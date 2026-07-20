@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডেটা জার্নালিজম: CDA টেন্ডার রিপোর্ট</title>
+    <!-- Chart.js লাইব্রেরি যুক্ত করা হলো -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CDA টেন্ডার ঝুঁকি বিশ্লেষণ</h1>
+        <p>এই চার্টটি গিটহাবের JSON ফাইল থেকে সরাসরি ডেটা নিয়ে তৈরি করা হয়েছে।</p>
+        
+        <!-- চার্ট দেখানোর জায়গা -->
+        <canvas id="riskChart"></canvas>
+    </div>
+
+    <script>
+        // এখানে আপনার গিটহাবের Raw JSON লিংকটি বসান
+        const jsonUrl = 'YOUR_GITHUB_RAW_JSON_LINK_HERE';
+
+        async function fetchDataAndDrawChart() {
+            try {
+                // JSON ডেটা কল করা হচ্ছে
+                const response = await fetch(jsonUrl);
+                const data = await response.json();
+
+                // ডেটা প্রসেসিং (উদাহরণস্বরূপ: Risk Level গোনা হচ্ছে)
+                let highRiskCount = 0;
+                let lowRiskCount = 0;
+
+                data.forEach(tender => {
+                    if (tender.Risk_Level === "HIGH") {
+                        highRiskCount++;
+                    } else if (tender.Risk_Level === "LOW") {
+                        lowRiskCount++;
+                    }
+                });
+
+                // Chart.js দিয়ে চার্ট তৈরি করা
+                const ctx = document.getElementById('riskChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // চার্টের ধরন (bar, pie, line ইত্যাদি)
+                    data: {
+                        labels: ['উচ্চ ঝুঁকি (HIGH)', 'নিম্ন ঝুঁকি (LOW)'],
+                        datasets: [{
+                            label: 'টেন্ডারের সংখ্যা',
+                            data: [highRiskCount, lowRiskCount],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)', // লাল রঙ
+                                'rgba(75, 192, 192, 0.7)'  // সবুজ রঙ
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('ডেটা লোড করতে সমস্যা হয়েছে:', error);
+            }
+        }
+
+        // ফাংশনটি কল করা হলো
+        fetchDataAndDrawChart();
+    </script>
+
+</body>
+</html>
