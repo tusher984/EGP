@@ -25,12 +25,15 @@
         header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;}
         header p { margin: 8px 0 0 0; font-size: 15px; color: var(--text-muted); font-weight: 500;}
 
-        /* Forensic Rules Matrix Section */
+        /* Forensic Rules Matrix Section - Made Interactive */
         .evidence-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 5px solid var(--netra-red); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .evidence-section h3 { margin: 0 0 15px 0; font-size: 19px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
         .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
-        .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; }
-        .evidence-item:hover { border-color: var(--neon-blue); background: rgba(255,255,255,0.03); }
+        
+        /* Interactive Rule Items */
+        .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
+        .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
+        .evidence-item.active-rule { border-color: var(--netra-red); background: rgba(204, 0, 0, 0.1); }
         .evidence-item strong { display: block; font-size: 14.5px; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
         .evidence-item p { margin: 0; font-size: 13px; color: var(--text-muted); text-align: justify; }
 
@@ -74,6 +77,9 @@
         .tools-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark);}
         .tools-bar input, .tools-bar select { padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 13px; outline: none; flex: 1; min-width: 150px; background: var(--dark-bg); color: white;}
         .tools-bar input:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
+        
+        .btn-clear { padding: 8px 15px; border: 1px solid var(--neon-blue); border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--neon-blue); background: transparent; transition: 0.2s; }
+        .btn-clear:hover { background: var(--neon-blue); color: var(--dark-bg); }
         .btn-download { padding: 8px 15px; border: none; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; background-color: var(--blue-800); }
         .btn-download:hover { background: var(--blue-600); }
 
@@ -95,6 +101,7 @@
         .doc-link.noa:hover { color: #fda4af; }
         
         .error { color: var(--netra-red); text-align: center; padding: 20px; font-size: 14px; font-weight: 600;}
+        .active-filter-banner { background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--neon-blue); padding: 8px 15px; margin-bottom: 15px; border-radius: 4px; font-size: 13px; display: none; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
@@ -103,42 +110,42 @@
         
         <header>
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
-            <p>উন্নয়ন কর্তৃপক্ষ (RAJUK, CDA, KDA, RDA, CoxDA, GDA) এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
+            <p>উন্নয়ন কর্তৃপক্ষ (RAJUK, CDA, KDA, RDA, CoxDA, GDA) এবং সরকারি প্রکیউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
         </header>
 
-        <!-- ফরেসনিক রুলবুক ম্যাট্রিক্স (CPV Explanation Added) -->
+        <!-- ফরেসনিক রুলবুক ম্যাট্রিক্স (ক্লিকযোগ্য করা হয়েছে) -->
         <div class="evidence-section">
-            <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স</h3>
+            <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স (যেকোনো রুল ফিল্টার করতে ক্লিক করুন)</h3>
             <div class="evidence-grid">
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('owner', this)">
                     <strong>১. তথ্য গোপন কোড (Rule: ITT 5.14)</strong>
                     <p>স্ট্যান্ডার্ড টেন্ডার ডকুমেন্টের ITT 5.14 ধারা অনুযায়ী প্রতিটি বিডারের 'Beneficial Owner' বা প্রকৃত মালিকানার বিবরণ দেওয়া বাধ্যতামূলক। এটি গোপন রাখা স্বার্থের সংঘাত ও বেনামী দুর্নীতির অকাট্য লক্ষণ।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('split', this)">
                     <strong>২. কৃত্রিম চুক্তি বিভাজন (PPA 2006)</strong>
                     <p>পাবলিক প্রকিউরমেন্ট রুলস (PPR) এবং জিপিএ আইনের রুল ELG_005 লঙ্ঘন। কোনো মেগা প্রজেক্টের কাজের উচ্চতর মন্ত্রণালয়ের অনুমোদন এড়াতে সুনির্দিষ্ট উদ্দেশ্যে কাজকে কৃত্রিমভাবে একাধিক ছোট ছোট লটে ভাগ করার নামান্তর।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('cpv', this)">
                     <strong>৩. অবান্তর CPV ক্যাটাগরি কারসাজি (CPV Staffing)</strong>
-                    <p><strong>CPV (Common Procurement Vocabulary)</strong> হলো আন্তর্জাতিক টেন্ডার আইডেন্টিফিকেশন কোড। জালিয়াতি করার জন্য মূল কাজের সাথে সম্পূর্ণ অপ্রাসঙ্গিক কোনো গোপন কোড (যেমন- সাধারণ রাস্তার কাজের মধ্যে জাহাজের যন্ত্রাংশের কোড) জোর করে ঢুকিয়ে টেন্ডারটিকে সাধারণ যোগ্য ঠিকাদারদের সার্চ রেজাল্ট থেকে লুকিয়ে ফেলার সুপরিকল্পিত কারসাজি।</p>
+                    <p><strong>CPV (Common Procurement Vocabulary)</strong> হলো আন্তর্জাতিক টেন্ডার কোড। জালিয়াতি করার জন্য মূল কাজের সাথে সম্পর্কহীন গোপন কোড (যেমন- রাস্তার কাজে জাহাজের কোড) জোর করে ঢুকিয়ে টেন্ডারটিকে সাধারণ ঠিকাদারদের সার্চ রেজাল্ট থেকে লুকিয়ে ফেলার কারসাজি।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('tailored', this)">
                     <strong>৪. বৈষম্যমূলক শর্ত (Tailored Criteria)</strong>
                     <p>টেন্ডার ডকুমেন্টের 'Eligibility' কলামে এমন অদ্ভুত ও অস্বাভাবিক স্পেসিফিক শর্ত (যেমন- নির্দিষ্ট কোনো এরিয়াতে সাব-অফিস বা ঠিক একটি নির্দিষ্ট ডেসিমাল ফিন্যান্সিয়াল টার্নওভার) দেওয়া, যা শুধু আগে থেকে ফিক্সড করা সিন্ডিকেটের সাথে মিলে যায়।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('monopoly', this)">
                     <strong>৫. মনোপলি ফানেলিং (Rule: ITT 50.6)</strong>
                     <p>ITT 50.6 ও 56.2(b) ধারা অনুসারে কার্যকর প্রতিযোগিতা না থাকলে বা মাত্র ১ জন রেস্পন্সিভ বিডার থাকলে রি-টেন্ডার আবশ্যক। কিন্তু স্ক্রিনিংয়ের মাধ্যমে বাকিদের অযোগ্য করে একক দরদাতাকে কাজ পাইয়ে দেওয়ার ব্যাকডোর মেথডলজি।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('outlier', this)">
                     <strong>৬. অস্বাভাবিক দর (Price Outliers)</strong>
                     <p>রুল STAT_001 এবং ওয়ার্ল্ড ব্যাংকের Abnormally Low/High Bids (ALB) গাইডলাইনের সরাসরি লঙ্ঘন। প্রজেক্টের অফিশিয়াল বাজেট এস্টিমেটের চেয়ে চরম কম বা বেশি প্রাইস ড্রপ করে বাজেট ম্যানিপুলেশনের মাধ্যমে কাজ বাগানো।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('meeting', this)">
                     <strong>৭. প্রি-টেন্ডার মিটিং প্রহসন</strong>
                     <p>টেন্ডার প্রকাশের মাত্র ৫ থেকে ৩০ মিনিটের ব্যবধানে অনলাইন বা অফলাইন মিটিংয়ের ডেট ফিক্সড করা, যা বাইরের সাধারণ কোনো ডেকোরেটেড প্রফেশনাল কোম্পানির পক্ষে এটেন্ড করা বা প্রজেক্ট কোয়েরি তোলার সুযোগ সম্পূর্ণ কেড়ে নেয়।</p>
                 </div>
-                <div class="evidence-item">
+                <div class="evidence-item" onclick="filterByRule('rigging', this)">
                     <strong>৮. বিড-রিগিং কোড (Dropout Ratio)</strong>
                     <p>বিপুল সংখ্যক ঠিকাদার টেন্ডার শিডিউল বা ডকুমেন্ট পারচেজ করার পরেও ফাইনাল ড্রপিং লেজারে কোনো বিড জমা না দেওয়া। এটি সরাসরি মাঠ পর্যায়ে শক্তিশালী সিন্ডিকেটের ভয়ভীতি প্রদর্শন অথবা পারস্পরিক আর্থিক রফা (Payoff)-এর প্রমাণ।</p>
                 </div>
@@ -199,85 +206,72 @@
 
         <!-- চার্ট গ্রিড (৯টি চার্ট) -->
         <div class="chart-grid">
-            
-            <!-- 1. Macro Violations -->
             <div class="chart-box">
                 <h3>১. দুর্নীতির ধরন (Macro-analysis)</h3>
-                <p class="chart-desc">সিস্টেমে পাওয়া মূল ৮টি প্রাতিষ্ঠানিক ভায়োলেশন</p>
+                <p class="chart-desc">সিস্টেমে পাওয়া মূল ৮টি প্রাতিষ্ঠানিক ভায়োлеশন</p>
                 <div class="chart-container"><canvas id="violationChart"></canvas></div>
-                <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> ই-জিপি系统中 আইন ভাঙার জন্য কোন কৌশলগুলো ঠিকাদারেরা সবচেয়ে বেশি ব্যবহার করেছে তার পরিসংখ্যান চিত্র।</div>
+                <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> ই-জিপি সিস্টেমে আইন ভাঙার জন্য কোন কৌশলগুলো ঠিকাদারেরা সবচেয়ে বেশি ব্যবহার করেছে তার পরিসংখ্যান চিত্র।</div>
             </div>
-
-            <!-- 2. Bid Rigging -->
             <div class="chart-box">
                 <h3>২. টেন্ডার ড্রপ-আউট (Bid-Rigging)</h3>
                 <p class="chart-desc">ডকুমেন্ট কিনেছেন বনাম ফাইনাল বিড জমা দিয়েছেন</p>
                 <div class="chart-container"><canvas id="dropoutChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> টেন্ডার কেনার পর বিপুল সংখক ঠিকাদার গায়েব হওয়া প্রমাণ করে যে, জমার আগেই গোপনে টাকার বিনিময়ে সমঝোতা করা হয়েছে।</div>
             </div>
-
-            <!-- 3. Syndicate Leaderboard -->
             <div class="chart-box">
                 <h3>৩. সিন্ডিকেট লিডারবোর্ড</h3>
                 <p class="chart-desc">সর্বোচ্চ মূল্যের 'HIGH' রিস্ক টেন্ডার প্রাপ্ত ঠিকাদার</p>
                 <div class="chart-container"><canvas id="syndicateChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> সরকারি মেগা প্রজেক্টের সিংহভাগ টাকা প্রতিযোগিতা ছাড়াই কোন বিশেষ কোম্পানিগুলোর পকেটে যাচ্ছে তা স্পষ্ট করে।</div>
             </div>
-
-            <!-- 4. Timeline Trend -->
             <div class="chart-box">
                 <h3>৪. ম্যানিপুলেশন টাইমলাইন</h3>
                 <p class="chart-desc">টেন্ডার প্রকাশের সময়কাল অনুযায়ী রুল ভায়োলেশনের প্রবণতা</p>
                 <div class="chart-container"><canvas id="timelineChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> বছরের কোন নির্দিষ্ট মাসে বা কোন অর্থবছর শেষ হওয়ার আগে তাড়াহুড়ো করে ব্যাকডোর টেন্ডার ছাড়ার হার বেড়েছে তা ট্র্যাক করে।</div>
             </div>
-
-            <!-- 5. Risk Count Distribution -->
             <div class="chart-box">
                 <h3>৫. টেন্ডার সংখ্যার ভিত্তিতে ঝুঁকি</h3>
                 <p class="chart-desc">উচ্চ, মাঝারি ও নিম্ন ঝুঁকির মোট অনুপাত (টেন্ডার সংখ্যায়)</p>
                 <div class="chart-container"><canvas id="riskPieChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> স্ক্যান করা প্রজেক্টগুলোর মধ্যে কত বিশাল শতাংশ টেন্ডার কোনো না কোনো দুর্নীতির রেড ফ্ল্যাগ নিয়ে পাশ হয়েছে।</div>
             </div>
-
-            <!-- 6. Top Agencies by Risk -->
             <div class="chart-box">
                 <h3>৬. শীর্ষ ঝুঁকিপূর্ণ সংস্থা (Agencies)</h3>
                 <p class="chart-desc">যেসব উন্নয়ন সংস্থার টেন্ডারে সবচেয়ে বেশি টাকার অসঙ্গতি</p>
                 <div class="chart-container"><canvas id="agencyChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> দুর্নীতি ও মনোপলি সিন্ডিকেটের পেছনে কোন প্রজেক্ট ডিরেক্টর বা সরকারি দপ্তরগুলো সবচেয়ে বেশি দায়ী তা চিহ্নিত করে।</div>
             </div>
-
-            <!-- 7. Top Red Flags -->
             <div class="chart-box">
                 <h3>৭. অনিয়মের প্রধান হাতিয়ার</h3>
                 <p class="chart-desc">অডিট ডাইনামিক ডেটা অনুসারে সবচেয়ে বেশি ব্যবহৃত ভায়োলেশন কোড</p>
                 <div class="chart-container"><canvas id="redFlagChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> ইনভেস্টিগেশনে ফিল্টার করা ডেটায় সবচেয়ে বেশি কোন অপরাধের কারণে টেন্ডারগুলো ফ্ল্যাগড বা ঝুঁকিপূর্ণ হয়েছে।</div>
             </div>
-
-            <!-- 8. Single vs Multiple Bidders -->
             <div class="chart-box">
                 <h3>৮. একক দরদাতার আধিপত্য (Monopoly)</h3>
                 <p class="chart-desc">১ জন যোগ্য দরদাতা বনাম সত্যিকারের প্রতিযোগীতা</p>
                 <div class="chart-container"><canvas id="singleBidderChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> কত বিপুল শতাংশ টেন্ডারে ড্রপিংয়ের নাটক করা হলেও মূলত ১ জন ঠিকাদারকে ফাঁকা মাঠে গোল দেওয়ার ব্যবস্থা করে দেওয়া হয়েছে।</div>
             </div>
-
-            <!-- 9. Risk by Financial Value -->
             <div class="chart-box">
                 <h3>৯. টাকার অঙ্কে ঝুঁকির অনুপাত</h3>
                 <p class="chart-desc">উচ্চ, মাঝারি ও নিম্ন ঝুঁকির সামগ্রিক আর্থিক গ্রাফ (BDT)</p>
                 <div class="chart-container"><canvas id="riskValuePieChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> মোট সরকারি বরাদ্দের কত হাজার কোটি টাকা উচ্চ-ঝুঁকিপূর্ণ টেন্ডারের মাধ্যমে সিন্ডিকেটের কাছে সমর্পিত হয়েছে।</div>
             </div>
-
         </div>
 
         <!-- এভিডেন্স লেজার (ডেটা টেবিল) -->
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             
+            <!-- Active Rule Banner -->
+            <div class="active-filter-banner" id="filterBanner">
+                <span id="bannerText" style="color: var(--neon-blue); font-weight: bold;"></span>
+                <button class="btn-clear" onclick="resetRuleFilter()">ফিল্টার সরান (Show All)</button>
+            </div>
+
             <div class="tools-bar">
                 <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="filterData()">
                 <select id="riskFilter" onchange="filterData()">
@@ -313,16 +307,11 @@
     <script>
         const jsonFileName = 'Procurement_Database.json';
         let globalTenderData = []; 
+        let activeRuleKey = null; // Track current clicked rule
         
-        let violationChartObj = null;
-        let syndicateChartObj = null;
-        let dropoutChartObj = null;
-        let timelineChartObj = null;
-        let riskPieChartObj = null;
-        let agencyChartObj = null;
-        let redFlagChartObj = null;
-        let singleBidderChartObj = null;
-        let riskValuePieChartObj = null;
+        let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
+        let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
+        let redFlagChartObj = null, singleBidderChartObj = null, riskValuePieChartObj = null;
 
         const colorPrimary = '#38bdf8';   
         const colorSecondary = '#1e3a8a'; 
@@ -352,22 +341,44 @@
                 type: 'bar',
                 data: {
                     labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'একই সময়', 'একক দরদাতা', 'অস্বাভাবিক দর', '৫মিনিট মিটিং', '<১৪ দিন সময়'],
-                    datasets: [{ 
-                        data: [1158, 825, 332, 312, 201, 146, 98, 83], 
-                        backgroundColor: colorSecondary,
-                        borderColor: colorPrimary,
-                        borderWidth: 1,
-                        borderRadius: 3
-                    }]
+                    datasets: [{ data: [1158, 825, 332, 312, 201, 146, 98, 83], backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 }]
                 },
-                options: { 
-                    indexAxis: 'y', 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {size: 11}} } },
-                    plugins: { legend: { display: false } } 
-                }
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {size: 11}} } }, plugins: { legend: { display: false } } }
             });
+        }
+
+        // NEW: Interactive Rule Clicking Function
+        function filterByRule(ruleKey, element) {
+            // Remove active class from all rules
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            
+            if (activeRuleKey === ruleKey) {
+                // If clicking the same rule again, reset filter
+                resetRuleFilter();
+                return;
+            }
+
+            activeRuleKey = ruleKey;
+            element.classList.add('active-rule');
+
+            // Show Banner
+            const banner = document.getElementById('filterBanner');
+            const bannerText = document.getElementById('bannerText');
+            const ruleName = element.querySelector('strong').innerText;
+            bannerText.innerText = `সিস্টেম ফিল্টার অ্যাক্টিভ: শুধুমাত্র "${ruleName}" এর ডেটা দেখানো হচ্ছে`;
+            banner.style.display = 'flex';
+
+            filterData(); // Re-trigger filtering
+            
+            // Auto scroll down smoothly to ledger section to show results
+            document.getElementById('filterBanner').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetRuleFilter() {
+            activeRuleKey = null;
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            document.getElementById('filterBanner').style.display = 'none';
+            filterData();
         }
 
         function filterData() {
@@ -375,10 +386,30 @@
             const risk = document.getElementById('riskFilter').value;
             
             const filtered = globalTenderData.filter(t => {
+                // 1. Dropdown Risk Filter
                 const matchRisk = risk === 'ALL' || t.Risk_Level === risk;
+                
+                // 2. Search Text Input Filter
                 const searchString = Object.values(t).join(' ').toLowerCase();
                 const matchTerm = searchString.includes(term);
-                return matchRisk && matchTerm;
+                
+                // 3. NEW: Interactive Forensic Rule Filter Logic
+                let matchRule = true;
+                if (activeRuleKey) {
+                    const reason = (t.Red_Flag_Reason || "").toLowerCase();
+                    const exp = (t.Extracted_Specific_Experience || "").toLowerCase();
+                    
+                    if (activeRuleKey === 'owner') matchRule = reason.includes("beneficial owner") || reason.includes("owner") || reason.includes("গোপন");
+                    else if (activeRuleKey === 'split') matchRule = reason.includes("splitting") || reason.includes("বিভাজন") || reason.includes("lot");
+                    else if (activeRuleKey === 'cpv') matchRule = reason.includes("cpv") || reason.includes("ক্যাটাগরি");
+                    else if (activeRuleKey === 'tailored') matchRule = /\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || reason.includes("조건") || reason.includes("criteria");
+                    else if (activeRuleKey === 'monopoly') matchRule = parseInt(t.Responsive_Tenders) === 1 || reason.includes("single") || reason.includes("একক");
+                    else if (activeRuleKey === 'outlier') matchRule = reason.includes("outlier") || reason.includes("অস্বাভাবিক");
+                    else if (activeRuleKey === 'meeting') matchRule = reason.includes("meeting") || reason.includes("মিটিং");
+                    else if (activeRuleKey === 'rigging') matchRule = (parseInt(t.Tenders_Sold) > parseInt(t.Tenders_Received) * 2) || reason.includes("rigging") || reason.includes("dropout");
+                }
+
+                return matchRisk && matchTerm && matchRule;
             });
             
             updateSummaries(filtered);
@@ -634,7 +665,8 @@
                 let pdfHtml = '';
                 if (t.Source_Files_Merged) {
                     t.Source_Files_Merged.split('|').filter(f => f.trim()).forEach((f, i) => {
-                        pdfHtml += `<a href="downloaded_pdfs/${f.trim()}" target="_blank" class="doc-link ${i>0?'noa':''}">${i>0?'NOA 📄' : 'Notice 📄'}</a>`;
+                        let isNoa = i > 0;
+                        pdfHtml += `<a href="downloaded_pdfs/${f.trim()}" target="_blank" class="doc-link ${isNoa ? 'noa' : ''}">${isNoa ? 'NOA 📄' : 'Notice 📄'}</a>`;
                     });
                 } else if(t.Source_File) {
                     pdfHtml = `<a href="downloaded_pdfs/${t.Source_File.trim()}" target="_blank" class="doc-link">Notice 📄</a>`;
