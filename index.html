@@ -21,11 +21,14 @@
         .card p { margin: 5px 0; font-size: 13px; font-weight: 600; color: #334155; }
         .card small { font-size: 11px; color: #64748b; }
 
-        /* Small Charts Grid */
-        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .chart-box { background: white; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; height: 220px; display: flex; flex-direction: column; }
+        /* Charts Grid - Fixed Layout */
+        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .chart-box { background: white; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; }
         .chart-box h3 { margin: 0 0 5px 0; font-size: 14px; text-align: center; color: #0f172a; }
-        .chart-container { flex-grow: 1; position: relative; }
+        .chart-desc { text-align: center; font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        
+        /* THIS FIXES THE STRETCHING ISSUE */
+        .chart-container { position: relative; height: 220px; width: 100%; } 
 
         /* Tools (Search & Download) */
         .tools-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
@@ -81,19 +84,24 @@
             </div>
         </div>
 
-        <!-- ছোট ও ক্লিন চার্ট (এক লাইনে) -->
+        <!-- চার্ট গ্রিড (ফিক্সড সাইজ) -->
         <div class="chart-grid">
             <div class="chart-box">
-                <h3>দুর্নীতির ধরন (Macro-analysis)</h3>
-                <div class="chart-container"><canvas id="violationChart"></canvas></div>
+                <h3>শীর্ষ দুর্নীতিগ্রস্ত ঠিকাদার (Syndicate Leaderboard)</h3>
+                <p class="chart-desc">যেসকল ঠিকাদার সবচেয়ে বেশি মূল্যের 'HIGH' রিস্ক টেন্ডার পেয়েছে</p>
+                <div class="chart-container"><canvas id="syndicateChart"></canvas></div>
             </div>
+
             <div class="chart-box">
-                <h3>প্রতিযোগিতা বাতিল (Funnel)</h3>
+                <h3>টেন্ডার প্রকাশের টাইমলাইন (Trend Analysis)</h3>
+                <p class="chart-desc">সময়ের সাথে সাথে জালিয়াতি বা রুল ভায়োলেশনের প্রবণতা</p>
+                <div class="chart-container"><canvas id="timelineChart"></canvas></div>
+            </div>
+            
+            <div class="chart-box">
+                <h3>প্রতিযোগিতা বাতিল (Bid-Response Funnel)</h3>
+                <p class="chart-desc">মোট টেন্ডারের ৩৬.৩% অযোগ্য করা হয়েছে। ২০১টিতে মাত্র ১ জন টিকে ছিল।</p>
                 <div class="chart-container"><canvas id="funnelChart"></canvas></div>
-            </div>
-            <div class="chart-box">
-                <h3>শীর্ষ ৫ চুক্তি (ডাইনামিক)</h3>
-                <div class="chart-container"><canvas id="valueChart"></canvas></div>
             </div>
         </div>
 
@@ -132,9 +140,12 @@
     <script>
         const jsonFileName = 'Procurement_Database.json';
         let globalTenderData = []; 
-        let valueChartInstance = null; // To destroy and re-draw dynamic chart
+        
+        // Chart Instances
+        let syndicateChartObj = null;
+        let timelineChartObj = null;
+        let funnelChartObj = null;
 
-        // Initialize Data
         async function init() {
             try {
                 const res = await fetch(jsonFileName);
@@ -142,47 +153,25 @@
                 const data = await res.json();
                 globalTenderData = data.Merged_Database || data; 
                 
-                drawStaticCharts();
-                filterData(); // This will render table, dynamic chart and summary
+                filterData(); 
             } catch (err) {
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="error">Failed to load ${jsonFileName}. Please run via GitHub Pages or Local Server.</td></tr>`;
             }
         }
 
-        // Static Charts (Violations & Funnel from TIB/Macro report)
-        function drawStaticCharts() {
-            new Chart(document.getElementById('violationChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['তথ্য গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'একক দরদাতা', 'অস্বাভাবিক দর'],
-                    datasets: [{ data: [1158, 825, 332, 201, 146], backgroundColor: '#e11d48' }]
-                },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            new Chart(document.getElementById('funnelChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['যোগ্য (1752)', 'অযোগ্য (997)'],
-                    datasets: [{ data: [1752, 997], backgroundColor: ['#2563eb', '#e11d48'] }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
-            });
-        }
-
-        // Dynamic Updates (Triggered on load and on search/filter)
         function filterData() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const risk = document.getElementById('riskFilter').value;
             
             const filtered = globalTenderData.filter(t => {
                 const matchRisk = risk === 'ALL' || t.Risk_Level === risk;
-                const matchTerm = Object.values(t).join(' ').toLowerCase().includes(term);
+                const searchString = Object.values(t).join(' ').toLowerCase();
+                const matchTerm = searchString.includes(term);
                 return matchRisk && matchTerm;
             });
             
             updateTable(filtered);
-            updateDynamicChart(filtered);
+            updateCharts(filtered);
             updateSummaries(filtered);
         }
 
@@ -193,21 +182,66 @@
             document.getElementById('totalValue').innerText = "৳" + unit;
         }
 
-        function updateDynamicChart(data) {
-            const valid = data.filter(t => t.Contract_Value_BDT != null)
-                              .sort((a, b) => b.Contract_Value_BDT - a.Contract_Value_BDT)
-                              .slice(0, 5);
-            
-            if(valueChartInstance) valueChartInstance.destroy(); // Clear old chart
-            
-            valueChartInstance = new Chart(document.getElementById('valueChart'), {
+        function updateCharts(data) {
+            // 1. Syndicate Leaderboard (Filtered data)
+            const suppliers = {};
+            data.forEach(t => {
+                if (t.Risk_Level === 'HIGH' && t.Supplier_Name && t.Contract_Value_BDT) {
+                    let name = t.Supplier_Name.split('(')[0].trim(); 
+                    if(!suppliers[name]) suppliers[name] = 0;
+                    suppliers[name] += parseFloat(t.Contract_Value_BDT);
+                }
+            });
+            const sortedSuppliers = Object.entries(suppliers).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const supLabels = sortedSuppliers.map(s => s[0].length > 20 ? s[0].substring(0, 20) + "..." : s[0]);
+            const supValues = sortedSuppliers.map(s => s[1]);
+
+            if(syndicateChartObj) syndicateChartObj.destroy();
+            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), {
                 type: 'bar',
                 data: {
-                    labels: valid.map(t => "ID:" + t.Tender_Proposal_ID),
-                    datasets: [{ label: 'মূল্য (BDT)', data: valid.map(t => t.Contract_Value_BDT), backgroundColor: '#16a34a' }]
+                    labels: supLabels,
+                    datasets: [{ label: 'মোট চুক্তিমূল্য (BDT)', data: supValues, backgroundColor: '#e11d48', borderRadius: 4 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 2. Timeline Chart (Filtered data)
+            const timeline = {};
+            data.forEach(t => {
+                let dStr = t.Advertised_Date || t.Contract_Signing_Date;
+                if(dStr) {
+                    let date = new Date(dStr);
+                    if(!isNaN(date)) {
+                        let monthYear = `${date.getFullYear()}-${('0'+(date.getMonth()+1)).slice(-2)}`;
+                        timeline[monthYear] = (timeline[monthYear] || 0) + 1;
+                    }
+                }
+            });
+            const sortedDates = Object.keys(timeline).sort();
+            const dateCounts = sortedDates.map(d => timeline[d]);
+
+            if(timelineChartObj) timelineChartObj.destroy();
+            timelineChartObj = new Chart(document.getElementById('timelineChart'), {
+                type: 'line',
+                data: {
+                    labels: sortedDates,
+                    datasets: [{ label: 'টেন্ডার সংখ্যা', data: dateCounts, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.3 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
+
+            // 3. Static Funnel/Doughnut Chart (TIB Macro Data)
+            if(!funnelChartObj) {
+                funnelChartObj = new Chart(document.getElementById('funnelChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['যোগ্য (1752)', 'অযোগ্য (997)'],
+                        datasets: [{ data: [1752, 997], backgroundColor: ['#16a34a', '#e11d48'], borderWidth: 1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
         }
 
         function updateTable(data) {
@@ -215,13 +249,16 @@
             tbody.innerHTML = ''; 
             if(!data.length) return tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">কোনো ডেটা নেই</td></tr>`;
             
-            data.forEach(t => {
+            // Custom Sorting: HIGH > MEDIUM > LOW
+            const riskOrder = { "HIGH": 1, "MEDIUM": 2, "LOW": 3 };
+            const sortedData = [...data].sort((a, b) => (riskOrder[a.Risk_Level] || 4) - (riskOrder[b.Risk_Level] || 4));
+
+            sortedData.forEach(t => {
                 let badge = t.Risk_Level === 'HIGH' ? 'bg-red' : (t.Risk_Level === 'MEDIUM' ? 'bg-orange' : 'bg-green');
                 let val = t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-IN') : '-';
                 let org = t.Organization_Agency ? t.Organization_Agency.split('Procuring')[0].trim() : "অজানা";
                 let sup = t.Supplier_Name ? t.Supplier_Name.split('(')[0].trim() : "-";
                 
-                // PDF links
                 let pdfHtml = '';
                 if (t.Source_Files_Merged) {
                     t.Source_Files_Merged.split('|').filter(f => f.trim()).forEach((f, i) => {
@@ -234,7 +271,7 @@
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr>
                         <td><strong>${t.Tender_Proposal_ID}</strong></td>
-                        <td title="${org}">${org.substring(0,20)}...</td>
+                        <td title="${org}">${org.substring(0,25)}...</td>
                         <td>${sup}</td>
                         <td><span class="badge ${badge}">${t.Risk_Level||'N/A'}</span></td>
                         <td>${val}</td>
@@ -248,18 +285,23 @@
         function downloadCSV() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const risk = document.getElementById('riskFilter').value;
-            const dataToExport = globalTenderData.filter(t => (risk === 'ALL' || t.Risk_Level === risk) && Object.values(t).join(' ').toLowerCase().includes(term));
+            const dataToExport = globalTenderData.filter(t => {
+                const matchRisk = risk === 'ALL' || t.Risk_Level === risk;
+                const searchString = Object.values(t).join(' ').toLowerCase();
+                const matchTerm = searchString.includes(term);
+                return matchRisk && matchTerm;
+            });
             
             if(!dataToExport.length) return alert("ডেটা নেই!");
 
-            let csv = "\uFEFF" + "Tender_ID,Agency,Supplier,Risk,Value_BDT,Flag_Reason\n";
+            let csv = "\uFEFFTender_ID,Agency,Supplier,Risk,Value_BDT,Flag_Reason\n";
             dataToExport.forEach(r => {
                 csv += `${r.Tender_Proposal_ID},"${(r.Organization_Agency||"").replace(/"/g,'""')}","${(r.Supplier_Name||"").replace(/"/g,'""')}",${r.Risk_Level},${r.Contract_Value_BDT||0},"${(r.Red_Flag_Reason||"").replace(/"/g,'""')}"\n`;
             });
 
             const link = document.createElement("a");
             link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-            link.download = "Tender_Data.csv";
+            link.download = "eGP_Tender_Data.csv";
             link.click();
         }
 
