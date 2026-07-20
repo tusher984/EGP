@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CDA টেন্ডার ডেটা ভিজ্যুয়ালাইজেশন</title>
-    <!-- Chart.js লাইব্রেরি -->
+    <title>CDA টেন্ডার ডেটা ভিজ্যুয়ালাইজেশন ও রিপোর্ট</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -14,9 +13,7 @@
             text-align: center;
             padding: 20px;
         }
-        h1 {
-            color: #2c3e50;
-        }
+        h1 { color: #2c3e50; }
         .dashboard {
             display: flex;
             justify-content: center;
@@ -32,48 +29,100 @@
             width: 45%;
             min-width: 400px;
         }
+        /* টেবিলের ডিজাইন */
+        .table-container {
+            margin-top: 40px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th { background-color: #34495e; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e8f4f8; }
+        
+        /* বাটন ও ব্যাজ ডিজাইন */
+        .btn-pdf {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .btn-pdf:hover { background-color: #c0392b; }
+        
+        .badge-high { background-color: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;}
+        .badge-low { background-color: #2ecc71; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;}
     </style>
 </head>
 <body>
 
-    <h1>📊 CDA টেন্ডার ডেটা ড্যাশবোর্ড</h1>
-    <p>আপনার দেওয়া JSON ডেটা থেকে সরাসরি তৈরি করা রিপোর্ট</p>
+    <h1>📊 CDA টেন্ডার ইনভেস্টিগেশন রিপোর্ট</h1>
+    <p>ডেটা ভিজ্যুয়ালাইজেশন এবং অরিজিনাল সোর্স ডকুমেন্টের আর্কাইভ</p>
 
+    <!-- চার্ট সেকশন -->
     <div class="dashboard">
-        <!-- প্রথম চার্ট: রিস্ক লেভেল -->
         <div class="chart-card">
             <h3>টেন্ডারের ঝুঁকি বিশ্লেষণ (Risk Level)</h3>
             <canvas id="riskChart"></canvas>
         </div>
-
-        <!-- দ্বিতীয় চার্ট: সর্বোচ্চ চুক্তি মূল্য -->
         <div class="chart-card">
             <h3>শীর্ষ ৫ সর্বোচ্চ চুক্তি মূল্য (Contract Value)</h3>
             <canvas id="valueChart"></canvas>
         </div>
     </div>
 
+    <!-- ডেটা টেবিল ও পিডিএফ লিংক সেকশন -->
+    <div class="table-container">
+        <h3>📄 টেন্ডারের বিস্তারিত এবং সোর্স ফাইল (PDF)</h3>
+        <table id="tenderTable">
+            <thead>
+                <tr>
+                    <th>টেন্ডার আইডি</th>
+                    <th>ঝুঁকির মাত্রা (Risk)</th>
+                    <th>চুক্তি মূল্য (BDT)</th>
+                    <th>সোর্স ফাইল (অরিজিনাল ডকুমেন্ট)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ডেটা এখানে জাভাস্ক্রিপ্ট দিয়ে বসানো হবে -->
+            </tbody>
+        </table>
+    </div>
+
     <script>
-        // আপনার দেওয়া JSON ডেটা এখানে রাখা হলো (টেস্ট করার জন্য)
-        // আপনি চাইলে আপনার সম্পূর্ণ ফাইল থেকে ডেটা এনে এখানে বসাতে পারেন
+        // এখানে আপনার JSON ডেটা দেওয়া হলো 
         const tenderData = [
-            { "Tender_Proposal_ID": 1306342, "Risk_Level": "LOW", "Contract_Value_BDT": null },
-            { "Tender_Proposal_ID": 1305867, "Risk_Level": "LOW", "Contract_Value_BDT": null },
-            { "Tender_Proposal_ID": 1267626, "Risk_Level": "LOW", "Contract_Value_BDT": 579500 },
-            { "Tender_Proposal_ID": 1231413, "Risk_Level": "LOW", "Contract_Value_BDT": 2054979.681 },
-            { "Tender_Proposal_ID": 1128572, "Risk_Level": "HIGH", "Contract_Value_BDT": 1875002.607 },
-            { "Tender_Proposal_ID": 1028832, "Risk_Level": "LOW", "Contract_Value_BDT": 8988920.1 },
-            { "Tender_Proposal_ID": 1023333, "Risk_Level": "HIGH", "Contract_Value_BDT": 11731574.38 },
-            { "Tender_Proposal_ID": 1001843, "Risk_Level": "LOW", "Contract_Value_BDT": 24247478.31 },
-            { "Tender_Proposal_ID": 1001782, "Risk_Level": "HIGH", "Contract_Value_BDT": 52490000.53 },
-            { "Tender_Proposal_ID": 971997, "Risk_Level": "LOW", "Contract_Value_BDT": 8741984.554 },
-            { "Tender_Proposal_ID": 959962, "Risk_Level": "LOW", "Contract_Value_BDT": 100790743.2 },
-            { "Tender_Proposal_ID": 918775, "Risk_Level": "HIGH", "Contract_Value_BDT": 74713501.27 },
-            { "Tender_Proposal_ID": 917088, "Risk_Level": "HIGH", "Contract_Value_BDT": 161596296.8 },
-            { "Tender_Proposal_ID": 848555, "Risk_Level": "HIGH", "Contract_Value_BDT": 51133146.95 }
+            { "Tender_Proposal_ID": 1306342, "Risk_Level": "LOW", "Contract_Value_BDT": null, "Source_File": "CDA_Tender_1306342.pdf" },
+            { "Tender_Proposal_ID": 1305867, "Risk_Level": "LOW", "Contract_Value_BDT": null, "Source_File": "CDA_Tender_1305867.pdf" },
+            { "Tender_Proposal_ID": 1267626, "Risk_Level": "LOW", "Contract_Value_BDT": 579500, "Source_File": "CDA_Tender_1267626.pdf" },
+            { "Tender_Proposal_ID": 1231413, "Risk_Level": "LOW", "Contract_Value_BDT": 2054979.681, "Source_File": "CDA_Tender_1231413.pdf" },
+            { "Tender_Proposal_ID": 1128572, "Risk_Level": "HIGH", "Contract_Value_BDT": 1875002.607, "Source_File": "CDA_Tender_1128572.pdf" },
+            { "Tender_Proposal_ID": 1028832, "Risk_Level": "LOW", "Contract_Value_BDT": 8988920.1, "Source_File": "CDA_Tender_1028832.pdf" },
+            { "Tender_Proposal_ID": 1023333, "Risk_Level": "HIGH", "Contract_Value_BDT": 11731574.38, "Source_File": "CDA_Tender_1023333.pdf" },
+            { "Tender_Proposal_ID": 1001843, "Risk_Level": "LOW", "Contract_Value_BDT": 24247478.31, "Source_File": "CDA_Tender_1001843.pdf" },
+            { "Tender_Proposal_ID": 1001782, "Risk_Level": "HIGH", "Contract_Value_BDT": 52490000.53, "Source_File": "CDA_Tender_1001782.pdf" },
+            { "Tender_Proposal_ID": 971997, "Risk_Level": "LOW", "Contract_Value_BDT": 8741984.554, "Source_File": "CDA_Tender_971997.pdf" },
+            { "Tender_Proposal_ID": 959962, "Risk_Level": "LOW", "Contract_Value_BDT": 100790743.2, "Source_File": "CDA_Tender_959962.pdf" },
+            { "Tender_Proposal_ID": 918775, "Risk_Level": "HIGH", "Contract_Value_BDT": 74713501.27, "Source_File": "CDA_Tender_918775.pdf" },
+            { "Tender_Proposal_ID": 917088, "Risk_Level": "HIGH", "Contract_Value_BDT": 161596296.8, "Source_File": "CDA_Tender_917088.pdf" },
+            { "Tender_Proposal_ID": 848555, "Risk_Level": "HIGH", "Contract_Value_BDT": 51133146.95, "Source_File": "CDA_Tender_848555.pdf" }
         ];
 
-        // --- ডেটা প্রসেসিং: Risk Level ---
+        // --- চার্টের জন্য ডেটা প্রসেসিং ---
         let highRiskCount = 0;
         let lowRiskCount = 0;
 
@@ -82,18 +131,14 @@
             else if (tender.Risk_Level === "LOW") lowRiskCount++;
         });
 
-        // --- ডেটা প্রসেসিং: Contract Value ---
-        // যেসব টেন্ডারে Contract Value দেওয়া আছে সেগুলো ফিল্টার করা
         const validContracts = tenderData.filter(tender => tender.Contract_Value_BDT !== null);
-        // বড় থেকে ছোট হিসেবে সাজানো (Sort)
         validContracts.sort((a, b) => b.Contract_Value_BDT - a.Contract_Value_BDT);
-        // শীর্ষ ৫টি ডেটা নেওয়া
         const top5Contracts = validContracts.slice(0, 5);
         
         const top5Labels = top5Contracts.map(tender => "ID: " + tender.Tender_Proposal_ID);
         const top5Values = top5Contracts.map(tender => tender.Contract_Value_BDT);
 
-        // --- চার্ট ১ আঁকা (Risk Chart - Pie) ---
+        // --- চার্ট ১: Risk Chart ---
         const ctxRisk = document.getElementById('riskChart').getContext('2d');
         new Chart(ctxRisk, {
             type: 'doughnut',
@@ -101,19 +146,14 @@
                 labels: ['উচ্চ ঝুঁকি (HIGH)', 'নিম্ন ঝুঁকি (LOW)'],
                 datasets: [{
                     data: [highRiskCount, lowRiskCount],
-                    backgroundColor: ['#e74c3c', '#2ecc71'], // লাল এবং সবুজ
+                    backgroundColor: ['#e74c3c', '#2ecc71'],
                     hoverOffset: 4
                 }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
         });
 
-        // --- চার্ট ২ আঁকা (Value Chart - Bar) ---
+        // --- চার্ট ২: Value Chart ---
         const ctxValue = document.getElementById('valueChart').getContext('2d');
         new Chart(ctxValue, {
             type: 'bar',
@@ -122,20 +162,42 @@
                 datasets: [{
                     label: 'চুক্তি মূল্য (BDT)',
                     data: top5Values,
-                    backgroundColor: '#3498db', // নীল রঙ
+                    backgroundColor: '#3498db',
                     borderColor: '#2980b9',
                     borderWidth: 1
                 }]
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'BDT (টাকা)' }
-                    }
-                }
-            }
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+
+        // --- ডেটা টেবিল ও PDF লিংক জেনারেট করা ---
+        const tbody = document.querySelector('#tenderTable tbody');
+        
+        tenderData.forEach(tender => {
+            const tr = document.createElement('tr');
+            
+            // ব্যাজ স্টাইল সেট করা
+            const badgeClass = tender.Risk_Level === 'HIGH' ? 'badge-high' : 'badge-low';
+            
+            // টাকার পরিমাণ ফরম্যাট করা
+            const formattedValue = tender.Contract_Value_BDT 
+                ? tender.Contract_Value_BDT.toLocaleString('en-IN') + ' ৳' 
+                : 'তথ্য নেই';
+
+            // PDF ফাইলের লিংক তৈরি (downloaded_pdfs ফোল্ডারের সাপেক্ষে)
+            // JSON ডেটায় যদি "CDA_Tender_xxx.pdf | Tender_xxx.pdf |" এমন থাকে, তবে প্রথম নামটুকু কেটে নেওয়া হচ্ছে
+            const pdfFileName = tender.Source_File.split(' |')[0].trim();
+            const pdfLink = `downloaded_pdfs/${pdfFileName}`;
+
+            tr.innerHTML = `
+                <td><strong>${tender.Tender_Proposal_ID}</strong></td>
+                <td><span class="${badgeClass}">${tender.Risk_Level}</span></td>
+                <td>${formattedValue}</td>
+                <td>
+                    <a href="${pdfLink}" target="_blank" class="btn-pdf">PDF দেখুন ↗</a>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
     </script>
 </body>
