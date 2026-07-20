@@ -38,6 +38,10 @@
         .chart-box h3 { margin: 0 0 5px 0; font-size: 15px; color: #111827; text-transform: uppercase; }
         .chart-desc { font-size: 12px; color: #6b7280; margin: 0 0 15px 0; }
         .chart-container { position: relative; height: 200px; width: 100%; } 
+        
+        /* New: Chart Explanation CSS */
+        .chart-explanation { margin-top: 15px; font-size: 11.5px; color: #6b7280; border-top: 1px dashed #e5e7eb; padding-top: 10px; line-height: 1.5; text-align: justify;}
+        .chart-explanation strong { color: #374151; }
 
         /* Tools (Search & Download) */
         .ledger-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #111827; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
@@ -77,7 +81,7 @@
             <p>সরকারি প্রকিউরমেন্টে সিন্ডিকেট, তথ্য গোপন ও আর্থিক অসঙ্গতির ডিজিটাল প্রমাণ (CDA, RAJUK, KDA)</p>
         </header>
 
-        <!-- ফরেসনিক ফাইন্ডিংস (Investigation Highlight) -->
+        <!-- ফরেসনিক ফাইন্ডিংস -->
         <div class="evidence-box">
             <h3>ফরেসনিক মেথডলজি ও অ্যালগরিদম অ্যালার্ট</h3>
             <p>PPR-2008, e-PG3A এবং World Bank গাইডলাইনের ভিত্তিতে সিস্টেম থেকে প্রাপ্ত সুনির্দিষ্ট অনিয়মসমূহ:</p>
@@ -113,24 +117,46 @@
             </div>
         </div>
 
-        <!-- চার্ট (ক্লিন ডিজাইন) -->
+        <!-- চার্ট গ্রিড -->
         <div class="chart-grid">
+            
+            <!-- Chart 1 -->
             <div class="chart-box">
                 <h3>সিন্ডিকেট ওয়াচ (Syndicate Watch)</h3>
                 <p class="chart-desc">সর্বোচ্চ মূল্যের 'HIGH' রিস্ক টেন্ডার প্রাপ্ত শীর্ষ ৫ ঠিকাদার</p>
                 <div class="chart-container"><canvas id="syndicateChart"></canvas></div>
+                
+                <!-- Chart Explanation -->
+                <div class="chart-explanation">
+                    <strong>ডেটা ভিত্তি:</strong> এই চার্টটি ডাটাবেসে থাকা শুধুমাত্র <em>'উচ্চ-ঝুঁকিপূর্ণ' (HIGH Risk)</em> হিসেবে চিহ্নিত টেন্ডারগুলোর <em>'চুক্তিমূল্য' (Contract Value)</em> এর ভিত্তিতে তৈরি।<br>
+                    <strong>যা প্রমাণ করে:</strong> এটি সরাসরি আঙুল তোলে যে, রুল ভেঙে বা তথ্য গোপন করে কোন নির্দিষ্ট ঠিকাদাররা (Contractors) সবচেয়ে বড় অঙ্কের সরকারি কাজগুলো নিজেদের পকেটে নিয়ে গেছে।
+                </div>
             </div>
 
+            <!-- Chart 2 -->
             <div class="chart-box">
                 <h3>ম্যানিপুলেশন টাইমলাইন (Trend)</h3>
                 <p class="chart-desc">টেন্ডার প্রকাশের সময়কাল অনুযায়ী অনিয়মের প্রবণতা</p>
                 <div class="chart-container"><canvas id="timelineChart"></canvas></div>
+                
+                <!-- Chart Explanation -->
+                <div class="chart-explanation">
+                    <strong>ডেটা ভিত্তি:</strong> সিস্টেমে থাকা টেন্ডারগুলোর <em>'বিজ্ঞাপন প্রকাশের তারিখ' (Advertised Date)</em> বা <em>'চুক্তি স্বাক্ষরের তারিখ'</em> এর টাইমলাইনের ওপর ভিত্তি করে এটি তৈরি।<br>
+                    <strong>যা প্রমাণ করে:</strong> এর মাধ্যমে বোঝা যায় বছরের কোন নির্দিষ্ট সময়ে (যেমন: অর্থবছর শেষ হওয়ার আগে বা মেগা প্রজেক্ট ঘোষণার সময়) তড়িঘড়ি করে জালিয়াতির মাধ্যমে কাজ দেওয়ার প্রবণতা বাড়ে কি না।
+                </div>
             </div>
             
+            <!-- Chart 3 -->
             <div class="chart-box">
                 <h3>প্রতিযোগিতা বাতিল (Funnel)</h3>
                 <p class="chart-desc">মোট টেন্ডারের ৩৬.৩% অযোগ্য। ২০১টিতে মাত্র ১ জন টিকে ছিল।</p>
                 <div class="chart-container"><canvas id="funnelChart"></canvas></div>
+                
+                <!-- Chart Explanation -->
+                <div class="chart-explanation">
+                    <strong>ডেটা ভিত্তি:</strong> টিআইবি (TIB) এবং ফরেসনিক অডিটের সামষ্টিক ডেটা (Macro Data) অনুযায়ী টেন্ডার ড্রপিং এবং রেস্পন্সিভ বিডারের অনুপাতের ওপর ভিত্তি করে এই ফানেল তৈরি।<br>
+                    <strong>যা প্রমাণ করে:</strong> এটি স্পষ্ট করে যে, কীভাবে নির্দিষ্ট এলাকায় অফিস থাকার মতো কঠিন ও বৈষম্যমূলক শর্ত দিয়ে সাধারণ দরদাতাদের অযোগ্য (Non-responsive) ঘোষণা করে প্রতিযোগিতার পথ বন্ধ করে দেওয়া হয়েছে।
+                </div>
             </div>
         </div>
 
@@ -277,7 +303,7 @@
                 options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { display: false } }, plugins: { legend: { display: false } } }
             });
 
-            // 3. Static Funnel (TIB Macro Data)
+            // 3. Static Funnel
             if(!funnelChartObj) {
                 funnelChartObj = new Chart(document.getElementById('funnelChart'), {
                     type: 'doughnut',
@@ -307,7 +333,6 @@
                 let sup = t.Supplier_Name ? t.Supplier_Name.split('(')[0].trim() : "<span style='color:#9ca3af'>Not Awarded</span>";
                 let reason = t.Red_Flag_Reason === "No significant issue detected" ? "<span style='color:#9ca3af'>Clean</span>" : t.Red_Flag_Reason;
                 
-                // PDF links styling
                 let pdfHtml = '';
                 if (t.Source_Files_Merged) {
                     t.Source_Files_Merged.split('|').filter(f => f.trim()).forEach((f, i) => {
