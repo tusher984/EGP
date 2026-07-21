@@ -30,12 +30,24 @@
         .evidence-section h3 { margin: 0 0 15px 0; font-size: 19px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
         .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
         
-        /* Interactive Rule Items */
+        /* Interactive Rule Items & Badges */
         .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
         .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
         .evidence-item.active-rule { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.1); }
-        .evidence-item strong { display: block; font-size: 14.5px; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
+        .evidence-item strong { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
         .evidence-item p { margin: 0; font-size: 13px; color: var(--text-muted); text-align: justify; }
+
+        .rule-count { 
+            background-color: var(--netra-red); 
+            color: white; 
+            font-size: 11px; 
+            font-weight: 800; 
+            padding: 2px 8px; 
+            border-radius: 12px; 
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.5);
+            min-width: 20px;
+            text-align: center;
+        }
 
         /* Summary Cards */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
@@ -118,36 +130,36 @@
             <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স (যেকোনো রুল ফিল্টার করতে ক্লিক করুন)</h3>
             <div class="evidence-grid">
                 <div class="evidence-item" onclick="filterByRule('owner', this)">
-                    <strong>১. তথ্য গোপন কোড (Rule: ITT 5.14)</strong>
+                    <strong>১. তথ্য গোপন (Rule: ITT 5.14) <span class="rule-count" id="count-owner">0</span></strong>
                     <p>স্ট্যান্ডার্ড টেন্ডার ডকুমেন্টের ITT 5.14 ধারা অনুযায়ী প্রতিটি বিডারের 'Beneficial Owner' বা প্রকৃত মালিকানার বিবরণ দেওয়া বাধ্যতামূলক। এটি গোপন রাখা স্বার্থের সংঘাত ও বেনামী দুর্নীতির অকাট্য লক্ষণ।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('split', this)">
-                    <strong>২. কৃত্রিম চুক্তি বিভাজন (PPA 2006)</strong>
+                    <strong>২. চুক্তি বিভাজন (PPA 2006) <span class="rule-count" id="count-split">0</span></strong>
                     <p>পাবলিক প্রকিউরমেন্ট রুলস (PPR) এবং জিপিএ আইনের রুল ELG_005 লঙ্ঘন। কোনো মেগা প্রজেক্টের কাজের উচ্চতর মন্ত্রণালয়ের অনুমোদন এড়াতে সুনির্দিষ্ট উদ্দেশ্যে কাজকে কৃত্রিমভাবে একাধিক ছোট ছোট লটে ভাগ করার নামান্তর।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('cpv', this)">
-                    <strong>৩. অবান্তর CPV ক্যাটাগরি কারসাজি (CPV Staffing)</strong>
-                    <p><strong>CPV (Common Procurement Vocabulary)</strong> হলো আন্তর্জাতিক টেন্ডার কোড। জালিয়াতি করার জন্য মূল কাজের সাথে সম্পর্কহীন গোপন কোড (যেমন- রাস্তার কাজে জাহাজের কোড) জোর করে ঢুকিয়ে টেন্ডারটিকে সাধারণ ঠিকাদারদের সার্চ রেজাল্ট থেকে লুকিয়ে ফেলার কারসাজি।</p>
+                    <strong>৩. CPV কারসাজি (CPV Staffing) <span class="rule-count" id="count-cpv">0</span></strong>
+                    <p><strong>CPV (Common Procurement Vocabulary)</strong> হলো আন্তর্জাতিক টেন্ডার কোড। জালিয়াতি করার জন্য মূল কাজের সাথে সম্পর্কহীন গোপন কোড (যেমন- রাস্তার কাজে জাহাজের কোড) জোর করে ঢুকিয়ে টেন্ডার লুকানোর কারসাজি।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('tailored', this)">
-                    <strong>৪. বৈষম্যমূলক শর্ত (Tailored Criteria)</strong>
-                    <p>টেন্ডার ডকুমেন্টের 'Eligibility' কলামে এমন অদ্ভুত ও অস্বাভাবিক স্পেসিফিক শর্ত (যেমন- নির্দিষ্ট কোনো এরিয়াতে সাব-অফিস বা ঠিক একটি নির্দিষ্ট ডেসিমাল ফিন্যান্সিয়াল টার্নওভার) দেওয়া, যা শুধু আগে থেকে ফিক্সড করা সিন্ডিকেটের সাথে মিলে যায়।</p>
+                    <strong>৪. বৈষম্যমূলক শর্ত (Tailored Criteria) <span class="rule-count" id="count-tailored">0</span></strong>
+                    <p>টেন্ডার ডকুমেন্টের 'Eligibility' কলামে এমন অদ্ভুত ও অস্বাভাবিক স্পেসিফিক শর্ত (যেমন- নির্দিষ্ট কোনো এরিয়াতে সাব-অফিস বা নির্দিষ্ট ডেসিমাল ফিন্যান্সিয়াল টার্নওভার) দেওয়া, যা শুধু সিন্ডিকেটের সাথে মিলে যায়।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('monopoly', this)">
-                    <strong>৫. মনোপলি ফানেলিং (Rule: ITT 50.6)</strong>
-                    <p>ITT 50.6 ও 56.2(b) ধারা অনুসারে কার্যকর প্রতিযোগিতা না থাকলে বা মাত্র ১ জন রেস্পন্সিভ বিডার থাকলে রি-টেন্ডার আবশ্যক। কিন্তু স্ক্রিনিংয়ের মাধ্যমে বাকিদের অযোগ্য করে একক দরদাতাকে কাজ পাইয়ে দেওয়ার ব্যাকডোর মেথডলজি।</p>
+                    <strong>৫. মনোপলি ফানেলিং (Rule: ITT 50.6) <span class="rule-count" id="count-monopoly">0</span></strong>
+                    <p>ITT 50.6 ও 56.2(b) ধারা অনুসারে কার্যকর প্রতিযোগিতা না থাকলে বা মাত্র ১ জন রেস্পন্সিভ বিডার থাকলে রি-টেন্ডার আবশ্যক। কিন্তু স্ক্রিনিংয়ের মাধ্যমে বাকিদের অযোগ্য করে একক দরদাতাকে কাজ পাইয়ে দেওয়ার মেথড।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('outlier', this)">
-                    <strong>৬. অস্বাভাবিক দর (Price Outliers)</strong>
-                    <p>রুল STAT_001 এবং ওয়ার্ল্ড ব্যাংকের Abnormally Low/High Bids (ALB) গাইডলাইনের সরাসরি লঙ্ঘন। প্রজেক্টের অফিশিয়াল বাজেট এস্টিমেটের চেয়ে চরম কম বা বেশি প্রাইস ড্রপ করে বাজেট ম্যানিপুলেশনের মাধ্যমে কাজ বাগানো।</p>
+                    <strong>৬. অস্বাভাবিক দর (Price Outliers) <span class="rule-count" id="count-outlier">0</span></strong>
+                    <p>রুল STAT_001 এবং ওয়ার্ল্ড ব্যাংকের Abnormally Low/High Bids (ALB) গাইডলাইনের সরাসরি লঙ্ঘন। প্রজেক্টের অফিশিয়াল বাজেট এস্টিমেটের চেয়ে চরম কম বা বেশি প্রাইস ড্রপ করে বাজেট ম্যানিপুলেশন।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('meeting', this)">
-                    <strong>৭. প্রি-টেন্ডার মিটিং প্রহসন</strong>
+                    <strong>৭. প্রি-টেন্ডার মিটিং প্রহসন <span class="rule-count" id="count-meeting">0</span></strong>
                     <p>টেন্ডার প্রকাশের মাত্র ৫ থেকে ৩০ মিনিটের ব্যবধানে অনলাইন বা অফলাইন মিটিংয়ের ডেট ফিক্সড করা, যা বাইরের সাধারণ কোনো ডেকোরেটেড প্রফেশনাল কোম্পানির পক্ষে এটেন্ড করা বা প্রজেক্ট কোয়েরি তোলার সুযোগ সম্পূর্ণ কেড়ে নেয়।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('rigging', this)">
-                    <strong>৮. বিড-রিগিং কোড (Dropout Ratio)</strong>
-                    <p>বিপুল সংখ্যক ঠিকাদার টেন্ডার শিডিউল বা ডকুমেন্ট পারচেজ করার পরেও ফাইনাল ড্রপিং লেজারে কোনো বিড জমা না দেওয়া। এটি সরাসরি মাঠ পর্যায়ে শক্তিশালী সিন্ডিকেটের ভয়ভীতি প্রদর্শন অথবা পারস্পরিক আর্থিক রফা (Payoff)-এর প্রমাণ।</p>
+                    <strong>৮. বিড-রিগিং কোড (Dropout Ratio) <span class="rule-count" id="count-rigging">0</span></strong>
+                    <p>বিপুল সংখ্যক ঠিকাদার টেন্ডার শিডিউল বা ডকুমেন্ট পারচেজ করার পরেও ফাইনাল ড্রপিং লেজারে কোনো বিড জমা না দেওয়া। এটি সরাসরি মাঠ পর্যায়ে শক্তিশালী সিন্ডিকেটের ভয়ভীতি প্রদর্শন অথবা আর্থিক রফার প্রমাণ।</p>
                 </div>
             </div>
         </div>
@@ -244,7 +256,7 @@
             </div>
             <div class="chart-box">
                 <h3>৭. অনিয়মের প্রধান হাতিয়ার</h3>
-                <p class="chart-desc">অডিট ডাইনামিক ডেটা অনুসারে সবচেয়ে বেশি ব্যবহৃত ভায়োলেশন কোড</p>
+                <p class="chart-desc">অডিট ডাই纳米িক ডেটা অনুসারে সবচেয়ে বেশি ব্যবহৃত ভায়োলেশন কোড</p>
                 <div class="chart-container"><canvas id="redFlagChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> ইনভেস্টিগেশনে ফিল্টার করা ডেটায় সবচেয়ে বেশি কোন অপরাধের কারণে টেন্ডারগুলো ফ্ল্যাগড বা ঝুঁকিপূর্ণ হয়েছে।</div>
             </div>
@@ -322,7 +334,7 @@
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.borderColor = '#1e3a5f';
 
-        // RULE DICTIONARY
+        // LEGAL RULE DICTIONARY
         const RULE_MAP = {
             owner: ["e-PG3 ITT 5.14 – Beneficial Ownership Disclosure"],
             monopoly: ["e-PG3 ITT 50.6 – Lack of Effective Competition", "e-PG3 ITT 56.2(b) – Rejection and Re-tender"],
@@ -334,26 +346,81 @@
             rigging: ["OECD Guidelines for Fighting Bid Rigging", "Competition Act"]
         };
 
+        // CENTRALIZED FORENSIC INSPECTION ENGINE
+        // Scans Red_Flag_Reason, Eligibility Criteria, Specific Experience, CPVs, Dropouts, Dates, and Prices
+        function detectTenderViolations(t) {
+            const v = { owner: false, split: false, cpv: false, tailored: false, monopoly: false, outlier: false, meeting: false, rigging: false };
+            
+            const rReason = (t.Red_Flag_Reason || "").toLowerCase();
+            const exp = (t.Extracted_Specific_Experience || t.Eligibility_Criteria || t.Qualification_Criteria || t.Eligibility || "").toLowerCase();
+            const cpvText = (t.CPV_Code || t.CPV_Category || t.Procurement_Category || "").toLowerCase();
+            const riskLvl = (t.Risk_Level || "").toUpperCase();
+            
+            const sold = parseInt(t.Tenders_Sold) || 0;
+            const recv = parseInt(t.Tenders_Received) || 0;
+            const resp = parseInt(t.Responsive_Tenders) || 0;
+            const val = parseFloat(t.Contract_Value_BDT) || 0;
+            const est = parseFloat(t.Official_Estimated_Cost) || 0;
+
+            // 1. Beneficial Owner Missing
+            if (/owner|beneficial|গোপন|itt\s*5\.14|missing owner/i.test(rReason) || (riskLvl === 'HIGH' && /itt/i.test(rReason))) {
+                v.owner = true;
+            }
+
+            // 2. Artificial Contract Splitting
+            if (/split|lot|বিভাজন|artificial splitting/i.test(rReason) || /multiple lots/i.test(exp)) {
+                v.split = true;
+            }
+
+            // 3. CPV Code Manipulation
+            if (/cpv|vocabulary|ক্যাটাগরি|কোড|mismatch/i.test(rReason) || /unrelated cpv/i.test(cpvText)) {
+                v.cpv = true;
+            }
+
+            // 4. Discriminatory / Tailored Criteria (Reads eligibility criteria & detail strings)
+            if (/\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /criteria|শর্ত|experience|যোগ্যতা|restrictive|tailored|specific experience/i.test(rReason) || /tailored/i.test(exp)) {
+                v.tailored = true;
+            }
+
+            // 5. Monopoly Funneling
+            if (resp === 1 || /single|একক|monopoly|50\.6|single bidder/i.test(rReason)) {
+                v.monopoly = true;
+            }
+
+            // 6. Abnormally Low / High Price Outliers
+            if (/outlier|অস্বাভাবিক|abnormally|low|high|alb/i.test(rReason) || (est > 0 && val > 0 && Math.abs(est - val) / est > 0.20)) {
+                v.outlier = true;
+            }
+
+            // 7. Pre-Tender Meeting Farce
+            if (/meeting|মিটিং|pre-tender|rush meeting/i.test(rReason)) {
+                v.meeting = true;
+            }
+
+            // 8. Bid Rigging / High Dropout Ratio
+            if ((sold > recv * 1.3 && sold > 3) || /rigging|dropout|collusion|কারসাজি/i.test(rReason)) {
+                v.rigging = true;
+            }
+
+            return v;
+        }
+
         // GLOBAL RULE MAPPER
         function getViolatedRules(t) {
             if (Array.isArray(t.Violated_Rules)) return t.Violated_Rules;
             if (t.Violated_Rule) return [t.Violated_Rule];
 
+            const violations = detectTenderViolations(t);
             let rules = [];
-            const rReason = (t.Red_Flag_Reason || "").toLowerCase();
-            const exp = (t.Extracted_Specific_Experience || "").toLowerCase();
-            const sold = parseInt(t.Tenders_Sold) || 0;
-            const recv = parseInt(t.Tenders_Received) || 0;
-            const resp = parseInt(t.Responsive_Tenders) || 0;
 
-            if (/owner|beneficial|গোপন|itt\s*5\.14/i.test(rReason)) rules.push(...RULE_MAP.owner);
-            if (/split|lot|বিভাজন/i.test(rReason)) rules.push(...RULE_MAP.split);
-            if (/cpv|vocabulary|کد|ক্যাটাগরি|কোড/i.test(rReason)) rules.push(...RULE_MAP.cpv);
-            if (/\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /criteria|শর্ত|experience|যোগ্যতা/i.test(rReason)) rules.push(...RULE_MAP.tailored);
-            if (resp === 1 || /single|একক|monopoly|50\.6/i.test(rReason)) rules.push(...RULE_MAP.monopoly);
-            if (/outlier|অস্বাভাবিক|abnormally/i.test(rReason)) rules.push(...RULE_MAP.outlier);
-            if (/meeting|মিটিং|pre-tender/i.test(rReason)) rules.push(...RULE_MAP.meeting);
-            if ((sold > recv * 1.3) || /rigging|dropout|collusion/i.test(rReason)) rules.push(...RULE_MAP.rigging);
+            if (violations.owner) rules.push(...RULE_MAP.owner);
+            if (violations.split) rules.push(...RULE_MAP.split);
+            if (violations.cpv) rules.push(...RULE_MAP.cpv);
+            if (violations.tailored) rules.push(...RULE_MAP.tailored);
+            if (violations.monopoly) rules.push(...RULE_MAP.monopoly);
+            if (violations.outlier) rules.push(...RULE_MAP.outlier);
+            if (violations.meeting) rules.push(...RULE_MAP.meeting);
+            if (violations.rigging) rules.push(...RULE_MAP.rigging);
 
             return rules.length > 0 ? [...new Set(rules)] : ["-"];
         }
@@ -384,7 +451,7 @@
 
             const banner = document.getElementById('filterBanner');
             const bannerText = document.getElementById('bannerText');
-            const ruleName = element.querySelector('strong').innerText;
+            const ruleName = element.querySelector('strong').innerText.split('<')[0].trim();
             bannerText.innerText = `ফিল্টার অ্যাক্টিভ: শুধুমাত্র "${ruleName}" এর তথ্য অনুসন্ধান করা হচ্ছে`;
             banner.style.display = 'flex';
 
@@ -410,30 +477,8 @@
                 
                 let matchRule = true;
                 if (activeRuleKey) {
-                    const rReason = (t.Red_Flag_Reason || "").toLowerCase();
-                    const exp = (t.Extracted_Specific_Experience || "").toLowerCase();
-                    const riskLvl = (t.Risk_Level || "").toUpperCase();
-                    const sold = parseInt(t.Tenders_Sold) || 0;
-                    const received = parseInt(t.Tenders_Received) || 0;
-                    const resp = parseInt(t.Responsive_Tenders) || 0;
-
-                    if (activeRuleKey === 'owner') {
-                        matchRule = /owner|beneficial|গোপন|itt\s*5\.14/i.test(rReason) || (riskLvl === 'HIGH' && /itt/i.test(rReason));
-                    } else if (activeRuleKey === 'split') {
-                        matchRule = /split|lot|বিভাজন/i.test(rReason);
-                    } else if (activeRuleKey === 'cpv') {
-                        matchRule = /cpv|vocabulary|کد|ক্যাটাগরি|কোড/i.test(rReason);
-                    } else if (activeRuleKey === 'tailored') {
-                        matchRule = /\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /criteria|শর্ত|experience|যোগ্যতা/i.test(rReason);
-                    } else if (activeRuleKey === 'monopoly') {
-                        matchRule = resp === 1 || /single|একক|monopoly|50\.6/i.test(rReason);
-                    } else if (activeRuleKey === 'outlier') {
-                        matchRule = /outlier|অস্বাভাবিক|abnormally|low|high/i.test(rReason);
-                    } else if (activeRuleKey === 'meeting') {
-                        matchRule = /meeting|মিটিং|pre-tender/i.test(rReason);
-                    } else if (activeRuleKey === 'rigging') {
-                        matchRule = (sold > received * 1.3) || /rigging|dropout|collusion|কারসাজি/i.test(rReason);
-                    }
+                    const violations = detectTenderViolations(t);
+                    matchRule = violations[activeRuleKey] === true;
                 }
 
                 return matchRisk && matchTerm && matchRule;
@@ -474,11 +519,8 @@
                     nexus[key].count++;
                 }
 
-                if(t.Extracted_Specific_Experience) {
-                    if(/\d+\.\d+/.test(t.Extracted_Specific_Experience) || /\d{2,}\s*\(/.test(t.Extracted_Specific_Experience)) {
-                        tailoredCount++;
-                    }
-                }
+                const violations = detectTenderViolations(t);
+                if(violations.tailored) tailoredCount++;
 
                 if(t.Advertised_Date && t.Tender_Valid_Up_To) {
                     let adDate = new Date(t.Advertised_Date);
@@ -512,25 +554,30 @@
         }
 
         function updateDynamicCharts(data) {
-            // 1. DYNAMIC VIOLATION CHART (Macro-analysis)
+            // 1. DYNAMIC VIOLATION CHART (Macro-analysis) & BADGE COUNTS
             let vCounts = { owner: 0, split: 0, cpv: 0, tailored: 0, monopoly: 0, outlier: 0, meeting: 0, rigging: 0 };
             
             data.forEach(t => {
-                const rReason = (t.Red_Flag_Reason || "").toLowerCase();
-                const exp = (t.Extracted_Specific_Experience || "").toLowerCase();
-                const sold = parseInt(t.Tenders_Sold) || 0;
-                const recv = parseInt(t.Tenders_Received) || 0;
-                const resp = parseInt(t.Responsive_Tenders) || 0;
-
-                if (/owner|beneficial|গোপন|itt\s*5\.14/i.test(rReason)) vCounts.owner++;
-                if (/split|lot|বিভাজন/i.test(rReason)) vCounts.split++;
-                if (/cpv|vocabulary|کد|ক্যাটাগরি|কোড/i.test(rReason)) vCounts.cpv++;
-                if (/\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /criteria|শর্ত|experience/i.test(rReason)) vCounts.tailored++;
-                if (resp === 1 || /single|একক|monopoly|50\.6/i.test(rReason)) vCounts.monopoly++;
-                if (/outlier|অস্বাভাবিক|abnormally/i.test(rReason)) vCounts.outlier++;
-                if (/meeting|মিটিং|pre-tender/i.test(rReason)) vCounts.meeting++;
-                if ((sold > recv * 1.3) || /rigging|dropout|collusion/i.test(rReason)) vCounts.rigging++;
+                const violations = detectTenderViolations(t);
+                if (violations.owner) vCounts.owner++;
+                if (violations.split) vCounts.split++;
+                if (violations.cpv) vCounts.cpv++;
+                if (violations.tailored) vCounts.tailored++;
+                if (violations.monopoly) vCounts.monopoly++;
+                if (violations.outlier) vCounts.outlier++;
+                if (violations.meeting) vCounts.meeting++;
+                if (violations.rigging) vCounts.rigging++;
             });
+
+            // UPDATE BADGE NUMBERS IN HTML MATRIX
+            document.getElementById('count-owner').innerText = vCounts.owner;
+            document.getElementById('count-split').innerText = vCounts.split;
+            document.getElementById('count-cpv').innerText = vCounts.cpv;
+            document.getElementById('count-tailored').innerText = vCounts.tailored;
+            document.getElementById('count-monopoly').innerText = vCounts.monopoly;
+            document.getElementById('count-outlier').innerText = vCounts.outlier;
+            document.getElementById('count-meeting').innerText = vCounts.meeting;
+            document.getElementById('count-rigging').innerText = vCounts.rigging;
 
             const vCtx = document.getElementById('violationChart');
             if(violationChartObj) violationChartObj.destroy();
@@ -605,7 +652,7 @@
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // SYNDICATE CHART
+            // 4. SYNDICATE CHART
             const suppliers = {};
             data.forEach(t => {
                 if (t.Risk_Level === 'HIGH' && t.Supplier_Name && t.Contract_Value_BDT) {
@@ -626,7 +673,7 @@
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {weight: 'bold'}} } }, plugins: { legend: { display: false } } }
             });
 
-            // RISK PIE CHART
+            // 5. RISK PIE CHART
             let highCount = 0, medCount = 0, lowCount = 0;
             data.forEach(t => {
                 if(t.Risk_Level === 'HIGH') highCount++;
@@ -644,7 +691,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
             });
 
-            // AGENCY CHART
+            // 6. AGENCY CHART
             const agencies = {};
             data.forEach(t => {
                 if (t.Risk_Level === 'HIGH' && t.Organization_Agency && t.Contract_Value_BDT) {
@@ -665,7 +712,7 @@
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // RED FLAG CHART
+            // 7. RED FLAG CHART
             const reasons = {};
             data.forEach(t => {
                 if(t.Red_Flag_Reason && !['No significant issue detected', 'Clean'].includes(t.Red_Flag_Reason)) {
@@ -685,7 +732,7 @@
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {font: {size: 10}, color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // SINGLE BIDDER CHART
+            // 8. SINGLE BIDDER CHART
             let single = 0, multiple = 0;
             data.forEach(t => {
                 let resp = parseInt(t.Responsive_Tenders);
@@ -705,7 +752,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
             });
 
-            // RISK VALUE PIE CHART
+            // 9. RISK VALUE PIE CHART
             let hVal = 0, mVal = 0, lVal = 0;
             data.forEach(t => {
                 let val = parseFloat(t.Contract_Value_BDT) || 0;
