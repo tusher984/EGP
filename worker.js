@@ -1,25 +1,17 @@
-// worker.js - Background Processing Engine (No DOM interactions here)
+// worker.js - Background Processing & Risk Calculation Engine
 
 let globalData = [];
 let filteredData = [];
 
 const RULE_TITLES = {
-    owner: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure",
-    split: "PPA 2006 Section 17 – Artificial Contract Splitting",
-    cpv: "EU CPV Regulation / e-GP Metadata Manipulation",
-    tailored: "PPR 2008 Rule 98 – Restrictive Qualification Criteria",
-    monopoly: "e-PG3 ITT 50.6 – Lack of Effective Competition",
-    outlier: "World Bank ALB Guideline",
-    meeting: "PPR Schedule 2 – Minimum Tender Preparation Time",
-    rigging: "Competition Act 2012 / Bid Rigging"
+    owner: "ITT 5.14 – Beneficial Ownership", split: "PPA 2006 Sec 17 – Contract Splitting",
+    cpv: "CPV Manipulation", tailored: "PPR 2008 Rule 98 – Restrictive Criteria",
+    monopoly: "ITT 50.6 – Lack of Competition", outlier: "Abnormally Low/High Bids",
+    meeting: "Minimum Tender Time", rigging: "Bid Rigging / Collusion"
 };
 
 const safeStr = (val) => (val ? String(val).toLowerCase() : "");
-const safeNum = (val) => {
-    if (!val) return 0;
-    if (typeof val === 'number') return val;
-    return parseFloat(String(val).replace(/,/g, '')) || 0;
-};
+const safeNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
 
 function parseBDT(str) {
     if (!str) return 0;
@@ -34,27 +26,23 @@ function analyzeEligibilityAI(text, reasonsArray = []) {
     if (!text) return false;
     let score = 0, t = safeStr(text);
     if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) { score += 50; reasonsArray.push("অস্বাভাবিক দশমিক সংখ্যার অভিজ্ঞতা।"); }
-    if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং (Geofencing)।"); }
-    if (/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/i.test(t)) { score += 20; reasonsArray.push("নির্দিষ্ট সংস্থার (Authority Locking) নাম।"); }
-    if (t.includes("single contract") || t.includes("একক চুক্তি")) { score += 20; reasonsArray.push("'Single Contract' লকিং।"); }
-    if (/(last 1 year|within 12 months|১ বছরের মধ্যে|last 2 years)/i.test(t)) { score += 20; reasonsArray.push("স্বল্প সময়ের অভিজ্ঞতা।"); }
+    if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং (Geofencing)।"); }
+    if (/\b(rajuk|cda|kda|pwd|lged|petrobangla)\b/i.test(t)) { score += 20; reasonsArray.push("নির্দিষ্ট সংস্থার নাম (Authority Locking)।"); }
     return score >= 50; 
 }
 
 function getDynamicFindings(t) {
     let findingsList = [], ruleKeys = [];
     const fullText = Object.values(t).map(v => safeStr(v)).join(" ");
-    const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria);
-    const desc = safeStr(t.Brief_Description_of_Works || t.Brief_Description_of_Goods_and_Related_Service), pkgNo = safeStr(t.Invitation_Reference || t.Package_No);
+    const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Qualification_Criteria);
+    const desc = safeStr(t.Brief_Description_of_Works), pkgNo = safeStr(t.Package_No);
     const sold = safeNum(t.Tenders_Sold), recv = safeNum(t.Tenders_Received), resp = safeNum(t.Responsive_Tenders), val = safeNum(t.Contract_Value_BDT), docPrice = safeNum(t.Document_Price_BDT);
 
     if (/beneficial owner missing/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") { findingsList.push({ name: "Beneficial Owner Hidden", ev: "মালিকানা গোপন।" }); ruleKeys.push('owner'); }
-    if (/split|artificial/i.test(rReason) || /\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) { findingsList.push({ name: "Artificial Splitting", ev: "লটে বিভাজন।" }); ruleKeys.push('split'); }
+    if (/split|artificial/i.test(rReason) || /\(lot-[0-9a-z]+\)/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) { findingsList.push({ name: "Artificial Splitting", ev: "লটে বিভাজন।" }); ruleKeys.push('split'); }
     if (/cpv manipulation/i.test(rReason) || (safeStr(t.CPV_Code).includes("000000")) || (docPrice > 0 && docPrice <= 50 && val > 1000000)) { findingsList.push({ name: "Metadata Manipulated", ev: "ভুল CPV বা অস্বাভাবিক ফি।" }); ruleKeys.push('cpv'); }
     
     let isTailored = false, tailoredEv = [];
-    let reqTurnover = parseBDT(t.Extracted_Turnover), reqLiq = parseBDT(t.Extracted_Liquid_Assets);
-    if (reqLiq > 0 && reqTurnover > 0 && reqLiq >= reqTurnover) { isTailored = true; tailoredEv.push(`লিকুইড মানি টার্নওভারের সমান।`); }
     if (analyzeEligibilityAI(exp, tailoredEv) || /tailored/i.test(rReason)) { isTailored = true; if(tailoredEv.length===0) tailoredEv.push("অস্বাভাবিক শর্ত।"); }
     if (isTailored) { findingsList.push({ name: "Tailored Criteria", ev: tailoredEv.join(" ") }); ruleKeys.push('tailored'); }
 
@@ -71,16 +59,27 @@ function getDynamicFindings(t) {
 
     if (sold > 0 && recv > 0 && sold >= (recv * 1.5) && sold >= 3) { findingsList.push({ name: "High Dropout (Rigging)", ev: `কিনেছে ${sold}, জমা ${recv}।` }); ruleKeys.push('rigging'); }
 
-    if (findingsList.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(rReason)) findingsList.push({ name: t.Red_Flag_Reason, ev: "সিস্টেম ফ্ল্যাগ।" });
+    let uniqueRules = [...new Set(ruleKeys)];
+    
+    // --- Risk Score Calculator ---
+    let riskScore = 0;
+    if(uniqueRules.includes('owner')) riskScore += 25;
+    if(uniqueRules.includes('monopoly')) riskScore += 25;
+    if(uniqueRules.includes('tailored')) riskScore += 20;
+    if(uniqueRules.includes('outlier')) riskScore += 20;
+    if(uniqueRules.includes('rigging')) riskScore += 15;
+    if(uniqueRules.includes('meeting')) riskScore += 10;
+    if(uniqueRules.includes('cpv')) riskScore += 10;
+    if(uniqueRules.includes('split')) riskScore += 5;
+    if(riskScore > 100) riskScore = 100;
 
     let html = findingsList.length > 0 ? findingsList.map(f => `<strong style="color:#fca5a5; display:block; margin-bottom:2px;">${f.name}</strong><span style="color:#94a3b8; font-size:11px; line-height:1.4; display:block;"><i>প্রমাণ: ${f.ev}</i></span>`).join("<div style='margin-bottom:8px;'></div>") : "-";
     let csv = findingsList.length > 0 ? findingsList.map(f => `${f.name} (Proof: ${f.ev})`).join(" + ") : "-";
-    let uniqueRules = [...new Set(ruleKeys)];
     let rulesHtml = uniqueRules.length > 0 ? uniqueRules.map(key => `<span class="clickable-rule" onclick="showModal('${key}')">${RULE_TITLES[key].split('–')[0].trim()} ↗</span>`).join("<br><br>") : "-";
     let rulesCsv = uniqueRules.length > 0 ? uniqueRules.map(key => RULE_TITLES[key]).join(" | ") : "-";
 
     return { 
-        html, csv, rulesHtml, rulesCsv, 
+        html, csv, rulesHtml, rulesCsv, score: riskScore,
         keys: { owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') } 
     };
 }
@@ -89,8 +88,7 @@ self.onmessage = function(e) {
     const { action, payload } = e.data;
 
     if (action === 'INIT_DATA') {
-        const rawData = payload;
-        globalData = rawData.map(t => {
+        globalData = payload.map(t => {
             t._findings = getDynamicFindings(t);
             t._searchStr = Object.values(t).map(v => safeStr(v)).join(' ');
             return t;
