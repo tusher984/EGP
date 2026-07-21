@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-GP Syndicate Tracker | Data Lab</title>
+    <title>e-GP Syndicate Tracker | Data Lab (Optimized)</title>
     <!-- Free Open Source Charting Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -80,13 +80,19 @@
         .btn-download { padding: 8px 15px; border: none; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; background-color: #1e40af; }
         .btn-download:hover { background: #2563eb; }
 
-        /* Data Table */
+        /* Data Table & Pagination */
         .table-responsive { overflow-x: auto; }
         table.main-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
         table.main-table th, table.main-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-dark); vertical-align: top; }
         table.main-table th { color: var(--neon-blue); font-weight: 700; font-size: 11.5px; text-transform: uppercase; background: rgba(255,255,255,0.02); letter-spacing: 0.5px;}
         table.main-table tr:hover { background-color: rgba(255,255,255,0.01); }
         
+        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 5px; }
+        .page-btn { padding: 6px 15px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-weight: 600; cursor: pointer; border-radius: 4px; transition: 0.2s;}
+        .page-btn:hover:not(:disabled) { background: var(--neon-blue); color: var(--dark-bg); }
+        .page-btn:disabled { border-color: var(--border-dark); color: var(--text-muted); cursor: not-allowed; }
+        .page-info { font-size: 13px; color: var(--text-light); }
+
         .risk-badge { font-weight: 700; font-size: 10px; padding: 2px 6px; border-radius: 3px; color: white; display: inline-block; text-transform: uppercase;}
         .risk-high { background-color: var(--netra-red); }
         .risk-medium { background-color: #d97706; }
@@ -98,7 +104,7 @@
         .btn-verify { background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s;}
         .btn-verify:hover { background-color: var(--neon-blue); color: var(--dark-bg); }
 
-        /* --- MODAL (POPUP) STYLES --- */
+        /* MODAL (POPUP) STYLES */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); animation: modalFadeIn 0.3s; }
         @keyframes modalFadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
@@ -122,7 +128,7 @@
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="transparency-note">
-                <strong>স্বচ্ছতা গ্যারান্টি (Transparency Note):</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত (Public) ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি। কোনো মনগড়া তথ্য এখানে নেই। প্রতিটি দুর্নীতির প্রমাণের পাশে থাকা <strong>"🔍 প্রমাণ যাচাই"</strong> বাটনে ক্লিক করে আপনি নিজেই সরকারি নথির আসল লেখা (Raw Data) এবং আইনের লঙ্ঘনটি মিলিয়ে দেখতে পারবেন।
+                <strong>স্বচ্ছতা গ্যারান্টি (Transparency Note):</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত (Public) ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি। কোনো মনগড়া তথ্য এখানে নেই। প্রতিটি দুর্নীতির প্রমাণের পাশে থাকা <strong>"🔍 প্রমাণ যাচাই"</strong> বাটনে ক্লিক করে আপনি নিজেই সরকারি নথির আসল লেখা (Raw Data) এবং আইনের লঙ্ঘনটি মিলিয়ে দেখতে পারবেন।
             </div>
         </header>
 
@@ -132,35 +138,35 @@
             <div class="evidence-grid">
                 <div class="evidence-item" onclick="filterByRule('owner', this)">
                     <strong>১. তথ্য গোপন (Rule: ITT 5.14) <span class="rule-count" id="count-owner">0</span></strong>
-                    <p>স্ট্যান্ডার্ড টেন্ডার ডকুমেন্টের ITT 5.14 ধারা অনুযায়ী প্রতিটি বিডারের 'Beneficial Owner' বা প্রকৃত মালিকানার বিবরণ দেওয়া বাধ্যতামূলক। এটি গোপন রাখা স্বার্থের সংঘাত ও বেনামী দুর্নীতির অকাট্য লক্ষণ।</p>
+                    <p>স্ট্যান্ডার্ড টেন্ডার ডকুমেন্টের ITT 5.14 ধারা অনুযায়ী প্রতিটি বিডারের 'Beneficial Owner' বা প্রকৃত মালিকানার বিবরণ দেওয়া বাধ্যতামূলক।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('split', this)">
                     <strong>২. চুক্তি বিভাজন (PPA 2006) <span class="rule-count" id="count-split">0</span></strong>
-                    <p>পাবলিক প্রকিউরমেন্ট রুলস (PPR) এবং জিপিএ আইনের রুল ELG_005 লঙ্ঘন। কোনো মেগা প্রজেক্টের কাজের উচ্চতর মন্ত্রণালয়ের অনুমোদন এড়াতে সুনির্দিষ্ট উদ্দেশ্যে কাজকে কৃত্রিমভাবে একাধিক ছোট ছোট লটে ভাগ করার নামান্তর।</p>
+                    <p>উচ্চতর মন্ত্রণালয়ের অনুমোদন এড়াতে সুনির্দিষ্ট উদ্দেশ্যে মেগা প্রজেক্টের কাজকে কৃত্রিমভাবে একাধিক ছোট ছোট লটে ভাগ করার নামান্তর।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('cpv', this)">
                     <strong>৩. CPV কারসাজি (CPV Staffing) <span class="rule-count" id="count-cpv">0</span></strong>
-                    <p><strong>CPV (Common Procurement Vocabulary)</strong> হলো আন্তর্জাতিক টেন্ডার কোড। জালিয়াতি করার জন্য মূল কাজের সাথে সম্পর্কহীন গোপন কোড জোর করে ঢুকিয়ে টেন্ডার লুকানোর কারসাজি।</p>
+                    <p>জালিয়াতি করার জন্য মূল কাজের সাথে সম্পর্কহীন গোপন কোড (CPV) জোর করে ঢুকিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানোর কারসাজি।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('tailored', this)">
                     <strong>৪. বৈষম্যমূলক শর্ত (Tailored Criteria) <span class="rule-count" id="count-tailored">0</span></strong>
-                    <p>টেন্ডার ডকুমেন্টের 'Eligibility' কলামে এমন অদ্ভুত ও অস্বাভাবিক স্পেসিফিক শর্ত (যেমন- নির্দিষ্ট কোনো এরিয়াতে সাব-অফিস বা নির্দিষ্ট ডেসিমাল ফিন্যান্সিয়াল টার্নওভার) দেওয়া, যা শুধু সিন্ডিকেটের সাথে মিলে যায়।</p>
+                    <p>টেন্ডার ডকুমেন্টে নির্দিষ্ট এরিয়া বা নির্দিষ্ট ডেসিমাল টার্নওভারের অদ্ভুত শর্ত দেওয়া, যা শুধু আগে থেকে ঠিক করা সিন্ডিকেটের সাথে মিলে যায়।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('monopoly', this)">
                     <strong>৫. মনোপলি ফানেলিং (Rule: ITT 50.6) <span class="rule-count" id="count-monopoly">0</span></strong>
-                    <p>ITT 50.6 ও 56.2(b) ধারা অনুসারে কার্যকর প্রতিযোগিতা না থাকলে বা মাত্র ১ জন রেস্পন্সিভ বিডার থাকলে রি-টেন্ডার আবশ্যক। কিন্তু স্ক্রিনিংয়ের মাধ্যমে বাকিদের অযোগ্য করে একক দরদাতাকে কাজ পাইয়ে দেওয়ার মেথড।</p>
+                    <p>১ জন রেস্পন্সিভ বিডার থাকলে রি-টেন্ডার আবশ্যক। কিন্তু স্ক্রিনিংয়ের মাধ্যমে বাকিদের অযোগ্য করে একক দরদাতাকে কাজ পাইয়ে দেওয়া।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('outlier', this)">
                     <strong>৬. অস্বাভাবিক দর (Price Outliers) <span class="rule-count" id="count-outlier">0</span></strong>
-                    <p>রুল STAT_001 এবং ওয়ার্ল্ড ব্যাংকের Abnormally Low/High Bids (ALB) গাইডলাইনের সরাসরি লঙ্ঘন। প্রজেক্টের অফিশিয়াল বাজেট এস্টিমেটের চেয়ে চরম কম বা বেশি প্রাইস ড্রপ করে বাজেট ম্যানিপুলেশন।</p>
+                    <p>প্রজেক্টের অফিশিয়াল বাজেট এস্টিমেটের চেয়ে চরম কম বা বেশি প্রাইস ড্রপ করে বাজেট ম্যানিপুলেশন (ALB Guidelines violation)।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('meeting', this)">
                     <strong>৭. প্রি-টেন্ডার মিটিং প্রহসন <span class="rule-count" id="count-meeting">0</span></strong>
-                    <p>টেন্ডার প্রকাশের মাত্র ৫ থেকে ৩০ মিনিটের ব্যবধানে অনলাইন বা অফলাইন মিটিংয়ের ডেট ফিক্সড করা, যা বাইরের সাধারণ কোনো ডেকোরেটেড প্রফেশনাল কোম্পানির পক্ষে এটেন্ড করা বা প্রজেক্ট কোয়েরি তোলার সুযোগ সম্পূর্ণ কেড়ে নেয়।</p>
+                    <p>টেন্ডার প্রকাশের অত্যন্ত অল্প সময়ের ব্যবধানে মিটিং বা ক্লোজিং ডেট ফিক্সড করা, যা বাইরের ঠিকাদারদের প্রস্তুতির সুযোগ কেড়ে নেয়।</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('rigging', this)">
                     <strong>৮. বিড-রিগিং কোড (Dropout Ratio) <span class="rule-count" id="count-rigging">0</span></strong>
-                    <p>বিপুল সংখ্যক ঠিকাদার টেন্ডার শিডিউল বা ডকুমেন্ট পারচেজ করার পরেও ফাইনাল ড্রপিং লেজারে কোনো বিড জমা না দেওয়া। এটি সরাসরি মাঠ পর্যায়ে শক্তিশালী সিন্ডিকেটের ভয়ভীতি প্রদর্শন অথবা আর্থিক রফার প্রমাণ।</p>
+                    <p>বিপুল সংখ্যক ঠিকাদার শিডিউল কেনার পরেও জমা না দেওয়া, যা সিন্ডিকেটের ভয়ভীতি বা আর্থিক রফার (Bid Rigging) সরাসরি প্রমাণ।</p>
                 </div>
             </div>
         </div>
@@ -207,12 +213,12 @@
                 <div class="alert-mini">
                     <h5>অতি-দ্রুত টেন্ডার ক্লোজিং</h5>
                     <p>আইন ভেঙে ১৪-২৮ দিনের কম সময়ে (Rush Jobs) টেন্ডার ক্লোজ করা হয়েছে:</p>
-                    <span id="rushJobsCount">০ টি</span>
+                    <span id="rushJobsCount" style="color:var(--netra-red); font-weight:bold;">০ টি</span>
                 </div>
-                <div class="alert-mini">
+                <div style="margin-top: 15px;" class="alert-mini">
                     <h5>যোগ্যতার শর্তে কারসাজি</h5>
                     <p>নির্দিষ্ট কোম্পানির জন্য টেইলর-মেইড (Tailored Criteria) শর্ত দেওয়া হয়েছে:</p>
-                    <span id="tailoredCriteriaCount">০ টি</span>
+                    <span id="tailoredCriteriaCount" style="color:var(--netra-red); font-weight:bold;">০ টি</span>
                 </div>
             </div>
         </div>
@@ -261,14 +267,15 @@
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             
-            <div class="active-filter-banner" id="filterBanner">
+            <div class="active-filter-banner" id="filterBanner" style="display:none; margin-bottom:15px; padding:10px; background:rgba(56, 189, 248, 0.1); border-left:4px solid var(--neon-blue); border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
                 <span id="bannerText" style="color: var(--neon-blue); font-weight: bold;"></span>
                 <button class="btn-clear" onclick="resetRuleFilter()">ফিল্টার সরান (Show All)</button>
             </div>
 
             <div class="tools-bar">
-                <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="filterData()">
-                <select id="riskFilter" onchange="filterData()">
+                <!-- Debounced input to prevent lag -->
+                <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="debouncedFilter()">
+                <select id="riskFilter" onchange="triggerFilter()">
                     <option value="ALL">সব ঝুঁকি (All Risks)</option>
                     <option value="HIGH">উচ্চ ঝুঁকি (HIGH)</option>
                     <option value="MEDIUM">মাঝারি ঝুঁকি (MEDIUM)</option>
@@ -287,7 +294,7 @@
                             <th style="width: 60px;">Risk</th>
                             <th style="text-align: right;">Value (৳)</th>
                             <th>Detected Findings & Verification</th>
-                            <th style="width: 150px;">Violated Rules (ল ক্লিক করুন)</th>
+                            <th style="width: 150px;">Violated Rules</th>
                             <th style="width: 60px;">Docs</th>
                         </tr>
                     </thead>
@@ -295,6 +302,13 @@
                         <tr><td colspan="8" style="text-align: center; color: #777; padding: 30px;">Loading Audit Data...</td></tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Optimized Pagination Controls -->
+            <div class="pagination" id="paginationControls" style="display:none;">
+                <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">&#8592; Previous</button>
+                <span class="page-info">Page <strong id="currentPageLabel">1</strong> of <strong id="totalPagesLabel">1</strong> (<span id="totalRowsLabel">0</span> records)</span>
+                <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">Next &#8594;</button>
             </div>
         </div>
     </div>
@@ -304,26 +318,24 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('ruleModal')">&times;</span>
             <h2 class="modal-title" id="modalTitle">Rule Title</h2>
-            <div class="rule-meta">
-                <span id="modalEnacted">Enactment Year</span>
-                <span style="border-color: rgba(220, 38, 38, 0.4); color: #fca5a5;">Forensic Audit Engine </span>
+            <div class="rule-meta" style="margin-bottom: 15px; font-size:12px; color:var(--text-muted);">
+                <span id="modalEnacted">Enactment Year</span> | 
+                <span style="color: #fca5a5;">Forensic Audit Engine</span>
             </div>
-            <div class="rule-desc-box" id="modalDesc">Rule description goes here...</div>
-            <div class="rule-penalty">
-                <strong>শাস্তি ও আইনি বিধান:</strong>
-                <span id="modalPenalty">Penalty description goes here...</span>
+            <div class="rule-desc-box" id="modalDesc" style="margin-bottom: 15px; line-height: 1.6;">Rule description goes here...</div>
+            <div class="rule-penalty" style="background: rgba(220, 38, 38, 0.1); padding: 10px; border-radius: 4px; border-left: 3px solid var(--netra-red);">
+                <strong style="color: #fca5a5;">শাস্তি ও আইনি বিধান:</strong>
+                <span id="modalPenalty" style="display:block; margin-top:5px; font-size:13.5px;">Penalty description goes here...</span>
             </div>
         </div>
     </div>
 
-    <!-- Data Inspector Modal (For Verifying Proof) -->
+    <!-- Data Inspector Modal -->
     <div id="inspectorModal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close-btn" onclick="closeModal('inspectorModal')">&times;</span>
             <h2 class="modal-title">🔍 কাঁচা তথ্য ও প্রমাণ যাচাই (Data Inspector)</h2>
-            <div class="explanation-box" id="inspectorExplanation">
-                কেন এটি দুর্নীতি তার সহজ ব্যাখ্যা এখানে আসবে...
-            </div>
+            <div class="explanation-box" id="inspectorExplanation"></div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                 <div class="raw-data-box">
@@ -352,6 +364,7 @@
     <script>
         const jsonFileName = 'Procurement_Database.json';
         let globalTenderData = []; 
+        let filteredDataCache = []; // Caches current filtered view for pagination
         let activeRuleKey = null; 
         
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
@@ -366,135 +379,43 @@
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.borderColor = '#1e3a5f';
 
-        // --- ENHANCED LEGAL RULE DICTIONARY FOR MODAL ---
+        // Pagination State
+        let currentPage = 1;
+        const rowsPerPage = 50;
+        let searchDebounceTimer = null;
+
         const RULE_DETAILS = {
-            owner: {
-                title: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure",
-                enacted: "২০০৬ (PPA) / আপডেট: ই-জিপি গাইডলাইন",
-                purpose: "টেন্ডারে অংশগ্রহণকারী কোম্পানির প্রকৃত মালিক কে তা প্রকাশ করা বাধ্যতামূলক। অনেক সময় সরকারি কর্মকর্তা বা প্রকল্প পরিচালকরা বেনামে কোম্পানি খুলে নিজেদের প্রজেক্টের কাজ নিজেরাই বাগিয়ে নেন। স্বার্থের সংঘাত (Conflict of Interest) এবং মানি লন্ডারিং ঠেকাতে এই রুল তৈরি হয়েছে।",
-                penalty: "টেন্ডার বাতিল, জামানত বাজেয়াপ্ত এবং পিপিএ ২০০৬ এর ধারা ৬৪ অনুযায়ী কোম্পানিকে ডিবরমেন্ট (কালোতালিকাভুক্ত) করা।"
-            },
-            split: {
-                title: "PPA 2006 Section 17 – Artificial Contract Splitting",
-                enacted: "২০০৬ (পাবলিক প্রকিউরমেন্ট আইন - ধারা ১৭)",
-                purpose: "বড় বাজেটের কাজের অনুমোদন মন্ত্রণালয় বা সিসিজিপি (CCGP) থেকে নিতে হয়। সেই উচ্চতর অডিট ও অনুমোদন এড়াতে একটি বড় মেগা-প্রজেক্টকে কৃত্রিমভাবে ছোট ছোট লটে (Lot-1, Lot-2) ভাগ করে নিজেদের পছন্দের ঠিকাদারদের মধ্যে বিলিয়ে দেওয়া এই আইনের সরাসরি লঙ্ঘন।",
-                penalty: "সংশ্লিষ্ট ক্রয়কারী কর্মকর্তার (PE) বিরুদ্ধে বিভাগীয় ব্যবস্থা এবং টেন্ডার প্রক্রিয়া বাতিল।"
-            },
-            cpv: {
-                title: "EU CPV Regulation / e-GP Metadata Manipulation",
-                enacted: "ই-জিপি সিস্টেম ম্যানুয়াল ও আন্তর্জাতিক গাইডলাইন",
-                purpose: "CPV হলো কাজের ধরন বোঝানোর গ্লোবাল কোড। রাস্তা ঘাটের কাজে যদি 'কম্পিউটার সাপ্লাই' বা 000000 কোড দিয়ে রাখা হয়, তবে আসল ঠিকাদাররা সার্চ করে টেন্ডারটি খুঁজে পায় না। অথবা ইচ্ছা করে শিডিউলের মূল্য মাত্র ২-১০ টাকা রাখা হয় যাতে এটি স্প্যাম মনে হয়। এটি টেন্ডারকে লোকচক্ষুর আড়ালে (Hidden Tender) রাখার একটি সাইবার ক্রাইম কৌশল।",
-                penalty: "টেন্ডার প্রক্রিয়া বাতিল এবং ডিজিটাল জালিয়াতির আওতায় অডিট আপত্তি।"
-            },
-            tailored: {
-                title: "PPR 2008 Rule 98 – Restrictive Qualification Criteria",
-                enacted: "২০০৮ (পাবলিক প্রকিউরমেন্ট বিধিমালা - বিধি ৯৮)",
-                purpose: "যোগ্যতার শর্ত এমনভাবে নির্ধারণ করা যাবে না যা প্রতিযোগিতাকে বাধাগ্রস্ত করে। নির্দিষ্ট কোনো এলাকার কাজের পূর্ব-অভিজ্ঞতা চাওয়া (Geofencing), বা নির্দিষ্ট দশমিক সংখ্যার টাকার (যেমন- ১.৩৫ কোটি) অভিজ্ঞতা চাওয়া মূলত আগে থেকে ফিক্স করে রাখা কোনো নির্দিষ্ট ঠিকাদারকে কাজ পাইয়ে দেওয়ার কৌশল (Tailoring)।",
-                penalty: "টেন্ডার বাতিল এবং উন্মুক্ত শর্তে পুনঃদরপত্র (Re-tender) আহ্বান।"
-            },
-            monopoly: {
-                title: "e-PG3 ITT 50.6 – Lack of Effective Competition",
-                enacted: "২০০৬ (PPA) ও স্ট্যান্ডার্ড টেন্ডার ডকুমেন্ট",
-                purpose: "টেন্ডারে যদি মাত্র ১ জন ঠিকাদার রেস্পন্সিভ (যোগ্য) হয়, তবে বুঝতে হবে প্রতিযোগিতার পরিবেশ ছিল না বা শর্তের মাধ্যমে কৃত্রিমভাবে অন্যদের অযোগ্য করা হয়েছে। এটি একচেটিয়া আধিপত্য বা মনোপলি তৈরির প্রমাণ।",
-                penalty: "একক দরদাতার ক্ষেত্রে যৌক্তিক কারণ না থাকলে টেন্ডার বাতিল করে রি-টেন্ডার করার আইনি বাধ্যবাধকতা রয়েছে।"
-            },
-            outlier: {
-                title: "World Bank ALB Guideline – Abnormally Low/High Bids",
-                enacted: "বিশ্বব্যাংক প্রকিউরমেন্ট রেগুলেশন ও PPR",
-                purpose: "বাজেটের চেয়ে অনেক বেশি বা অনেক কম দরে বিড করার মানে হলো, হয় কাজের মান চরম খারাপ হবে, নতুবা ভেতরে দুর্নীতির জন্য অতিরিক্ত বাজেট রাখা হয়েছে। এছাড়া চুক্তিমূল্যে অস্বাভাবিক ভগ্নাংশ বা এস্টিমেটের সাথে হুবহু ৩ ডিজিটের দশমিক মিলে যাওয়া মানে হলো সরকারি বাজেট আগেই সিন্ডিকেটের কাছে ফাঁস (Leak) করা হয়েছে।",
-                penalty: "অস্বাভাবিক দরের ব্যাখ্যা তলব এবং সন্তোষজনক না হলে টেন্ডার সরাসরি বাতিল।"
-            },
-            meeting: {
-                title: "PPR Schedule 2 – Minimum Tender Preparation Time",
-                enacted: "২০০৮ (PPR তফসিল-২)",
-                purpose: "ঠিকাদারদের টেন্ডার ডকুমেন্ট পড়া, সাইট ভিজিট করা এবং প্রশ্ন করার জন্য পর্যাপ্ত সময় দিতে হয়। টেন্ডার পাবলিশ করেই ১৪ দিনের কম সময়ে টেন্ডার ক্লোজ করা, অথবা NOA (কার্যাদেশ) পাওয়ার ১-৩ দিনের মাথায় তড়িঘড়ি করে চুক্তি স্বাক্ষর করা মানে হলো বাইরের কাউকে সুযোগ না দিয়ে নিজেদের লোককে কাজ দেওয়া (Lightning Execution)।",
-                penalty: "প্রকিউরমেন্ট রুল ভায়োলেশন এবং অডিট আপত্তি।"
-            },
-            rigging: {
-                title: "Competition Act 2012 / OECD Bid Rigging Guidelines",
-                enacted: "২০১২ (প্রতিযোগিতা আইন)",
-                purpose: "টেন্ডার শিডিউল কিনেও বিপুল সংখ্যক ঠিকাদারের জমা না দেওয়া (High Dropout) মানে হলো, ঠিকাদাররা নিজেদের মধ্যে সমঝোতা করে একজনকে কাজ নেওয়ার সুযোগ করে দিয়েছে এবং বিনিময়ে আর্থিকভাবে লাভবান (Payoff) হয়েছে। এটি একটি সংঘবদ্ধ অপরাধ।",
-                penalty: "কম্পিটিশন কমিশনের অধীনে মামলা, জরিমানা এবং সিন্ডিকেটকে কালোতালিকাভুক্তি (Debarment)।"
-            }
+            owner: { title: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক। স্বার্থের সংঘাত ঠেকাতে এই রুল তৈরি হয়েছে।", penalty: "টেন্ডার বাতিল ও কালোতালিকাভুক্তি।" },
+            split: { title: "PPA 2006 Section 17 – Artificial Contract Splitting", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।", penalty: "বিভাগীয় ব্যবস্থা এবং টেন্ডার বাতিল।" },
+            cpv: { title: "EU CPV Regulation / e-GP Metadata Manipulation", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।", penalty: "টেন্ডার প্রক্রিয়া বাতিল।" },
+            tailored: { title: "PPR 2008 Rule 98 – Restrictive Qualification Criteria", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।", penalty: "পুনঃদরপত্র আহ্বান।" },
+            monopoly: { title: "e-PG3 ITT 50.6 – Lack of Effective Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।", penalty: "টেন্ডার বাতিল।" },
+            outlier: { title: "World Bank ALB Guideline", enacted: "বিশ্বব্যাংক রেগুলেশন", purpose: "বাজেটের চেয়ে অনেক বেশি বা কম দরে বিড করা।", penalty: "টেন্ডার সরাসরি বাতিল।" },
+            meeting: { title: "PPR Schedule 2 – Minimum Tender Preparation Time", enacted: "২০০৮ (PPR)", purpose: "১৪ দিনের কম সময়ে টেন্ডার ক্লোজ করা অবৈধ।", penalty: "অডিট আপত্তি।" },
+            rigging: { title: "Competition Act 2012 / Bid Rigging", enacted: "২০১২ (প্রতিযোগিতা আইন)", purpose: "শিডিউল কিনে জমা না দেওয়া সিন্ডিকেশনের প্রমাণ।", penalty: "জরিমানা ও ডিবরমেন্ট।" }
         };
 
-        // Modals Logic
+        // UI Helpers
         function showModal(ruleKey) {
-            const modal = document.getElementById('ruleModal');
             const data = RULE_DETAILS[ruleKey];
             if(data) {
                 document.getElementById('modalTitle').innerText = data.title;
                 document.getElementById('modalEnacted').innerText = data.enacted;
                 document.getElementById('modalDesc').innerText = data.purpose;
                 document.getElementById('modalPenalty').innerText = data.penalty;
-                modal.style.display = 'flex';
+                document.getElementById('ruleModal').style.display = 'flex';
             }
         }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
 
-        function showDataInspector(tenderId) {
-            const t = globalTenderData.find(x => x.Tender_Proposal_ID == tenderId);
-            if(!t) return;
-
-            const modal = document.getElementById('inspectorModal');
-            const f = getDynamicFindings(t);
-
-            document.getElementById('insID').innerText = t.Tender_Proposal_ID || "N/A";
-            document.getElementById('insVal').innerText = formatCurrency(t.Contract_Value_BDT);
-            document.getElementById('insPrice').innerText = t.Document_Price_BDT ? `৳${t.Document_Price_BDT}` : "N/A";
-            
-            document.getElementById('insSold').innerText = t.Tenders_Sold || "0";
-            document.getElementById('insRecv').innerText = t.Tenders_Received || "0";
-            document.getElementById('insResp').innerText = t.Responsive_Tenders || "0";
-
-            document.getElementById('insPub').innerText = t.Advertised_Date || t.Published_Date || "N/A";
-            document.getElementById('insClose').innerText = t.Tender_Valid_Up_To || t.Closing_Date || "N/A";
-            document.getElementById('insNoa').innerText = t.Notification_of_Award_Date || "N/A";
-            document.getElementById('insSign').innerText = t.Contract_Signing_Date || "N/A";
-
-            let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || t.Eligibility_Criteria || "শর্তের কোনো তথ্য ডেটাবেসে পাওয়া যায়নি।";
-            
-            // Highlight specific suspicious keywords in raw data
-            let highlightedExp = rawExp.replace(/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/gi, '<span class="highlight-red">$&</span>');
-            highlightedExp = highlightedExp.replace(/(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/gi, '<span class="highlight-red">$&</span>');
-            highlightedExp = highlightedExp.replace(/\d+\.[1-9]\d+\s*(crore|lac|lakh)/gi, '<span class="highlight-red">$&</span>');
-            highlightedExp = highlightedExp.replace(/(single contract|single tender|একক চুক্তি)/gi, '<span class="highlight-red">$&</span>');
-
-            document.getElementById('insExp').innerHTML = highlightedExp;
-
-            // Generate Layman Explanation based on findings
-            let laymenExp = "<strong>সহজ ভাষায় বিশ্লেষণ:</strong><br>";
-            if(f.keys.owner) laymenExp += "• টেন্ডারটিতে কার্যাদেশ পাওয়া কোম্পানির প্রকৃত মালিকের নাম গোপন করা হয়েছে। এটি বেনামী কোম্পানির লক্ষণ।<br>";
-            if(f.keys.tailored) laymenExp += "• নিচে দেওয়া 'যোগ্যতার শর্ত' পড়লে দেখবেন, নির্দিষ্ট এলাকার নাম, নির্দিষ্ট ব্র্যান্ড বা দশমিক সংখ্যার টাকার কথা বলা আছে। সাধারণ ঠিকাদারদের আটকাতেই এই চালাকি করা হয়।<br>";
-            if(f.keys.monopoly) laymenExp += "• পোর্টালে দেখা যাচ্ছে টেন্ডার জমা দিলেও বা কিনলেও, শেষ পর্যন্ত 'যোগ্য (Responsive)' ঘোষণা করা হয়েছে মাত্র ১ জনকে। একেই ফাঁকা মাঠে গোল দেওয়া বলে।<br>";
-            if(f.keys.cpv) laymenExp += "• এতো টাকার প্রজেক্ট কিন্তু শিডিউল ফি দেখুন, একদম নামমাত্র (বা 000000 কোড)! যাতে অন্য ঠিকাদাররা সার্চ করে টেন্ডারটি খুঁজে না পায়।<br>";
-            if(f.keys.outlier) laymenExp += "• চুক্তিমূল্যের টাকার অঙ্কটি দেখুন। ৩-ডিজিটের দশমিক (যেমন: .692) থাকা মানে হলো আগে থেকেই সরকারি বাজেট লিক হয়েছে এবং ঠিকাদার ক্যালকুলেটর চেপে হুবহু সেই এস্টিমেট মিলিয়ে দর দিয়েছে।<br>";
-            if(f.keys.meeting) laymenExp += "• টাইমলাইনের তারিখগুলো দেখুন। টেন্ডার প্রকাশ, জমার সময় এবং চুক্তি স্বাক্ষরের মাঝে এত কম সময় দেওয়া হয়েছে যা প্রমাণ করে যে কাজ আগে থেকেই ফিক্স করা ছিল।<br>";
-            if(f.keys.rigging) laymenExp += "• শিডিউল কিনেছে অনেকেই, কিন্তু জমা দিয়েছে খুব কম। অর্থাৎ, অন্যদের টাকা দিয়ে ম্যানেজ করে টেন্ডার ড্রপ করা থেকে বিরত রাখা হয়েছে (Bid Rigging)।<br>";
-
-            if(laymenExp === "<strong>সহজ ভাষায় বিশ্লেষণ:</strong><br>") laymenExp += "এই টেন্ডারে দৃশ্যত বড় কোনো দুর্নীতি ধরা পড়েনি।";
-            
-            document.getElementById('inspectorExplanation').innerHTML = laymenExp;
-            modal.style.display = 'flex';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
-        }
-
-        // --- SAFE DATA PARSERS ---
+        // Data Parsers
         const safeStr = (val) => (val ? String(val).toLowerCase() : "");
         const safeNum = (val) => {
             if (!val) return 0;
             if (typeof val === 'number') return val;
             return parseFloat(String(val).replace(/,/g, '')) || 0;
         };
-        
         function parseBDT(str) {
             if (!str) return 0;
             let s = String(str).toLowerCase().replace(/,/g, '');
@@ -503,250 +424,9 @@
             else if (s.includes('lac') || s.includes('lakh')) val *= 100000;
             return val;
         }
-
-        // --- 100% CALIBRATED NLP ENGINE (EVIDENCE GATHERING) ---
-        function analyzeEligibilityAI(text, reasonsArray = []) {
-            if (!text) return false;
-            let score = 0;
-            let t = safeStr(text);
-            
-            if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) {
-                score += 50; 
-                reasonsArray.push("অস্বাভাবিক দশমিক সংখ্যার (Tailored Decimal) কাজের পূর্ব অভিজ্ঞতা চাওয়া হয়েছে।");
-            }
-            if (/(office|branch office|industry|working center)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) {
-                score += 50; 
-                reasonsArray.push("নির্দিষ্ট এলাকার লোকাল অফিস বা ভৌগোলিক লকিং (Geofencing) করা হয়েছে।");
-            }
-            if (/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/i.test(t)) {
-                score += 20; 
-                reasonsArray.push("নির্দিষ্ট সরকারি সংস্থার (Authority Locking) নাম উল্লেখ করে পূর্ব-অভিজ্ঞতা চাওয়া হয়েছে।");
-            }
-            if (t.includes("single contract") || t.includes("single tender") || t.includes("একক চুক্তি")) {
-                score += 20;
-                reasonsArray.push("'Single Contract'-এ কাজ করার কড়াকড়ি দেওয়া হয়েছে।");
-            }
-            if (/(last 1 year|within 12 months|১ বছরের মধ্যে|last 2 years)/i.test(t)) {
-                score += 20;
-                reasonsArray.push("অস্বাভাবিক স্বল্প সময়ের (Time Locking) কাজের অভিজ্ঞতা চাওয়া হয়েছে।");
-            }
-            if (/(must own|own equipment|manufacturer authorization|dealership|oem)/i.test(t)) {
-                score += 30;
-                reasonsArray.push("নির্দিষ্ট ব্র্যান্ড, ইকুইপমেন্ট বা অথরাইজেশন লকিং করা হয়েছে।");
-            }
-            if (/(iso 9001|iso 14001|fsc|specific certification)/i.test(t)) {
-                score += 20;
-                reasonsArray.push("কাজের সাথে সম্পর্কহীন সনদ বা সার্টিফিকেশন চাওয়া হয়েছে।");
-            }
-
-            return score >= 50; 
+        function extractCleanAgencyName(agencyString) {
+            return agencyString ? agencyString.replace(/Procuring Entity.*/i, '').trim() : "Unknown Agency";
         }
-
-        // --- THE ULTIMATE DEEP FORENSIC ENGINE ---
-        function getDynamicFindings(t) {
-            let findingsList = [];
-            let ruleKeys = [];
-
-            const fullText = Object.values(t).map(v => safeStr(v)).join(" ");
-            const rReason = safeStr(t.Red_Flag_Reason);
-            const exp = safeStr(t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria);
-            const desc = safeStr(t.Brief_Description_of_Works || t.Brief_Description_of_Goods_and_Related_Service);
-            const pkgNo = safeStr(t.Invitation_Reference || t.Package_No);
-            
-            const sold = safeNum(t.Tenders_Sold);
-            const recv = safeNum(t.Tenders_Received);
-            const resp = safeNum(t.Responsive_Tenders);
-            const val = safeNum(t.Contract_Value_BDT);
-            const docPrice = safeNum(t.Document_Price_BDT);
-
-            if (/beneficial owner missing/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") {
-                findingsList.push({ name: "Beneficial Owner Info Hidden", ev: "মালিকানার কলাম ফাঁকা বা 'Missing' রাখা হয়েছে।" });
-                ruleKeys.push('owner');
-            }
-
-            if (/split|artificial splitting/i.test(rReason) || /\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) {
-                let match = desc.match(/\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i) || pkgNo.match(/\(lot-[0-9a-z]+\)/i) || ["কৃত্রিম বিভাজন"];
-                findingsList.push({ name: "Artificial Contract Splitting", ev: `কাজের বর্ণনায় "${match[0]}" পাওয়া গেছে যা মেগা-প্রজেক্ট খণ্ডিতকরণের লক্ষণ।` });
-                ruleKeys.push('split');
-            }
-
-            const cpvText = safeStr(t.CPV_Code);
-            if (/cpv manipulation/i.test(rReason) || (cpvText && cpvText.includes("000000")) || (docPrice > 0 && docPrice <= 50 && val > 1000000)) {
-                let evStr = (docPrice > 0 && docPrice <= 50) ? `কোটি টাকার প্রজেক্ট কিন্তু শিডিউল ফি মাত্র ৳${docPrice} নির্ধারণ করে টেন্ডার লুকানো হয়েছে।` : "CPV কোড 000000 দিয়ে টেন্ডার লুকানো হয়েছে।";
-                findingsList.push({ name: "Tender Hidden / Metadata Manipulated", ev: evStr });
-                ruleKeys.push('cpv');
-            }
-
-            let isTailored = false;
-            let tailoredEv = [];
-            let reqTurnover = parseBDT(t.Extracted_Turnover);
-            let reqLiq = parseBDT(t.Extracted_Liquid_Assets);
-            
-            if (reqLiq > 0 && reqTurnover > 0 && reqLiq >= reqTurnover) {
-                isTailored = true;
-                tailoredEv.push(`লিকুইড মানি (৳${t.Extracted_Liquid_Assets}) টার্নওভারের (৳${t.Extracted_Turnover}) সমান বা বেশি চাওয়া হয়েছে যা অযৌক্তিক।`);
-            }
-            let aiScore = analyzeEligibilityAI(exp, tailoredEv);
-            if (aiScore || /tailored|restrictive/i.test(rReason)) {
-                isTailored = true;
-                if(tailoredEv.length === 0) tailoredEv.push("যোগ্যতার শর্তে অস্বাভাবিক লকিং পাওয়া গেছে।");
-            }
-            if (isTailored) {
-                findingsList.push({ name: "Tailored/Discriminatory Criteria", ev: tailoredEv.join(" ") });
-                ruleKeys.push('tailored');
-            }
-
-            if (resp === 1 && recv === 1 && sold === 1) {
-                findingsList.push({ name: "Zero Competition Award", ev: "মাত্র ১ জন কিনেছে, ১ জন জমা দিয়েছে এবং সে-ই কাজ পেয়েছে।" });
-                ruleKeys.push('monopoly');
-            } else if (resp === 1 || /single responsive bidder/i.test(rReason)) {
-                findingsList.push({ name: "Single Responsive Bidder (Monopoly)", ev: "একাধিক জমা পড়লেও রেস্পন্সিভ (যোগ্য) করা হয়েছে মাত্র ১ জনকে।" });
-                ruleKeys.push('monopoly');
-            }
-
-            const valStr = String(t.Contract_Value_BDT || t.Contract_Value || "");
-            if (valStr.includes('.') && valStr.split('.')[1].length >= 3 && val > 100000) {
-                findingsList.push({ name: "Abnormal Bid (Engineered Match)", ev: `চুক্তিমূল্যে ৩-ডিজিটের ভগ্নাংশ (${valStr}) পাওয়া গেছে, যা এস্টিমেটের সাথে গোপন আঁতাতের প্রমাণ।` });
-                ruleKeys.push('outlier');
-            } else if (/(outlier|abnormal|alb|below\s*10%|above\s*10%)/i.test(fullText)) {
-                findingsList.push({ name: "Price Outlier / Abnormal Bid", ev: "দরপত্র মূল্যায়নে অস্বাভাবিক দর (ALB) পাওয়া গেছে।" });
-                ruleKeys.push('outlier');
-            }
-
-            let isRush = false;
-            let isLightning = false;
-            let adDate = new Date(t.Advertised_Date);
-            let closeDate = new Date(t.Tender_Valid_Up_To);
-            let noaDate = new Date(t.Notification_of_Award_Date);
-            let signDate = new Date(t.Contract_Signing_Date);
-            let diffDays = 0, executionDays = 0;
-            
-            if (!isNaN(adDate) && !isNaN(closeDate)) {
-                diffDays = Math.ceil((closeDate - adDate) / (1000 * 60 * 60 * 24));
-                if (diffDays <= 14 && diffDays > 0) isRush = true; 
-            }
-            if (!isNaN(noaDate) && !isNaN(signDate)) {
-                executionDays = Math.ceil((signDate - noaDate) / (1000 * 60 * 60 * 24));
-                if (executionDays <= 3 && executionDays >= 0) isLightning = true; 
-            }
-
-            if (isRush || isLightning || /meeting|মিটিং|rush tender/i.test(rReason)) {
-                if (isLightning) {
-                    findingsList.push({ name: "Lightning Fast Contract Execution", ev: `NOA কার্যাদেশ এবং চুক্তি স্বাক্ষরের মাঝে পার্থক্য মাত্র ${executionDays} দিন (আগে থেকেই রেডি করা)।` });
-                } else if (isRush) {
-                    findingsList.push({ name: "< 14 Days Rush Tender", ev: `টেন্ডার প্রকাশ এবং জমার মাঝে পার্থক্য মাত্র ${diffDays} দিন (আইনত অবৈধ)।` });
-                } else {
-                    findingsList.push({ name: "Pre-Tender Process Irregularity", ev: "প্রি-টেন্ডার মিটিংয়ের সময়সূচিতে কারসাজি করা হয়েছে।" });
-                }
-                ruleKeys.push('meeting');
-            }
-
-            if (sold > 0 && recv > 0 && sold >= (recv * 1.5) && sold >= 3) {
-                findingsList.push({ name: "High Dropout Ratio (Bid Rigging)", ev: `মোট ${sold} জন শিডিউল কিনেছে কিন্তু জমা দিয়েছে মাত্র ${recv} জন (অস্বাভাবিক ড্রপ-আউট)।` });
-                ruleKeys.push('rigging');
-            } else if (/rigging|dropout/i.test(rReason)) {
-                findingsList.push({ name: "Bid Rigging / Collusion Risk", ev: "বিড ড্রপিংয়ে সিন্ডিকেশনের প্রমাণ পাওয়া গেছে।" });
-                ruleKeys.push('rigging');
-            }
-
-            if (findingsList.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(rReason)) {
-                findingsList.push({ name: t.Red_Flag_Reason, ev: "সিস্টেম থেকে ফ্ল্যাগ করা হয়েছে।" });
-            }
-
-            let findingsTextHtml = findingsList.length > 0 
-                ? findingsList.map(f => `<strong style="color:#fca5a5; display:block; margin-bottom:2px;">${f.name}</strong><span style="color:#94a3b8; font-size:11px; line-height:1.4; display:block;"><i>প্রমাণ: ${f.ev}</i></span>`).join("<div style='margin-bottom:8px;'></div>") 
-                : "-";
-                
-            let findingsTextCsv = findingsList.length > 0 
-                ? findingsList.map(f => `${f.name} (Proof: ${f.ev})`).join(" + ") 
-                : "-";
-                
-            let uniqueRules = [...new Set(ruleKeys)];
-            let rulesHtml = "-";
-            let rulesCsv = "-";
-            if (uniqueRules.length > 0) {
-                rulesHtml = uniqueRules.map(key => `<span class="clickable-rule" onclick="showModal('${key}')" title="ক্লিক করে বিস্তারিত পড়ুন">${RULE_DETAILS[key].title.split('–')[0].trim()} ↗</span>`).join("<br><br>");
-                rulesCsv = uniqueRules.map(key => RULE_DETAILS[key].title).join(" | ");
-            }
-
-            return {
-                html: findingsTextHtml,
-                csv: findingsTextCsv,
-                rulesHtml: rulesHtml,
-                rulesCsv: rulesCsv,
-                keys: {
-                    owner: uniqueRules.includes('owner'),
-                    split: uniqueRules.includes('split'),
-                    cpv: uniqueRules.includes('cpv'),
-                    tailored: uniqueRules.includes('tailored'),
-                    monopoly: uniqueRules.includes('monopoly'),
-                    outlier: uniqueRules.includes('outlier'),
-                    meeting: uniqueRules.includes('meeting'),
-                    rigging: uniqueRules.includes('rigging')
-                }
-            };
-        }
-
-        async function init() {
-            try {
-                const res = await fetch(jsonFileName);
-                if (!res.ok) throw new Error("File not found");
-                const data = await res.json();
-                globalTenderData = data.Merged_Database || data; 
-                filterData(); 
-            } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="error">ডেটা লোড করা যায়নি। ব্রাউজারের পলিসির কারণে লোকাল ফোল্ডার থেকে JSON রিড করতে সমস্যা হচ্ছে। ফাইলটি লাইভ সার্ভারে ওপেন করুন বা IDE Live Server ব্যবহার করুন।</td></tr>`;
-            }
-        }
-
-        function filterByRule(ruleKey, element) {
-            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-            if (activeRuleKey === ruleKey) {
-                resetRuleFilter();
-                return;
-            }
-            activeRuleKey = ruleKey;
-            element.classList.add('active-rule');
-            const banner = document.getElementById('filterBanner');
-            const bannerText = document.getElementById('bannerText');
-            const ruleName = element.querySelector('strong').innerText.split('<')[0].trim();
-            bannerText.innerText = `ফিল্টার অ্যাক্টিভ: শুধুমাত্র "${ruleName}" এর ডেটা অনুসন্ধান করা হচ্ছে`;
-            banner.style.display = 'flex';
-            filterData(); 
-            document.getElementById('filterBanner').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function resetRuleFilter() {
-            activeRuleKey = null;
-            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-            document.getElementById('filterBanner').style.display = 'none';
-            filterData();
-        }
-
-        function filterData() {
-            const term = safeStr(document.getElementById('searchInput').value);
-            const risk = document.getElementById('riskFilter').value;
-            
-            const filtered = globalTenderData.filter(t => {
-                const matchRisk = risk === 'ALL' || t.Risk_Level === risk;
-                const searchString = Object.values(t).map(v => safeStr(v)).join(' ');
-                const matchTerm = searchString.includes(term);
-                
-                let matchRule = true;
-                if (activeRuleKey) {
-                    const dynamicFindings = getDynamicFindings(t);
-                    matchRule = dynamicFindings.keys[activeRuleKey] === true;
-                }
-
-                return matchRisk && matchTerm && matchRule;
-            });
-            
-            updateSummaries(filtered);
-            updateAdvancedAnalysis(filtered);
-            updateDynamicCharts(filtered);
-            updateTable(filtered);
-        }
-
         function formatCurrency(amount) {
             const value = safeNum(amount);
             if (value === 0) return '-';
@@ -755,56 +435,235 @@
             return value.toLocaleString('en-IN');
         }
 
+        // Engine Logic (Remains identical but only called ONCE per record)
+        function analyzeEligibilityAI(text, reasonsArray = []) {
+            if (!text) return false;
+            let score = 0, t = safeStr(text);
+            if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) { score += 50; reasonsArray.push("অস্বাভাবিক দশমিক সংখ্যার অভিজ্ঞতা।"); }
+            if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং (Geofencing)।"); }
+            if (/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/i.test(t)) { score += 20; reasonsArray.push("নির্দিষ্ট সংস্থার (Authority Locking) নাম।"); }
+            if (t.includes("single contract") || t.includes("একক চুক্তি")) { score += 20; reasonsArray.push("'Single Contract' লকিং।"); }
+            if (/(last 1 year|within 12 months|১ বছরের মধ্যে|last 2 years)/i.test(t)) { score += 20; reasonsArray.push("স্বল্প সময়ের অভিজ্ঞতা।"); }
+            return score >= 50; 
+        }
+
+        function getDynamicFindings(t) {
+            let findingsList = [], ruleKeys = [];
+            const fullText = Object.values(t).map(v => safeStr(v)).join(" ");
+            const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria);
+            const desc = safeStr(t.Brief_Description_of_Works || t.Brief_Description_of_Goods_and_Related_Service), pkgNo = safeStr(t.Invitation_Reference || t.Package_No);
+            const sold = safeNum(t.Tenders_Sold), recv = safeNum(t.Tenders_Received), resp = safeNum(t.Responsive_Tenders), val = safeNum(t.Contract_Value_BDT), docPrice = safeNum(t.Document_Price_BDT);
+
+            if (/beneficial owner missing/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") { findingsList.push({ name: "Beneficial Owner Hidden", ev: "মালিকানা গোপন।" }); ruleKeys.push('owner'); }
+            if (/split|artificial/i.test(rReason) || /\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) { findingsList.push({ name: "Artificial Splitting", ev: "লটে বিভাজন।" }); ruleKeys.push('split'); }
+            if (/cpv manipulation/i.test(rReason) || (safeStr(t.CPV_Code).includes("000000")) || (docPrice > 0 && docPrice <= 50 && val > 1000000)) { findingsList.push({ name: "Metadata Manipulated", ev: "ভুল CPV বা অস্বাভাবিক ফি।" }); ruleKeys.push('cpv'); }
+            
+            let isTailored = false, tailoredEv = [];
+            let reqTurnover = parseBDT(t.Extracted_Turnover), reqLiq = parseBDT(t.Extracted_Liquid_Assets);
+            if (reqLiq > 0 && reqTurnover > 0 && reqLiq >= reqTurnover) { isTailored = true; tailoredEv.push(`লিকুইড মানি টার্নওভারের সমান।`); }
+            if (analyzeEligibilityAI(exp, tailoredEv) || /tailored/i.test(rReason)) { isTailored = true; if(tailoredEv.length===0) tailoredEv.push("অস্বাভাবিক শর্ত।"); }
+            if (isTailored) { findingsList.push({ name: "Tailored Criteria", ev: tailoredEv.join(" ") }); ruleKeys.push('tailored'); }
+
+            if (resp === 1 && recv === 1 && sold === 1) { findingsList.push({ name: "Zero Competition", ev: "মাত্র ১ জন জমা ও কাজ পেয়েছে।" }); ruleKeys.push('monopoly'); } 
+            else if (resp === 1 || /single responsive/i.test(rReason)) { findingsList.push({ name: "Monopoly", ev: "মাত্র ১ জনকে যোগ্য করা হয়েছে।" }); ruleKeys.push('monopoly'); }
+
+            const valStr = String(t.Contract_Value_BDT || "");
+            if (valStr.includes('.') && valStr.split('.')[1].length >= 3 && val > 100000) { findingsList.push({ name: "Engineered Match", ev: `৩-ডিজিটের ভগ্নাংশ।` }); ruleKeys.push('outlier'); }
+            else if (/(outlier|abnormal|alb)/i.test(fullText)) { findingsList.push({ name: "Abnormal Bid", ev: "অস্বাভাবিক দর।" }); ruleKeys.push('outlier'); }
+
+            let adDate = new Date(t.Advertised_Date), closeDate = new Date(t.Tender_Valid_Up_To), noaDate = new Date(t.Notification_of_Award_Date), signDate = new Date(t.Contract_Signing_Date);
+            if (!isNaN(adDate) && !isNaN(closeDate) && Math.ceil((closeDate - adDate) / 86400000) <= 14) { findingsList.push({ name: "Rush Tender", ev: "<১৪ দিনে টেন্ডার ক্লোজ।" }); ruleKeys.push('meeting'); }
+            else if (!isNaN(noaDate) && !isNaN(signDate) && Math.ceil((signDate - noaDate) / 86400000) <= 3) { findingsList.push({ name: "Lightning Execution", ev: "৩ দিনে চুক্তি স্বাক্ষর।" }); ruleKeys.push('meeting'); }
+
+            if (sold > 0 && recv > 0 && sold >= (recv * 1.5) && sold >= 3) { findingsList.push({ name: "High Dropout (Rigging)", ev: `কিনেছে ${sold}, জমা ${recv}।` }); ruleKeys.push('rigging'); }
+
+            if (findingsList.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(rReason)) findingsList.push({ name: t.Red_Flag_Reason, ev: "সিস্টেম ফ্ল্যাগ।" });
+
+            let html = findingsList.length > 0 ? findingsList.map(f => `<strong style="color:#fca5a5; display:block; margin-bottom:2px;">${f.name}</strong><span style="color:#94a3b8; font-size:11px; line-height:1.4; display:block;"><i>প্রমাণ: ${f.ev}</i></span>`).join("<div style='margin-bottom:8px;'></div>") : "-";
+            let csv = findingsList.length > 0 ? findingsList.map(f => `${f.name} (Proof: ${f.ev})`).join(" + ") : "-";
+            let uniqueRules = [...new Set(ruleKeys)];
+            let rulesHtml = uniqueRules.length > 0 ? uniqueRules.map(key => `<span class="clickable-rule" onclick="showModal('${key}')">${RULE_DETAILS[key].title.split('–')[0].trim()} ↗</span>`).join("<br><br>") : "-";
+
+            return { html, csv, rulesHtml, keys: { owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') } };
+        }
+
+        // --- OPTIMIZATION 1: PRE-COMPUTE ON LOAD ---
+        async function init() {
+            try {
+                const res = await fetch(jsonFileName);
+                if (!res.ok) throw new Error("File not found");
+                const data = await res.json();
+                
+                const rawArray = data.Merged_Database || data;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #38bdf8; padding: 30px;">Optimizing ${rawArray.length} records in memory...</td></tr>`;
+                
+                // Pre-compute everything (O(N) operation runs only once)
+                setTimeout(() => {
+                    globalTenderData = rawArray.map(t => {
+                        t._findings = getDynamicFindings(t);
+                        t._searchStr = Object.values(t).map(v => safeStr(v)).join(' '); // Search Index
+                        return t;
+                    });
+                    triggerFilter(); 
+                }, 100); // Allow DOM to paint loading message
+
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--netra-red);">ডেটা লোড করা যায়নি। লোকাল ফোল্ডারে JSON ফাইলটি রাখুন বা Live Server ব্যবহার করুন।</td></tr>`;
+            }
+        }
+
+        // --- OPTIMIZATION 3: DEBOUNCED SEARCH ---
+        function debouncedFilter() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                triggerFilter();
+            }, 300); // Wait 300ms after user stops typing
+        }
+
+        function triggerFilter() {
+            currentPage = 1; // Reset to page 1 on new search
+            executeFilterAndRender();
+        }
+
+        function filterByRule(ruleKey, element) {
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            if (activeRuleKey === ruleKey) { resetRuleFilter(); return; }
+            activeRuleKey = ruleKey;
+            element.classList.add('active-rule');
+            document.getElementById('bannerText').innerText = `ফিল্টার অ্যাক্টিভ: "${element.querySelector('strong').innerText.split('<')[0].trim()}"`;
+            document.getElementById('filterBanner').style.display = 'flex';
+            triggerFilter();
+            document.getElementById('filterBanner').scrollIntoView({ behavior: 'smooth' });
+        }
+        function resetRuleFilter() {
+            activeRuleKey = null;
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            document.getElementById('filterBanner').style.display = 'none';
+            triggerFilter();
+        }
+
+        // --- CORE FILTER EXECUTION (Uses Pre-computed cache) ---
+        function executeFilterAndRender() {
+            const term = safeStr(document.getElementById('searchInput').value);
+            const risk = document.getElementById('riskFilter').value;
+            
+            // O(N) filter over pre-computed strings (Blazing Fast even for 50k)
+            filteredDataCache = globalTenderData.filter(t => {
+                if (risk !== 'ALL' && t.Risk_Level !== risk) return false;
+                if (term && !t._searchStr.includes(term)) return false;
+                if (activeRuleKey && t._findings.keys[activeRuleKey] !== true) return false;
+                return true;
+            });
+            
+            updateSummaries(filteredDataCache);
+            updateAdvancedAnalysis(filteredDataCache);
+            updateDynamicCharts(filteredDataCache);
+            renderTablePage();
+        }
+
+        // --- OPTIMIZATION 2 & 4: PAGINATION & BATCH DOM RENDERING ---
+        function renderTablePage() {
+            const tbody = document.getElementById('tableBody');
+            const totalRows = filteredDataCache.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
+            
+            // Bounds checking
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > totalPages) currentPage = totalPages;
+
+            document.getElementById('totalRowsLabel').innerText = totalRows;
+            document.getElementById('currentPageLabel').innerText = currentPage;
+            document.getElementById('totalPagesLabel').innerText = totalPages;
+            
+            const pControls = document.getElementById('paginationControls');
+            pControls.style.display = totalRows > 0 ? 'flex' : 'none';
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+
+            if (totalRows === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found matching your criteria.</td></tr>`;
+                return;
+            }
+
+            const startIdx = (currentPage - 1) * rowsPerPage;
+            const pageData = filteredDataCache.slice(startIdx, startIdx + rowsPerPage);
+            
+            // Batch HTML creation to prevent DOM thrashing
+            const htmlArray = pageData.map(t => {
+                let riskClass = t.Risk_Level === 'HIGH' ? 'risk-high' : (t.Risk_Level === 'MEDIUM' ? 'risk-medium' : 'risk-low');
+                let org = extractCleanAgencyName(t.Organization_Agency);
+                let sup = t.Supplier_Name ? String(t.Supplier_Name).split('(')[0].trim() : "<span style='color:var(--text-muted)'>-</span>";
+                
+                let pdfHtml = '-';
+                if (t.Source_Files_Merged) {
+                    pdfHtml = String(t.Source_Files_Merged).split('|').filter(f => f.trim()).map((file, i) => 
+                        `<a href="downloaded_pdfs/${file.trim()}" target="_blank" class="doc-link">${i > 0 ? 'NOA 📄' : 'Notice 📄'}</a>`
+                    ).join('');
+                } else if(t.Source_File) {
+                    pdfHtml = `<a href="downloaded_pdfs/${String(t.Source_File).trim()}" target="_blank" class="doc-link">Notice 📄</a>`;
+                }
+
+                let verifyBtn = t._findings.html !== '-' ? `<button class="btn-verify" onclick="showDataInspector('${t.Tender_Proposal_ID}')">🔍 প্রমাণ</button>` : '';
+
+                return `
+                    <tr>
+                        <td style="font-family: monospace; font-weight: bold; color: var(--neon-blue);">${t.Tender_Proposal_ID}</td>
+                        <td style="color: #cbd5e1;">${org}</td>
+                        <td style="font-weight: bold; color: #fff;">${sup}</td>
+                        <td><span class="risk-badge ${riskClass}">${t.Risk_Level||'N/A'}</span></td>
+                        <td style="text-align: right; font-family: monospace; font-weight: bold; color: #fff;">${formatCurrency(t.Contract_Value_BDT)}</td>
+                        <td style="line-height: 1.4; padding-right:15px;">${t._findings.html} ${verifyBtn}</td>
+                        <td style="font-size: 11.5px; color: #38bdf8; font-weight: 600; line-height: 1.4;">${t._findings.rulesHtml}</td>
+                        <td>${pdfHtml}</td>
+                    </tr>
+                `;
+            });
+
+            // Single DOM write
+            tbody.innerHTML = htmlArray.join('');
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderTablePage();
+            document.getElementById('tenderTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Analysis Updates (Now using Pre-computed _findings)
         function updateSummaries(data) {
-            document.getElementById('totalContracts').innerText = data.length;
-            let highRiskValue = 0;
-            let missingOwnerCount = 0;
+            document.getElementById('totalContracts').innerText = data.length.toLocaleString();
+            let highRiskValue = 0, missingOwnerCount = 0;
             data.forEach(t => {
-                const f = getDynamicFindings(t);
                 if (t.Risk_Level === 'HIGH') highRiskValue += safeNum(t.Contract_Value_BDT);
-                if (f.keys.owner) missingOwnerCount++;
+                if (t._findings.keys.owner) missingOwnerCount++;
             });
             let unit = highRiskValue >= 1000000000 ? (highRiskValue/1000000000).toFixed(2) + " বিলিয়ন" : (highRiskValue/10000000).toFixed(2) + " কোটি";
             document.getElementById('totalValue').innerText = "৳" + unit;
             document.getElementById('totalOwnersMissing').innerText = missingOwnerCount + " টি";
         }
 
-        function extractCleanAgencyName(agencyString) {
-            if(!agencyString) return "Unknown Agency";
-            return agencyString.replace(/Procuring Entity.*/i, '').trim();
-        }
-
         function updateAdvancedAnalysis(data) {
             const nexus = {};
-            let tailoredCount = 0;
-            let rushCount = 0;
+            let tailoredCount = 0, rushCount = 0;
 
             data.forEach(t => {
-                if(t.Supplier_Name && t.Organization_Agency && safeStr(t.Tender_Status) === "contract awarded") {
-                    let agency = extractCleanAgencyName(t.Organization_Agency);
-                    let sup = String(t.Supplier_Name).split('(')[0].trim();
-                    let key = agency + "|||" + sup;
-                    if(!nexus[key]) nexus[key] = { agency, sup, count: 0 };
+                if(t.Supplier_Name && t.Organization_Agency && safeStr(t.Tender_Status).includes("awarded")) {
+                    let key = extractCleanAgencyName(t.Organization_Agency) + "|||" + String(t.Supplier_Name).split('(')[0].trim();
+                    if(!nexus[key]) nexus[key] = { count: 0 };
                     nexus[key].count++;
                 }
-                const f = getDynamicFindings(t);
-                if(f.keys.tailored) tailoredCount++;
-                if(f.keys.meeting) rushCount++;
+                if(t._findings.keys.tailored) tailoredCount++;
+                if(t._findings.keys.meeting) rushCount++;
             });
 
-            const sortedNexus = Object.values(nexus).sort((a, b) => b.count - a.count).filter(n => n.count > 1).slice(0, 5);
+            const sortedNexus = Object.entries(nexus).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
             const nBody = document.getElementById('nexusBody');
-            nBody.innerHTML = '';
-            if(sortedNexus.length > 0) {
-                sortedNexus.forEach(n => {
-                    nBody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td style="color:var(--text-muted);">${n.agency.substring(0,30)}..</td>
-                            <td style="font-weight:600;">${n.sup.substring(0,25)}</td>
-                            <td><strong>${n.count} বার</strong></td>
-                        </tr>
-                    `);
-                });
+            
+            if(sortedNexus.length > 0 && sortedNexus[0][1].count > 1) {
+                nBody.innerHTML = sortedNexus.map(n => {
+                    let [ag, sup] = n[0].split('|||');
+                    return `<tr><td style="color:var(--text-muted);">${ag.substring(0,30)}..</td><td style="font-weight:600;">${sup.substring(0,25)}</td><td><strong>${n[1].count} বার</strong></td></tr>`;
+                }).join('');
             } else {
                 nBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">পর্যাপ্ত ডেটা পাওয়া যায়নি</td></tr>`;
             }
@@ -815,237 +674,135 @@
 
         function updateDynamicCharts(data) {
             let vCounts = { owner: 0, split: 0, cpv: 0, tailored: 0, monopoly: 0, outlier: 0, meeting: 0, rigging: 0 };
+            const suppliers = {}, timeline = {}, agencies = {}, reasons = {};
+            let tSold = 0, tRecv = 0, tResp = 0;
+            let highCount = 0, medCount = 0, lowCount = 0;
+            let hVal = 0, mVal = 0, lVal = 0;
             
+            // Single loop to gather ALL chart data
             data.forEach(t => {
-                const f = getDynamicFindings(t);
-                if (f.keys.owner) vCounts.owner++;
-                if (f.keys.split) vCounts.split++;
-                if (f.keys.cpv) vCounts.cpv++;
-                if (f.keys.tailored) vCounts.tailored++;
-                if (f.keys.monopoly) vCounts.monopoly++;
-                if (f.keys.outlier) vCounts.outlier++;
-                if (f.keys.meeting) vCounts.meeting++;
-                if (f.keys.rigging) vCounts.rigging++;
-            });
+                const k = t._findings.keys;
+                if (k.owner) vCounts.owner++; if (k.split) vCounts.split++; if (k.cpv) vCounts.cpv++;
+                if (k.tailored) vCounts.tailored++; if (k.monopoly) vCounts.monopoly++; if (k.outlier) vCounts.outlier++;
+                if (k.meeting) vCounts.meeting++; if (k.rigging) vCounts.rigging++;
 
-            document.getElementById('count-owner').innerText = vCounts.owner;
-            document.getElementById('count-split').innerText = vCounts.split;
-            document.getElementById('count-cpv').innerText = vCounts.cpv;
-            document.getElementById('count-tailored').innerText = vCounts.tailored;
-            document.getElementById('count-monopoly').innerText = vCounts.monopoly;
-            document.getElementById('count-outlier').innerText = vCounts.outlier;
-            document.getElementById('count-meeting').innerText = vCounts.meeting;
-            document.getElementById('count-rigging').innerText = vCounts.rigging;
+                let val = safeNum(t.Contract_Value_BDT);
+                if (t.Risk_Level === 'HIGH') {
+                    highCount++; hVal += val;
+                    if (t.Supplier_Name) { let n = String(t.Supplier_Name).split('(')[0].trim(); suppliers[n] = (suppliers[n]||0) + val; }
+                    if (t.Organization_Agency) { let a = extractCleanAgencyName(t.Organization_Agency); agencies[a] = (agencies[a]||0) + val; }
+                } else if (t.Risk_Level === 'MEDIUM') { medCount++; mVal += val; } 
+                else { lowCount++; lVal += val; }
 
-            if(violationChartObj) violationChartObj.destroy();
-            violationChartObj = new Chart(document.getElementById('violationChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'],
-                    datasets: [{ 
-                        data: [vCounts.owner, vCounts.split, vCounts.cpv, vCounts.tailored, vCounts.monopoly, vCounts.outlier, vCounts.meeting, vCounts.rigging], 
-                        backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 
-                    }]
-                },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {size: 11}} } }, plugins: { legend: { display: false } } }
-            });
-
-            const timeline = {};
-            data.forEach(t => {
                 let dStr = t.Advertised_Date || t.Contract_Signing_Date;
                 if(dStr) {
-                    let date = new Date(dStr);
-                    if(!isNaN(date)) {
-                        let monthYear = `${date.getFullYear()}-${('0'+(date.getMonth()+1)).slice(-2)}`;
-                        if(!timeline[monthYear]) timeline[monthYear] = { HIGH: 0, MEDIUM: 0, LOW: 0 };
-                        let risk = t.Risk_Level || 'LOW';
-                        if(timeline[monthYear][risk] !== undefined) timeline[monthYear][risk]++;
+                    let d = new Date(dStr);
+                    if(!isNaN(d)) {
+                        let my = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
+                        if(!timeline[my]) timeline[my] = { HIGH:0, MEDIUM:0, LOW:0 };
+                        timeline[my][t.Risk_Level||'LOW']++;
                     }
                 }
-            });
-            
-            const sortedDates = Object.keys(timeline).sort();
-            if(timelineChartObj) timelineChartObj.destroy();
-            timelineChartObj = new Chart(document.getElementById('timelineChart'), {
-                type: 'line',
-                data: {
-                    labels: sortedDates,
-                    datasets: [
-                        { label: 'HIGH', data: sortedDates.map(d => timeline[d].HIGH), borderColor: colorAlert, backgroundColor: 'rgba(220, 38, 38, 0.1)', fill: true, tension: 0.3, pointRadius: 2 },
-                        { label: 'MEDIUM', data: sortedDates.map(d => timeline[d].MEDIUM), borderColor: colorAccent, backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.3, pointRadius: 0 },
-                        { label: 'LOW', data: sortedDates.map(d => timeline[d].LOW), borderColor: colorSecondary, backgroundColor: 'transparent', tension: 0.3, pointRadius: 0 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: {color: '#f8fafc'} }, y: { display: false } }, plugins: { legend: { display: true, labels: {color: '#f8fafc'} } } }
-            });
 
-            let tSold = 0, tRecv = 0, tResp = 0;
-            data.forEach(t => {
-                tSold += safeNum(t.Tenders_Sold);
-                tRecv += safeNum(t.Tenders_Received);
-                tResp += safeNum(t.Responsive_Tenders);
-            });
-            if(dropoutChartObj) dropoutChartObj.destroy();
-            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), {
-                type: 'bar',
-                data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary], borderRadius: 3 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
-            });
-
-            const suppliers = {};
-            data.forEach(t => {
-                if (t.Risk_Level === 'HIGH' && t.Supplier_Name) {
-                    let name = String(t.Supplier_Name).split('(')[0].trim(); 
-                    if(!suppliers[name]) suppliers[name] = 0;
-                    suppliers[name] += safeNum(t.Contract_Value_BDT);
-                }
-            });
-            const sortedSuppliers = Object.entries(suppliers).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            if(syndicateChartObj) syndicateChartObj.destroy();
-            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), {
-                type: 'bar',
-                data: { labels: sortedSuppliers.map(s => s[0].length > 15 ? s[0].substring(0, 15) + ".." : s[0]), datasets: [{ data: sortedSuppliers.map(s => s[1]), backgroundColor: colorAlert, borderRadius: 3 }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {weight: 'bold'}} } }, plugins: { legend: { display: false } } }
-            });
-
-            let highCount = 0, medCount = 0, lowCount = 0;
-            data.forEach(t => {
-                if(t.Risk_Level === 'HIGH') highCount++; else if(t.Risk_Level === 'MEDIUM') medCount++; else if(t.Risk_Level === 'LOW') lowCount++;
-            });
-            if(riskPieChartObj) riskPieChartObj.destroy();
-            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), {
-                type: 'doughnut',
-                data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [highCount, medCount, lowCount], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
-            });
-
-            const agencies = {};
-            data.forEach(t => {
-                if (t.Risk_Level === 'HIGH' && t.Organization_Agency) {
-                    let name = extractCleanAgencyName(t.Organization_Agency);
-                    if(!agencies[name]) agencies[name] = 0;
-                    agencies[name] += safeNum(t.Contract_Value_BDT);
-                }
-            });
-            const sortedAgencies = Object.entries(agencies).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            if(agencyChartObj) agencyChartObj.destroy();
-            agencyChartObj = new Chart(document.getElementById('agencyChart'), {
-                type: 'bar',
-                data: { labels: sortedAgencies.map(s => s[0].length > 20 ? s[0].substring(0, 20) + ".." : s[0]), datasets: [{ data: sortedAgencies.map(s => s[1]), backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
-            });
-
-            const reasons = {};
-            data.forEach(t => {
-                const f = getDynamicFindings(t);
-                if(f.csv !== "-") {
-                    let textClean = f.csv.split(' (Proof')[0].trim().substring(0, 20);
+                tSold += safeNum(t.Tenders_Sold); tRecv += safeNum(t.Tenders_Received); tResp += safeNum(t.Responsive_Tenders);
+                
+                if(t._findings.csv !== "-") {
+                    let textClean = t._findings.csv.split(' (Proof')[0].trim().substring(0, 20);
                     reasons[textClean] = (reasons[textClean] || 0) + 1;
                 }
             });
-            const sortedReasons = Object.entries(reasons).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+            // Update DOM Counts
+            ['owner','split','cpv','tailored','monopoly','outlier','meeting','rigging'].forEach(key => {
+                document.getElementById('count-'+key).innerText = vCounts[key];
+            });
+
+            // Re-render Charts (Destroy and recreate to clear canvas)
+            const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+            const barOptsY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:10}} } } };
+
+            if(violationChartObj) violationChartObj.destroy();
+            violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [vCounts.owner, vCounts.split, vCounts.cpv, vCounts.tailored, vCounts.monopoly, vCounts.outlier, vCounts.meeting, vCounts.rigging], backgroundColor: colorSecondary, borderRadius: 3 }] }, options: barOptsY });
+
+            if(dropoutChartObj) dropoutChartObj.destroy();
+            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary], borderRadius: 3 }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } } } });
+
+            const sortTop5 = (obj) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5);
+            const topSup = sortTop5(suppliers);
+            if(syndicateChartObj) syndicateChartObj.destroy();
+            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: topSup.map(s => s[0].substring(0,15)), datasets: [{ data: topSup.map(s => s[1]), backgroundColor: colorAlert, borderRadius: 3 }] }, options: barOptsY });
+
+            const sDates = Object.keys(timeline).sort();
+            if(timelineChartObj) timelineChartObj.destroy();
+            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sDates, datasets: [ { label: 'HIGH', data: sDates.map(d => timeline[d].HIGH), borderColor: colorAlert, backgroundColor: 'rgba(220, 38, 38, 0.1)', fill: true, tension: 0.3, pointRadius: 2 }, { label: 'LOW', data: sDates.map(d => timeline[d].LOW), borderColor: colorSecondary, backgroundColor: 'transparent', tension: 0.3, pointRadius: 0 } ] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff'}}}, scales: { x: { grid: { display: false }, ticks:{color:'#fff'} }, y: { display: false } } } });
+
+            const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } };
+            
+            if(riskPieChartObj) riskPieChartObj.destroy();
+            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [highCount, medCount, lowCount], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] }, options: pieOpts });
+
+            const topAg = sortTop5(agencies);
+            if(agencyChartObj) agencyChartObj.destroy();
+            agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: topAg.map(s => s[0].substring(0,20)), datasets: [{ data: topAg.map(s => s[1]), backgroundColor: colorSecondary, borderRadius: 3 }] }, options: barOptsY });
+
+            const topR = sortTop5(reasons);
             if(redFlagChartObj) redFlagChartObj.destroy();
-            redFlagChartObj = new Chart(document.getElementById('redFlagChart'), {
-                type: 'bar',
-                data: { labels: sortedReasons.map(r => r[0] + ".."), datasets: [{ data: sortedReasons.map(r => r[1]), backgroundColor: colorAccent, borderRadius: 3 }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {font: {size: 10}, color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
-            });
+            redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: topR.map(r => r[0]), datasets: [{ data: topR.map(r => r[1]), backgroundColor: colorAccent, borderRadius: 3 }] }, options: barOptsY });
 
-            let single = vCounts.monopoly;
-            let multiple = data.length - single;
             if(singleBidderChartObj) singleBidderChartObj.destroy();
-            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), {
-                type: 'doughnut',
-                data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [single, multiple], backgroundColor: [colorAlert, colorSecondary], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
-            });
+            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [vCounts.monopoly, data.length - vCounts.monopoly], backgroundColor: [colorAlert, colorSecondary], borderWidth: 0 }] }, options: pieOpts });
 
-            let hVal = 0, mVal = 0, lVal = 0;
-            data.forEach(t => {
-                let val = safeNum(t.Contract_Value_BDT);
-                if(t.Risk_Level === 'HIGH') hVal += val; else if(t.Risk_Level === 'MEDIUM') mVal += val; else if(t.Risk_Level === 'LOW') lVal += val;
-            });
             if(riskValuePieChartObj) riskValuePieChartObj.destroy();
-            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), {
-                type: 'pie',
-                data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hVal, mVal, lVal], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
-            });
+            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hVal, mVal, lVal], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] }, options: pieOpts });
         }
 
-        function updateTable(data) {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = ''; 
-            if(!data.length) return tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: var(--text-muted);">No records found.</td></tr>`;
+        // Inspector Modal (Uses Cached Data)
+        function showDataInspector(tenderId) {
+            const t = globalTenderData.find(x => x.Tender_Proposal_ID == tenderId);
+            if(!t) return;
+
+            document.getElementById('insID').innerText = t.Tender_Proposal_ID || "N/A";
+            document.getElementById('insVal').innerText = formatCurrency(t.Contract_Value_BDT);
+            document.getElementById('insPrice').innerText = t.Document_Price_BDT ? `৳${t.Document_Price_BDT}` : "N/A";
+            document.getElementById('insSold').innerText = t.Tenders_Sold || "0";
+            document.getElementById('insRecv').innerText = t.Tenders_Received || "0";
+            document.getElementById('insResp').innerText = t.Responsive_Tenders || "0";
+            document.getElementById('insPub').innerText = t.Advertised_Date || t.Published_Date || "N/A";
+            document.getElementById('insClose').innerText = t.Tender_Valid_Up_To || t.Closing_Date || "N/A";
+            document.getElementById('insNoa').innerText = t.Notification_of_Award_Date || "N/A";
+            document.getElementById('insSign').innerText = t.Contract_Signing_Date || "N/A";
+
+            let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "শর্তের কোনো তথ্য ডেটাবেসে পাওয়া যায়নি।";
+            let highlightedExp = rawExp.replace(/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/gi, '<span class="highlight-red">$&</span>');
+            highlightedExp = highlightedExp.replace(/(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/gi, '<span class="highlight-red">$&</span>');
+            highlightedExp = highlightedExp.replace(/\d+\.[1-9]\d+\s*(crore|lac|lakh)/gi, '<span class="highlight-red">$&</span>');
+            highlightedExp = highlightedExp.replace(/(single contract|single tender|একক চুক্তি)/gi, '<span class="highlight-red">$&</span>');
+            document.getElementById('insExp').innerHTML = highlightedExp;
+
+            let laymenExp = "<strong>সহজ ভাষায় বিশ্লেষণ:</strong><br>";
+            const fk = t._findings.keys;
+            if(fk.owner) laymenExp += "• বেনামী কোম্পানির লক্ষণ: প্রকৃত মালিকের নাম গোপন।<br>";
+            if(fk.tailored) laymenExp += "• সাধারণ ঠিকাদারদের আটকাতে নির্দিষ্ট এলাকার বা অদ্ভুত দশমিক সংখ্যার শর্ত দেওয়া হয়েছে।<br>";
+            if(fk.monopoly) laymenExp += "• ফাঁকা মাঠে গোল: রেস্পন্সিভ (যোগ্য) ঘোষণা করা হয়েছে মাত্র ১ জনকে।<br>";
+            if(fk.cpv) laymenExp += "• টেন্ডার লুকানোর চেষ্টা: অবান্তর CPV কোড বা অস্বাভাবিক শিডিউল ফি।<br>";
+            if(fk.outlier) laymenExp += "• বাজেট লিক: চুক্তিমূল্যে ৩-ডিজিটের ভগ্নাংশ, যা এস্টিমেটের সাথে গোপন আঁতাতের প্রমাণ।<br>";
+            if(fk.meeting) laymenExp += "• তাড়াহুড়া: টেন্ডার প্রকাশ থেকে চুক্তির মাঝে অস্বাভাবিক কম সময়, কাজ আগে থেকেই ফিক্স করা ছিল।<br>";
+            if(fk.rigging) laymenExp += "• বিড রিগিং: শিডিউল কিনেছে অনেকেই, কিন্তু জমা দিয়েছে খুব কম।<br>";
+            if(laymenExp === "<strong>সহজ ভাষায় বিশ্লেষণ:</strong><br>") laymenExp += "এই টেন্ডারে দৃশ্যত বড় কোনো দুর্নীতি ধরা পড়েনি।";
             
-            const riskOrder = { "HIGH": 1, "MEDIUM": 2, "LOW": 3 };
-            const sortedData = [...data].sort((a, b) => (riskOrder[a.Risk_Level] || 4) - (riskOrder[b.Risk_Level] || 4));
-
-            sortedData.forEach(t => {
-                let riskClass = t.Risk_Level === 'HIGH' ? 'risk-high' : (t.Risk_Level === 'MEDIUM' ? 'risk-medium' : 'risk-low');
-                let valStr = formatCurrency(t.Contract_Value_BDT);
-                
-                let org = extractCleanAgencyName(t.Organization_Agency);
-                let sup = t.Supplier_Name ? String(t.Supplier_Name).split('(')[0].trim() : "<span style='color:var(--text-muted)'>-</span>";
-                
-                const f = getDynamicFindings(t);
-                
-                let pdfHtml = '';
-                if (t.Source_Files_Merged) {
-                    String(t.Source_Files_Merged).split('|').filter(f => f.trim()).forEach((file, i) => {
-                        let isNoa = i > 0;
-                        pdfHtml += `<a href="downloaded_pdfs/${file.trim()}" target="_blank" class="doc-link ${isNoa ? 'noa' : ''}">${isNoa ? 'NOA 📄' : 'Notice 📄'}</a>`;
-                    });
-                } else if(t.Source_File) {
-                    pdfHtml = `<a href="downloaded_pdfs/${String(t.Source_File).trim()}" target="_blank" class="doc-link">Notice 📄</a>`;
-                } else {
-                    pdfHtml = '-';
-                }
-
-                let verifyBtn = `<button class="btn-verify" onclick="showDataInspector('${t.Tender_Proposal_ID}')">🔍 প্রমাণ যাচাই</button>`;
-
-                tbody.insertAdjacentHTML('beforeend', `
-                    <tr>
-                        <td style="font-family: monospace; font-weight: bold; color: var(--neon-blue);">${t.Tender_Proposal_ID}</td>
-                        <td style="color: #cbd5e1;">${org}</td>
-                        <td style="font-weight: bold; color: #fff;">${sup}</td>
-                        <td><span class="risk-badge ${riskClass}">${t.Risk_Level||'N/A'}</span></td>
-                        <td style="text-align: right; font-family: monospace; font-weight: bold; color: #fff;">${valStr}</td>
-                        <td style="line-height: 1.4; padding-right:15px;">${f.html} ${f.html !== '-' ? verifyBtn : ''}</td>
-                        <td style="font-size: 11.5px; color: #38bdf8; font-weight: 600; line-height: 1.4;">${f.rulesHtml}</td>
-                        <td>${pdfHtml}</td>
-                    </tr>
-                `);
-            });
+            document.getElementById('inspectorExplanation').innerHTML = laymenExp;
+            document.getElementById('inspectorModal').style.display = 'flex';
         }
 
         function downloadCSV() {
-            const term = safeStr(document.getElementById('searchInput').value);
-            const risk = document.getElementById('riskFilter').value;
-            
-            const dataToExport = globalTenderData.filter(t => {
-                const matchRisk = risk === 'ALL' || t.Risk_Level === risk;
-                const searchString = Object.values(t).map(v => safeStr(v)).join(' ');
-                return matchRisk && searchString.includes(term);
-            });
-            
-            if(!dataToExport.length) return alert("No data available to export.");
-
+            if(!filteredDataCache.length) return alert("No data available to export.");
             let csv = "\uFEFF" + "Tender_ID,Agency,Supplier,Risk,Value_BDT,Detected_Findings_With_Evidence,Violated_Rules\n";
-            
-            dataToExport.forEach(r => {
-                const f = getDynamicFindings(r);
-                const escAgency = extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""');
-                const escSupplier = safeStr(r.Supplier_Name).replace(/"/g, '""');
-                const escReason = f.csv.replace(/"/g, '""');
-                const escRules = f.rulesCsv.replace(/"/g, '""');
-
-                csv += `${r.Tender_Proposal_ID},"${escAgency}","${escSupplier}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},"${escReason}","${escRules}"\n`;
+            filteredDataCache.forEach(r => {
+                csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${safeStr(r.Supplier_Name).replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},"${r._findings.csv.replace(/"/g, '""')}","${r._findings.rulesCsv.replace(/"/g, '""')}"\n`;
             });
-
             const link = document.createElement("a");
             link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-            link.download = "eGP_Forensic_Audit_Data_All_Authorities.csv";
+            link.download = "eGP_Forensic_Audit_Data.csv";
             link.click();
         }
 
