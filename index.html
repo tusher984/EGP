@@ -329,7 +329,7 @@
             owner: ["e-PG3 ITT 5.14 – Beneficial Ownership Disclosure"],
             monopoly: ["e-PG3 ITT 50.6 – Lack of Effective Competition"],
             split: ["PPA 2006 – Artificial Contract Splitting"],
-            cpv: ["EU CPV Regulation (Mismatched Code)"],
+            cpv: ["EU CPV Regulation (Mismatched Code / Hidden Tender)"],
             tailored: ["PPR 2008 Rule 98 – Restrictive Qualification Criteria"],
             meeting: ["PPR Schedule – Minimum Tender Preparation Time"],
             outlier: ["World Bank ALB Guideline – Abnormally Low/High Bids"],
@@ -353,7 +353,7 @@
             // 1. Tailored Decimals: Catches absurd limits like "1.35 crore" or "1.23 Crore"
             if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) score += 50; 
             
-            // 2. Geofencing & Authority Locking (Direct hit for "office in Chattogram City", "Corporation Area")
+            // 2. Geofencing & Authority Locking
             if (/(office|branch office|industry|working center)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) {
                 score += 50; // Immediate Flag for illegal geographical restriction
             }
@@ -369,7 +369,6 @@
             if (/(must own|own equipment|manufacturer authorization|dealership|oem)/i.test(t)) score += 30;
             if (/(iso 9001|iso 14001|fsc|specific certification)/i.test(t)) score += 20;
 
-            // Threshold: If total suspicion score is 50 or more, flag it as Tailored!
             return score >= 50; 
         }
 
@@ -388,29 +387,30 @@
             const recv = safeNum(t.Tenders_Received);
             const resp = safeNum(t.Responsive_Tenders);
             const val = safeNum(t.Contract_Value_BDT);
+            const docPrice = safeNum(t.Document_Price_BDT);
 
-            // Rule 1: Beneficial Owner Missing Check
-            if (/beneficial owner missing/i.test(rReason) || t.Red_Flag_Reason === "Beneficial Owner Missing") {
+            // Rule 1: Beneficial Owner Missing
+            if (/beneficial owner missing/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") {
                 findings.push("Beneficial Owner Info Hidden");
                 rules.push(...RULE_MAP.owner);
             }
 
-            // Rule 2: Splitting Check (Catches Lot-1, Lot-2, Part-A explicitly in Description or Package No)
+            // Rule 2: Splitting Check
             if (/split|artificial splitting/i.test(rReason) || /\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) {
                 findings.push("Artificial Contract Splitting (Lot Pattern Detected)");
                 rules.push(...RULE_MAP.split);
             }
 
-            // Rule 3: CPV Match Check
+            // Rule 3: CPV Match & Hidden Tender Check (Low Doc Price Trick)
             const cpvText = safeStr(t.CPV_Code);
-            if (/cpv manipulation/i.test(rReason) || (cpvText && cpvText.includes("000000"))) {
-                findings.push("CPV Category Manipulated or Hidden");
+            if (/cpv manipulation/i.test(rReason) || (cpvText && cpvText.includes("000000")) || (docPrice > 0 && docPrice <= 50 && val > 1000000)) {
+                findings.push("Tender Hidden / Metadata Manipulated (Absurd Doc Price)");
                 rules.push(...RULE_MAP.cpv);
             }
 
             // Rule 4: Tailored Criteria Check (Using NLP)
             if (analyzeEligibilityAI(exp) || /tailored|restrictive/i.test(rReason)) {
-                findings.push("Tailored\/Discriminatory Eligibility Criteria");
+                findings.push("Tailored/Discriminatory Eligibility Criteria");
                 rules.push(...RULE_MAP.tailored);
             }
 
@@ -420,23 +420,29 @@
                 rules.push(...RULE_MAP.monopoly);
             }
 
-            // Rule 6: Price Outliers Check
-            if (/price outlier|abnormal bid/i.test(rReason) || /abnormally low|abnormally high/i.test(fullText)) {
+            // Rule 6: Price Outlier / Abnormal Bid Check (Engineered Decimal Detection)
+            const valStr = String(t.Contract_Value_BDT || t.Contract_Value || "");
+            if (valStr.includes('.') && valStr.split('.')[1].length >= 3 && val > 100000) {
+                // If contract value has 3 decimal places (e.g., .849), it's a mathematically engineered bid matching internal estimates
+                findings.push("Abnormal Bid / Exact Estimate Match (Decimal Engineered)");
+                rules.push(...RULE_MAP.outlier);
+            } else if (/(outlier|abnormal|alb|below\s*10%|above\s*10%)/i.test(fullText)) {
                 findings.push("Price Outlier / Abnormal Bid");
                 rules.push(...RULE_MAP.outlier);
             }
 
-            // Rule 7: Pre-Tender Meeting / Rush Job Check
+            // Rule 7: Pre-Tender Meeting / Rush Job Check (Calculates gap between Ad and NOA)
             let isRush = false;
             let adDate = new Date(t.Advertised_Date);
-            let closeDate = new Date(t.Tender_Valid_Up_To);
-            if (!isNaN(adDate) && !isNaN(closeDate)) {
-                let diffDays = Math.ceil(Math.abs(closeDate - adDate) / (1000 * 60 * 60 * 24));
-                if (diffDays <= 14 && diffDays > 0) isRush = true; 
+            let noaDate = new Date(t.Notification_of_Award_Date);
+            
+            if (!isNaN(adDate) && !isNaN(noaDate)) {
+                let diffDays = Math.ceil(Math.abs(noaDate - adDate) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 30 && diffDays > 0) isRush = true; // NOA within 30 days means tender time + meeting was a farce
             }
 
             if (isRush || /meeting|মিটিং|rush tender/i.test(rReason)) {
-                findings.push(isRush ? "< 14 Days Rush Tender" : "Pre-Tender Process Irregularity");
+                findings.push(isRush ? "Pre-Tender Farce (<30 Days to NOA Award)" : "Pre-Tender Process Irregularity");
                 rules.push(...RULE_MAP.meeting);
             }
 
@@ -450,7 +456,7 @@
             }
 
             // Safe fallback
-            if (findings.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(t.Red_Flag_Reason.toLowerCase())) {
+            if (findings.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(rReason)) {
                 findings.push(t.Red_Flag_Reason);
             }
 
@@ -460,11 +466,11 @@
                 keys: {
                     owner: findings.some(f => /Owner/i.test(f)),
                     split: findings.some(f => /Splitting/i.test(f)),
-                    cpv: findings.some(f => /CPV/i.test(f)),
+                    cpv: findings.some(f => /CPV|Hidden/i.test(f)),
                     tailored: findings.some(f => /Tailored/i.test(f)),
                     monopoly: findings.some(f => /Responsive Bidder/i.test(f)),
-                    outlier: findings.some(f => /Outlier/i.test(f)),
-                    meeting: findings.some(f => /Rush|Meeting/i.test(f)),
+                    outlier: findings.some(f => /Outlier|Abnormal|Estimate Match/i.test(f)),
+                    meeting: findings.some(f => /Farce|Meeting|Irregularity/i.test(f)),
                     rigging: findings.some(f => /Dropout|Rigging/i.test(f))
                 }
             };
@@ -836,7 +842,7 @@
 
             const link = document.createElement("a");
             link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-            link.download = "eGP_Forensic_Audit_Data.csv";
+            link.download = "eGP_Forensic_Audit_Data_All_Authorities.csv";
             link.click();
         }
 
