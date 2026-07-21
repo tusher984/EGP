@@ -4,12 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e-GP Syndicate Tracker | Massive Data Lab</title>
+    
+    <!-- Google Fonts Fallback for Bengali (Hind Siliguri) -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Chart.js for Visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- PDF.js for Live Fact Checking -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Tesseract.js for AI OCR (Scanned Image PDF Support) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
+        /* =========================================================
+           Li Ador Noirrit Multiweight Custom Font Setup 
+           ========================================================= */
+        
+        /* Light (300) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-Light.ttf') format('truetype');
+            font-weight: 300;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* Regular (400) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* Medium (500) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* SemiBold (600) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-SemiBold.ttf') format('truetype');
+            font-weight: 600;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* Bold (700) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* ExtraBold / Black (800) */
+        @font-face {
+            font-family: 'Li Ador';
+            src: url('fonts/LiAdorNoirritMultiweight/LiAdorNoirrit-ExtraBold.ttf') format('truetype');
+            font-weight: 800;
+            font-style: normal;
+            font-display: swap;
+        }
+
         /* Premium Dark Black & Deep Blue Theme Layout */
         :root {
             --dark-bg: #080c14;      
@@ -21,76 +85,79 @@
             --border-dark: #1e293b;  
         }
         
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--dark-bg); color: var(--text-light); margin: 0; padding: 0; line-height: 1.6; }
+        /* Applied Li Ador -> Hind Siliguri -> Standard English Fonts */
+        body { 
+            font-family: 'Li Ador', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--dark-bg); 
+            color: var(--text-light); 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6; 
+        }
+        
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         header { background-color: var(--dark-card); padding: 30px 20px; margin-bottom: 25px; text-align: center; border-bottom: 4px solid var(--netra-red); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
         header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;}
-        header p { margin: 8px 0 0 0; font-size: 15px; color: var(--text-muted); font-weight: 500;}
-        .transparency-note { background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 10px; margin-top: 15px; border-radius: 5px; font-size: 12.5px; text-align: justify; border: 1px solid rgba(56, 189, 248, 0.3);}
+        header p { margin: 8px 0 0 0; font-size: 16px; color: var(--text-muted); font-weight: 500;}
+        .transparency-note { background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 10px 15px; margin-top: 15px; border-radius: 5px; font-size: 14px; border: 1px solid rgba(56, 189, 248, 0.3); display: flex; justify-content: space-between; align-items: center;}
 
         /* Forensic Rules Matrix */
         .evidence-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 5px solid var(--netra-red); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .evidence-section h3 { margin: 0 0 15px 0; font-size: 19px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .evidence-section h3 { margin: 0 0 15px 0; font-size: 20px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
         .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
         .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
         .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
         .evidence-item.active-rule { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.1); }
-        .evidence-item strong { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
-        .evidence-item p { margin: 0; font-size: 13px; color: var(--text-muted); text-align: justify; }
-        .rule-count { background-color: var(--netra-red); color: white; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 12px; min-width: 20px; text-align: center; }
+        .evidence-item strong { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
+        .evidence-item p { margin: 0; font-size: 14px; font-weight: 400; color: var(--text-muted); text-align: justify; }
+        .rule-count { background-color: var(--netra-red); color: white; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 12px; min-width: 20px; text-align: center; }
 
         /* Summary Cards & Charts */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .card { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 6px; text-align: center; }
-        .card h2 { margin: 0 0 5px 0; font-size: 28px; color: var(--neon-blue); font-weight: 800; }
+        .card h2 { margin: 0 0 5px 0; font-size: 28px; color: var(--neon-blue); font-weight: 800; font-family: -apple-system, sans-serif;} /* Numbers keep standard font */
         .card.alert-card h2 { color: var(--netra-red); }
-        .card p { margin: 0; font-size: 13px; font-weight: 700; text-transform: uppercase; }
-        .nexus-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .nexus-box { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; }
-        .nexus-box h4 { margin: 0 0 15px 0; color: var(--neon-blue); text-transform: uppercase; border-bottom: 1px solid var(--border-dark); padding-bottom: 8px; }
-        .nexus-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-        .nexus-table th, .nexus-table td { padding: 10px; border-bottom: 1px solid var(--border-dark); text-align: left;}
+        .card p { margin: 0; font-size: 15px; font-weight: 600; text-transform: uppercase; }
+        
         .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .chart-box { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; display: flex; flex-direction: column; }
-        .chart-box h3 { margin: 0 0 15px 0; font-size: 15px; text-align: center; font-weight: 700;}
+        .chart-box h3 { margin: 0 0 15px 0; font-size: 16px; text-align: center; font-weight: 700;}
         .chart-container { position: relative; height: 220px; width: 100%; flex-grow: 1; } 
 
         /* Tools Bar */
         .ledger-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; }
-        .ledger-section h3 { margin: 0 0 15px 0; color: var(--neon-blue); text-transform: uppercase; font-size: 18px; }
+        .ledger-section h3 { margin: 0 0 15px 0; color: var(--neon-blue); text-transform: uppercase; font-size: 20px; font-weight: 700; }
         .tools-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark);}
-        .tools-bar input, .tools-bar select { padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 13px; outline: none; flex: 1; min-width: 150px; background: var(--dark-bg); color: white;}
+        .tools-bar input, .tools-bar select { font-family: inherit; font-weight: 500; padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 14px; outline: none; flex: 1; min-width: 150px; background: var(--dark-bg); color: white;}
         .tools-bar input:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
-        .btn-clear { padding: 8px 15px; border: 1px solid var(--neon-blue); border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--neon-blue); background: transparent; transition: 0.2s; }
+        .btn-clear { font-family: inherit; padding: 8px 15px; border: 1px solid var(--neon-blue); border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--neon-blue); background: transparent; transition: 0.2s; }
         .btn-clear:hover { background: var(--neon-blue); color: var(--dark-bg); }
-        .btn-download { padding: 8px 15px; border: none; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; background-color: #1e40af; }
+        .btn-download { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; font-weight: 600; cursor: pointer; color: white; background-color: #1e40af; }
         .btn-download:hover { background: #2563eb; }
         
-        /* Home Buttons */
-        .btn-home { padding: 8px 15px; border: none; border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; background-color: #059669; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+        .btn-home { font-family: inherit; padding: 6px 12px; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; color: white; background-color: #059669; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;}
         .btn-home:hover { background: #047857; transform: translateY(-1px); }
-        .top-action-bar { text-align: center; margin-bottom: 25px; }
 
-        .btn-highlight { padding: 8px 15px; border: 2px solid var(--netra-red); border-radius: 4px; font-size: 14px; font-weight: 800; cursor: pointer; color: white; background-color: #990000; transition: 0.3s; box-shadow: 0 4px 10px rgba(220,38,38,0.4); display: inline-block; margin-top: 15px;}
+        .btn-highlight { font-family: inherit; padding: 8px 15px; border: 2px solid var(--netra-red); border-radius: 4px; font-size: 15px; font-weight: 700; cursor: pointer; color: white; background-color: #990000; transition: 0.3s; box-shadow: 0 4px 10px rgba(220,38,38,0.4); display: inline-block; margin-top: 15px;}
         .btn-highlight:hover { background-color: var(--netra-red); transform: translateY(-2px); }
 
         /* Table & Pagination */
         .table-responsive { overflow-x: auto; }
-        table.main-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        table.main-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
         table.main-table th, table.main-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-dark); vertical-align: top; }
-        table.main-table th { color: var(--neon-blue); font-weight: 700; font-size: 11.5px; text-transform: uppercase; background: rgba(255,255,255,0.02);}
+        table.main-table th { color: var(--neon-blue); font-weight: 700; font-size: 13px; text-transform: uppercase; background: rgba(255,255,255,0.02);}
         table.main-table tr:hover { background-color: rgba(255,255,255,0.01); }
         .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 5px; }
-        .page-btn { padding: 6px 15px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-weight: 600; cursor: pointer; border-radius: 4px;}
+        .page-btn { font-family: inherit; padding: 6px 15px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-weight: 600; cursor: pointer; border-radius: 4px;}
         .page-btn:hover:not(:disabled) { background: var(--neon-blue); color: var(--dark-bg); }
         .page-btn:disabled { border-color: var(--border-dark); color: var(--text-muted); cursor: not-allowed; }
-        .risk-badge { font-weight: 700; font-size: 10px; padding: 2px 6px; border-radius: 3px; color: white; display: inline-block; text-transform: uppercase;}
+        .risk-badge { font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 3px; color: white; display: inline-block; text-transform: uppercase; font-family: -apple-system, sans-serif;}
         .risk-high { background-color: var(--netra-red); }
         .risk-medium { background-color: #d97706; }
         .risk-low { background-color: #059669; }
-        .doc-link { color: var(--neon-blue); text-decoration: underline; font-weight: 600; font-size: 12px; display: inline-block; margin-right: 8px;}
-        .btn-verify { background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s;}
+        .doc-link { color: var(--neon-blue); text-decoration: underline; font-weight: 600; font-size: 13px; display: inline-block; margin-right: 8px; margin-bottom: 5px;}
+        .btn-verify { font-family: inherit; background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 5px; transition: 0.2s;}
         .btn-verify:hover { background-color: var(--neon-blue); color: var(--dark-bg); }
 
         /* Modals */
@@ -98,20 +165,20 @@
         .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 90%; max-width: 850px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
         .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer;}
         .close-btn:hover { color: var(--netra-red); }
-        .raw-data-box { background: #080c14; border: 1px dashed #334155; padding: 15px; border-radius: 5px; color: #cbd5e1; font-family: monospace; font-size: 13px; line-height: 1.6; margin-bottom: 15px; word-wrap: break-word;}
-        .raw-data-box strong { color: var(--neon-blue); font-family: sans-serif; }
+        .raw-data-box { background: #080c14; border: 1px dashed #334155; padding: 15px; border-radius: 5px; color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 15px; word-wrap: break-word;}
+        .raw-data-box strong { color: var(--neon-blue); font-family: inherit; font-weight: 700; }
         .highlight-red { color: #fca5a5; font-weight: bold; background: rgba(220, 38, 38, 0.2); padding: 0 4px; border-radius:3px;}
-        .explanation-box { background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--neon-blue); padding: 15px; font-size: 13.5px; color: #f8fafc; line-height: 1.5; margin-bottom: 15px;}
+        .explanation-box { background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--neon-blue); padding: 15px; font-size: 15px; color: #f8fafc; line-height: 1.6; margin-bottom: 15px; font-weight: 500;}
         
         /* Evidence Print Styles */
         @media print {
             body * { visibility: hidden; }
             #inspectorModal, #inspectorModal * { visibility: visible; }
-            #inspectorModal { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; background: white !important; color: black !important; padding: 0; margin: 0; border: none; box-shadow: none; }
+            #inspectorModal { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; background: white !important; color: black !important; padding: 0; margin: 0; border: none; box-shadow: none; font-family: -apple-system, sans-serif !important; }
             .modal-content { border: 2px solid #000; width: 100%; max-height: none; overflow: visible; box-shadow: none; padding: 20px; }
             .raw-data-box, .explanation-box { background: #f8fafc !important; color: #000 !important; border: 1px solid #ccc !important; }
             .modal-title { color: black !important; border-bottom: 2px solid black; padding-bottom: 5px; }
-            .close-btn, .btn-highlight, .tools-bar, header, .top-action-bar, .evidence-section { display: none !important; }
+            .close-btn, .btn-highlight, .tools-bar, header, .evidence-section { display: none !important; }
             .highlight-red { background: transparent !important; color: #dc2626 !important; font-weight: bold; border-bottom: 2px solid #dc2626; }
             .modal-content::before { content: "DATA LAB - FORENSIC EVIDENCE"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 50px; color: rgba(0,0,0,0.05); font-weight: bold; pointer-events: none; z-index: -1; }
             #pdfViewerContainer { display: none !important; }
@@ -125,17 +192,17 @@
         <header>
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
+            
+            <!-- Transparency Note with Home Button -->
             <div class="transparency-note">
-                <strong>স্বচ্ছতা গ্যারান্টি:</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি।
+                <span style="text-align: left; padding-right: 15px; font-weight: 500;">
+                    <strong>স্বচ্ছতা গ্যারান্টি:</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি।
+                </span>
+                <button class="btn-home" onclick="resetDashboard()" title="ক্লিক করলে ড্যাশবোর্ডের সব ফিল্টার মুছে শুরুর অবস্থায় ফিরে যাবে">
+                    🏠
+                </button>
             </div>
         </header>
-
-        <!-- TOP HOME BUTTON -->
-        <div class="top-action-bar">
-            <button class="btn-home" style="padding: 10px 25px; font-size: 15px;" onclick="resetDashboard()" title="ক্লিক করলে সম্পূর্ণ ড্যাশবোর্ড শুরুর অবস্থায় ফিরে যাবে">
-                🏠 হোম পেইজ / সব ফিল্টার রিসেট করুন
-            </button>
-        </div>
 
         <!-- Rulebook Matrix -->
         <div class="evidence-section">
@@ -203,9 +270,7 @@
                 <button class="btn-clear" onclick="resetRuleFilter()">ফিল্টার সরান (Show All)</button>
             </div>
 
-            <!-- TOOLS BAR WITH TABLE HOME BUTTON -->
             <div class="tools-bar">
-                <button class="btn-home" onclick="resetDashboard()">🏠 হোম রিসেট</button>
                 <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="debouncedFilter()">
                 <select id="riskFilter" onchange="triggerFilter()">
                     <option value="ALL">সব ঝুঁকি (All Risks)</option>
@@ -222,7 +287,7 @@
                         <tr>
                             <th style="width: 70px;">ID</th><th>Procuring Entity</th><th>Contractor / Supplier</th>
                             <th style="width: 60px;">Risk</th><th style="text-align: right;">Value (৳)</th>
-                            <th>Detected Findings & Verification</th><th style="width: 150px;">Violated Rules</th><th style="width: 60px;">Docs</th>
+                            <th>Detected Findings & Verification</th><th style="width: 150px;">Violated Rules</th><th style="width: 70px;">Docs</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -244,11 +309,11 @@
         <div class="modal-content" style="max-width: 500px;">
             <span class="close-btn" onclick="closeModal('ruleModal')">&times;</span>
             <h2 class="modal-title" id="modalTitle">Rule Title</h2>
-            <div style="margin-bottom: 15px; font-size:12px; color:var(--text-muted);"><span id="modalEnacted"></span> | <span style="color: #fca5a5;">Forensic Engine</span></div>
-            <div id="modalDesc" style="margin-bottom: 15px; line-height: 1.6;"></div>
+            <div style="margin-bottom: 15px; font-size:14px; color:var(--text-muted);"><span id="modalEnacted"></span> | <span style="color: #fca5a5; font-weight: 600;">Forensic Engine</span></div>
+            <div id="modalDesc" style="margin-bottom: 15px; line-height: 1.6; font-size: 16px;"></div>
             <div style="background: rgba(220, 38, 38, 0.1); padding: 10px; border-radius: 4px; border-left: 3px solid var(--netra-red);">
-                <strong style="color: #fca5a5;">শাস্তি ও আইনি বিধান:</strong>
-                <span id="modalPenalty" style="display:block; margin-top:5px; font-size:13.5px;"></span>
+                <strong style="color: #fca5a5; font-weight: 700;">শাস্তি ও আইনি বিধান:</strong>
+                <span id="modalPenalty" style="display:block; margin-top:5px; font-size:15px;"></span>
             </div>
         </div>
     </div>
@@ -259,10 +324,10 @@
             <span class="close-btn" onclick="closeModal('inspectorModal')">&times;</span>
             
             <div style="border-bottom: 2px solid var(--border-dark); padding-bottom: 10px; margin-bottom: 15px;">
-                <h2 class="modal-title" style="border:none; margin:0; padding:0;">🔍 Forensic Evidence Docket</h2>
+                <h2 class="modal-title" style="border:none; margin:0; padding:0; font-family:-apple-system, sans-serif; font-weight: 800;">🔍 Forensic Evidence Docket</h2>
             </div>
 
-            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-family: monospace;">
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px; text-transform: uppercase; font-family: monospace;">
                 Timestamp: <span id="timestampData"></span> | ID: <span id="footprintID"></span>
             </div>
 
@@ -271,23 +336,23 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                 <div class="raw-data-box">
                     <strong>টেন্ডার মেটাডেটা (Metadata):</strong><br><br>
-                    ID: <span id="insID" class="highlight-red"></span><br>
-                    Contract Value: <span id="insVal"></span><br>
-                    Document Price: <span id="insPrice" class="highlight-red"></span><br>
-                    Sold: <span id="insSold"></span> | Received: <span id="insRecv"></span> | Responsive: <span id="insResp" class="highlight-red"></span>
+                    ID: <span id="insID" class="highlight-red" style="font-family:-apple-system, sans-serif;"></span><br>
+                    Contract Value: <span id="insVal" style="font-family:-apple-system, sans-serif;"></span><br>
+                    Document Price: <span id="insPrice" class="highlight-red" style="font-family:-apple-system, sans-serif;"></span><br>
+                    Sold: <span id="insSold" style="font-family:-apple-system, sans-serif;"></span> | Received: <span id="insRecv" style="font-family:-apple-system, sans-serif;"></span> | Responsive: <span id="insResp" class="highlight-red" style="font-family:-apple-system, sans-serif;"></span>
                 </div>
                 <div class="raw-data-box">
                     <strong>টাইমলাইন (Timeline):</strong><br><br>
-                    Published: <span id="insPub"></span><br>
-                    Closing: <span id="insClose"></span><br>
-                    NOA Given: <span id="insNoa"></span><br>
-                    Contract Signing: <span id="insSign" class="highlight-red"></span>
+                    Published: <span id="insPub" style="font-family:-apple-system, sans-serif;"></span><br>
+                    Closing: <span id="insClose" style="font-family:-apple-system, sans-serif;"></span><br>
+                    NOA Given: <span id="insNoa" style="font-family:-apple-system, sans-serif;"></span><br>
+                    Contract Signing: <span id="insSign" class="highlight-red" style="font-family:-apple-system, sans-serif;"></span>
                 </div>
             </div>
 
             <div class="raw-data-box">
                 <strong>অফিশিয়াল যোগ্যতার শর্ত (Eligibility Criteria):</strong><br><br>
-                <div id="insExp" style="white-space: pre-wrap; font-size: 14px;"></div>
+                <div id="insExp" style="white-space: pre-wrap; font-size: 15px;"></div>
                 
                 <!-- DIRECT PDF SNIPPET AND BUTTONS -->
                 <div id="directPdfBtnContainer" style="text-align: center; margin-top: 15px;"></div>
@@ -297,10 +362,10 @@
             <div id="pdfViewerContainer" style="display: none; margin-top: 20px; border: 2px solid var(--neon-blue); border-radius: 5px; overflow: hidden; background: #222;">
                 <div style="background: #111; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
                     <div>
-                        <span style="color:var(--neon-blue); font-weight:bold; font-size:13px; margin-right: 15px;">📄 Original Document Viewer</span>
-                        <a id="pdfFallbackLink" target="_blank" style="color:#10b981; font-size:12px; font-weight:bold; text-decoration:none; border: 1px solid #10b981; padding: 3px 8px; border-radius: 3px;" title="নতুন ট্যাবে ফুলস্ক্রিনে খুলুন">Full Screen / New Tab ↗</a>
+                        <span style="color:var(--neon-blue); font-weight:bold; font-size:14px; margin-right: 15px;">📄 Original Document Viewer</span>
+                        <a id="pdfFallbackLink" target="_blank" style="color:#10b981; font-size:13px; font-weight:bold; text-decoration:none; border: 1px solid #10b981; padding: 3px 8px; border-radius: 3px;" title="নতুন ট্যাবে ফুলস্ক্রিনে খুলুন">Full Screen / New Tab ↗</a>
                     </div>
-                    <button class="btn-clear" onclick="document.getElementById('pdfViewerContainer').style.display='none'" style="padding: 4px 10px; font-size: 12px; border-color:var(--netra-red); color:var(--netra-red);">PDF বন্ধ করুন ✖</button>
+                    <button class="btn-clear" onclick="document.getElementById('pdfViewerContainer').style.display='none'" style="padding: 4px 10px; font-size: 13px; border-color:var(--netra-red); color:var(--netra-red);">PDF বন্ধ করুন ✖</button>
                 </div>
                 <iframe id="pdfIframe" style="width: 100%; height: 600px; border: none; background: #fff;"></iframe>
             </div>
@@ -308,6 +373,8 @@
     </div>
 
     <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
         const jsonFileName = 'Procurement_Database.json';
         let currentFilteredData = [];
         let activeRuleKey = null; 
@@ -317,6 +384,7 @@
 
         const colorPrimary = '#38bdf8', colorSecondary = '#1e3a8a', colorAccent = '#60a5fa', colorAlert = '#dc2626';     
         Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = '#1e3a5f';
+        Chart.defaults.font.family = "'Li Ador', 'Hind Siliguri', sans-serif";
 
         let currentPage = 1;
         const rowsPerPage = 50;
@@ -453,7 +521,7 @@
                 
                 let pdfFiles = [];
                 if (t.Source_Files_Merged) {
-                    pdfFiles = String(t.Source_Files_Merged).split('|').map(f => f.trim()).filter(f => f);
+                    pdfFiles = String(t.Source_Files_Merged).split(/\||,|;/).map(f => f.trim()).filter(f => f.toLowerCase().endsWith('.pdf'));
                 } else if(t.Source_File) {
                     pdfFiles = [String(t.Source_File).trim()];
                 }
@@ -471,7 +539,7 @@
                     <td><span class="risk-badge ${riskClass}">${t.Risk_Level||'N/A'}</span></td>
                     <td style="text-align: right; font-family: monospace; font-weight: bold; color: #fff;">${formatCurrency(t.Contract_Value_BDT)}</td>
                     <td style="line-height: 1.4; padding-right:15px;">${t._findings.html} ${verifyBtn}</td>
-                    <td style="font-size: 11.5px; color: #38bdf8; font-weight: 600;">${t._findings.rulesHtml}</td>
+                    <td style="font-size: 13px; color: #38bdf8; font-weight: 600;">${t._findings.rulesHtml}</td>
                     <td>${pdfHtml}</td>
                 </tr>`;
             }).join('');
@@ -523,13 +591,13 @@
             ['owner','split','cpv','tailored','monopoly','outlier','meeting','rigging'].forEach(key => document.getElementById('count-'+key).innerText = v[key].toLocaleString());
 
             const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-            const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:10}} } } };
+            const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:11, family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
 
             if(violationChartObj) violationChartObj.destroy();
             violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: colorSecondary }] }, options: barY });
 
             if(dropoutChartObj) dropoutChartObj.destroy();
-            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } } } });
+            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
 
             const sTop5 = (obj) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(syndicateChartObj) syndicateChartObj.destroy();
@@ -537,16 +605,15 @@
 
             const sD = Object.keys(dates).sort();
             if(timelineChartObj) timelineChartObj.destroy();
-            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: colorAlert, fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: colorSecondary }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff'}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
+            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: colorAlert, fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: colorSecondary }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
 
-            const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: '#f8fafc'} } } };
+            const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
             if(riskPieChartObj) riskPieChartObj.destroy(); riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth:0 }] }, options: pieOpts });
             if(agencyChartObj) agencyChartObj.destroy(); agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: colorSecondary }] }, options: barY });
         }
 
-        // --- SMART SNIPPET EXTRACTOR (Bulletproof Highlight) ---
+        // --- SMART SNIPPET EXTRACTOR ---
         function getHighlightedSnippet(fullText, keyword) {
-            // কমা বা স্পেস ইগনোর করে ডাইনামিক সার্চ
             const cleanKeyword = keyword.toString().replace(/,/g, '');
             const regex = new RegExp(`.{0,100}${cleanKeyword}.{0,100}`, 'gi'); 
             const match = fullText.replace(/,/g, '').match(regex);
@@ -554,21 +621,38 @@
             if (match && match[0]) {
                 let snippet = match[0];
                 const highlightRegex = new RegExp(`(${cleanKeyword})`, 'gi');
-                snippet = snippet.replace(highlightRegex, `<mark style="background: #eab308; color: #000; font-weight: 900; font-size: 15px; padding: 2px 6px; border-radius: 3px; box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);">$&</mark>`);
+                snippet = snippet.replace(highlightRegex, `<mark style="background: #eab308; color: #000; font-weight: 900; font-size: 16px; padding: 2px 6px; border-radius: 3px; box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);">$&</mark>`);
                 return `"... ${snippet} ..."`;
             }
-            return `<span style="color:var(--netra-red);">পিডিএফ থেকে টেক্সট পড়া গেছে, কিন্তু হুবহু "${keyword}" শব্দটি মেলেনি (সম্ভবত স্ক্যান করা ছবি)।</span>`;
+            return `<span style="color:var(--netra-red);">পিডিএফ থেকে টেক্সট পড়া গেছে, কিন্তু হুবহু "${keyword}" শব্দটি মেলেনি।</span>`;
         }
 
         async function extractTextFromPDF(pdfUrl) {
             try {
                 const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
                 let text = '';
+                
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const content = await page.getTextContent();
                     text += content.items.map(item => item.str).join(' ') + '\n';
                 }
+                
+                // OCR Fallback for Scanned Documents
+                if (text.trim().length < 50 && window.Tesseract) {
+                    const page = await pdf.getPage(1);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                    
+                    const { data } = await Tesseract.recognize(canvas, 'eng+ben');
+                    text = data.text;
+                }
+                
                 return text.toLowerCase();
             } catch (error) { return null; }
         }
@@ -623,7 +707,7 @@
             // --- Live PDF Fact Checking & Smart Snippet ---
             let pdfFiles = [];
             if (t.Source_Files_Merged) {
-                pdfFiles = String(t.Source_Files_Merged).split('|').map(f => f.trim()).filter(f => f);
+                pdfFiles = String(t.Source_Files_Merged).split(/\||,|;/).map(f => f.trim()).filter(f => f.toLowerCase().endsWith('.pdf'));
             } else if (t.Source_File) {
                 pdfFiles = [String(t.Source_File).trim()];
             }
@@ -641,7 +725,7 @@
 
                 btnContainer.innerHTML = `
                     <div style="background: rgba(56, 189, 248, 0.1); padding: 15px; border-radius: 5px; border: 1px dashed var(--neon-blue); margin-top: 15px;">
-                        <span style="color:var(--neon-blue); font-weight:bold;">⏳ Scanning Original PDF for live verification...</span>
+                        <span style="color:var(--neon-blue); font-weight:bold; font-size:15px;">⏳ Scanning Original PDF (Applying AI OCR for scanned images)...</span>
                     </div>
                 `;
 
@@ -650,27 +734,43 @@
                 if (livePdfText) {
                     const snippetHtml = getHighlightedSnippet(livePdfText, keywordToSearch);
                     
+                    let buttonsHtml = '';
+                    pdfFiles.forEach((file, i) => {
+                        let label = i === 0 ? (pdfFiles.length > 1 ? '📄 Notice PDF' : '📄 অরিজিনাল PDF') : '📄 NOA PDF';
+                        buttonsHtml += `<button class="btn-highlight" style="margin: 5px;" onclick="showPdfInModal('${file}', '${keywordToSearch}')">${label} ওপেন করুন</button>`;
+                    });
+
                     btnContainer.innerHTML = `
                         <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 5px; border: 1px solid #10b981; margin-top: 15px; text-align: left;">
-                            <strong style="color: #10b981; font-size: 14px;">✅ AI Extracted Proof from Original PDF:</strong><br>
-                            <div style="margin-top: 10px; font-style: italic; color: #fff; font-size: 15px; line-height: 1.8; background: #000; padding: 15px; border-radius: 5px; border-left: 4px solid #eab308;">
+                            <strong style="color: #10b981; font-size: 16px;">✅ AI Extracted Proof from PDF:</strong><br>
+                            <div style="margin-top: 10px; font-style: italic; color: #fff; font-size: 16px; line-height: 1.8; background: #000; padding: 15px; border-radius: 5px; border-left: 4px solid #eab308;">
                                 ${snippetHtml}
                             </div>
                             <div style="margin-top: 15px; text-align: center;">
-                                <button class="btn-highlight" onclick="showPdfInModal('${pdfFilename}', '${keywordToSearch}')">
-                                    📄 অরিজিনাল PDF ফাইল ওপেন করুন
-                                </button>
+                                ${buttonsHtml}
                             </div>
                         </div>
                     `;
                 } else {
-                    btnContainer.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">⚠️ PDF extraction failed (Document may be a scanned image).</span>`;
+                    btnContainer.innerHTML = `<span style="color:var(--text-muted); font-size:14px;">⚠️ PDF extraction failed (Document may be corrupted).</span>`;
                 }
             } else {
-                btnContainer.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">⚠️ এই টেন্ডারের কোনো অরিজিনাল PDF ফাইল ডেটাবেসে সংযুক্ত নেই।</span>`;
+                btnContainer.innerHTML = `<span style="color:var(--text-muted); font-size:14px;">⚠️ এই টেন্ডারের কোনো অরিজিনাল PDF ফাইল ডেটাবেসে সংযুক্ত নেই।</span>`;
             }
 
             document.getElementById('inspectorModal').style.display = 'flex';
+        }
+
+        function downloadCSV() {
+            if(!currentFilteredData.length) return alert("No data available to export.");
+            let csv = "\uFEFFTender_ID,Agency,Supplier,Risk,Value_BDT,Detected_Findings,Violated_Rules\n";
+            currentFilteredData.forEach(r => {
+                csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${(r.Supplier_Name||"").replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},"${r._findings.csv.replace(/"/g, '""')}","${r._findings.rulesCsv.replace(/"/g, '""')}"\n`;
+            });
+            const link = document.createElement("a");
+            link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
+            link.download = "eGP_Forensic_Audit_Data.csv";
+            link.click();
         }
 
         init();
