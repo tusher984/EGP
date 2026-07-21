@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-GP Syndicate Tracker | Data Lab (Optimized)</title>
+    <title>e-GP Syndicate Tracker | Massive Data Lab</title>
     <!-- Free Open Source Charting Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -104,7 +104,7 @@
         .btn-verify { background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.2s;}
         .btn-verify:hover { background-color: var(--neon-blue); color: var(--dark-bg); }
 
-        /* MODAL (POPUP) STYLES */
+        /* MODAL STYLES */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); animation: modalFadeIn 0.3s; }
         @keyframes modalFadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
@@ -128,7 +128,7 @@
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="transparency-note">
-                <strong>স্বচ্ছতা গ্যারান্টি (Transparency Note):</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত (Public) ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি। কোনো মনগড়া তথ্য এখানে নেই। প্রতিটি দুর্নীতির প্রমাণের পাশে থাকা <strong>"🔍 প্রমাণ যাচাই"</strong> বাটনে ক্লিক করে আপনি নিজেই সরকারি নথির আসল লেখা (Raw Data) এবং আইনের লঙ্ঘনটি মিলিয়ে দেখতে পারবেন।
+                <strong>স্বচ্ছতা গ্যারান্টি (Transparency Note):</strong> এই সিস্টেমটি সম্পূর্ণ ওপেন-সোর্স এবং ই-জিপি পোর্টাল থেকে প্রাপ্ত উন্মুক্ত (Public) ডেটা গাণিতিক বিশ্লেষণের মাধ্যমে তৈরি।
             </div>
         </header>
 
@@ -223,7 +223,7 @@
             </div>
         </div>
 
-        <!-- চার্ট গ্রিড (৯টি চার্ট) -->
+        <!-- চার্ট গ্রিড -->
         <div class="chart-grid">
             <div class="chart-box">
                 <h3>দুর্নীতির ধরন (Macro-analysis)</h3>
@@ -263,7 +263,7 @@
             </div>
         </div>
 
-        <!-- এভিডেন্স লেজার (ডেটা টেবিল) -->
+        <!-- এভিডেন্স লেজার -->
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             
@@ -273,7 +273,6 @@
             </div>
 
             <div class="tools-bar">
-                <!-- Debounced input to prevent lag -->
                 <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="debouncedFilter()">
                 <select id="riskFilter" onchange="triggerFilter()">
                     <option value="ALL">সব ঝুঁকি (All Risks)</option>
@@ -299,12 +298,11 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr><td colspan="8" style="text-align: center; color: #777; padding: 30px;">Loading Audit Data...</td></tr>
+                        <tr><td colspan="8" style="text-align: center; color: #777; padding: 30px;">Loading Audit Data via Background Worker...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Optimized Pagination Controls -->
             <div class="pagination" id="paginationControls" style="display:none;">
                 <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">&#8592; Previous</button>
                 <span class="page-info">Page <strong id="currentPageLabel">1</strong> of <strong id="totalPagesLabel">1</strong> (<span id="totalRowsLabel">0</span> records)</span>
@@ -363,8 +361,7 @@
 
     <script>
         const jsonFileName = 'Procurement_Database.json';
-        let globalTenderData = []; 
-        let filteredDataCache = []; // Caches current filtered view for pagination
+        let currentFilteredData = [];
         let activeRuleKey = null; 
         
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
@@ -384,6 +381,7 @@
         const rowsPerPage = 50;
         let searchDebounceTimer = null;
 
+        // UI Rule Dict
         const RULE_DETAILS = {
             owner: { title: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক। স্বার্থের সংঘাত ঠেকাতে এই রুল তৈরি হয়েছে।", penalty: "টেন্ডার বাতিল ও কালোতালিকাভুক্তি।" },
             split: { title: "PPA 2006 Section 17 – Artificial Contract Splitting", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।", penalty: "বিভাগীয় ব্যবস্থা এবং টেন্ডার বাতিল।" },
@@ -395,7 +393,6 @@
             rigging: { title: "Competition Act 2012 / Bid Rigging", enacted: "২০১২ (প্রতিযোগিতা আইন)", purpose: "শিডিউল কিনে জমা না দেওয়া সিন্ডিকেশনের প্রমাণ।", penalty: "জরিমানা ও ডিবরমেন্ট।" }
         };
 
-        // UI Helpers
         function showModal(ruleKey) {
             const data = RULE_DETAILS[ruleKey];
             if(data) {
@@ -409,24 +406,8 @@
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
         window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
 
-        // Data Parsers
-        const safeStr = (val) => (val ? String(val).toLowerCase() : "");
-        const safeNum = (val) => {
-            if (!val) return 0;
-            if (typeof val === 'number') return val;
-            return parseFloat(String(val).replace(/,/g, '')) || 0;
-        };
-        function parseBDT(str) {
-            if (!str) return 0;
-            let s = String(str).toLowerCase().replace(/,/g, '');
-            let val = parseFloat(s.match(/[\d\.]+/)?.[0]) || 0;
-            if (s.includes('crore') || s.includes('core')) val *= 10000000;
-            else if (s.includes('lac') || s.includes('lakh')) val *= 100000;
-            return val;
-        }
-        function extractCleanAgencyName(agencyString) {
-            return agencyString ? agencyString.replace(/Procuring Entity.*/i, '').trim() : "Unknown Agency";
-        }
+        const safeNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
+        function extractCleanAgencyName(agencyString) { return agencyString ? agencyString.replace(/Procuring Entity.*/i, '').trim() : "Unknown Agency"; }
         function formatCurrency(amount) {
             const value = safeNum(amount);
             if (value === 0) return '-';
@@ -435,94 +416,48 @@
             return value.toLocaleString('en-IN');
         }
 
-        // Engine Logic (Remains identical but only called ONCE per record)
-        function analyzeEligibilityAI(text, reasonsArray = []) {
-            if (!text) return false;
-            let score = 0, t = safeStr(text);
-            if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) { score += 50; reasonsArray.push("অস্বাভাবিক দশমিক সংখ্যার অভিজ্ঞতা।"); }
-            if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|chittagong|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং (Geofencing)।"); }
-            if (/\b(rajuk|cda|kda|rda|coxda|gda|pwd|lged|city corporation|petrobangla)\b/i.test(t)) { score += 20; reasonsArray.push("নির্দিষ্ট সংস্থার (Authority Locking) নাম।"); }
-            if (t.includes("single contract") || t.includes("একক চুক্তি")) { score += 20; reasonsArray.push("'Single Contract' লকিং।"); }
-            if (/(last 1 year|within 12 months|১ বছরের মধ্যে|last 2 years)/i.test(t)) { score += 20; reasonsArray.push("স্বল্প সময়ের অভিজ্ঞতা।"); }
-            return score >= 50; 
+        // --- WEB WORKER INITIALIZATION ---
+        let dataWorker;
+        if (window.Worker) {
+            dataWorker = new Worker('worker.js');
+        } else {
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--netra-red);">Your browser does not support Web Workers.</td></tr>`;
         }
 
-        function getDynamicFindings(t) {
-            let findingsList = [], ruleKeys = [];
-            const fullText = Object.values(t).map(v => safeStr(v)).join(" ");
-            const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria);
-            const desc = safeStr(t.Brief_Description_of_Works || t.Brief_Description_of_Goods_and_Related_Service), pkgNo = safeStr(t.Invitation_Reference || t.Package_No);
-            const sold = safeNum(t.Tenders_Sold), recv = safeNum(t.Tenders_Received), resp = safeNum(t.Responsive_Tenders), val = safeNum(t.Contract_Value_BDT), docPrice = safeNum(t.Document_Price_BDT);
+        dataWorker.onmessage = function(e) {
+            const { action, data } = e.data;
+            if (action === 'DATA_READY' || action === 'FILTER_COMPLETE') {
+                currentFilteredData = data;
+                updateSummaries(currentFilteredData);
+                updateAdvancedAnalysis(currentFilteredData);
+                updateDynamicCharts(currentFilteredData);
+                currentPage = 1; 
+                renderTablePage();
+            }
+        };
 
-            if (/beneficial owner missing/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") { findingsList.push({ name: "Beneficial Owner Hidden", ev: "মালিকানা গোপন।" }); ruleKeys.push('owner'); }
-            if (/split|artificial/i.test(rReason) || /\(lot-[0-9a-z]+\)|part-[0-9a-z]+/i.test(desc) || /\(lot-[0-9a-z]+\)/i.test(pkgNo)) { findingsList.push({ name: "Artificial Splitting", ev: "লটে বিভাজন।" }); ruleKeys.push('split'); }
-            if (/cpv manipulation/i.test(rReason) || (safeStr(t.CPV_Code).includes("000000")) || (docPrice > 0 && docPrice <= 50 && val > 1000000)) { findingsList.push({ name: "Metadata Manipulated", ev: "ভুল CPV বা অস্বাভাবিক ফি।" }); ruleKeys.push('cpv'); }
-            
-            let isTailored = false, tailoredEv = [];
-            let reqTurnover = parseBDT(t.Extracted_Turnover), reqLiq = parseBDT(t.Extracted_Liquid_Assets);
-            if (reqLiq > 0 && reqTurnover > 0 && reqLiq >= reqTurnover) { isTailored = true; tailoredEv.push(`লিকুইড মানি টার্নওভারের সমান।`); }
-            if (analyzeEligibilityAI(exp, tailoredEv) || /tailored/i.test(rReason)) { isTailored = true; if(tailoredEv.length===0) tailoredEv.push("অস্বাভাবিক শর্ত।"); }
-            if (isTailored) { findingsList.push({ name: "Tailored Criteria", ev: tailoredEv.join(" ") }); ruleKeys.push('tailored'); }
-
-            if (resp === 1 && recv === 1 && sold === 1) { findingsList.push({ name: "Zero Competition", ev: "মাত্র ১ জন জমা ও কাজ পেয়েছে।" }); ruleKeys.push('monopoly'); } 
-            else if (resp === 1 || /single responsive/i.test(rReason)) { findingsList.push({ name: "Monopoly", ev: "মাত্র ১ জনকে যোগ্য করা হয়েছে।" }); ruleKeys.push('monopoly'); }
-
-            const valStr = String(t.Contract_Value_BDT || "");
-            if (valStr.includes('.') && valStr.split('.')[1].length >= 3 && val > 100000) { findingsList.push({ name: "Engineered Match", ev: `৩-ডিজিটের ভগ্নাংশ।` }); ruleKeys.push('outlier'); }
-            else if (/(outlier|abnormal|alb)/i.test(fullText)) { findingsList.push({ name: "Abnormal Bid", ev: "অস্বাভাবিক দর।" }); ruleKeys.push('outlier'); }
-
-            let adDate = new Date(t.Advertised_Date), closeDate = new Date(t.Tender_Valid_Up_To), noaDate = new Date(t.Notification_of_Award_Date), signDate = new Date(t.Contract_Signing_Date);
-            if (!isNaN(adDate) && !isNaN(closeDate) && Math.ceil((closeDate - adDate) / 86400000) <= 14) { findingsList.push({ name: "Rush Tender", ev: "<১৪ দিনে টেন্ডার ক্লোজ।" }); ruleKeys.push('meeting'); }
-            else if (!isNaN(noaDate) && !isNaN(signDate) && Math.ceil((signDate - noaDate) / 86400000) <= 3) { findingsList.push({ name: "Lightning Execution", ev: "৩ দিনে চুক্তি স্বাক্ষর।" }); ruleKeys.push('meeting'); }
-
-            if (sold > 0 && recv > 0 && sold >= (recv * 1.5) && sold >= 3) { findingsList.push({ name: "High Dropout (Rigging)", ev: `কিনেছে ${sold}, জমা ${recv}।` }); ruleKeys.push('rigging'); }
-
-            if (findingsList.length === 0 && t.Red_Flag_Reason && !['no significant issue detected', 'clean', '-'].includes(rReason)) findingsList.push({ name: t.Red_Flag_Reason, ev: "সিস্টেম ফ্ল্যাগ।" });
-
-            let html = findingsList.length > 0 ? findingsList.map(f => `<strong style="color:#fca5a5; display:block; margin-bottom:2px;">${f.name}</strong><span style="color:#94a3b8; font-size:11px; line-height:1.4; display:block;"><i>প্রমাণ: ${f.ev}</i></span>`).join("<div style='margin-bottom:8px;'></div>") : "-";
-            let csv = findingsList.length > 0 ? findingsList.map(f => `${f.name} (Proof: ${f.ev})`).join(" + ") : "-";
-            let uniqueRules = [...new Set(ruleKeys)];
-            let rulesHtml = uniqueRules.length > 0 ? uniqueRules.map(key => `<span class="clickable-rule" onclick="showModal('${key}')">${RULE_DETAILS[key].title.split('–')[0].trim()} ↗</span>`).join("<br><br>") : "-";
-
-            return { html, csv, rulesHtml, keys: { owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') } };
-        }
-
-        // --- OPTIMIZATION 1: PRE-COMPUTE ON LOAD ---
         async function init() {
             try {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #38bdf8; padding: 30px;">Loading and transferring 50k+ records to Background Worker...</td></tr>`;
                 const res = await fetch(jsonFileName);
                 if (!res.ok) throw new Error("File not found");
                 const data = await res.json();
-                
                 const rawArray = data.Merged_Database || data;
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #38bdf8; padding: 30px;">Optimizing ${rawArray.length} records in memory...</td></tr>`;
-                
-                // Pre-compute everything (O(N) operation runs only once)
-                setTimeout(() => {
-                    globalTenderData = rawArray.map(t => {
-                        t._findings = getDynamicFindings(t);
-                        t._searchStr = Object.values(t).map(v => safeStr(v)).join(' '); // Search Index
-                        return t;
-                    });
-                    triggerFilter(); 
-                }, 100); // Allow DOM to paint loading message
-
+                dataWorker.postMessage({ action: 'INIT_DATA', payload: rawArray });
             } catch (err) {
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--netra-red);">ডেটা লোড করা যায়নি। লোকাল ফোল্ডারে JSON ফাইলটি রাখুন বা Live Server ব্যবহার করুন।</td></tr>`;
             }
         }
 
-        // --- OPTIMIZATION 3: DEBOUNCED SEARCH ---
         function debouncedFilter() {
             clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(() => {
-                triggerFilter();
-            }, 300); // Wait 300ms after user stops typing
+            searchDebounceTimer = setTimeout(() => { triggerFilter(); }, 300); 
         }
 
         function triggerFilter() {
-            currentPage = 1; // Reset to page 1 on new search
-            executeFilterAndRender();
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const risk = document.getElementById('riskFilter').value;
+            dataWorker.postMessage({ action: 'APPLY_FILTER', payload: { term, risk, activeRuleKey } });
         }
 
         function filterByRule(ruleKey, element) {
@@ -542,36 +477,15 @@
             triggerFilter();
         }
 
-        // --- CORE FILTER EXECUTION (Uses Pre-computed cache) ---
-        function executeFilterAndRender() {
-            const term = safeStr(document.getElementById('searchInput').value);
-            const risk = document.getElementById('riskFilter').value;
-            
-            // O(N) filter over pre-computed strings (Blazing Fast even for 50k)
-            filteredDataCache = globalTenderData.filter(t => {
-                if (risk !== 'ALL' && t.Risk_Level !== risk) return false;
-                if (term && !t._searchStr.includes(term)) return false;
-                if (activeRuleKey && t._findings.keys[activeRuleKey] !== true) return false;
-                return true;
-            });
-            
-            updateSummaries(filteredDataCache);
-            updateAdvancedAnalysis(filteredDataCache);
-            updateDynamicCharts(filteredDataCache);
-            renderTablePage();
-        }
-
-        // --- OPTIMIZATION 2 & 4: PAGINATION & BATCH DOM RENDERING ---
         function renderTablePage() {
             const tbody = document.getElementById('tableBody');
-            const totalRows = filteredDataCache.length;
+            const totalRows = currentFilteredData.length;
             const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
             
-            // Bounds checking
             if(currentPage < 1) currentPage = 1;
             if(currentPage > totalPages) currentPage = totalPages;
 
-            document.getElementById('totalRowsLabel').innerText = totalRows;
+            document.getElementById('totalRowsLabel').innerText = totalRows.toLocaleString();
             document.getElementById('currentPageLabel').innerText = currentPage;
             document.getElementById('totalPagesLabel').innerText = totalPages;
             
@@ -586,9 +500,8 @@
             }
 
             const startIdx = (currentPage - 1) * rowsPerPage;
-            const pageData = filteredDataCache.slice(startIdx, startIdx + rowsPerPage);
+            const pageData = currentFilteredData.slice(startIdx, startIdx + rowsPerPage);
             
-            // Batch HTML creation to prevent DOM thrashing
             const htmlArray = pageData.map(t => {
                 let riskClass = t.Risk_Level === 'HIGH' ? 'risk-high' : (t.Risk_Level === 'MEDIUM' ? 'risk-medium' : 'risk-low');
                 let org = extractCleanAgencyName(t.Organization_Agency);
@@ -619,7 +532,6 @@
                 `;
             });
 
-            // Single DOM write
             tbody.innerHTML = htmlArray.join('');
         }
 
@@ -629,7 +541,7 @@
             document.getElementById('tenderTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Analysis Updates (Now using Pre-computed _findings)
+        // Fast Aggregation on Main Thread (Takes <10ms even for 50k items)
         function updateSummaries(data) {
             document.getElementById('totalContracts').innerText = data.length.toLocaleString();
             let highRiskValue = 0, missingOwnerCount = 0;
@@ -639,7 +551,7 @@
             });
             let unit = highRiskValue >= 1000000000 ? (highRiskValue/1000000000).toFixed(2) + " বিলিয়ন" : (highRiskValue/10000000).toFixed(2) + " কোটি";
             document.getElementById('totalValue').innerText = "৳" + unit;
-            document.getElementById('totalOwnersMissing').innerText = missingOwnerCount + " টি";
+            document.getElementById('totalOwnersMissing').innerText = missingOwnerCount.toLocaleString() + " টি";
         }
 
         function updateAdvancedAnalysis(data) {
@@ -647,7 +559,7 @@
             let tailoredCount = 0, rushCount = 0;
 
             data.forEach(t => {
-                if(t.Supplier_Name && t.Organization_Agency && safeStr(t.Tender_Status).includes("awarded")) {
+                if(t.Supplier_Name && t.Organization_Agency && (t.Tender_Status || "").toLowerCase().includes("awarded")) {
                     let key = extractCleanAgencyName(t.Organization_Agency) + "|||" + String(t.Supplier_Name).split('(')[0].trim();
                     if(!nexus[key]) nexus[key] = { count: 0 };
                     nexus[key].count++;
@@ -668,8 +580,8 @@
                 nBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">পর্যাপ্ত ডেটা পাওয়া যায়নি</td></tr>`;
             }
 
-            document.getElementById('tailoredCriteriaCount').innerText = `${tailoredCount} টি টেন্ডার`;
-            document.getElementById('rushJobsCount').innerText = `${rushCount} টি টেন্ডার`; 
+            document.getElementById('tailoredCriteriaCount').innerText = `${tailoredCount.toLocaleString()} টি টেন্ডার`;
+            document.getElementById('rushJobsCount').innerText = `${rushCount.toLocaleString()} টি টেন্ডার`; 
         }
 
         function updateDynamicCharts(data) {
@@ -679,7 +591,6 @@
             let highCount = 0, medCount = 0, lowCount = 0;
             let hVal = 0, mVal = 0, lVal = 0;
             
-            // Single loop to gather ALL chart data
             data.forEach(t => {
                 const k = t._findings.keys;
                 if (k.owner) vCounts.owner++; if (k.split) vCounts.split++; if (k.cpv) vCounts.cpv++;
@@ -712,12 +623,10 @@
                 }
             });
 
-            // Update DOM Counts
             ['owner','split','cpv','tailored','monopoly','outlier','meeting','rigging'].forEach(key => {
-                document.getElementById('count-'+key).innerText = vCounts[key];
+                document.getElementById('count-'+key).innerText = vCounts[key].toLocaleString();
             });
 
-            // Re-render Charts (Destroy and recreate to clear canvas)
             const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
             const barOptsY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:10}} } } };
 
@@ -756,9 +665,9 @@
             riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hVal, mVal, lVal], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] }, options: pieOpts });
         }
 
-        // Inspector Modal (Uses Cached Data)
+        // Inspector Modal
         function showDataInspector(tenderId) {
-            const t = globalTenderData.find(x => x.Tender_Proposal_ID == tenderId);
+            const t = currentFilteredData.find(x => x.Tender_Proposal_ID == tenderId);
             if(!t) return;
 
             document.getElementById('insID').innerText = t.Tender_Proposal_ID || "N/A";
@@ -795,10 +704,10 @@
         }
 
         function downloadCSV() {
-            if(!filteredDataCache.length) return alert("No data available to export.");
+            if(!currentFilteredData.length) return alert("No data available to export.");
             let csv = "\uFEFF" + "Tender_ID,Agency,Supplier,Risk,Value_BDT,Detected_Findings_With_Evidence,Violated_Rules\n";
-            filteredDataCache.forEach(r => {
-                csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${safeStr(r.Supplier_Name).replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},"${r._findings.csv.replace(/"/g, '""')}","${r._findings.rulesCsv.replace(/"/g, '""')}"\n`;
+            currentFilteredData.forEach(r => {
+                csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${(r.Supplier_Name||"").replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},"${r._findings.csv.replace(/"/g, '""')}","${r._findings.rulesCsv.replace(/"/g, '""')}"\n`;
             });
             const link = document.createElement("a");
             link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
