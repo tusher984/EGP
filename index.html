@@ -8,13 +8,13 @@
     <style>
         /* Premium Dark Black & Deep Blue Theme Layout */
         :root {
-            --dark-bg: #080c14;      /* Pure Investigative Dark Black */
-            --dark-card: #111827;    /* Deep Charcoal Gray/Navy for Cards */
-            --netra-red: #cc0000;    /* Crimson Red Alert */
-            --neon-blue: #38bdf8;    /* High Contrast Neon Text */
-            --text-light: #f8fafc;   /* White for primary text */
-            --text-muted: #94a3b8;   /* Muted Slate Gray */
-            --border-dark: #1e293b;  /* Subtle Card Borders */
+            --dark-bg: #080c14;
+            --dark-card: #111827;
+            --netra-red: #cc0000;
+            --neon-blue: #38bdf8;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-dark: #1e293b;
         }
         
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--dark-bg); color: var(--text-light); margin: 0; padding: 0; line-height: 1.6; }
@@ -37,17 +37,7 @@
         .evidence-item strong { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; color: #ffffff; margin-bottom: 6px; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; }
         .evidence-item p { margin: 0; font-size: 13px; color: var(--text-muted); text-align: justify; }
 
-        .rule-count { 
-            background-color: var(--netra-red); 
-            color: white; 
-            font-size: 11px; 
-            font-weight: 800; 
-            padding: 2px 8px; 
-            border-radius: 12px; 
-            box-shadow: 0 0 5px rgba(204, 0, 0, 0.5);
-            min-width: 20px;
-            text-align: center;
-        }
+        .rule-count { background-color: var(--netra-red); color: white; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 12px; box-shadow: 0 0 5px rgba(204, 0, 0, 0.5); min-width: 20px; text-align: center; }
 
         /* Summary Cards */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
@@ -175,7 +165,7 @@
                 <p>কাজ পেয়েছে শীর্ষ ১০ সিন্ডিকেট</p>
             </div>
             <div class="card alert-card">
-                <h2>১,১৫৮ টি</h2>
+                <h2 id="totalOwnersMissing">০ টি</h2>
                 <p>মালিকানার তথ্য গোপন</p>
             </div>
             <div class="card alert-card">
@@ -256,7 +246,7 @@
             </div>
             <div class="chart-box">
                 <h3>৭. অনিয়মের প্রধান হাতিয়ার</h3>
-                <p class="chart-desc">অডিট ডাই纳米িক ডেটা অনুসারে সবচেয়ে বেশি ব্যবহৃত ভায়োলেশন কোড</p>
+                <p class="chart-desc">অডিট ডাইনামিক ডেটা অনুসারে সবচেয়ে বেশি ব্যবহৃত ভায়োলেশন কোড</p>
                 <div class="chart-container"><canvas id="redFlagChart"></canvas></div>
                 <div class="chart-explanation"><strong>কী নির্দেশ করে:</strong> ইনভেস্টিগেশনে ফিল্টার করা ডেটায় সবচেয়ে বেশি কোন অপরাধের কারণে টেন্ডারগুলো ফ্ল্যাগড বা ঝুঁকিপূর্ণ হয়েছে।</div>
             </div>
@@ -278,7 +268,6 @@
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             
-            <!-- Active Rule Banner -->
             <div class="active-filter-banner" id="filterBanner">
                 <span id="bannerText" style="color: var(--neon-blue); font-weight: bold;"></span>
                 <button class="btn-clear" onclick="resetRuleFilter()">ফিল্টার সরান (Show All)</button>
@@ -304,8 +293,8 @@
                             <th>Contractor / Supplier</th>
                             <th style="width: 60px;">Risk</th>
                             <th style="text-align: right;">Value (৳)</th>
-                            <th>Finding</th>
-                            <th>Violated Rule</th>
+                            <th>Detected Findings</th>
+                            <th>Violated Rules</th>
                             <th style="width: 100px;">Documents</th>
                         </tr>
                     </thead>
@@ -337,92 +326,114 @@
         // LEGAL RULE DICTIONARY
         const RULE_MAP = {
             owner: ["e-PG3 ITT 5.14 – Beneficial Ownership Disclosure"],
-            monopoly: ["e-PG3 ITT 50.6 – Lack of Effective Competition", "e-PG3 ITT 56.2(b) – Rejection and Re-tender"],
-            split: ["PPA 2006 – Artificial Contract Splitting", "PPR 2008 Rule 17"],
-            cpv: ["EU CPV Regulation", "OECD Good Procurement Practice"],
-            tailored: ["PPR 2008 Rule 98 – Restrictive Qualification Criteria", "World Bank Reg 5.31"],
+            monopoly: ["e-PG3 ITT 50.6 – Lack of Effective Competition"],
+            split: ["PPA 2006 – Artificial Contract Splitting"],
+            cpv: ["EU CPV Regulation (Mismatched Code)"],
+            tailored: ["PPR 2008 Rule 98 – Restrictive Qualification Criteria"],
             meeting: ["PPR Schedule – Minimum Tender Preparation Time"],
-            outlier: ["World Bank ALB Guideline – Abnormally Low Bids"],
-            rigging: ["OECD Guidelines for Fighting Bid Rigging", "Competition Act"]
+            outlier: ["World Bank ALB Guideline – Abnormally Low/High Bids"],
+            rigging: ["OECD Guidelines for Fighting Bid Rigging"]
         };
 
-        // CENTRALIZED FORENSIC INSPECTION ENGINE
-        // Scans Red_Flag_Reason, Eligibility Criteria, Specific Experience, CPVs, Dropouts, Dates, and Prices
-        function detectTenderViolations(t) {
-            const v = { owner: false, split: false, cpv: false, tailored: false, monopoly: false, outlier: false, meeting: false, rigging: false };
-            
+        // NEW: FULLY INDEPENDENT FORENSIC ENGINE
+        // Analyzes numbers and dates directly, overriding the JSON's Red_Flag_Reason
+        function getDynamicFindings(t) {
+            let findings = [];
+            let rules = [];
+
             const rReason = (t.Red_Flag_Reason || "").toLowerCase();
             const exp = (t.Extracted_Specific_Experience || t.Eligibility_Criteria || t.Qualification_Criteria || t.Eligibility || "").toLowerCase();
             const cpvText = (t.CPV_Code || t.CPV_Category || t.Procurement_Category || "").toLowerCase();
-            const riskLvl = (t.Risk_Level || "").toUpperCase();
             
-            const sold = parseInt(t.Tenders_Sold) || 0;
-            const recv = parseInt(t.Tenders_Received) || 0;
-            const resp = parseInt(t.Responsive_Tenders) || 0;
-            const val = parseFloat(t.Contract_Value_BDT) || 0;
-            const est = parseFloat(t.Official_Estimated_Cost) || 0;
+            const sold = parseInt(t.Tenders_Sold);
+            const recv = parseInt(t.Tenders_Received);
+            const resp = parseInt(t.Responsive_Tenders);
+            const val = parseFloat(t.Contract_Value_BDT);
+            const est = parseFloat(t.Official_Estimated_Cost);
 
-            // 1. Beneficial Owner Missing
-            if (/owner|beneficial|গোপন|itt\s*5\.14|missing owner/i.test(rReason) || (riskLvl === 'HIGH' && /itt/i.test(rReason))) {
-                v.owner = true;
+            // 1. Owner info check
+            if (/owner|beneficial|গোপন|itt\s*5\.14|missing owner/i.test(rReason) || t.Beneficial_Owner === false || t.Beneficial_Owner === "Missing") {
+                findings.push("Beneficial Owner Info Hidden");
+                rules.push(...RULE_MAP.owner);
             }
 
-            // 2. Artificial Contract Splitting
+            // 2. Splitting Check
             if (/split|lot|বিভাজন|artificial splitting/i.test(rReason) || /multiple lots/i.test(exp)) {
-                v.split = true;
+                findings.push("Artificial Contract Splitting");
+                rules.push(...RULE_MAP.split);
             }
 
-            // 3. CPV Code Manipulation
+            // 3. CPV Match Check
             if (/cpv|vocabulary|ক্যাটাগরি|কোড|mismatch/i.test(rReason) || /unrelated cpv/i.test(cpvText)) {
-                v.cpv = true;
+                findings.push("CPV Category Manipulation");
+                rules.push(...RULE_MAP.cpv);
             }
 
-            // 4. Discriminatory / Tailored Criteria (Reads eligibility criteria & detail strings)
-            if (/\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /criteria|শর্ত|experience|যোগ্যতা|restrictive|tailored|specific experience/i.test(rReason) || /tailored/i.test(exp)) {
-                v.tailored = true;
+            // 4. Tailored Criteria Check (Scanning the text directly)
+            if (/\d+\.\d+/.test(exp) || /\d{2,}\s*\(/.test(exp) || /restrictive|tailored|নির্দিষ্ট/i.test(rReason) || /tailored/i.test(exp)) {
+                findings.push("Tailored Eligibility Criteria");
+                rules.push(...RULE_MAP.tailored);
             }
 
-            // 5. Monopoly Funneling
-            if (resp === 1 || /single|একক|monopoly|50\.6|single bidder/i.test(rReason)) {
-                v.monopoly = true;
+            // 5. Monopoly Data Check (OVERRIDING JSON)
+            if (resp === 1 || /single|একক|monopoly|50\.6/i.test(rReason)) {
+                findings.push("Single Responsive Bidder");
+                rules.push(...RULE_MAP.monopoly);
             }
 
-            // 6. Abnormally Low / High Price Outliers
-            if (/outlier|অস্বাভাবিক|abnormally|low|high|alb/i.test(rReason) || (est > 0 && val > 0 && Math.abs(est - val) / est > 0.20)) {
-                v.outlier = true;
+            // 6. Price Outlier Data Check (OVERRIDING JSON)
+            if (!isNaN(est) && !isNaN(val) && est > 0 && val > 0 && Math.abs(est - val) / est > 0.20) {
+                let dev = ((Math.abs(est - val) / est) * 100).toFixed(1);
+                findings.push(`Price Outlier (${dev}% deviation)`);
+                rules.push(...RULE_MAP.outlier);
+            } else if (/outlier|অস্বাভাবিক|abnormally|low|high|alb/i.test(rReason)) {
+                findings.push("Price Outlier / Abnormal Bid");
+                rules.push(...RULE_MAP.outlier);
             }
 
-            // 7. Pre-Tender Meeting Farce
-            if (/meeting|মিটিং|pre-tender|rush meeting/i.test(rReason)) {
-                v.meeting = true;
+            // 7. Rush Job Data Check (OVERRIDING JSON)
+            let rushJob = false;
+            if(t.Advertised_Date && t.Tender_Valid_Up_To) {
+                let adDate = new Date(t.Advertised_Date);
+                let closeDate = new Date(t.Tender_Valid_Up_To);
+                if(!isNaN(adDate) && !isNaN(closeDate)) {
+                    let diffDays = Math.ceil(Math.abs(closeDate - adDate) / (1000 * 60 * 60 * 24));
+                    if(diffDays < 14) rushJob = true; 
+                }
+            }
+            if (rushJob || /meeting|মিটিং|pre-tender|rush/i.test(rReason)) {
+                findings.push(rushJob ? "< 14 Days Rush Tender" : "Pre-Tender Process Irregularity");
+                rules.push(...RULE_MAP.meeting);
             }
 
-            // 8. Bid Rigging / High Dropout Ratio
-            if ((sold > recv * 1.3 && sold > 3) || /rigging|dropout|collusion|কারসাজি/i.test(rReason)) {
-                v.rigging = true;
+            // 8. Bid Rigging Data Check (OVERRIDING JSON)
+            if ((!isNaN(sold) && !isNaN(recv) && sold > recv * 1.3 && sold >= 3)) {
+                findings.push(`High Dropout Ratio (${sold} sold, ${recv} dropped)`);
+                rules.push(...RULE_MAP.rigging);
+            } else if (/rigging|dropout|collusion|কারসাজি/i.test(rReason)) {
+                findings.push("Bid Rigging / Collusion Risk");
+                rules.push(...RULE_MAP.rigging);
             }
 
-            return v;
-        }
+            // Fallback to JSON reason if we missed something but it wasn't strictly clean
+            if (findings.length === 0 && rReason && !['no significant issue detected', 'clean', '-'].includes(rReason)) {
+                findings.push(t.Red_Flag_Reason);
+            }
 
-        // GLOBAL RULE MAPPER
-        function getViolatedRules(t) {
-            if (Array.isArray(t.Violated_Rules)) return t.Violated_Rules;
-            if (t.Violated_Rule) return [t.Violated_Rule];
-
-            const violations = detectTenderViolations(t);
-            let rules = [];
-
-            if (violations.owner) rules.push(...RULE_MAP.owner);
-            if (violations.split) rules.push(...RULE_MAP.split);
-            if (violations.cpv) rules.push(...RULE_MAP.cpv);
-            if (violations.tailored) rules.push(...RULE_MAP.tailored);
-            if (violations.monopoly) rules.push(...RULE_MAP.monopoly);
-            if (violations.outlier) rules.push(...RULE_MAP.outlier);
-            if (violations.meeting) rules.push(...RULE_MAP.meeting);
-            if (violations.rigging) rules.push(...RULE_MAP.rigging);
-
-            return rules.length > 0 ? [...new Set(rules)] : ["-"];
+            return {
+                findingsText: findings.length > 0 ? findings.join(" + ") : "-",
+                rulesList: rules.length > 0 ? [...new Set(rules)] : ["-"],
+                keys: {
+                    owner: findings.some(f => f.includes("Owner")),
+                    split: findings.some(f => f.includes("Splitting")),
+                    cpv: findings.some(f => f.includes("CPV")),
+                    tailored: findings.some(f => f.includes("Tailored")),
+                    monopoly: findings.some(f => f.includes("Single Responsive Bidder")),
+                    outlier: findings.some(f => f.includes("Outlier")),
+                    meeting: findings.some(f => f.includes("Rush") || f.includes("Pre-Tender")),
+                    rigging: findings.some(f => f.includes("Dropout") || f.includes("Rigging"))
+                }
+            };
         }
 
         async function init() {
@@ -434,7 +445,7 @@
                 
                 filterData(); 
             } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="error">ডেটা লোড করা যায়নি। ব্রাউজারের পলিসির কারণে লোকাল ফোল্ডার থেকে JSON রিড করতে সমস্যা হচ্ছে। ফাইলগুলো গিটহাবে পুশ করে লাইভ লিংক থেকে ওপেন করুন।</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="error">ডেটা লোড করা যায়নি। লোকাল ফোল্ডার থেকে JSON রিড করতে ব্রাউজারের পলিসি সমস্যা করছে। লাইভ সার্ভারে ওপেন করুন।</td></tr>`;
             }
         }
 
@@ -452,7 +463,7 @@
             const banner = document.getElementById('filterBanner');
             const bannerText = document.getElementById('bannerText');
             const ruleName = element.querySelector('strong').innerText.split('<')[0].trim();
-            bannerText.innerText = `ফিল্টার অ্যাক্টিভ: শুধুমাত্র "${ruleName}" এর তথ্য অনুসন্ধান করা হচ্ছে`;
+            bannerText.innerText = `ফিল্টার অ্যাক্টিভ: শুধুমাত্র "${ruleName}" এর ডেটা অনুসন্ধান করা হচ্ছে`;
             banner.style.display = 'flex';
 
             filterData(); 
@@ -477,8 +488,8 @@
                 
                 let matchRule = true;
                 if (activeRuleKey) {
-                    const violations = detectTenderViolations(t);
-                    matchRule = violations[activeRuleKey] === true;
+                    const dynamicFindings = getDynamicFindings(t);
+                    matchRule = dynamicFindings.keys[activeRuleKey] === true;
                 }
 
                 return matchRisk && matchTerm && matchRule;
@@ -500,9 +511,19 @@
 
         function updateSummaries(data) {
             document.getElementById('totalContracts').innerText = data.length;
-            let highRiskValue = data.reduce((acc, t) => acc + ((t.Risk_Level === 'HIGH' && t.Contract_Value_BDT) ? parseFloat(t.Contract_Value_BDT) : 0), 0);
+            
+            let highRiskValue = 0;
+            let missingOwnerCount = 0;
+
+            data.forEach(t => {
+                const f = getDynamicFindings(t);
+                if (t.Risk_Level === 'HIGH' && t.Contract_Value_BDT) highRiskValue += parseFloat(t.Contract_Value_BDT);
+                if (f.keys.owner) missingOwnerCount++;
+            });
+
             let unit = highRiskValue >= 1000000000 ? (highRiskValue/1000000000).toFixed(2) + " বিলিয়ন" : (highRiskValue/10000000).toFixed(2) + " কোটি";
             document.getElementById('totalValue').innerText = "৳" + unit;
+            document.getElementById('totalOwnersMissing').innerText = missingOwnerCount + " টি";
         }
 
         function updateAdvancedAnalysis(data) {
@@ -519,17 +540,9 @@
                     nexus[key].count++;
                 }
 
-                const violations = detectTenderViolations(t);
-                if(violations.tailored) tailoredCount++;
-
-                if(t.Advertised_Date && t.Tender_Valid_Up_To) {
-                    let adDate = new Date(t.Advertised_Date);
-                    let closeDate = new Date(t.Tender_Valid_Up_To);
-                    if(!isNaN(adDate) && !isNaN(closeDate)) {
-                        let diffDays = Math.ceil(Math.abs(closeDate - adDate) / (1000 * 60 * 60 * 24));
-                        if(diffDays < 14) rushCount++; 
-                    }
-                }
+                const f = getDynamicFindings(t);
+                if(f.keys.tailored) tailoredCount++;
+                if(f.keys.meeting) rushCount++;
             });
 
             const sortedNexus = Object.values(nexus).sort((a, b) => b.count - a.count).filter(n => n.count > 1).slice(0, 5);
@@ -550,26 +563,31 @@
             }
 
             document.getElementById('tailoredCriteriaCount').innerText = `${tailoredCount} টি টেন্ডার`;
-            document.getElementById('rushJobsCount').innerText = `${rushCount > 0 ? rushCount : 83} টি টেন্ডার`; 
+            document.getElementById('rushJobsCount').innerText = `${rushCount} টি টেন্ডার`; 
         }
 
         function updateDynamicCharts(data) {
-            // 1. DYNAMIC VIOLATION CHART (Macro-analysis) & BADGE COUNTS
             let vCounts = { owner: 0, split: 0, cpv: 0, tailored: 0, monopoly: 0, outlier: 0, meeting: 0, rigging: 0 };
-            
+            const reasons = {};
+
             data.forEach(t => {
-                const violations = detectTenderViolations(t);
-                if (violations.owner) vCounts.owner++;
-                if (violations.split) vCounts.split++;
-                if (violations.cpv) vCounts.cpv++;
-                if (violations.tailored) vCounts.tailored++;
-                if (violations.monopoly) vCounts.monopoly++;
-                if (violations.outlier) vCounts.outlier++;
-                if (violations.meeting) vCounts.meeting++;
-                if (violations.rigging) vCounts.rigging++;
+                const f = getDynamicFindings(t);
+                if (f.keys.owner) vCounts.owner++;
+                if (f.keys.split) vCounts.split++;
+                if (f.keys.cpv) vCounts.cpv++;
+                if (f.keys.tailored) vCounts.tailored++;
+                if (f.keys.monopoly) vCounts.monopoly++;
+                if (f.keys.outlier) vCounts.outlier++;
+                if (f.keys.meeting) vCounts.meeting++;
+                if (f.keys.rigging) vCounts.rigging++;
+
+                if(f.findingsText !== "-") {
+                    let textClean = f.findingsText.split('+')[0].trim().substring(0, 20);
+                    reasons[textClean] = (reasons[textClean] || 0) + 1;
+                }
             });
 
-            // UPDATE BADGE NUMBERS IN HTML MATRIX
+            // UPDATE BADGES IN MATRIX
             document.getElementById('count-owner').innerText = vCounts.owner;
             document.getElementById('count-split').innerText = vCounts.split;
             document.getElementById('count-cpv').innerText = vCounts.cpv;
@@ -579,24 +597,19 @@
             document.getElementById('count-meeting').innerText = vCounts.meeting;
             document.getElementById('count-rigging').innerText = vCounts.rigging;
 
-            const vCtx = document.getElementById('violationChart');
             if(violationChartObj) violationChartObj.destroy();
-            violationChartObj = new Chart(vCtx, {
+            violationChartObj = new Chart(document.getElementById('violationChart'), {
                 type: 'bar',
                 data: {
                     labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'],
                     datasets: [{ 
                         data: [vCounts.owner, vCounts.split, vCounts.cpv, vCounts.tailored, vCounts.monopoly, vCounts.outlier, vCounts.meeting, vCounts.rigging], 
-                        backgroundColor: colorSecondary, 
-                        borderColor: colorPrimary, 
-                        borderWidth: 1, 
-                        borderRadius: 3 
+                        backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 
                     }]
                 },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {size: 11}} } }, plugins: { legend: { display: false } } }
             });
 
-            // 2. TIMELINE CHART (Multi-Line Risk Over Time)
             const timeline = {};
             data.forEach(t => {
                 let dStr = t.Advertised_Date || t.Contract_Signing_Date;
@@ -612,47 +625,33 @@
             });
             
             const sortedDates = Object.keys(timeline).sort();
-            const highCounts = sortedDates.map(d => timeline[d].HIGH);
-            const medCounts = sortedDates.map(d => timeline[d].MEDIUM);
-            const lowCounts = sortedDates.map(d => timeline[d].LOW);
-
             if(timelineChartObj) timelineChartObj.destroy();
             timelineChartObj = new Chart(document.getElementById('timelineChart'), {
                 type: 'line',
                 data: {
                     labels: sortedDates,
                     datasets: [
-                        { label: 'HIGH', data: highCounts, borderColor: colorAlert, backgroundColor: 'rgba(220, 38, 38, 0.1)', fill: true, tension: 0.3, pointRadius: 2 },
-                        { label: 'MEDIUM', data: medCounts, borderColor: colorAccent, backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.3, pointRadius: 0 },
-                        { label: 'LOW', data: lowCounts, borderColor: colorSecondary, backgroundColor: 'transparent', tension: 0.3, pointRadius: 0 }
+                        { label: 'HIGH', data: sortedDates.map(d => timeline[d].HIGH), borderColor: colorAlert, backgroundColor: 'rgba(220, 38, 38, 0.1)', fill: true, tension: 0.3, pointRadius: 2 },
+                        { label: 'MEDIUM', data: sortedDates.map(d => timeline[d].MEDIUM), borderColor: colorAccent, backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.3, pointRadius: 0 },
+                        { label: 'LOW', data: sortedDates.map(d => timeline[d].LOW), borderColor: colorSecondary, backgroundColor: 'transparent', tension: 0.3, pointRadius: 0 }
                     ]
                 },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    scales: { x: { grid: { display: false }, ticks: {color: '#f8fafc', maxTicksLimit: 6} }, y: { display: false } }, 
-                    plugins: { legend: { display: true, position: 'top', labels: {color: '#f8fafc', boxWidth: 10} } } 
-                }
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false }, ticks: {color: '#f8fafc'} }, y: { display: false } }, plugins: { legend: { display: true, labels: {color: '#f8fafc'} } } }
             });
 
-            // 3. DROPOUT FUNNEL
             let tSold = 0, tRecv = 0, tResp = 0;
             data.forEach(t => {
                 if(t.Tenders_Sold && !isNaN(t.Tenders_Sold)) tSold += parseInt(t.Tenders_Sold);
                 if(t.Tenders_Received && !isNaN(t.Tenders_Received)) tRecv += parseInt(t.Tenders_Received);
                 if(t.Responsive_Tenders && !isNaN(t.Responsive_Tenders)) tResp += parseInt(t.Responsive_Tenders);
             });
-            
             if(dropoutChartObj) dropoutChartObj.destroy();
             dropoutChartObj = new Chart(document.getElementById('dropoutChart'), {
                 type: 'bar',
-                data: {
-                    labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'],
-                    datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary], borderRadius: 3 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, grid: { display: false } }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
+                data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary], borderRadius: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // 4. SYNDICATE CHART
             const suppliers = {};
             data.forEach(t => {
                 if (t.Risk_Level === 'HIGH' && t.Supplier_Name && t.Contract_Value_BDT) {
@@ -662,36 +661,24 @@
                 }
             });
             const sortedSuppliers = Object.entries(suppliers).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            
             if(syndicateChartObj) syndicateChartObj.destroy();
             syndicateChartObj = new Chart(document.getElementById('syndicateChart'), {
                 type: 'bar',
-                data: {
-                    labels: sortedSuppliers.map(s => s[0].length > 15 ? s[0].substring(0, 15) + ".." : s[0]),
-                    datasets: [{ data: sortedSuppliers.map(s => s[1]), backgroundColor: colorAlert, borderRadius: 3 }]
-                },
+                data: { labels: sortedSuppliers.map(s => s[0].length > 15 ? s[0].substring(0, 15) + ".." : s[0]), datasets: [{ data: sortedSuppliers.map(s => s[1]), backgroundColor: colorAlert, borderRadius: 3 }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font: {weight: 'bold'}} } }, plugins: { legend: { display: false } } }
             });
 
-            // 5. RISK PIE CHART
             let highCount = 0, medCount = 0, lowCount = 0;
             data.forEach(t => {
-                if(t.Risk_Level === 'HIGH') highCount++;
-                else if(t.Risk_Level === 'MEDIUM') medCount++;
-                else if(t.Risk_Level === 'LOW') lowCount++;
+                if(t.Risk_Level === 'HIGH') highCount++; else if(t.Risk_Level === 'MEDIUM') medCount++; else if(t.Risk_Level === 'LOW') lowCount++;
             });
-
             if(riskPieChartObj) riskPieChartObj.destroy();
             riskPieChartObj = new Chart(document.getElementById('riskPieChart'), {
                 type: 'doughnut',
-                data: {
-                    labels: ['HIGH', 'MEDIUM', 'LOW'],
-                    datasets: [{ data: [highCount, medCount, lowCount], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }]
-                },
+                data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [highCount, medCount, lowCount], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
             });
 
-            // 6. AGENCY CHART
             const agencies = {};
             data.forEach(t => {
                 if (t.Risk_Level === 'HIGH' && t.Organization_Agency && t.Contract_Value_BDT) {
@@ -701,73 +688,39 @@
                 }
             });
             const sortedAgencies = Object.entries(agencies).sort((a, b) => b[1] - a[1]).slice(0, 5);
-
             if(agencyChartObj) agencyChartObj.destroy();
             agencyChartObj = new Chart(document.getElementById('agencyChart'), {
                 type: 'bar',
-                data: {
-                    labels: sortedAgencies.map(s => s[0].length > 15 ? s[0].substring(0, 15) + ".." : s[0]),
-                    datasets: [{ data: sortedAgencies.map(s => s[1]), backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 }]
-                },
+                data: { labels: sortedAgencies.map(s => s[0].length > 15 ? s[0].substring(0, 15) + ".." : s[0]), datasets: [{ data: sortedAgencies.map(s => s[1]), backgroundColor: colorSecondary, borderColor: colorPrimary, borderWidth: 1, borderRadius: 3 }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // 7. RED FLAG CHART
-            const reasons = {};
-            data.forEach(t => {
-                if(t.Red_Flag_Reason && !['No significant issue detected', 'Clean'].includes(t.Red_Flag_Reason)) {
-                    let reason = t.Red_Flag_Reason.substring(0, 20) + "..";
-                    reasons[reason] = (reasons[reason] || 0) + 1;
-                }
-            });
             const sortedReasons = Object.entries(reasons).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            
             if(redFlagChartObj) redFlagChartObj.destroy();
             redFlagChartObj = new Chart(document.getElementById('redFlagChart'), {
                 type: 'bar',
-                data: {
-                    labels: sortedReasons.map(r => r[0]),
-                    datasets: [{ data: sortedReasons.map(r => r[1]), backgroundColor: colorAccent, borderRadius: 3 }]
-                },
+                data: { labels: sortedReasons.map(r => r[0] + ".."), datasets: [{ data: sortedReasons.map(r => r[1]), backgroundColor: colorAccent, borderRadius: 3 }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { grid: { display: false }, ticks: {font: {size: 10}, color: '#f8fafc'} } }, plugins: { legend: { display: false } } }
             });
 
-            // 8. SINGLE BIDDER CHART
-            let single = 0, multiple = 0;
-            data.forEach(t => {
-                let resp = parseInt(t.Responsive_Tenders);
-                if(!isNaN(resp)) {
-                    if(resp === 1) single++;
-                    else if (resp > 1) multiple++;
-                }
-            });
-
+            let single = vCounts.monopoly;
+            let multiple = data.length - single;
             if(singleBidderChartObj) singleBidderChartObj.destroy();
             singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), {
                 type: 'doughnut',
-                data: {
-                    labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'],
-                    datasets: [{ data: [single, multiple], backgroundColor: [colorAlert, colorSecondary], borderWidth: 0 }]
-                },
+                data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [single, multiple], backgroundColor: [colorAlert, colorSecondary], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
             });
 
-            // 9. RISK VALUE PIE CHART
             let hVal = 0, mVal = 0, lVal = 0;
             data.forEach(t => {
                 let val = parseFloat(t.Contract_Value_BDT) || 0;
-                if(t.Risk_Level === 'HIGH') hVal += val;
-                else if(t.Risk_Level === 'MEDIUM') mVal += val;
-                else if(t.Risk_Level === 'LOW') lVal += val;
+                if(t.Risk_Level === 'HIGH') hVal += val; else if(t.Risk_Level === 'MEDIUM') mVal += val; else if(t.Risk_Level === 'LOW') lVal += val;
             });
-
             if(riskValuePieChartObj) riskValuePieChartObj.destroy();
             riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), {
                 type: 'pie',
-                data: {
-                    labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'],
-                    datasets: [{ data: [hVal, mVal, lVal], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }]
-                },
+                data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hVal, mVal, lVal], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {font: {size: 11}, color: '#f8fafc'} } } }
             });
         }
@@ -787,17 +740,16 @@
                 let org = t.Organization_Agency ? t.Organization_Agency.split('Procuring')[0].trim() : "Unknown";
                 let sup = t.Supplier_Name ? t.Supplier_Name.split('(')[0].trim() : "<span style='color:var(--text-muted)'>-</span>";
                 
-                let reason = (!t.Red_Flag_Reason || t.Red_Flag_Reason === "No significant issue detected" || t.Red_Flag_Reason === "Clean") ? "-" : t.Red_Flag_Reason;
-                
-                let detectedRules = getViolatedRules(t);
-                let rulesHtml = detectedRules.join("<br>");
-                if(reason === "-") rulesHtml = "-";
+                // USE DYNAMIC ENGINE INSTEAD OF JSON FIELD
+                const f = getDynamicFindings(t);
+                let reason = f.findingsText;
+                let rulesHtml = f.rulesList.join("<br>");
                 
                 let pdfHtml = '';
                 if (t.Source_Files_Merged) {
-                    t.Source_Files_Merged.split('|').filter(f => f.trim()).forEach((f, i) => {
+                    t.Source_Files_Merged.split('|').filter(f => f.trim()).forEach((file, i) => {
                         let isNoa = i > 0;
-                        pdfHtml += `<a href="downloaded_pdfs/${f.trim()}" target="_blank" class="doc-link ${isNoa ? 'noa' : ''}">${isNoa ? 'NOA 📄' : 'Notice 📄'}</a>`;
+                        pdfHtml += `<a href="downloaded_pdfs/${file.trim()}" target="_blank" class="doc-link ${isNoa ? 'noa' : ''}">${isNoa ? 'NOA 📄' : 'Notice 📄'}</a>`;
                     });
                 } else if(t.Source_File) {
                     pdfHtml = `<a href="downloaded_pdfs/${t.Source_File.trim()}" target="_blank" class="doc-link">Notice 📄</a>`;
@@ -812,7 +764,7 @@
                         <td style="font-weight: bold; color: #fff;">${sup}</td>
                         <td><span class="risk-badge ${riskClass}">${t.Risk_Level||'N/A'}</span></td>
                         <td style="text-align: right; font-family: monospace; font-weight: bold; color: #fff;">${valStr}</td>
-                        <td style="font-size: 12px; color: #fca5a5;">${reason}</td>
+                        <td style="font-size: 12px; color: #fca5a5; line-height: 1.4;">${reason}</td>
                         <td style="font-size: 11.5px; color: #38bdf8; font-weight: 600; line-height: 1.4;">${rulesHtml}</td>
                         <td>${pdfHtml}</td>
                     </tr>
@@ -832,20 +784,15 @@
             
             if(!dataToExport.length) return alert("No data available to export.");
 
-            let csv = "\uFEFF" + "Tender_ID,Agency,Supplier,Risk,Value_BDT,Finding,Violated_Rules\n";
+            let csv = "\uFEFF" + "Tender_ID,Agency,Supplier,Risk,Value_BDT,Detected_Findings,Violated_Rules\n";
             
             dataToExport.forEach(r => {
-                let reason = (!r.Red_Flag_Reason || r.Red_Flag_Reason === "No significant issue detected" || r.Red_Flag_Reason === "Clean") ? "-" : r.Red_Flag_Reason;
+                const f = getDynamicFindings(r);
                 
-                let detectedRules = "-";
-                if (reason !== "-") {
-                    detectedRules = getViolatedRules(r).join(" | "); 
-                }
-
                 const escAgency = (r.Organization_Agency || "").replace(/"/g, '""');
                 const escSupplier = (r.Supplier_Name || "").replace(/"/g, '""');
-                const escReason = reason.replace(/"/g, '""');
-                const escRules = detectedRules.replace(/"/g, '""');
+                const escReason = f.findingsText.replace(/"/g, '""');
+                const escRules = f.rulesList.join(" | ").replace(/"/g, '""');
 
                 csv += `${r.Tender_Proposal_ID},"${escAgency}","${escSupplier}",${r.Risk_Level || "N/A"},${r.Contract_Value_BDT || 0},"${escReason}","${escRules}"\n`;
             });
