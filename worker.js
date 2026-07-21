@@ -61,7 +61,7 @@ function getDynamicFindings(t) {
 
     let uniqueRules = [...new Set(ruleKeys)];
     
-    // --- Risk Score Calculator ---
+    // Risk Score Calculator
     let riskScore = 0;
     if(uniqueRules.includes('owner')) riskScore += 25;
     if(uniqueRules.includes('monopoly')) riskScore += 25;
@@ -88,13 +88,20 @@ self.onmessage = function(e) {
     const { action, payload } = e.data;
 
     if (action === 'INIT_DATA') {
-        globalData = payload.map(t => {
-            t._findings = getDynamicFindings(t);
-            t._searchStr = Object.values(t).map(v => safeStr(v)).join(' ');
-            return t;
-        });
-        filteredData = [...globalData];
-        self.postMessage({ action: 'DATA_READY', data: filteredData });
+        try {
+            // Robust check to handle array or object
+            let dataArray = Array.isArray(payload) ? payload : (payload.Merged_Database || []);
+            
+            globalData = dataArray.map(t => {
+                t._findings = getDynamicFindings(t);
+                t._searchStr = Object.values(t).map(v => safeStr(v)).join(' ');
+                return t;
+            });
+            filteredData = [...globalData];
+            self.postMessage({ action: 'DATA_READY', data: filteredData });
+        } catch (error) {
+            self.postMessage({ action: 'ERROR', message: error.message });
+        }
     }
 
     if (action === 'APPLY_FILTER') {
