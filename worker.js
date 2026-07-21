@@ -1,4 +1,4 @@
-// worker.js - Background Processing Engine
+// worker.js - Background Processing Engine (No DOM interactions here)
 
 let globalData = [];
 let filteredData = [];
@@ -81,42 +81,32 @@ function getDynamicFindings(t) {
 
     return { 
         html, csv, rulesHtml, rulesCsv, 
-        keys: { 
-            owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), 
-            cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), 
-            monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), 
-            meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') 
-        } 
+        keys: { owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') } 
     };
 }
 
-// Communication Interface
 self.onmessage = function(e) {
     const { action, payload } = e.data;
 
     if (action === 'INIT_DATA') {
         const rawData = payload;
-        
         globalData = rawData.map(t => {
             t._findings = getDynamicFindings(t);
             t._searchStr = Object.values(t).map(v => safeStr(v)).join(' ');
             return t;
         });
-        
         filteredData = [...globalData];
         self.postMessage({ action: 'DATA_READY', data: filteredData });
     }
 
     if (action === 'APPLY_FILTER') {
         const { term, risk, activeRuleKey } = payload;
-        
         filteredData = globalData.filter(t => {
             if (risk !== 'ALL' && t.Risk_Level !== risk) return false;
             if (term && !t._searchStr.includes(term)) return false;
             if (activeRuleKey && t._findings.keys[activeRuleKey] !== true) return false;
             return true;
         });
-
         self.postMessage({ action: 'FILTER_COMPLETE', data: filteredData });
     }
 };
