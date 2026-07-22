@@ -83,7 +83,7 @@
         .btn-verify { font-family: inherit; background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 5px; transition: 0.2s;}
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 950px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
         .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer;}
         .close-btn:hover { color: var(--netra-red); }
         
@@ -106,10 +106,10 @@
         .docket-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 20px; }
         .docket-meta { font-family: monospace; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
         .qr-container { background: #fff; padding: 5px; border-radius: 4px; width: 64px; height: 64px; }
-        .hash-string { background: #000; padding: 3px 6px; border-radius: 3px; color: #10b981; font-weight: bold; word-break: break-all; }
+        .hash-string { background: #000; padding: 3px 6px; border-radius: 3px; color: #10b981; font-weight: bold; letter-spacing: 0.5px; word-break: break-all; }
         #networkGraph { width: 100%; height: 70vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
 
-        .scan-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .scan-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 14px; }
         .scan-item:last-child { border-bottom: none; }
 
         @media print {
@@ -286,7 +286,8 @@
                         <strong>Publish Date:</strong> <span id="insPub"></span><br>
                         <strong>Closing Date:</strong> <span id="insClose"></span><br>
                         <strong>NOA Given:</strong> <span id="insNoa"></span><br>
-                        <strong>Contract Signing:</strong> <span id="insSign" class="highlight-red"></span>
+                        <strong>Contract Signing:</strong> <span id="insSign" class="highlight-red"></span><br>
+                        <strong>CPV Code:</strong> <span id="insCpv"></span>
                     </p>
                     <div style="margin-top: 15px; font-size:13px; border-top: 1px dashed var(--border-dark); padding-top: 10px;">
                         <strong>Raw Eligibility Criteria:</strong><br>
@@ -653,7 +654,6 @@
             riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
         }
 
-        // --- NETWORK GRAPH (Vis.js) ---
         function openNetworkMap() {
             document.getElementById('networkModal').style.display = 'flex';
             const nodes = new vis.DataSet();
@@ -686,7 +686,6 @@
             new vis.Network(container, { nodes, edges }, { physics: { stabilization: true, barnesHut: { gravitationalConstant: -2000 } } });
         }
 
-        // --- COMPREHENSIVE PDF EXTRACTION & COMPARISON ---
         async function extractTextFromPDF(pdfUrl) {
             try {
                 const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
@@ -711,17 +710,6 @@
                 const meta = await pdf.getMetadata();
                 return { text: text.toLowerCase(), meta: meta.info };
             } catch (error) { return null; }
-        }
-
-        function showModal(ruleKey) {
-            const data = RULE_DETAILS[ruleKey];
-            if(data) {
-                document.getElementById('modalTitle').innerText = data.title;
-                document.getElementById('modalEnacted').innerText = data.enacted;
-                document.getElementById('modalDesc').innerText = data.purpose;
-                document.getElementById('modalPenalty').innerText = data.penalty;
-                document.getElementById('ruleModal').style.display = 'flex';
-            }
         }
 
         function showPdfInModal(filename, keyword) {
@@ -772,6 +760,7 @@
             document.getElementById('insClose').innerText = t.Closing_Date || "N/A";
             document.getElementById('insNoa').innerText = t.Notification_of_Award_Date || "N/A";
             document.getElementById('insSign').innerText = t.Contract_Signing_Date || "N/A";
+            document.getElementById('insCpv').innerText = t.CPV_Code || "N/A";
 
             let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "No data.";
             document.getElementById('insExp').innerHTML = rawExp.replace(/\b(rajuk|cda|kda|pwd|lged|petrobangla)\b/gi, '<span class="highlight-red">$&</span>').replace(/\d+\.[1-9]\d+\s*(crore|lac|lakh)/gi, '<span class="highlight-red">$&</span>');
@@ -787,73 +776,121 @@
                 const tenderIdStr = String(t.Tender_Proposal_ID);
                 const isZeroValue = exactDbVal === "0";
 
-                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s) for Tender ID & Value...</div>`;
+                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s) against official records...</div>`;
 
-                let valMatch = false, valPartial = false, idMatch = false;
+                // Verification items array
+                let verificationItems = [
+                    { key: "Tender ID", val: tenderIdStr, found: false, type: "exact" }
+                ];
+                
+                if (!isZeroValue) {
+                    verificationItems.push({ key: "Contract Value", val: exactDbVal, intVal: intDbVal, found: false, partial: false, type: "value" });
+                } else {
+                    verificationItems.push({ key: "Contract Value", val: "0", found: true, partial: false, type: "skip", note: "৳0 (Skipped)" });
+                }
+
+                if (t.Document_Price_BDT) verificationItems.push({ key: "Document Price", val: String(t.Document_Price_BDT).trim(), found: false, type: "exact" });
+                if (t.Advertised_Date) verificationItems.push({ key: "Publish Date", val: String(t.Advertised_Date).trim(), found: false, type: "date" });
+                if (t.Closing_Date) verificationItems.push({ key: "Closing Date", val: String(t.Closing_Date).trim(), found: false, type: "date" });
+                if (t.CPV_Code && t.CPV_Code !== "-") verificationItems.push({ key: "CPV Code", val: String(t.CPV_Code).trim(), found: false, type: "exact" });
+
                 let highlightSnippets = [];
-                let finalMeta = null;
                 let additionalFlags = [];
+                let finalMeta = null;
 
                 for (let i = 0; i < pdfFiles.length; i++) {
                     const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFiles[i]}`);
                     if (pdfResult && pdfResult.text) {
                         finalMeta = pdfResult.meta;
                         const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
-                        
-                        // Check Tender ID
-                        if (livePdfText.includes(tenderIdStr)) {
-                            idMatch = true;
-                            let idRegex = new RegExp(`.{0,30}${tenderIdStr}.{0,30}`, 'gi');
-                            let idM = livePdfText.match(idRegex);
-                            if(idM && idM[0]) highlightSnippets.push(`<strong>[ID]</strong> ` + idM[0].replace(new RegExp(tenderIdStr, 'gi'), `<mark style="background:#eab308;font-weight:bold;">$&</mark>`));
-                        }
 
-                        // Check Red Flags
-                        if (/cancel|re-tender|court|stay order/i.test(livePdfText)) {
-                            additionalFlags.push("Possible Legal/Cancel issue mentioned in text.");
-                        }
+                        // Verify standard items
+                        verificationItems.forEach(item => {
+                            if (item.type === 'skip' || item.found) return;
 
-                        // Check Value
-                        if (!isZeroValue && !valMatch) {
-                            let flexiPattern = exactDbVal.split('').map(char => char === '.' ? '[\\.\\s\\,\\n\\r]*' : char).join('[\\s\\,\\n\\r]*'); 
-                            const regex = new RegExp(`.{0,40}${flexiPattern}.{0,40}`, 'gi'); 
-                            const match = livePdfText.match(regex);
+                            if (item.type === 'value') {
+                                let flexiPattern = item.val.split('').map(char => char === '.' ? '[\\.\\s\\,\\n\\r]*' : char).join('[\\s\\,\\n\\r]*'); 
+                                const regex = new RegExp(`.{0,40}${flexiPattern}.{0,40}`, 'gi'); 
+                                const match = livePdfText.match(regex);
+                                if (match && match[0]) {
+                                    item.found = true;
+                                    highlightSnippets.push(`<strong>[${item.key}]</strong> ` + match[0].replace(new RegExp(`(${flexiPattern})`, 'gi'), `<mark style="background:#10b981; color:#fff; font-weight:bold;">$&</mark>`));
+                                } else if (item.val.includes('.')) {
+                                    let intPattern = item.intVal.split('').join('[\\s\\,\\n\\r]*');
+                                    const regexInt = new RegExp(`.{0,40}${intPattern}.{0,40}`, 'gi');
+                                    const matchInt = livePdfText.match(regexInt);
+                                    if(matchInt && matchInt[0]) {
+                                        item.partial = true;
+                                        highlightSnippets.push(`<strong>[${item.key} (Partial)]</strong> ` + matchInt[0].replace(new RegExp(`(${intPattern})`, 'gi'), `<mark style="background:#f59e0b; color:#000; font-weight:bold;">$&</mark>`));
+                                    }
+                                }
+                            } else if (item.type === 'exact' && item.val) {
+                                let cleanVal = item.val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                let regex = new RegExp(`.{0,30}${cleanVal}.{0,30}`, 'gi');
+                                let match = livePdfText.match(regex);
+                                if(match && match[0]) {
+                                    item.found = true;
+                                    highlightSnippets.push(`<strong>[${item.key}]</strong> ` + match[0].replace(new RegExp(cleanVal, 'gi'), `<mark style="background:#eab308; font-weight:bold;">$&</mark>`));
+                                }
+                            } else if (item.type === 'date' && item.val) {
+                                let cleanVal = item.val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                let regex = new RegExp(`.{0,30}${cleanVal}.{0,30}`, 'gi');
+                                let match = livePdfText.match(regex);
+                                if(match && match[0]) {
+                                    item.found = true;
+                                    highlightSnippets.push(`<strong>[${item.key}]</strong> ` + match[0].replace(new RegExp(cleanVal, 'gi'), `<mark style="background:#eab308; font-weight:bold;">$&</mark>`));
+                                } else {
+                                    let dateParts = item.val.split(/[-\/\s,]+/);
+                                    if(dateParts.length >= 3) {
+                                        let datePattern = dateParts.join('[\\-\\s\\/\\,]*');
+                                        let regexDate = new RegExp(`.{0,30}${datePattern}.{0,30}`, 'gi');
+                                        let matchDate = livePdfText.match(regexDate);
+                                        if(matchDate && matchDate[0]) {
+                                            item.found = true;
+                                            highlightSnippets.push(`<strong>[${item.key}]</strong> ` + matchDate[0].replace(new RegExp(`(${datePattern})`, 'gi'), `<mark style="background:#eab308; font-weight:bold;">$&</mark>`));
+                                        }
+                                    }
+                                }
+                            }
+                        });
 
-                            if (match && match[0]) {
-                                valMatch = true;
-                                highlightSnippets.push(`<strong>[Value]</strong> ` + match[0].replace(new RegExp(`(${flexiPattern})`, 'gi'), `<mark style="background:#10b981; color:#fff; font-weight:bold;">$&</mark>`));
-                            } else if (exactDbVal.includes('.')) {
-                                let intPattern = intDbVal.split('').join('[\\s\\,\\n\\r]*');
-                                const regexInt = new RegExp(`.{0,40}${intPattern}.{0,40}`, 'gi');
-                                const matchInt = livePdfText.match(regexInt);
-                                if(matchInt && matchInt[0]) {
-                                    valPartial = true;
-                                    highlightSnippets.push(`<strong>[Value (Partial)]</strong> ` + matchInt[0].replace(new RegExp(`(${intPattern})`, 'gi'), `<mark style="background:#f59e0b; color:#000; font-weight:bold;">$&</mark>`));
+                        // Check Violated Rules Evidence
+                        if (t._findings && t._findings.keys) {
+                            if (t._findings.keys.tailored) {
+                                let tailoredRegex = /\b(rajuk|cda|kda|pwd|lged|petrobangla)\b|\d+\.[1-9]\d+\s*(crore|lac|lakh)|(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i;
+                                let m = livePdfText.match(new RegExp(`.{0,40}(${tailoredRegex.source}).{0,40}`, 'gi'));
+                                if(m && m[0] && !verificationItems.find(i => i.key === 'Rule Evidence: Tailored Criteria')) {
+                                    verificationItems.push({ key: 'Rule Evidence: Tailored Criteria', found: true, type: 'rule' });
+                                    highlightSnippets.push(`<strong>[Rule Evidence: Tailored]</strong> ` + m[0].replace(tailoredRegex, `<mark style="background:#ef4444; color:#fff; font-weight:bold;">$&</mark>`));
+                                }
+                            }
+                            if (t._findings.keys.rigging || t._findings.keys.meeting) {
+                                if (/cancel|re-tender|court|stay order/i.test(livePdfText) && !additionalFlags.includes("Possible Legal/Cancel issue mentioned.")) {
+                                    additionalFlags.push("Possible Legal/Cancel issue mentioned.");
                                 }
                             }
                         }
                     }
                 }
 
+                // Build Match Status HTML
                 let matchStatusHtml = "";
-                
-                // ID Status
-                if(idMatch) matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ Tender ID (${tenderIdStr}) Found.</div>`;
-                else matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ Tender ID (${tenderIdStr}) NOT Found!</div>`;
-
-                // Value Status
-                if (isZeroValue) {
-                    matchStatusHtml += `<div class="scan-item" style="color: #38bdf8; font-weight: bold;">ℹ️ Contract Value is ৳0 (Skipped value scan).</div>`;
-                } else if (valMatch) {
-                    matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ Contract Value (৳${exactDbVal}) Verified.</div>`;
-                } else if (valPartial) {
-                    matchStatusHtml += `<div class="scan-item" style="color: #f59e0b; font-weight: bold;">⚠️ Value Partial Match: Only integer (৳${intDbVal}) found.</div>`;
-                } else {
-                    matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ Contract Value (৳${exactDbVal}) Mismatch! Tampering risk.</div>`;
-                }
+                verificationItems.forEach(item => {
+                    if (item.type === 'skip') {
+                        matchStatusHtml += `<div class="scan-item" style="color: #38bdf8; font-weight: bold;">ℹ️ ${item.key}: ${item.note}</div>`;
+                    } else if (item.found) {
+                        matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ ${item.key} Verified.</div>`;
+                    } else if (item.partial) {
+                        matchStatusHtml += `<div class="scan-item" style="color: #f59e0b; font-weight: bold;">⚠️ ${item.key} Partial Match (Check Snips).</div>`;
+                    } else if (item.type !== 'rule') {
+                        matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ ${item.key} NOT Found in PDF!</div>`;
+                    }
+                });
 
                 if(additionalFlags.length > 0) {
-                    matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-size:12px;">🚨 Flags: ${additionalFlags[0]}</div>`;
+                    additionalFlags.forEach(flag => {
+                        matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-size:13px;">🚨 Flag: ${flag}</div>`;
+                    });
                 }
 
                 // Metadata update
@@ -885,7 +922,7 @@
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 4px; padding: 10px; margin-bottom: 10px;">
                         ${matchStatusHtml}
                     </div>
-                    ${highlightSnippets.length > 0 ? `<div style="font-family: monospace; font-size: 13px; color: #cbd5e1; background: #000; padding: 10px; border-left: 3px solid #38bdf8; margin-bottom: 15px; border-radius: 4px; max-height:100px; overflow-y:auto;">${highlightSnippets.join('<br><br>')}</div>` : ''}
+                    ${highlightSnippets.length > 0 ? `<div style="font-family: monospace; font-size: 13px; color: #cbd5e1; background: #000; padding: 10px; border-left: 3px solid #38bdf8; margin-bottom: 15px; border-radius: 4px; max-height:150px; overflow-y:auto;">${highlightSnippets.join('<br><br>')}</div>` : ''}
                     <div style="text-align: center; border-top: 1px dashed #334155; padding-top: 10px;">${buttonsHtml}</div>
                 `;
             } else {
