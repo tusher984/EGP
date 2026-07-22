@@ -276,7 +276,7 @@
             
             <div class="comparison-grid">
                 <div class="comp-col comp-db">
-                    <h4>🏛️ Official Database Record</h4>
+                    <h4>🏛️ Official Database Claim</h4>
                     <p style="margin:0; font-family:-apple-system, sans-serif; font-size:14px; line-height:1.8;">
                         <strong>Contract Value:</strong> <span id="insVal" class="highlight-red"></span><br>
                         <strong>Document Price:</strong> <span id="insPrice" class="highlight-red"></span><br>
@@ -294,7 +294,7 @@
                     </div>
                 </div>
                 <div class="comp-col comp-pdf" id="pdfScanResultCol">
-                    <h4>📄 Live PDF Scan Result</h4>
+                    <h4>📄 Original PDF Evidence</h4>
                     <div id="directPdfBtnContainer"></div>
                 </div>
             </div>
@@ -312,6 +312,7 @@
         </div>
     </div>
 
+    <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -417,7 +418,6 @@
             let mStart = new Date(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date);
             let mEnd = new Date(t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date);
 
-            // Time Manipulation Checks
             if (!isNaN(mStart) && !isNaN(mEnd)) {
                 let meetDiffHours = (mEnd - mStart) / 3600000;
                 if (meetDiffHours < 24) { findingsList.push({ name: "Meeting Rigged", ev: "প্রি-টেন্ডার মিটিংয়ের সময় ১ দিনেরও কম।" }); ruleKeys.push('meeting'); }
@@ -467,7 +467,6 @@
                         return t;
                     });
                     
-                    // DEFAULT SORT BY HIGH RISK FIRST
                     const riskOrder = { "HIGH": 1, "MEDIUM": 2, "LOW": 3 };
                     globalData.sort((a, b) => (riskOrder[a.Risk_Level] || 4) - (riskOrder[b.Risk_Level] || 4));
 
@@ -702,7 +701,6 @@
                 let pattern = intVal.split('').join('[\\s\\,\\.\\r\\n]*');
                 regex = new RegExp(`.{0,40}${pattern}.{0,40}`, 'gi');
             } else if (type === 'date') {
-                // Ignore time part in DB e.g., "12-Oct-2023 11:00:00" -> "12-Oct-2023"
                 cleanVal = searchVal.split(' ')[0].trim();
                 let dateParts = cleanVal.split(/[-\/\s,]+/);
                 if(dateParts.length < 3) return null;
@@ -780,9 +778,9 @@
             else if (safeScore >= 40) document.getElementById('riskMeterFill').style.background = "#f59e0b";
             else document.getElementById('riskMeterFill').style.background = "#10b981";
 
-            document.getElementById('pdfMetaBox').innerHTML = "Waiting for PDF Scan...";
+            document.getElementById('pdfMetaBox').innerHTML = "Extracting raw data from Original PDF...";
 
-            // POPULATING DB INFO
+            // POPULATING DB INFO (AS FALLBACK/COMPARISON)
             document.getElementById('insVal').innerText = formatCurrency(t.Contract_Value_BDT) + ` (৳${safeNum(t.Contract_Value_BDT)})`;
             document.getElementById('insPrice').innerText = t.Document_Price_BDT ? `৳${t.Document_Price_BDT}` : "N/A";
             document.getElementById('insSold').innerText = t.Tenders_Sold || "0";
@@ -814,7 +812,7 @@
                 const tenderIdStr = String(t.Tender_Proposal_ID);
                 const isZeroValue = exactDbVal === "0";
 
-                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s) for deep anomalies...</div>`;
+                pdfCol.innerHTML = `<h4>📄 Original PDF Evidence</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s)...</div>`;
 
                 let verificationItems = [
                     { key: "Tender ID", val: tenderIdStr, found: false, type: "exact" }
@@ -834,10 +832,12 @@
                 let highlightSnippets = [];
                 let additionalFlags = [];
                 let finalMeta = null;
+                let pdfReadable = false;
 
                 for (let i = 0; i < pdfFiles.length; i++) {
                     const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFiles[i]}`);
-                    if (pdfResult && pdfResult.text) {
+                    if (pdfResult && pdfResult.text && pdfResult.text.length > 50) {
+                        pdfReadable = true;
                         finalMeta = pdfResult.meta;
                         const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
 
@@ -848,7 +848,7 @@
                             if (m) {
                                 item.found = true;
                                 let hl = `<mark style="background:#10b981; color:#fff; font-weight:bold;">${m}</mark>`;
-                                if (item.type === 'price' && !m.includes(item.val.split('.')[0])) hl = `<mark style="background:#f59e0b; color:#000; font-weight:bold;">${m}</mark>`; // Fuzzy fallback highlight
+                                if (item.type === 'price' && !m.includes(item.val.split('.')[0])) hl = `<mark style="background:#f59e0b; color:#000; font-weight:bold;">${m}</mark>`; 
                                 highlightSnippets.push(`<strong>[${item.key}]</strong> ...${hl}...`);
                             }
                         });
@@ -871,20 +871,25 @@
                 }
 
                 let matchStatusHtml = "";
-                verificationItems.forEach(item => {
-                    if (item.type === 'skip') {
-                        matchStatusHtml += `<div class="scan-item" style="color: #38bdf8; font-weight: bold;">ℹ️ ${item.key}: ${item.note}</div>`;
-                    } else if (item.found) {
-                        matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ ${item.key} Verified.</div>`;
-                    } else if (item.type !== 'rule') {
-                        matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ ${item.key} NOT Found in PDF!</div>`;
-                    }
-                });
-
-                if(additionalFlags.length > 0) {
-                    additionalFlags.forEach(flag => {
-                        matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-size:13px;">🚨 Flag: ${flag}</div>`;
+                
+                if (!pdfReadable) {
+                    matchStatusHtml = `<div class="scan-item" style="color: #f59e0b; font-weight: bold; line-height:1.4;">⚠️ অস্পষ্ট স্ক্যান: পিডিএফটি পড়া যাচ্ছে না। ডেটাবেস (JSON) থেকে তথ্য দেখানো হচ্ছে। (No Direct Red Flag)</div>`;
+                } else {
+                    verificationItems.forEach(item => {
+                        if (item.type === 'skip') {
+                            matchStatusHtml += `<div class="scan-item" style="color: #38bdf8; font-weight: bold;">ℹ️ ${item.key}: ${item.note}</div>`;
+                        } else if (item.found) {
+                            matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ ${item.key} Verified from PDF.</div>`;
+                        } else if (item.type !== 'rule') {
+                            matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ ${item.key} NOT Found in PDF!</div>`;
+                        }
                     });
+
+                    if(additionalFlags.length > 0) {
+                        additionalFlags.forEach(flag => {
+                            matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-size:13px;">🚨 Flag: ${flag}</div>`;
+                        });
+                    }
                 }
 
                 if(finalMeta) {
@@ -911,7 +916,7 @@
                 });
 
                 pdfCol.innerHTML = `
-                    <h4>📄 Live PDF Scan Result</h4>
+                    <h4>📄 Original PDF Evidence</h4>
                     <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 4px; padding: 10px; margin-bottom: 10px;">
                         ${matchStatusHtml}
                     </div>
@@ -919,7 +924,7 @@
                     <div style="text-align: center; border-top: 1px dashed #334155; padding-top: 10px;">${buttonsHtml}</div>
                 `;
             } else {
-                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="color:var(--text-muted); margin-top:20px;">⚠️ No original PDF attached to this record.</div>`;
+                pdfCol.innerHTML = `<h4>📄 Original PDF Evidence</h4><div style="color:var(--text-muted); margin-top:20px;">⚠️ No original PDF attached to this record.</div>`;
             }
 
             document.getElementById('inspectorModal').style.display = 'flex';
