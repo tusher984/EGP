@@ -34,6 +34,8 @@
         .btn-home:hover { background: #047857; transform: translateY(-1px); }
         .btn-nexus { padding: 8px 20px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #7e22ce; font-family: inherit; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);}
         .btn-nexus:hover { background-color: #6b21a8; transform: translateY(-2px);}
+        .btn-folder { padding: 8px 20px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #ea580c; font-family: inherit; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);}
+        .btn-folder:hover { background-color: #c2410c; transform: translateY(-2px);}
 
         .evidence-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 5px solid var(--netra-red); }
         .evidence-section h3 { margin: 0 0 15px 0; font-size: 20px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px;}
@@ -127,6 +129,8 @@
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="header-buttons">
                 <button class="btn-home" onclick="resetDashboard()" title="রিসেট">🏠 হোম / সব ফিল্টার রিসেট</button>
+                <label for="jsonUpload" class="btn-nexus" style="cursor: pointer; display: inline-block;">📂 Load Custom JSON</label>
+                <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="loadCustomJSON(event)">
                 <button class="btn-nexus" onclick="openNetworkMap()">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
             </div>
         </header>
@@ -241,7 +245,8 @@
                     <h2 style="margin:0 0 5px 0; color:var(--neon-blue); font-family:-apple-system, sans-serif; font-weight:800; font-size: 22px;">🔍 Data Labelling & Correction Tool</h2>
                     <div class="docket-meta">
                         Tender ID: <strong id="footprintID" style="color:var(--text-light); font-size:13px;"></strong><br>
-                        Generated: <span id="timestampData"></span>
+                        Generated: <span id="timestampData"></span><br>
+                        System Hash: <span id="hashData" style="color:#10b981; font-family: monospace;"></span>
                     </div>
                 </div>
             </div>
@@ -309,7 +314,7 @@
         let currentFilteredData = [];
         let activeRuleKey = null; 
         let currentTenderIdInModal = null;
-
+        
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
         let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
         let redFlagChartObj = null, singleBidderChartObj = null, riskValuePieChartObj = null;
@@ -351,7 +356,9 @@
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch (e) { return "HASH_ERROR"; }
+            } catch (e) {
+                return "HASH_ERROR_OR_INSECURE_CONTEXT";
+            }
         }
 
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
@@ -381,17 +388,18 @@
 
         async function checkFileExists(url) {
             try {
-                const response = await fetch(url, { method: 'HEAD' });
+                const encodedUrl = encodeURI(url);
+                const response = await fetch(encodedUrl, { method: 'HEAD', cache: 'no-store' });
                 return response.ok;
             } catch (e) {
                 return false;
             }
         }
 
-        // SMART GITHUB FINDER ENGINE (DUAL FOLDERS)
         async function getPdfFilesListFromGithub(t) {
             let files = [];
             let idStr = String(t.Tender_Proposal_ID);
+            
             let noticeDir = 'Tender Notice_PDFs/';
             let awardDir = 'Contract_Awards_PDFs/';
 
@@ -404,17 +412,15 @@
                 if(f.length > 0) rawFiles.push(f.toLowerCase().endsWith('.pdf') ? f : f + '.pdf'); 
             }
 
-            // 1. Check exact names in both folders
             for(let f of rawFiles) {
                 let nPath = noticeDir + f;
                 let aPath = awardDir + f;
                 if(await checkFileExists(nPath)) files.push({name: f, path: nPath});
                 else if(await checkFileExists(aPath)) files.push({name: f, path: aPath});
-                else files.push({name: f, path: nPath}); // Default fallback so button appears
+                else files.push({name: f, path: nPath}); 
             }
 
-            // 2. If no files found, Aggressively guess common file names using ID in both folders
-            if (files.length === 0 && idStr) {
+            if (files.length === 0 && idStr && idStr !== "undefined") {
                 let noticeGuesses = [`${idStr}.pdf`, `${idStr}_Notice.pdf`, `Notice_${idStr}.pdf`];
                 let awardGuesses = [`${idStr}_NOA.pdf`, `NOA_${idStr}.pdf`, `${idStr}_Award.pdf`, `${idStr}.pdf`];
                 
@@ -506,7 +512,7 @@
                     document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--netra-red); padding:30px; font-size:16px; font-weight:bold;">⚠️ Security Blocked: You must run this using VS Code 'Live Server' or XAMPP.</td></tr>`;
                     return;
                 }
-                const res = await fetch(defaultJsonFileName);
+                const res = await fetch(defaultJsonFileName, { cache: 'no-store' });
                 if (res.ok) {
                     try {
                         const data = await res.json();
@@ -521,6 +527,25 @@
             } catch (err) {
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--netra-red); padding:30px; font-size:16px;">⚠️ Network Error: ${err.message}</td></tr>`;
             }
+        }
+
+        function loadCustomJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; color: #38bdf8; padding:30px; font-size:16px; font-weight:bold;">⏳ ডেটা লোড হচ্ছে... দয়া করে অপেক্ষা করুন।</td></tr>`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    let dataArray = Array.isArray(data) ? data : (data.Merged_Database || []);
+                    processAndRenderData(dataArray);
+                } catch (err) {
+                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--netra-red); padding:30px; font-size:16px;">⚠️ Error parsing JSON: ${err.message}</td></tr>`;
+                }
+            };
+            reader.readAsText(file);
         }
 
         function debouncedFilter() { clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { triggerFilter(); }, 300); }
@@ -695,10 +720,9 @@
             return null;
         }
 
-        // FAST PDF TEXT EXTRACTION
         async function extractTextFromPDF(pdfUrl) {
             try {
-                const pdf = await pdfjsLib.getDocument(pdfUrl).promise; let text = '';
+                const pdf = await pdfjsLib.getDocument(encodeURI(pdfUrl)).promise; let text = '';
                 for (let i = 1; i <= pdf.numPages; i++) { 
                     const page = await pdf.getPage(i); 
                     const content = await page.getTextContent(); 
@@ -710,7 +734,7 @@
 
         function showPdfInModalUrl(url, keyword) {
             const container = document.getElementById('pdfViewerContainer');
-            const targetUrl = url + `#search=${encodeURIComponent(keyword)}`;
+            const targetUrl = encodeURI(url) + `#search=${encodeURIComponent(keyword)}`;
             document.getElementById('pdfIframe').src = targetUrl; 
             document.getElementById('pdfFallbackLink').href = targetUrl;
             container.style.display = 'block'; 
