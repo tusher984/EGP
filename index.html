@@ -129,13 +129,8 @@
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="header-buttons">
                 <button class="btn-home" onclick="resetDashboard()" title="রিসেট">🏠 হোম / সব ফিল্টার রিসেট</button>
-                
-                <label for="pdfFolderUpload" class="btn-folder" title="আপনার লোকাল ফোল্ডার সিলেক্ট করুন, টেন্ডার আইডি দিয়ে পিডিএফ অটো-ম্যাচ হবে">📁 Select PDF Folder</label>
-                <input type="file" id="pdfFolderUpload" webkitdirectory directory multiple style="display: none;" onchange="loadPDFFolder(event)">
-                
                 <label for="jsonUpload" class="btn-nexus" style="cursor: pointer; display: inline-block;">📂 Load Custom JSON</label>
                 <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="loadCustomJSON(event)">
-                
                 <button class="btn-nexus" onclick="openNetworkMap()">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
             </div>
         </header>
@@ -318,8 +313,6 @@
         let currentFilteredData = [];
         let activeRuleKey = null; 
         let currentTenderIdInModal = null;
-        
-        let localPDFFiles = []; 
 
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
         let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
@@ -350,7 +343,7 @@
             cpv: { title: "EU CPV Regulation / e-GP Metadata Manipulation", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।", penalty: "টেন্ডার প্রক্রিয়া বাতিল।" },
             tailored: { title: "PPR 2008 Rule 98 – Restrictive Qualification Criteria", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।", penalty: "পুনঃদরপত্র আহ্বান।" },
             monopoly: { title: "e-PG3 ITT 50.6 – Lack of Effective Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।", penalty: "টেন্ডার বাতিল।" },
-            outlier: { title: "World Bank ALB Guideline", enacted: "বিশ্বব্যাংক রেগুলেশন", purpose: "বাজেটের চেয়েঙ্ঘ অনেক বেশি বা কম দরে বিড করা।", penalty: "টেন্ডার সরাসরি বাতিল।" },
+            outlier: { title: "World Bank ALB Guideline", enacted: "বিশ্বব্যাংক রেগুলেশন", purpose: "বাজেটের চেয়ে অনেক বেশি বা কম দরে বিড করা।", penalty: "টেন্ডার সরাসরি বাতিল।" },
             meeting: { title: "Pre-Tender Meeting Manipulation", enacted: "২০০৮ (PPR)", purpose: "মিটিংয়ের সময় অত্যন্ত কম বা একই দিনে করে অন্যদের প্রস্তুতির সুযোগ না দেওয়া।", penalty: "অডিট আপত্তি ও রি-টেন্ডার।" },
             rigging: { title: "Competition Act 2012 / Bid Rigging", enacted: "২০১২ (প্রতিযোগিতা আইন)", purpose: "শিডিউল কিনে জমা না দেওয়া সিন্ডিকেশনের প্রমাণ।", penalty: "জরিমানা ও ডিবরমেন্ট।" }
         };
@@ -392,24 +385,30 @@
             return v.toLocaleString('en-IN');
         }
 
-        function loadPDFFolder(event) {
-            localPDFFiles = Array.from(event.target.files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
-            alert(`✅ ${localPDFFiles.length} PDFs loaded successfully! \n\nNow whenever you click "🔍 প্রমাণ যাচাই", the system will automatically find and match PDFs containing the Tender ID from this folder!`);
-        }
-
+        // ============================================
+        // BULLETPROOF PDF FILE LIST EXTRACTOR
+        // ============================================
         function getPdfFilesList(t) {
-            let idStr = String(t.Tender_Proposal_ID);
-            if (localPDFFiles.length > 0) {
-                let matches = localPDFFiles.filter(f => f.name.includes(idStr));
-                if(matches.length > 0) return matches;
-            }
             let files = [];
+            
+            // Priority 1: Check Source_Files_Merged
             if (t.Source_Files_Merged && t.Source_Files_Merged !== "undefined" && t.Source_Files_Merged !== "-") {
-                files = String(t.Source_Files_Merged).split(/\||,|;/).map(f=>f.trim()).filter(f=>f.toLowerCase().endsWith('.pdf'));
-            } else if (t.Source_File && t.Source_File !== "undefined" && t.Source_File !== "-") { 
-                let f = String(t.Source_File).trim(); if(f.toLowerCase().endsWith('.pdf')) files.push(f); 
+                let raw = String(t.Source_Files_Merged).split(/\||,|;/).map(f=>f.trim()).filter(f=>f.length > 0);
+                // Append .pdf if missing so it doesn't get filtered out
+                raw.forEach(f => files.push(f.toLowerCase().endsWith('.pdf') ? f : f + '.pdf'));
+            } 
+            // Priority 2: Check Source_File
+            else if (t.Source_File && t.Source_File !== "undefined" && t.Source_File !== "-") { 
+                let f = String(t.Source_File).trim(); 
+                if(f.length > 0) files.push(f.toLowerCase().endsWith('.pdf') ? f : f + '.pdf'); 
             }
-            return files;
+            
+            // Priority 3: Fallback using Tender ID if everything else is empty
+            if (files.length === 0 && t.Tender_Proposal_ID) {
+                files.push(`${t.Tender_Proposal_ID}.pdf`);
+            }
+            
+            return [...new Set(files)]; // Return unique files
         }
 
         function analyzeEligibilityAI(text, reasonsArray = []) {
@@ -593,6 +592,9 @@
             document.getElementById('totalOwnersMissing').innerText = missing.toLocaleString() + " টি";
         }
 
+        // ===============================================
+        // BUG FIX: ALL CHART VARIABLES PROPERLY RESTORED
+        // ===============================================
         function updateDynamicCharts(data) {
             let v = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
             const sups = {}, dates = {}, ags = {}, reasons = {}; let tSold=0, tRecv=0, tResp=0, hc=0, mc=0, lc=0, hv=0, mv=0, lv=0;
@@ -607,7 +609,7 @@
                 if(dStr && !isNaN(new Date(dStr))) { let d = new Date(dStr), my = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`; if(!dates[my]) dates[my] = { HIGH:0, MEDIUM:0, LOW:0 }; dates[my][t.Risk_Level||'LOW']++; }
                 tSold += safeNum(t.Tenders_Sold); tRecv += safeNum(t.Tenders_Received); tResp += safeNum(t.Responsive_Tenders);
                 
-                // POPULATE REASONS (FIXED BUG HERE)
+                // Reason tracking for chart
                 if(t._findings && t._findings.csv && t._findings.csv !== "-") { 
                     let c = t._findings.csv.split(' (Proof')[0].trim().substring(0, 20); 
                     reasons[c] = (reasons[c] || 0) + 1; 
@@ -616,23 +618,41 @@
 
             ['owner','split','cpv','tailored','monopoly','outlier','meeting','rigging'].forEach(key => document.getElementById('count-'+key).innerText = v[key].toLocaleString());
 
-            const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }; const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:11, family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
+            const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }; 
+            const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:11, family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
 
-            if(violationChartObj) violationChartObj.destroy(); violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: '#1e3a8a' }] }, options: barY });
-            if(dropoutChartObj) dropoutChartObj.destroy(); dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: ['#cc0000', '#60a5fa', '#38bdf8'] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
+            if(violationChartObj) violationChartObj.destroy(); 
+            violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: '#1e3a8a' }] }, options: barY });
+            
+            if(dropoutChartObj) dropoutChartObj.destroy(); 
+            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: ['#cc0000', '#60a5fa', '#38bdf8'] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
+            
             const sTop5 = (obj) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(syndicateChartObj) syndicateChartObj.destroy(); syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: '#cc0000' }] }, options: barY });
+            
+            if(syndicateChartObj) syndicateChartObj.destroy(); 
+            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: '#cc0000' }] }, options: barY });
+            
             const sD = Object.keys(dates).sort();
-            if(timelineChartObj) timelineChartObj.destroy(); timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: '#cc0000', fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: '#1e3a8a' }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
+            
+            if(timelineChartObj) timelineChartObj.destroy(); 
+            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: '#cc0000', fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: '#1e3a8a' }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
+            
             const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
-            if(riskPieChartObj) riskPieChartObj.destroy(); riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
-            if(agencyChartObj) agencyChartObj.destroy(); agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: '#1e3a8a' }] }, options: barY });
+            
+            if(riskPieChartObj) riskPieChartObj.destroy(); 
+            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            
+            if(agencyChartObj) agencyChartObj.destroy(); 
+            agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: '#1e3a8a' }] }, options: barY });
             
             if(redFlagChartObj) redFlagChartObj.destroy(); 
             redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: sTop5(reasons).map(r => r[0]), datasets: [{ data: sTop5(reasons).map(r => r[1]), backgroundColor: '#60a5fa' }] }, options: barY });
             
-            if(singleBidderChartObj) singleBidderChartObj.destroy(); singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: ['#cc0000', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
-            if(riskValuePieChartObj) riskValuePieChartObj.destroy(); riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            if(singleBidderChartObj) singleBidderChartObj.destroy(); 
+            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: ['#cc0000', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            
+            if(riskValuePieChartObj) riskValuePieChartObj.destroy(); 
+            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
         }
 
         function openNetworkMap() {
@@ -694,11 +714,12 @@
             } catch (error) { return null; }
         }
 
-        function showPdfInModalUrl(url, keyword) {
+        function showPdfInModal(filename, keyword) {
             const container = document.getElementById('pdfViewerContainer');
-            const targetUrl = url + `#search=${encodeURIComponent(keyword)}`;
-            document.getElementById('pdfIframe').src = targetUrl; 
-            document.getElementById('pdfFallbackLink').href = targetUrl;
+            // Host URL path for GitHub pages
+            const pdfUrl = `downloaded_pdfs/${filename}#search=${encodeURIComponent(keyword)}`;
+            document.getElementById('pdfIframe').src = pdfUrl; 
+            document.getElementById('pdfFallbackLink').href = pdfUrl;
             container.style.display = 'block'; 
             setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
         }
@@ -735,184 +756,185 @@
             </tr>`;
         }
 
-        async function processPdfFilesForData(t, pdfFiles, exactDbVal, tenderIdStr, isZeroValue) {
-            let verifyItems = [
-                { key: "Tender ID", id: "fin_id", val: tenderIdStr, type: "exact", matches: [] },
-                { key: "Contract Value", id: "fin_val", val: exactDbVal, type: isZeroValue ? "skip" : "price", matches: [] },
-                { key: "Document Price", id: "fin_doc_price", val: String(t.Document_Price_BDT||"").trim(), type: "doc_price", matches: [] },
-                { key: "Publish Date", id: "fin_pub", val: String(t.Advertised_Date||"").trim(), type: "date", matches: [] },
-                { key: "Closing Date", id: "fin_close", val: String(t.Closing_Date||"").trim(), type: "date", matches: [] },
-                { key: "Meeting Start", id: "fin_mstart", val: String(t.Pre_Tender_Meeting_Start||t.Pre_Tender_Meeting_Start_Date||"").trim(), type: "date", matches: [] },
-                { key: "Meeting End", id: "fin_mend", val: String(t.Pre_Tender_Meeting_End||t.Pre_Tender_Meeting_End_Date||"").trim(), type: "date", matches: [] },
-                { key: "NOA Date", id: "fin_noa", val: String(t.Notification_of_Award_Date||"").trim(), type: "date", matches: [] },
-                { key: "Signing Date", id: "fin_sign", val: String(t.Contract_Signing_Date||"").trim(), type: "date", matches: [] },
-                { key: "CPV Code", id: "fin_cpv", val: String(t.CPV_Code||"").trim(), type: "exact", matches: [] }
-            ];
-
-            let finalMeta = null;
-            let ruleViolationsFoundInPDF = [];
-
-            for (let i = 0; i < pdfFiles.length; i++) {
-                let fileObj = pdfFiles[i];
-                let isLocalFile = typeof fileObj !== 'string';
-                let docName = isLocalFile ? fileObj.name : fileObj;
-                let fileUrl = isLocalFile ? URL.createObjectURL(fileObj) : `downloaded_pdfs/${docName}`;
-
-                const pdfResult = await extractTextFromPDF(fileUrl);
-                
-                if (pdfResult && pdfResult.text && pdfResult.text.length > 50) {
-                    finalMeta = pdfResult.meta;
-                    const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
-                    
-                    verifyItems.forEach(item => {
-                        if (item.type === 'skip') return;
-                        let m = findInPDF(livePdfText, item.val, item.type);
-                        if (m) {
-                            let isPart = false;
-                            if ((item.type === 'price' || item.type === 'doc_price') && !m.includes(item.val.split('.')[0])) isPart = true;
-                            if (!item.matches.some(x => x.text === m && x.doc === docName)) {
-                                item.matches.push({ doc: docName, text: m, isPartial: isPart });
-                            }
-                        }
-                    });
-
-                    if (t._findings && t._findings.keys) {
-                        if (t._findings.keys.tailored) {
-                            let tailoredRegex = /\b(rajuk|cda|kda|pwd|lged|petrobangla)\b|\d+\.[1-9]\d+\s*(crore|lac|lakh)|(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i;
-                            let ruleMatch = livePdfText.match(new RegExp(`.{0,40}(${tailoredRegex.source}).{0,40}`, 'gi'));
-                            if(ruleMatch && ruleMatch[0] && !ruleViolationsFoundInPDF.some(r => r.key === 'Tailored Criteria Evidence' && r.doc === docName)) {
-                                ruleViolationsFoundInPDF.push({ doc: docName, key: 'Tailored Criteria Evidence', match: ruleMatch[0].replace(tailoredRegex, `<mark style="background:#ef4444; color:#fff; font-weight:bold;">$&</mark>`) });
-                            }
-                        }
-                        if (/cancel|re-tender|court|stay order/i.test(livePdfText) && !ruleViolationsFoundInPDF.some(r => r.key === 'Legal / Stay Order' && r.doc === docName)) {
-                            ruleViolationsFoundInPDF.push({ doc: docName, key: 'Legal / Stay Order', match: "Found text related to cancel/court/re-tender" });
-                        }
-                    }
-                }
-            }
-            return { verifyItems, finalMeta, ruleViolationsFoundInPDF };
-        }
-
+        // ============================================
+        // TRY-CATCH WRAPPED PDF SCANNER TO PREVENT HANGING
+        // ============================================
         async function showDataInspector(tenderId) {
-            const t = currentFilteredData.find(x => x.Tender_Proposal_ID == tenderId);
-            if(!t) return;
+            try {
+                const t = currentFilteredData.find(x => x.Tender_Proposal_ID == tenderId);
+                if(!t) return;
 
-            currentTenderIdInModal = tenderId;
-            
-            // 1. OPEN MODAL IMMEDIATELY
-            document.getElementById('inspectorModal').style.display = 'flex';
-            document.getElementById('mergeActionContainer').innerHTML = '';
-            document.getElementById('pdfViewerContainer').style.display = 'none';
-            document.getElementById('investigationBox').style.display = 'none';
-            document.getElementById('timestampData').innerText = new Date().toISOString();
-            document.getElementById('footprintID').innerText = t.Tender_Proposal_ID;
-            
-            const hashVal = await generateHash(JSON.stringify(t));
-            document.getElementById('hashData').innerText = hashVal;
+                currentTenderIdInModal = tenderId;
+                
+                // 1. OPEN MODAL IMMEDIATELY
+                document.getElementById('inspectorModal').style.display = 'flex';
+                document.getElementById('mergeActionContainer').innerHTML = '';
+                document.getElementById('pdfViewerContainer').style.display = 'none';
+                document.getElementById('investigationBox').style.display = 'none';
+                document.getElementById('timestampData').innerText = new Date().toISOString();
+                document.getElementById('footprintID').innerText = t.Tender_Proposal_ID;
+                
+                const hashVal = await generateHash(JSON.stringify(t));
+                document.getElementById('hashData').innerText = hashVal;
 
-            let safeScore = t._findings && t._findings.score ? t._findings.score : 0;
-            document.getElementById('riskScoreText').innerText = safeScore + "%";
-            document.getElementById('riskMeterFill').style.width = safeScore + "%";
-            if (safeScore >= 80) document.getElementById('riskMeterFill').style.background = "#ef4444";
-            else if (safeScore >= 40) document.getElementById('riskMeterFill').style.background = "#f59e0b";
-            else document.getElementById('riskMeterFill').style.background = "#10b981";
+                let safeScore = t._findings && t._findings.score ? t._findings.score : 0;
+                document.getElementById('riskScoreText').innerText = safeScore + "%";
+                document.getElementById('riskMeterFill').style.width = safeScore + "%";
+                if (safeScore >= 80) document.getElementById('riskMeterFill').style.background = "#ef4444";
+                else if (safeScore >= 40) document.getElementById('riskMeterFill').style.background = "#f59e0b";
+                else document.getElementById('riskMeterFill').style.background = "#10b981";
 
-            document.getElementById('pdfMetaBox').innerHTML = "Extracting Data...";
-            
-            // SHOW FAST LOADING STATE
-            document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:#38bdf8; padding: 40px; font-size:16px; font-weight:bold;">⚡ PDF স্ক্যান হচ্ছে... (0.5 Second)</td></tr>`;
-            document.getElementById('pdfActionButtons').innerHTML = '';
+                document.getElementById('pdfMetaBox').innerHTML = "Extracting Data...";
+                document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:#38bdf8; padding: 40px; font-size:16px; font-weight:bold;">⚡ PDF স্ক্যান হচ্ছে... (0.5 Second)</td></tr>`;
+                document.getElementById('pdfActionButtons').innerHTML = '';
 
-            let pdfFiles = getPdfFilesList(t);
-            
-            if (pdfFiles.length > 0) {
-                const exactDbVal = safeNum(t.Contract_Value_BDT).toString();
-                const intDbVal = exactDbVal.includes('.') ? exactDbVal.split('.')[0] : exactDbVal;
-                const tenderIdStr = String(t.Tender_Proposal_ID);
-                const isZeroValue = exactDbVal === "0";
+                let pdfFiles = getPdfFilesList(t);
+                
+                if (pdfFiles.length > 0) {
+                    const exactDbVal = safeNum(t.Contract_Value_BDT).toString();
+                    const intDbVal = exactDbVal.includes('.') ? exactDbVal.split('.')[0] : exactDbVal;
+                    const tenderIdStr = String(t.Tender_Proposal_ID);
+                    const isZeroValue = exactDbVal === "0";
 
-                // 2. RUN EXTRACTION IN BACKGROUND WITHOUT BLOCKING UI
-                setTimeout(async () => {
-                    let { verifyItems, finalMeta, ruleViolationsFoundInPDF } = await processPdfFilesForData(t, pdfFiles, exactDbVal, tenderIdStr, isZeroValue);
+                    // 2. NON-BLOCKING EXTRACTION WITH TRY-CATCH
+                    setTimeout(async () => {
+                        try {
+                            let verifyItems = [
+                                { key: "Tender ID", id: "fin_id", val: tenderIdStr, type: "exact", matches: [] },
+                                { key: "Contract Value", id: "fin_val", val: exactDbVal, type: isZeroValue ? "skip" : "price", matches: [] },
+                                { key: "Document Price", id: "fin_doc_price", val: String(t.Document_Price_BDT||"").trim(), type: "doc_price", matches: [] },
+                                { key: "Publish Date", id: "fin_pub", val: String(t.Advertised_Date||"").trim(), type: "date", matches: [] },
+                                { key: "Closing Date", id: "fin_close", val: String(t.Closing_Date||"").trim(), type: "date", matches: [] },
+                                { key: "Meeting Start", id: "fin_mstart", val: String(t.Pre_Tender_Meeting_Start||t.Pre_Tender_Meeting_Start_Date||"").trim(), type: "date", matches: [] },
+                                { key: "Meeting End", id: "fin_mend", val: String(t.Pre_Tender_Meeting_End||t.Pre_Tender_Meeting_End_Date||"").trim(), type: "date", matches: [] },
+                                { key: "NOA Date", id: "fin_noa", val: String(t.Notification_of_Award_Date||"").trim(), type: "date", matches: [] },
+                                { key: "Signing Date", id: "fin_sign", val: String(t.Contract_Signing_Date||"").trim(), type: "date", matches: [] },
+                                { key: "CPV Code", id: "fin_cpv", val: String(t.CPV_Code||"").trim(), type: "exact", matches: [] }
+                            ];
 
-                    if(finalMeta) document.getElementById('pdfMetaBox').innerHTML = `Created: <span class="meta-tag">${finalMeta.CreationDate ? finalMeta.CreationDate.substring(2,10) : 'Hidden'}</span><br>Creator: <span class="meta-tag">${finalMeta.Creator || 'Unknown'}</span><br>Producer: <span class="meta-tag">${finalMeta.Producer || 'Unknown'}</span>`;
-                    else document.getElementById('pdfMetaBox').innerHTML = `<span style="color:var(--netra-red)">No Metadata Found / PDFs Unreadable</span>`;
+                            let finalMeta = null;
+                            let ruleViolationsFoundInPDF = [];
 
-                    let rowsHtml = verifyItems.map(item => buildVerificationRow(item)).join('');
-                    
-                    rowsHtml += `<tr><td style="font-weight:bold;">Sold / Recv / Resp</td><td style="color:#94a3b8;">${t.Tenders_Sold||0} / ${t.Tenders_Received||0} / ${t.Responsive_Tenders||0}</td><td><span style="color:#94a3b8; font-size:11px;">*Check PDF manually</span></td>
-                        <td>
-                            <input type="text" id="fin_sold" class="edit-input" style="width:28%; display:inline;" value="${t.Tenders_Sold||0}"> / 
-                            <input type="text" id="fin_recv" class="edit-input" style="width:28%; display:inline;" value="${t.Tenders_Received||0}"> / 
-                            <input type="text" id="fin_resp" class="edit-input" style="width:28%; display:inline;" value="${t.Responsive_Tenders||0}">
-                        </td></tr>`;
-                    
-                    let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "";
-                    rowsHtml += `<tr><td style="font-weight:bold;">Eligibility Criteria</td><td style="color:#94a3b8; font-size:11px;">${rawExp.substring(0,80)}...</td><td><span style="color:#94a3b8; font-size:11px;">*Edit below if needed</span></td>
-                        <td><textarea id="fin_exp" class="edit-textarea">${rawExp}</textarea></td></tr>`;
+                            for (let i = 0; i < pdfFiles.length; i++) {
+                                let docName = pdfFiles[i];
+                                let fileUrl = `downloaded_pdfs/${docName}`;
 
-                    document.getElementById('verifyTableBody').innerHTML = rowsHtml;
+                                const pdfResult = await extractTextFromPDF(fileUrl);
+                                
+                                if (pdfResult && pdfResult.text && pdfResult.text.length > 50) {
+                                    finalMeta = pdfResult.meta;
+                                    const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
+                                    
+                                    verifyItems.forEach(item => {
+                                        if (item.type === 'skip') return;
+                                        let m = findInPDF(livePdfText, item.val, item.type);
+                                        if (m) {
+                                            let isPart = false;
+                                            if ((item.type === 'price' || item.type === 'doc_price') && !m.includes(item.val.split('.')[0])) isPart = true;
+                                            if (!item.matches.some(x => x.text === m && x.doc === docName)) {
+                                                item.matches.push({ doc: docName, text: m, isPartial: isPart });
+                                            }
+                                        }
+                                    });
 
-                    let buttonsHtml = '';
-                    pdfFiles.forEach((fileObj, i) => {
-                        let isLocalFile = typeof fileObj !== 'string';
-                        let docName = isLocalFile ? fileObj.name : fileObj;
-                        let lower = docName.toLowerCase(); 
-                        let searchKeyword = tenderIdStr; 
-                        let label = "📄 " + docName;
-                        
-                        if (lower.includes('notice') || i===0) { 
-                            label = "📄 Tender Notice"; 
+                                    if (t._findings && t._findings.keys) {
+                                        if (t._findings.keys.tailored) {
+                                            let tailoredRegex = /\b(rajuk|cda|kda|pwd|lged|petrobangla)\b|\d+\.[1-9]\d+\s*(crore|lac|lakh)|(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i;
+                                            let ruleMatch = livePdfText.match(new RegExp(`.{0,40}(${tailoredRegex.source}).{0,40}`, 'gi'));
+                                            if(ruleMatch && ruleMatch[0] && !ruleViolationsFoundInPDF.some(r => r.key === 'Tailored Criteria Evidence' && r.doc === docName)) {
+                                                ruleViolationsFoundInPDF.push({ doc: docName, key: 'Tailored Criteria Evidence', match: ruleMatch[0].replace(tailoredRegex, `<mark style="background:#ef4444; color:#fff; font-weight:bold;">$&</mark>`) });
+                                            }
+                                        }
+                                        if (/cancel|re-tender|court|stay order/i.test(livePdfText) && !ruleViolationsFoundInPDF.some(r => r.key === 'Legal / Stay Order' && r.doc === docName)) {
+                                            ruleViolationsFoundInPDF.push({ doc: docName, key: 'Legal / Stay Order', match: "Found text related to cancel/court/re-tender" });
+                                        }
+                                    }
+                                }
+                            }
+
+                            // UPDATE UI
+                            if(finalMeta) document.getElementById('pdfMetaBox').innerHTML = `Created: <span class="meta-tag">${finalMeta.CreationDate ? finalMeta.CreationDate.substring(2,10) : 'Hidden'}</span><br>Creator: <span class="meta-tag">${finalMeta.Creator || 'Unknown'}</span><br>Producer: <span class="meta-tag">${finalMeta.Producer || 'Unknown'}</span>`;
+                            else document.getElementById('pdfMetaBox').innerHTML = `<span style="color:var(--netra-red)">No Metadata Found / PDFs Not Available in Server</span>`;
+
+                            let rowsHtml = verifyItems.map(item => buildVerificationRow(item)).join('');
+                            
+                            rowsHtml += `<tr><td style="font-weight:bold;">Sold / Recv / Resp</td><td style="color:#94a3b8;">${t.Tenders_Sold||0} / ${t.Tenders_Received||0} / ${t.Responsive_Tenders||0}</td><td><span style="color:#94a3b8; font-size:11px;">*Check PDF manually</span></td>
+                                <td>
+                                    <input type="text" id="fin_sold" class="edit-input" style="width:28%; display:inline;" value="${t.Tenders_Sold||0}"> / 
+                                    <input type="text" id="fin_recv" class="edit-input" style="width:28%; display:inline;" value="${t.Tenders_Received||0}"> / 
+                                    <input type="text" id="fin_resp" class="edit-input" style="width:28%; display:inline;" value="${t.Responsive_Tenders||0}">
+                                </td></tr>`;
+                            
+                            let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "";
+                            rowsHtml += `<tr><td style="font-weight:bold;">Eligibility Criteria</td><td style="color:#94a3b8; font-size:11px;">${rawExp.substring(0,80)}...</td><td><span style="color:#94a3b8; font-size:11px;">*Edit below if needed</span></td>
+                                <td><textarea id="fin_exp" class="edit-textarea">${rawExp}</textarea></td></tr>`;
+
+                            document.getElementById('verifyTableBody').innerHTML = rowsHtml;
+
+                            let buttonsHtml = '';
+                            pdfFiles.forEach((docName, i) => {
+                                let lower = docName.toLowerCase(); 
+                                let searchKeyword = tenderIdStr; 
+                                let label = "📄 " + docName;
+                                
+                                if (lower.includes('notice') || i===0) { 
+                                    label = "📄 Tender Notice"; 
+                                }
+                                if (lower.includes('noa') || lower.includes('award') || i === 1) {
+                                    label = "📄 Contract Award Notice";
+                                    searchKeyword = !isZeroValue ? intDbVal : tenderIdStr;
+                                }
+                                
+                                let btnClass = (i === 1 || lower.includes('noa')) ? "btn-highlight btn-highlight-alt" : "btn-highlight";
+                                buttonsHtml += `<button class="${btnClass}" onclick="showPdfInModal('${docName}', '${searchKeyword}')" style="margin-right:5px; padding: 6px 12px; font-size:13px;">${label}</button>`;
+                            });
+                            document.getElementById('pdfActionButtons').innerHTML = buttonsHtml;
+
+                            if (t.PDF_Verified) document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px; background:rgba(16,185,129,0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid #10b981;">✅ Verified & Merged</span>`;
+                            else document.getElementById('mergeActionContainer').innerHTML = `<button class="btn-merge" onclick="mergePDFDataToDB()">💾 Verify & Update Database</button>`;
+
+                            let invHtml = "";
+                            let pDate = new Date(t.Advertised_Date); let cDate = new Date(t.Closing_Date || t.Tender_Valid_Up_To);
+                            if(!isNaN(pDate) && !isNaN(cDate)) {
+                                let d = Math.ceil((cDate - pDate) / 86400000);
+                                if(d <= 14) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Rush Tender:</strong> Only ${d} days given to submit bid.</div>`;
+                                else invHtml += `<div class="inv-item"><strong style="color:#10b981;">✅ Timeline:</strong> ${d} days given to submit.</div>`;
+                            }
+                            
+                            let mS = new Date(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date); let mE = new Date(t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date);
+                            if(!isNaN(mS) && !isNaN(mE)) {
+                                let h = (mE - mS) / 3600000;
+                                if(h < 24) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Meeting Rigging:</strong> Pre-tender meeting was open for less than 24 hours (${h.toFixed(1)} hrs).</div>`;
+                            }
+                            
+                            let nDate = new Date(t.Notification_of_Award_Date); let sDate = new Date(t.Contract_Signing_Date);
+                            if(!isNaN(nDate) && !isNaN(sDate)) {
+                                let d = Math.ceil((sDate - nDate) / 86400000);
+                                if(d <= 3) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Lightning Execution:</strong> Contract signed in just ${d} days after NOA.</div>`;
+                            }
+
+                            if(ruleViolationsFoundInPDF.length > 0) {
+                                ruleViolationsFoundInPDF.forEach(r => {
+                                    invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 ${r.key} (${r.doc}):</strong> ...${r.match}...</div>`;
+                                });
+                            }
+
+                            if(invHtml) {
+                                document.getElementById('investigationBox').innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:#fff;">🕵️ Full Investigation Analytics:</div>${invHtml}`;
+                                document.getElementById('investigationBox').style.display = 'block';
+                            }
+                        } catch (scanErr) {
+                            document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--netra-red);">⚠️ স্ক্যান করতে সমস্যা হয়েছে: ${scanErr.message}</td></tr>`;
+                            document.getElementById('pdfMetaBox').innerHTML = "Scan Error";
                         }
-                        if (lower.includes('noa') || lower.includes('award') || i === 1) {
-                            label = "📄 Contract Award Notice";
-                            searchKeyword = !isZeroValue ? intDbVal : tenderIdStr;
-                        }
-                        
-                        let btnClass = (i === 1 || lower.includes('noa')) ? "btn-highlight btn-highlight-alt" : "btn-highlight";
-                        let fileUrl = isLocalFile ? URL.createObjectURL(fileObj) : `downloaded_pdfs/${docName}`;
-                        
-                        buttonsHtml += `<button class="${btnClass}" onclick="showPdfInModalUrl('${fileUrl}', '${searchKeyword}')" style="margin-right:5px; padding: 6px 12px; font-size:13px;">${label}</button>`;
-                    });
-                    document.getElementById('pdfActionButtons').innerHTML = buttonsHtml;
+                    }, 50);
 
-                    if (t.PDF_Verified) document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px; background:rgba(16,185,129,0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid #10b981;">✅ Verified & Merged</span>`;
-                    else document.getElementById('mergeActionContainer').innerHTML = `<button class="btn-merge" onclick="mergePDFDataToDB()">💾 Verify & Update Database</button>`;
-
-                    let invHtml = "";
-                    let pDate = new Date(t.Advertised_Date); let cDate = new Date(t.Closing_Date || t.Tender_Valid_Up_To);
-                    if(!isNaN(pDate) && !isNaN(cDate)) {
-                        let d = Math.ceil((cDate - pDate) / 86400000);
-                        if(d <= 14) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Rush Tender:</strong> Only ${d} days given to submit bid.</div>`;
-                        else invHtml += `<div class="inv-item"><strong style="color:#10b981;">✅ Timeline:</strong> ${d} days given to submit.</div>`;
-                    }
-                    
-                    let mS = new Date(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date); let mE = new Date(t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date);
-                    if(!isNaN(mS) && !isNaN(mE)) {
-                        let h = (mE - mS) / 3600000;
-                        if(h < 24) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Meeting Rigging:</strong> Pre-tender meeting was open for less than 24 hours (${h.toFixed(1)} hrs).</div>`;
-                    }
-                    
-                    let nDate = new Date(t.Notification_of_Award_Date); let sDate = new Date(t.Contract_Signing_Date);
-                    if(!isNaN(nDate) && !isNaN(sDate)) {
-                        let d = Math.ceil((sDate - nDate) / 86400000);
-                        if(d <= 3) invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 Lightning Execution:</strong> Contract signed in just ${d} days after NOA.</div>`;
-                    }
-
-                    if(ruleViolationsFoundInPDF.length > 0) {
-                        ruleViolationsFoundInPDF.forEach(r => {
-                            invHtml += `<div class="inv-item"><strong style="color:var(--netra-red);">🚨 ${r.key} (${r.doc}):</strong> ...${r.match}...</div>`;
-                        });
-                    }
-
-                    if(invHtml) {
-                        document.getElementById('investigationBox').innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:#fff;">🕵️ Full Investigation Analytics:</div>${invHtml}`;
-                        document.getElementById('investigationBox').style.display = 'block';
-                    }
-                }, 50);
-
-            } else {
-                document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">⚠️ No PDF found in Database (JSON). Please check file names.</td></tr>`;
+                } else {
+                    document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">⚠️ No PDF found in Database (JSON). Please check file names.</td></tr>`;
+                }
+            } catch (mainErr) {
+                console.error("Inspector Error:", mainErr);
+                alert("দুঃখিত, ডেটা লোড করতে একটি এরর হয়েছে।");
             }
         }
 
@@ -939,7 +961,6 @@
                 t.PDF_Verified = true;
                 t._findings = getDynamicFindings(t);
                 
-                // LIVE UPDATE
                 triggerFilter(); 
                 
                 document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px; background:rgba(16,185,129,0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid #10b981;">✅ Updated & Merged!</span>`;
