@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>e-GP Syndicate Tracker | Massive Data Lab</title>
     
-    <!-- Google Fonts Fallback -->
+    <!-- Google Fonts Fallback for Bengali -->
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries -->
@@ -67,6 +67,7 @@
         .btn-nexus { padding: 10px 25px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #7e22ce; font-family: inherit; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);}
         .btn-nexus:hover { background-color: #6b21a8; transform: translateY(-2px);}
         .btn-highlight { font-family: inherit; padding: 8px 15px; border: 2px solid var(--netra-red); border-radius: 4px; font-size: 15px; font-weight: 700; cursor: pointer; color: white; background-color: #990000; transition: 0.3s; margin-top: 10px;}
+        .btn-highlight-alt { border-color: #0ea5e9; background-color: #0284c7; }
 
         .table-responsive { overflow-x: auto; }
         table.main-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
@@ -84,12 +85,14 @@
         .btn-verify { font-family: inherit; background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 5px; transition: 0.2s;}
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 950px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
         .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer;}
+        .close-btn:hover { color: var(--netra-red); }
+        
         .raw-data-box { background: #080c14; border: 1px dashed #334155; padding: 15px; border-radius: 5px; color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 15px; word-wrap: break-word;}
+        .raw-data-box strong { color: var(--neon-blue); font-family: inherit; font-weight: 700; }
         .highlight-red { color: #fca5a5; font-weight: bold; background: rgba(220, 38, 38, 0.2); padding: 0 4px; border-radius:3px;}
-        .clickable-rule { cursor: pointer; color: var(--neon-blue); text-decoration: underline; text-decoration-style: dashed; }
-        .clickable-rule:hover { color: white; }
+        .explanation-box { background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--neon-blue); padding: 15px; font-size: 15px; color: #f8fafc; line-height: 1.6; margin-bottom: 15px; font-weight: 500;}
         
         .meter-container { background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px; display: flex; justify-content: space-around; align-items: center;}
         .risk-gauge { width: 150px; height: 15px; background: #334155; border-radius: 10px; overflow: hidden; margin: 10px auto; position: relative;}
@@ -326,7 +329,6 @@
         let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
         let redFlagChartObj = null, singleBidderChartObj = null, riskValuePieChartObj = null;
 
-        const colorPrimary = '#38bdf8', colorSecondary = '#1e3a8a', colorAccent = '#60a5fa', colorAlert = '#dc2626';     
         Chart.defaults.color = '#94a3b8'; 
         Chart.defaults.borderColor = '#1e3a5f';
         Chart.defaults.font.family = "'Li Ador', 'Hind Siliguri', sans-serif";
@@ -360,7 +362,7 @@
         // Crypto Hash
         async function generateHash(text) {
             try {
-                if (!crypto || !crypto.subtle) return "HASH_UNAVAILABLE_IN_INSECURE_LOCAL_NETWORK";
+                if (!crypto || !crypto.subtle) return "HASH_UNAVAILABLE_IN_LOCAL_NETWORK";
                 const msgBuffer = new TextEncoder().encode(text);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -391,7 +393,7 @@
             if (!text) return false;
             let score = 0, t = safeStr(text);
             if (/\d+\.[1-9]\d+\s*(crore|lac|lakh)/i.test(t)) { score += 50; reasonsArray.push("অস্বাভাবিক দশমিক সংখ্যার অভিজ্ঞতা।"); }
-            if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং (Geofencing)।"); }
+            if (/(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i.test(t)) { score += 50; reasonsArray.push("ভৌগোলিক লকিং।"); }
             if (/\b(rajuk|cda|kda|pwd|lged|petrobangla)\b/i.test(t)) { score += 20; reasonsArray.push("নির্দিষ্ট সংস্থার নাম (Authority Locking)।"); }
             return score >= 50; 
         }
@@ -591,7 +593,6 @@
             document.getElementById('totalOwnersMissing').innerText = missing.toLocaleString() + " টি";
         }
 
-        // 9 DYNAMIC CHARTS UPDATE
         function updateDynamicCharts(data) {
             let v = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
             const sups = {}, dates = {}, ags = {}, reasons = {};
@@ -624,44 +625,35 @@
             const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
             const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:11, family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
 
-            // 1. Violation Bar
             if(violationChartObj) violationChartObj.destroy();
-            violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: colorSecondary }] }, options: barY });
+            violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: '#1e3a8a' }] }, options: barY });
 
-            // 2. Dropout Bar
             if(dropoutChartObj) dropoutChartObj.destroy();
-            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: [colorAlert, colorAccent, colorPrimary] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
+            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: ['#cc0000', '#60a5fa', '#38bdf8'] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
 
-            // 3. Syndicate Leaderboard
             const sTop5 = (obj) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5);
             if(syndicateChartObj) syndicateChartObj.destroy();
-            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: colorAlert }] }, options: barY });
+            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: '#cc0000' }] }, options: barY });
 
-            // 4. Timeline Line
             const sD = Object.keys(dates).sort();
             if(timelineChartObj) timelineChartObj.destroy();
-            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: colorAlert, fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: colorSecondary }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
+            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: '#cc0000', fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: '#1e3a8a' }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
 
-            // 5. Risk Doughnut
             const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
             if(riskPieChartObj) riskPieChartObj.destroy(); 
-            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth:0 }] }, options: pieOpts });
+            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
 
-            // 6. Agency Bar
             if(agencyChartObj) agencyChartObj.destroy(); 
-            agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: colorSecondary }] }, options: barY });
+            agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: '#1e3a8a' }] }, options: barY });
 
-            // 7. Red Flag Tool Bar
             if(redFlagChartObj) redFlagChartObj.destroy(); 
-            redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: sTop5(reasons).map(r => r[0]), datasets: [{ data: sTop5(reasons).map(r => r[1]), backgroundColor: colorAccent }] }, options: barY });
+            redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: sTop5(reasons).map(r => r[0]), datasets: [{ data: sTop5(reasons).map(r => r[1]), backgroundColor: '#60a5fa' }] }, options: barY });
 
-            // 8. Single Bidder Monopoly Doughnut
             if(singleBidderChartObj) singleBidderChartObj.destroy(); 
-            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: [colorAlert, colorSecondary], borderWidth:0 }] }, options: pieOpts });
+            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: ['#cc0000', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
 
-            // 9. Risk Value Pie
             if(riskValuePieChartObj) riskValuePieChartObj.destroy(); 
-            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: [colorAlert, colorAccent, colorSecondary], borderWidth:0 }] }, options: pieOpts });
+            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
         }
 
         // --- NETWORK GRAPH (Vis.js) ---
@@ -708,7 +700,6 @@
                     text += content.items.map(item => item.str).join(' ') + '\n';
                 }
                 
-                // OCR Fallback
                 if (text.trim().length < 50 && window.Tesseract) {
                     const page = await pdf.getPage(1);
                     const viewport = page.getViewport({ scale: 1.5 });
@@ -794,64 +785,86 @@
             else if (t.Source_File) pdfFiles = [String(t.Source_File).trim()];
             
             if (pdfFiles.length > 0) {
-                const pdfFilename = pdfFiles[0]; 
                 const exactDbVal = safeNum(t.Contract_Value_BDT).toString();
                 const intDbVal = exactDbVal.includes('.') ? exactDbVal.split('.')[0] : exactDbVal;
 
-                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Initiating Digital Scan on ${pdfFilename}...</div>`;
+                pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s)...</div>`;
 
-                const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFilename}`);
-                
-                if (pdfResult && pdfResult.text) {
-                    const livePdfText = pdfResult.text;
-                    const meta = pdfResult.meta;
-                    
-                    if(meta) {
-                        document.getElementById('pdfMetaBox').innerHTML = `
-                            Created: <span class="meta-tag">${meta.CreationDate ? meta.CreationDate.substring(2,10) : 'Hidden'}</span><br>
-                            Creator Tool: <span class="meta-tag">${meta.Creator || 'Unknown'}</span><br>
-                            Producer: <span class="meta-tag">${meta.Producer || 'Unknown'}</span>
-                        `;
-                    }
+                let isMatch = false;
+                let isPartial = false;
+                let highlightSnippet = "";
+                let matchStatusHtml = "";
+                let finalMeta = null;
 
-                    let matchStatusHtml = "";
-                    let highlightSnippet = "";
+                if (exactDbVal === "0") {
+                    matchStatusHtml = `<div style="background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 10px; border: 1px solid var(--neon-blue); border-radius: 4px; font-weight: bold; margin-bottom: 10px;">ℹ️ চুক্তিমূল্য ৳০। এটি শুধুমাত্র একটি টেন্ডার নোটিশ হওয়ায় টাকার অঙ্কের স্ক্যানিং স্কিপ করা হয়েছে।</div>`;
+                    const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFiles[0]}`);
+                    if (pdfResult) finalMeta = pdfResult.meta;
+                } else {
+                    for (let i = 0; i < pdfFiles.length; i++) {
+                        const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFiles[i]}`);
+                        if (pdfResult && pdfResult.text) {
+                            finalMeta = pdfResult.meta;
+                            const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
+                            
+                            let flexiPattern = exactDbVal.split('').map(char => char === '.' ? '[\\.\\s\\,\\n\\r]*' : char).join('[\\s\\,\\n\\r]*'); 
+                            const regex = new RegExp(`.{0,60}${flexiPattern}.{0,60}`, 'gi'); 
+                            const match = livePdfText.match(regex);
 
-                    let flexiPattern = exactDbVal.split('').map(char => char === '.' ? '[\\.\\s\\,]*' : char).join('[\\s\\,]*'); 
-                    const regex = new RegExp(`.{0,60}${flexiPattern}.{0,60}`, 'gi'); 
-                    const match = livePdfText.match(regex);
-
-                    if (match && match[0] && exactDbVal > 0) {
-                        matchStatusHtml = `<div style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 10px; border: 1px solid #10b981; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">✅ VERIFIED: Contract value (৳${exactDbVal}) perfectly matches the PDF document.</div>`;
-                        highlightSnippet = match[0].replace(new RegExp(`(${flexiPattern})`, 'gi'), `<mark style="background: #eab308; color: #000; font-weight: bold;">$&</mark>`);
-                    } else if (exactDbVal.includes('.')) {
-                        let intPattern = intDbVal.split('').join('[\\s\\,]*');
-                        const regexInt = new RegExp(`.{0,60}${intPattern}.{0,60}`, 'gi');
-                        const matchInt = livePdfText.match(regexInt);
-                        if(matchInt && matchInt[0]) {
-                            matchStatusHtml = `<div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 10px; border: 1px solid #f59e0b; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">⚠️ PARTIAL MATCH: Only integer part (৳${intDbVal}) found. Decimals missing/altered in PDF.</div>`;
-                            highlightSnippet = matchInt[0].replace(new RegExp(`(${intPattern})`, 'gi'), `<mark style="background: #eab308; color: #000; font-weight: bold;">$&</mark>`);
-                        } else {
-                            matchStatusHtml = `<div style="background: rgba(220, 38, 38, 0.1); color: #dc2626; padding: 10px; border: 1px solid #dc2626; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">❌ MISMATCH DETECTED: Contract value (৳${exactDbVal}) NOT FOUND in the original document! Data tampering suspected.</div>`;
+                            if (match && match[0]) {
+                                isMatch = true;
+                                highlightSnippet = match[0].replace(new RegExp(`(${flexiPattern})`, 'gi'), `<mark style="background: #eab308; color: #000; font-weight: bold;">$&</mark>`);
+                                break; 
+                            } else if (exactDbVal.includes('.')) {
+                                let intPattern = intDbVal.split('').join('[\\s\\,\\n\\r]*');
+                                const regexInt = new RegExp(`.{0,60}${intPattern}.{0,60}`, 'gi');
+                                const matchInt = livePdfText.match(regexInt);
+                                if(matchInt && matchInt[0]) {
+                                    isPartial = true;
+                                    highlightSnippet = matchInt[0].replace(new RegExp(`(${intPattern})`, 'gi'), `<mark style="background: #eab308; color: #000; font-weight: bold;">$&</mark>`);
+                                }
+                            }
                         }
-                    } else {
-                         matchStatusHtml = `<div style="background: rgba(220, 38, 38, 0.1); color: #dc2626; padding: 10px; border: 1px solid #dc2626; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">❌ MISMATCH DETECTED: Contract value (৳${exactDbVal}) NOT FOUND in the original document!</div>`;
                     }
 
-                    let buttonsHtml = '';
-                    pdfFiles.forEach((file, i) => {
-                        buttonsHtml += `<button class="btn-highlight" style="margin: 5px;" onclick="showPdfInModal('${file}', '${intDbVal}')">📄 Open PDF ${i+1}</button>`;
-                    });
+                    if (isMatch) {
+                        matchStatusHtml = `<div style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 10px; border: 1px solid #10b981; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">✅ VERIFIED: চুক্তিমূল্য (৳${exactDbVal}) স্ক্যান করা নথির সাথে হুবহু মিলেছে!</div>`;
+                    } else if (isPartial) {
+                        matchStatusHtml = `<div style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 10px; border: 1px solid #f59e0b; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">⚠️ PARTIAL MATCH: শুধুমাত্র মূল টাকার অঙ্কটি (৳${intDbVal}) মিলেছে। দশমিকের পরের অংশে গড়মিল বা স্ক্যানিং ত্রুটি।</div>`;
+                    } else {
+                        matchStatusHtml = `<div style="background: rgba(220, 38, 38, 0.1); color: #dc2626; padding: 10px; border: 1px solid #dc2626; border-radius: 4px; font-weight: bold; margin-bottom: 10px;">❌ MISMATCH DETECTED: চুক্তিমূল্য (৳${exactDbVal}) যুক্ত থাকা কোনো পিডিএফেই পাওয়া যায়নি! ডেটা টেম্পারিংয়ের আশঙ্কা।</div>`;
+                    }
+                }
 
-                    pdfCol.innerHTML = `
-                        <h4>📄 Live PDF Scan Result</h4>
-                        ${matchStatusHtml}
-                        ${highlightSnippet ? `<div style="font-family: monospace; font-size: 13px; color: #fff; background: #000; padding: 10px; border-left: 3px solid #eab308; margin-bottom: 15px;">"...${highlightSnippet}..."</div>` : ''}
-                        <div style="text-align: center;">${buttonsHtml}</div>
+                if(finalMeta) {
+                    document.getElementById('pdfMetaBox').innerHTML = `
+                        Created: <span class="meta-tag">${finalMeta.CreationDate ? finalMeta.CreationDate.substring(2,10) : 'Hidden'}</span><br>
+                        Creator Tool: <span class="meta-tag">${finalMeta.Creator || 'Unknown'}</span><br>
+                        Producer: <span class="meta-tag">${finalMeta.Producer || 'Unknown'}</span>
                     `;
                 } else {
-                    pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="color:var(--netra-red); margin-top:20px;">⚠️ PDF extraction failed or file corrupted.</div>`;
+                    document.getElementById('pdfMetaBox').innerHTML = `<span style="color:var(--netra-red)">No Metadata Found</span>`;
                 }
+
+                let buttonsHtml = '';
+                pdfFiles.forEach((file, i) => {
+                    let lower = file.toLowerCase();
+                    let label = "📄 Document " + (i+1);
+                    if (lower.includes('notice')) label = "📄 Tender Notice";
+                    else if (lower.includes('noa') || lower.includes('award')) label = "📄 NOA / Contract Award";
+                    else if (i === 0 && pdfFiles.length > 1) label = "📄 Tender Notice";
+                    else if (i === 1) label = "📄 NOA / Award";
+                    
+                    let btnClass = (i === 1 || lower.includes('noa')) ? "btn-highlight btn-highlight-alt" : "btn-highlight";
+                    buttonsHtml += `<button class="${btnClass}" style="margin: 5px;" onclick="showPdfInModal('${file}', '${exactDbVal === "0" ? "" : intDbVal}')">${label}</button>`;
+                });
+
+                pdfCol.innerHTML = `
+                    <h4>📄 Live PDF Scan Result</h4>
+                    ${matchStatusHtml}
+                    ${highlightSnippet ? `<div style="font-family: monospace; font-size: 13px; color: #fff; background: #000; padding: 10px; border-left: 3px solid #eab308; margin-bottom: 15px; border-radius: 4px;">"...${highlightSnippet}..."</div>` : ''}
+                    <div style="text-align: center; border-top: 1px dashed #334155; padding-top: 10px;">${buttonsHtml}</div>
+                `;
             } else {
                 pdfCol.innerHTML = `<h4>📄 Live PDF Scan Result</h4><div style="color:var(--text-muted); margin-top:20px;">⚠️ No original PDF attached to this record.</div>`;
             }
