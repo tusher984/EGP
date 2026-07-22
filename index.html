@@ -47,7 +47,7 @@
         .rule-count { background-color: var(--netra-red); color: white; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 12px;}
 
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .card { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 6px; text-align: center; }
+        .card { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 6px; text-align: center; transition: 0.3s; }
         .card h2 { margin: 0 0 5px 0; font-size: 28px; color: var(--neon-blue); font-family: -apple-system, sans-serif;} 
         .card.alert-card h2 { color: var(--netra-red); }
         .card p { margin: 0; font-size: 15px; font-weight: 600; text-transform: uppercase; }
@@ -63,9 +63,10 @@
         .tools-bar input:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
         .btn-clear { font-family: inherit; padding: 8px 15px; border: 1px solid var(--neon-blue); border-radius: 4px; font-size: 14px; cursor: pointer; color: var(--neon-blue); background: transparent; transition: 0.2s; }
         .btn-download { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: white; background-color: #1e40af; }
-        .btn-json { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: white; background-color: #0284c7; font-weight: bold; }
+        .btn-json { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: #fff; background-color: #0284c7; font-weight: bold; transition: 0.2s;}
+        .btn-json:hover { background-color: #0369a1; }
         
-        .btn-highlight { font-family: inherit; padding: 8px 15px; border: 2px solid var(--netra-red); border-radius: 4px; font-size: 15px; font-weight: 700; cursor: pointer; color: white; background-color: #990000; transition: 0.3s; margin-top: 10px;}
+        .btn-highlight { font-family: inherit; padding: 6px 12px; border: 2px solid var(--netra-red); border-radius: 4px; font-size: 13px; font-weight: 700; cursor: pointer; color: white; background-color: #990000; transition: 0.3s; margin-top: 5px;}
         .btn-highlight-alt { border-color: #0ea5e9; background-color: #0284c7; }
         .btn-merge { background-color: #10b981; color: white; border: none; padding: 8px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); transition: 0.3s; }
         .btn-merge:hover { background-color: #059669; transform: translateY(-2px); }
@@ -86,12 +87,10 @@
         .btn-verify { font-family: inherit; background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 5px; transition: 0.2s;}
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1000px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
-        .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer;}
+        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1200px; max-height: 90vh; overflow-y: auto; padding: 25px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+        .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer; z-index: 10;}
         .close-btn:hover { color: var(--netra-red); }
         
-        .raw-data-box { background: #080c14; border: 1px dashed #334155; padding: 15px; border-radius: 5px; color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 15px; word-wrap: break-word;}
-        .highlight-red { color: #fca5a5; font-weight: bold; background: rgba(220, 38, 38, 0.2); padding: 0 4px; border-radius:3px;}
         .clickable-rule { cursor: pointer; color: var(--neon-blue); text-decoration: underline; text-decoration-style: dashed; }
         
         .meter-container { background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px; display: flex; justify-content: space-around; align-items: center;}
@@ -99,34 +98,38 @@
         .risk-fill { height: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 1s ease-in-out; }
         .meta-tag { font-family: monospace; font-size: 11px; background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 3px 6px; border-radius: 3px; border: 1px solid rgba(56,189,248,0.3); margin-top: 5px; display: inline-block;}
 
-        .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-dark);}
-        .comp-col { padding: 20px; }
-        .comp-db { background: rgba(56, 189, 248, 0.05); border-right: 1px solid var(--border-dark); }
-        .comp-pdf { background: rgba(16, 185, 129, 0.05); }
-        .comp-col h4 { margin: 0 0 10px 0; color: var(--text-light); font-size: 16px; border-bottom: 1px dashed #334155; padding-bottom: 5px;}
+        /* VERIFICATION TABLE STYLES */
+        .verify-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #0f172a; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-dark); }
+        .verify-table th { background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 12px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border-dark); }
+        .verify-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-dark); font-size: 13.5px; vertical-align: middle; }
+        .verify-table tr:hover { background: rgba(255,255,255,0.02); }
         
+        .edit-input { width: 100%; background: #080c14; border: 1px solid #334155; color: #10b981; padding: 6px 8px; border-radius: 4px; font-family: monospace; font-size: 14px; font-weight: bold; outline: none; transition: 0.2s; box-sizing: border-box; }
+        .edit-input:focus { border-color: var(--neon-blue); background: #1e293b; box-shadow: 0 0 5px rgba(56,189,248,0.3); }
+        .edit-textarea { width: 100%; height: 60px; background: #080c14; border: 1px solid #334155; color: #10b981; padding: 8px; border-radius: 4px; font-family: inherit; font-size: 13px; resize: vertical; outline: none; box-sizing: border-box; }
+        
+        .btn-use-pdf { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 5px; font-weight:bold; }
+        .btn-use-pdf:hover { background: #10b981; color: #fff; }
+
         .docket-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 20px; }
         .docket-meta { font-family: monospace; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
         .qr-container { background: #fff; padding: 5px; border-radius: 4px; width: 64px; height: 64px; }
         .hash-string { background: #000; padding: 3px 6px; border-radius: 3px; color: #10b981; font-weight: bold; letter-spacing: 0.5px; word-break: break-all; }
         #networkGraph { width: 100%; height: 70vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
 
-        .scan-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 14px; }
-        .scan-item:last-child { border-bottom: none; }
+        .investigation-box { background: rgba(220, 38, 38, 0.05); border-left: 4px solid var(--netra-red); padding: 10px 15px; margin-bottom: 15px; font-size: 13.5px; border-radius: 0 4px 4px 0; }
 
         @media print {
             body * { visibility: hidden; }
             #inspectorModal, #inspectorModal * { visibility: visible; }
             #inspectorModal { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; background: white !important; color: black !important; padding: 0; margin: 0; border: none; box-shadow: none; font-family: -apple-system, sans-serif !important; }
             .modal-content { border: 2px solid #000; width: 100%; max-height: none; overflow: visible; box-shadow: none; padding: 20px; }
-            .raw-data-box, .meter-container, .comparison-grid { background: #f8fafc !important; color: #000 !important; border: 1px solid #000 !important; }
-            .comp-col h4 { color: black !important; border-bottom-color: black !important; }
             .modal-title { color: black !important; }
             .docket-header { border-bottom: 2px solid #000; }
-            .close-btn, .btn-highlight, .tools-bar, header, .evidence-section, #pdfViewerContainer, .action-buttons, .top-action-bar { display: none !important; }
-            .highlight-red { background: transparent !important; color: #dc2626 !important; font-weight: bold; border-bottom: 2px solid #dc2626; }
+            .close-btn, .btn-highlight, .tools-bar, header, .evidence-section, #pdfViewerContainer, .action-buttons, .top-action-bar, .btn-use-pdf { display: none !important; }
             .hash-string, .meta-tag { background: transparent !important; color: black !important; border: 1px dashed black; }
             .modal-content::before { content: "CERTIFIED FORENSIC EVIDENCE"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 40px; color: rgba(0,0,0,0.1); font-weight: bold; pointer-events: none; z-index: -1; }
+            .edit-input, .edit-textarea { border: none !important; background: transparent !important; color: black !important; padding: 0 !important; font-weight: normal !important;}
         }
     </style>
 </head>
@@ -192,7 +195,7 @@
                     <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
                 </select>
                 <button class="btn-download" onclick="downloadCSV()">CSV এক্সপোর্ট</button>
-                <button class="btn-json" onclick="downloadUpdatedJSON()" title="For Main Website Development">📥 Export Updated JSON</button>
+                <button class="btn-json" onclick="downloadUpdatedJSON()" title="Download corrected DB for main website">📥 Export Updated JSON</button>
             </div>
             
             <div class="table-responsive">
@@ -244,14 +247,14 @@
         </div>
     </div>
 
-    <!-- Data Inspector Modal (Evidence) -->
+    <!-- DATA INSPECTOR / VERIFICATION TOOL MODAL -->
     <div id="inspectorModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('inspectorModal')">&times;</span>
             
             <div class="docket-header">
                 <div>
-                    <h2 style="margin:0 0 5px 0; color:var(--neon-blue); font-family:-apple-system, sans-serif; font-weight:800; font-size: 22px;">🔍 Digital Forensic Evidence Docket</h2>
+                    <h2 style="margin:0 0 5px 0; color:var(--neon-blue); font-family:-apple-system, sans-serif; font-weight:800; font-size: 22px;">🔍 Deep Investigation & Verification Tool</h2>
                     <div class="docket-meta">
                         Generated: <span id="timestampData"></span><br>
                         Tender ID: <strong id="footprintID" style="color:var(--text-light); font-size:13px;"></strong><br>
@@ -273,35 +276,32 @@
                 </div>
             </div>
 
+            <!-- INVESTIGATION ANALYTICS BOX -->
+            <div id="investigationBox" class="investigation-box" style="display:none;"></div>
+
             <div class="action-buttons" style="margin-bottom: 15px; display: flex; gap: 10px; align-items:center;">
                 <a id="archiveLink" href="#" target="_blank" style="background: #1e3a8a; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: bold;">🌐 Web Archive (Wayback)</a>
                 <button onclick="window.print()" style="background: var(--netra-red); color: white; border: none; padding: 8px 15px; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer;">🖨️ Print Evidence</button>
+                <div id="pdfActionButtons" style="margin-left:15px;"></div>
                 <div id="mergeActionContainer" style="margin-left:auto;"></div>
             </div>
-            
-            <div class="comparison-grid">
-                <div class="comp-col comp-db">
-                    <h4>🏛️ Official Database (Claim)</h4>
-                    <p style="margin:0; font-family:-apple-system, sans-serif; font-size:14px; line-height:1.8;">
-                        <strong>Contract Value:</strong> <span id="insVal" class="highlight-red"></span><br>
-                        <strong>Document Price:</strong> <span id="insPrice" class="highlight-red"></span><br>
-                        <strong>Tenderers (Sold/Recv/Resp):</strong> <span id="insSold"></span> / <span id="insRecv"></span> / <span id="insResp"></span><br>
-                        <strong>Publish Date:</strong> <span id="insPub"></span><br>
-                        <strong>Closing Date:</strong> <span id="insClose"></span><br>
-                        <strong>Pre-Tender Meeting:</strong> <span id="insMeet"></span><br>
-                        <strong>NOA Given:</strong> <span id="insNoa"></span><br>
-                        <strong>Contract Signing:</strong> <span id="insSign" class="highlight-red"></span><br>
-                        <strong>CPV Code:</strong> <span id="insCpv"></span>
-                    </p>
-                    <div style="margin-top: 15px; font-size:13px; border-top: 1px dashed var(--border-dark); padding-top: 10px;">
-                        <strong>Raw Eligibility Criteria:</strong><br>
-                        <span id="insExp" style="white-space: pre-wrap;"></span>
-                    </div>
-                </div>
-                <div class="comp-col comp-pdf" id="pdfScanResultCol">
-                    <h4>📄 PDF Evidence (Source of Truth)</h4>
-                    <div id="directPdfBtnContainer"></div>
-                </div>
+
+            <!-- 3-WAY VERIFICATION TABLE -->
+            <div id="verificationTableContainer">
+                <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 16px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Official DB vs PDF Verification</h4>
+                <table class="verify-table" id="verifyTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Field</th>
+                            <th style="width: 25%;">Database (Claim)</th>
+                            <th style="width: 35%;">PDF Extraction (Source of Truth)</th>
+                            <th style="width: 25%;">Final Verified Input</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verifyTableBody">
+                        <!-- Populated Dynamically -->
+                    </tbody>
+                </table>
             </div>
 
             <div id="pdfViewerContainer" style="display: none; margin-top: 20px; border: 2px solid var(--neon-blue); border-radius: 5px; overflow: hidden; background: #222;">
@@ -317,6 +317,7 @@
         </div>
     </div>
 
+    <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -324,7 +325,6 @@
         let globalData = [];
         let currentFilteredData = [];
         let activeRuleKey = null; 
-        let currentVerificationItems = []; 
         let currentTenderIdInModal = null;
         
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
@@ -357,7 +357,7 @@
             tailored: { title: "PPR 2008 Rule 98 – Restrictive Qualification Criteria", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।", penalty: "পুনঃদরপত্র আহ্বান।" },
             monopoly: { title: "e-PG3 ITT 50.6 – Lack of Effective Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।", penalty: "টেন্ডার বাতিল।" },
             outlier: { title: "World Bank ALB Guideline", enacted: "বিশ্বব্যাংক রেগুলেশন", purpose: "বাজেটের চেয়ে অনেক বেশি বা কম দরে বিড করা।", penalty: "টেন্ডার সরাসরি বাতিল।" },
-            meeting: { title: "Pre-Tender Meeting Manipulation", enacted: "২০০৮ (PPR)", purpose: "মিটিংয়ের সময় অত্যন্ত কম বা একই দিনে করে অন্যদের প্রস্তুতির সুযোগ না দেওয়া।", penalty: "অডিট আপত্তি।" },
+            meeting: { title: "Pre-Tender Meeting Manipulation", enacted: "২০০৮ (PPR)", purpose: "মিটিংয়ের সময় অত্যন্ত কম বা একই দিনে করে অন্যদের প্রস্তুতির সুযোগ না দেওয়া।", penalty: "অডিট আপত্তি ও রি-টেন্ডার।" },
             rigging: { title: "Competition Act 2012 / Bid Rigging", enacted: "২০১২ (প্রতিযোগিতা আইন)", purpose: "শিডিউল কিনে জমা না দেওয়া সিন্ডিকেশনের প্রমাণ।", penalty: "জরিমানা ও ডিবরমেন্ট।" }
         };
 
@@ -375,12 +375,20 @@
 
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
         window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = "none"; }
+        function showRuleModal(ruleKey) {
+            const data = RULE_DETAILS[ruleKey];
+            if(data) {
+                document.getElementById('modalTitle').innerText = data.title;
+                document.getElementById('modalEnacted').innerText = data.enacted;
+                document.getElementById('modalDesc').innerText = data.purpose;
+                document.getElementById('modalPenalty').innerText = data.penalty;
+                document.getElementById('ruleModal').style.display = 'flex';
+            }
+        }
 
         const safeStr = (val) => (val ? String(val).toLowerCase() : "");
         const safeNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
-        
         function extractCleanAgencyName(str) { return str ? str.replace(/Procuring Entity.*/i, '').trim() : "Unknown Agency"; }
-        
         function formatCurrency(amount) {
             const v = safeNum(amount);
             if (v === 0) return '-';
@@ -401,7 +409,7 @@
         function getDynamicFindings(t) {
             let findingsList = [], ruleKeys = [];
             const fullText = Object.values(t).map(v => safeStr(v)).join(" ");
-            const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Qualification_Criteria);
+            const rReason = safeStr(t.Red_Flag_Reason), exp = safeStr(t.Eligibility_of_Tenderer || t.Qualification_Criteria || t.Extracted_Specific_Experience);
             const desc = safeStr(t.Brief_Description_of_Works), pkgNo = safeStr(t.Package_No);
             const sold = safeNum(t.Tenders_Sold), recv = safeNum(t.Tenders_Received), resp = safeNum(t.Responsive_Tenders), val = safeNum(t.Contract_Value_BDT), docPrice = safeNum(t.Document_Price_BDT);
 
@@ -420,14 +428,16 @@
             if (valStr.includes('.') && valStr.split('.')[1].length >= 3 && val > 100000) { findingsList.push({ name: "Engineered Match", ev: `৩-ডিজিটের ভগ্নাংশ।` }); ruleKeys.push('outlier'); }
             else if (/(outlier|abnormal|alb)/i.test(fullText)) { findingsList.push({ name: "Abnormal Bid", ev: "অস্বাভাবিক দর।" }); ruleKeys.push('outlier'); }
 
-            let adDate = new Date(t.Advertised_Date), closeDate = new Date(t.Tender_Valid_Up_To), noaDate = new Date(t.Notification_of_Award_Date), signDate = new Date(t.Contract_Signing_Date);
+            let adDate = new Date(t.Advertised_Date), closeDate = new Date(t.Closing_Date || t.Tender_Valid_Up_To), noaDate = new Date(t.Notification_of_Award_Date), signDate = new Date(t.Contract_Signing_Date);
             let mStart = new Date(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date);
             let mEnd = new Date(t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date);
 
+            // Time Manipulation Check
             if (!isNaN(mStart) && !isNaN(mEnd)) {
                 let meetDiffHours = (mEnd - mStart) / 3600000;
                 if (meetDiffHours < 24) { findingsList.push({ name: "Meeting Rigged", ev: "প্রি-টেন্ডার মিটিংয়ের সময় ১ দিনেরও কম।" }); ruleKeys.push('meeting'); }
-            } else if (!isNaN(adDate) && !isNaN(closeDate) && Math.ceil((closeDate - adDate) / 86400000) <= 14) { 
+            } 
+            if (!isNaN(adDate) && !isNaN(closeDate) && Math.ceil((closeDate - adDate) / 86400000) <= 14) { 
                 findingsList.push({ name: "Rush Tender", ev: "<১৪ দিনে টেন্ডার ক্লোজ।" }); ruleKeys.push('meeting'); 
             }
 
@@ -448,8 +458,12 @@
 
             let html = findingsList.length > 0 ? findingsList.map(f => `<strong style="color:#fca5a5; display:block; margin-bottom:2px;">${f.name}</strong><span style="color:#94a3b8; font-size:11px; line-height:1.4; display:block;"><i>প্রমাণ: ${f.ev}</i></span>`).join("<div style='margin-bottom:8px;'></div>") : "-";
             let csv = findingsList.length > 0 ? findingsList.map(f => `${f.name} (Proof: ${f.ev})`).join(" + ") : "-";
-            let rulesHtml = uniqueRules.length > 0 ? uniqueRules.map(key => `<span class="clickable-rule" onclick="showModal('${key}')">${RULE_TITLES[key].split('–')[0].trim()} ↗</span>`).join("<br><br>") : "-";
+            let rulesHtml = uniqueRules.length > 0 ? uniqueRules.map(key => `<span class="clickable-rule" onclick="showRuleModal('${key}')">${RULE_TITLES[key].split('–')[0].trim()} ↗</span>`).join("<br><br>") : "-";
             
+            if(riskScore >= 60) t.Risk_Level = "HIGH";
+            else if(riskScore >= 30) t.Risk_Level = "MEDIUM";
+            else t.Risk_Level = "LOW";
+
             return { html, csv, rulesHtml, score: riskScore, keys: { owner: uniqueRules.includes('owner'), split: uniqueRules.includes('split'), cpv: uniqueRules.includes('cpv'), tailored: uniqueRules.includes('tailored'), monopoly: uniqueRules.includes('monopoly'), outlier: uniqueRules.includes('outlier'), meeting: uniqueRules.includes('meeting'), rigging: uniqueRules.includes('rigging') } };
         }
 
@@ -484,63 +498,44 @@
             }
         }
 
-        function debouncedFilter() {
-            clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(() => { triggerFilter(); }, 300); 
-        }
+        function debouncedFilter() { clearTimeout(searchDebounceTimer); searchDebounceTimer = setTimeout(() => { triggerFilter(); }, 300); }
 
         function triggerFilter() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const risk = document.getElementById('riskFilter').value;
-            
             currentFilteredData = globalData.filter(t => {
                 if (risk !== 'ALL' && t.Risk_Level !== risk) return false;
                 if (term && !t._searchStr.includes(term)) return false;
                 if (activeRuleKey && t._findings.keys[activeRuleKey] !== true) return false;
                 return true;
             });
-
-            updateSummaries(currentFilteredData);
-            updateDynamicCharts(currentFilteredData);
-            currentPage = 1; 
-            renderTablePage();
+            updateSummaries(currentFilteredData); updateDynamicCharts(currentFilteredData); currentPage = 1; renderTablePage();
         }
 
         function resetDashboard() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('riskFilter').value = 'ALL';
-            activeRuleKey = null;
-            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-            document.getElementById('filterBanner').style.display = 'none';
-            triggerFilter();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('searchInput').value = ''; document.getElementById('riskFilter').value = 'ALL';
+            activeRuleKey = null; document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            document.getElementById('filterBanner').style.display = 'none'; triggerFilter(); window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function filterByRule(ruleKey, element) {
             document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
             if (activeRuleKey === ruleKey) { resetRuleFilter(); return; }
-            activeRuleKey = ruleKey;
-            element.classList.add('active-rule');
+            activeRuleKey = ruleKey; element.classList.add('active-rule');
             document.getElementById('bannerText').innerText = `ফিল্টার অ্যাক্টিভ: "${element.querySelector('strong').innerText.split('<')[0].trim()}"`;
-            document.getElementById('filterBanner').style.display = 'flex';
-            triggerFilter();
-            document.getElementById('filterBanner').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('filterBanner').style.display = 'flex'; triggerFilter(); document.getElementById('filterBanner').scrollIntoView({ behavior: 'smooth' });
         }
 
         function resetRuleFilter() {
-            activeRuleKey = null;
-            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-            document.getElementById('filterBanner').style.display = 'none';
-            triggerFilter();
+            activeRuleKey = null; document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            document.getElementById('filterBanner').style.display = 'none'; triggerFilter();
         }
 
         function renderTablePage() {
             const tbody = document.getElementById('tableBody');
             const totalRows = currentFilteredData.length;
             const totalPages = Math.ceil(totalRows / rowsPerPage) || 1;
-            
-            if(currentPage < 1) currentPage = 1;
-            if(currentPage > totalPages) currentPage = totalPages;
+            if(currentPage < 1) currentPage = 1; if(currentPage > totalPages) currentPage = totalPages;
 
             document.getElementById('totalRowsLabel').innerText = totalRows.toLocaleString();
             document.getElementById('currentPageLabel').innerText = currentPage;
@@ -549,29 +544,19 @@
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
 
-            if (totalRows === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No records found.</td></tr>`;
-                return;
-            }
+            if (totalRows === 0) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">No records found.</td></tr>`; return; }
 
             const pageData = currentFilteredData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
             tbody.innerHTML = pageData.map(t => {
                 let riskClass = t.Risk_Level === 'HIGH' ? 'risk-high' : (t.Risk_Level === 'MEDIUM' ? 'risk-medium' : 'risk-low');
                 
                 let pdfFiles = [];
-                if (t.Source_Files_Merged) {
-                    pdfFiles = String(t.Source_Files_Merged).split(/\||,|;/).map(f => f.trim()).filter(f => f.toLowerCase().endsWith('.pdf'));
-                } else if(t.Source_File) {
-                    pdfFiles = [String(t.Source_File).trim()];
-                }
+                if (t.Source_Files_Merged) pdfFiles = String(t.Source_Files_Merged).split(/\||,|;/).map(f => f.trim()).filter(f => f.toLowerCase().endsWith('.pdf'));
+                else if(t.Source_File) pdfFiles = [String(t.Source_File).trim()];
                 
-                let pdfHtml = pdfFiles.length > 0 
-                    ? pdfFiles.map((file, i) => `<a href="downloaded_pdfs/${file}" target="_blank" class="doc-link">${i === 0 && pdfFiles.length > 1 ? 'Notice' : (i===0 ? 'PDF' : 'NOA')} 📄</a>`).join('<br>') 
-                    : '-';
-
+                let pdfHtml = pdfFiles.length > 0 ? pdfFiles.map((file, i) => `<a href="downloaded_pdfs/${file}" target="_blank" class="doc-link">${i === 0 && pdfFiles.length > 1 ? 'Notice' : (i===0 ? 'PDF' : 'NOA')} 📄</a>`).join('<br>') : '-';
                 let verifyBtn = `<button class="btn-verify" onclick="showDataInspector('${t.Tender_Proposal_ID}')">🔍 প্রমাণ যাচাই</button>`;
-                
-                let mergeBadge = t.PDF_Verified === true ? `<div style="margin-top:4px; font-size:10px; color:#10b981; font-weight:bold;">✅ PDF MERGED</div>` : '';
+                let mergeBadge = t.PDF_Verified === true ? `<div style="margin-top:4px; font-size:10px; color:#10b981; font-weight:bold;">✅ VERIFIED</div>` : '';
 
                 return `<tr>
                     <td style="font-family: monospace; font-weight: bold; color: var(--neon-blue);">${t.Tender_Proposal_ID} ${mergeBadge}</td>
@@ -586,46 +571,31 @@
             }).join('');
         }
 
-        function changePage(direction) {
-            currentPage += direction;
-            renderTablePage();
-            document.getElementById('tenderTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        function changePage(direction) { currentPage += direction; renderTablePage(); document.getElementById('tenderTable').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
         function updateSummaries(data) {
             document.getElementById('totalContracts').innerText = data.length.toLocaleString();
             let hVal = 0, missing = 0;
-            data.forEach(t => {
-                if (t.Risk_Level === 'HIGH') hVal += safeNum(t.Contract_Value_BDT);
-                if (t._findings.keys.owner) missing++;
-            });
+            data.forEach(t => { if (t.Risk_Level === 'HIGH') hVal += safeNum(t.Contract_Value_BDT); if (t._findings.keys.owner) missing++; });
             document.getElementById('totalValue').innerText = "৳" + (hVal >= 1000000000 ? (hVal/1000000000).toFixed(2) + " বিলিয়ন" : (hVal/10000000).toFixed(2) + " কোটি");
             document.getElementById('totalOwnersMissing').innerText = missing.toLocaleString() + " টি";
         }
 
         function updateDynamicCharts(data) {
             let v = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
-            const sups = {}, dates = {}, ags = {}, reasons = {};
-            let tSold=0, tRecv=0, tResp=0, hc=0, mc=0, lc=0, hv=0, mv=0, lv=0;
+            const sups = {}, dates = {}, ags = {}, reasons = {}; let tSold=0, tRecv=0, tResp=0, hc=0, mc=0, lc=0, hv=0, mv=0, lv=0;
             
             data.forEach(t => {
                 const k = t._findings.keys;
                 if (k.owner) v.owner++; if (k.split) v.split++; if (k.cpv) v.cpv++; if (k.tailored) v.tailored++; 
                 if (k.monopoly) v.monopoly++; if (k.outlier) v.outlier++; if (k.meeting) v.meeting++; if (k.rigging) v.rigging++;
-
                 let val = safeNum(t.Contract_Value_BDT);
-                if (t.Risk_Level === 'HIGH') {
-                    hc++; hv += val;
-                    if (t.Supplier_Name) { let n = String(t.Supplier_Name).split('(')[0].trim(); sups[n] = (sups[n]||0) + val; }
+                if (t.Risk_Level === 'HIGH') { hc++; hv += val; if (t.Supplier_Name) { let n = String(t.Supplier_Name).split('(')[0].trim(); sups[n] = (sups[n]||0) + val; }
                     if (t.Organization_Agency) { let a = extractCleanAgencyName(t.Organization_Agency); ags[a] = (ags[a]||0) + val; }
                 } else if (t.Risk_Level === 'MEDIUM') { mc++; mv += val; } else { lc++; lv += val; }
 
                 let dStr = t.Advertised_Date || t.Contract_Signing_Date;
-                if(dStr && !isNaN(new Date(dStr))) {
-                    let d = new Date(dStr), my = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
-                    if(!dates[my]) dates[my] = { HIGH:0, MEDIUM:0, LOW:0 };
-                    dates[my][t.Risk_Level||'LOW']++;
-                }
+                if(dStr && !isNaN(new Date(dStr))) { let d = new Date(dStr), my = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`; if(!dates[my]) dates[my] = { HIGH:0, MEDIUM:0, LOW:0 }; dates[my][t.Risk_Level||'LOW']++; }
                 tSold += safeNum(t.Tenders_Sold); tRecv += safeNum(t.Tenders_Received); tResp += safeNum(t.Responsive_Tenders);
                 if(t._findings.csv !== "-") { let c = t._findings.csv.split(' (Proof')[0].trim().substring(0, 20); reasons[c] = (reasons[c] || 0) + 1; }
             });
@@ -635,65 +605,33 @@
             const cOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
             const barY = { ...cOpts, indexAxis: 'y', scales: { x: { display: false }, y: { grid: { display: false }, ticks: {color: '#f8fafc', font:{size:11, family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
 
-            if(violationChartObj) violationChartObj.destroy();
-            violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: '#1e3a8a' }] }, options: barY });
-
-            if(dropoutChartObj) dropoutChartObj.destroy();
-            dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: ['#cc0000', '#60a5fa', '#38bdf8'] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
-
+            if(violationChartObj) violationChartObj.destroy(); violationChartObj = new Chart(document.getElementById('violationChart'), { type: 'bar', data: { labels: ['মালিকানা গোপন', 'চুক্তি বিভাজন', 'অবান্তর CPV', 'বৈষম্যমূলক শর্ত', 'একক দরদাতা', 'অস্বাভাবিক দর', 'প্রি-টেন্ডার মিটিং', 'বিড-রিগিং'], datasets: [{ data: [v.owner, v.split, v.cpv, v.tailored, v.monopoly, v.outlier, v.meeting, v.rigging], backgroundColor: '#1e3a8a' }] }, options: barY });
+            if(dropoutChartObj) dropoutChartObj.destroy(); dropoutChartObj = new Chart(document.getElementById('dropoutChart'), { type: 'bar', data: { labels: ['শিডিউল কিনেছে', 'বিড জমা দিয়েছে', 'যোগ্য বিবেচিত'], datasets: [{ data: [tSold, tRecv, tResp], backgroundColor: ['#cc0000', '#60a5fa', '#38bdf8'] }] }, options: { ...cOpts, scales: { y: { display: false }, x: { grid: { display: false }, ticks: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } } });
             const sTop5 = (obj) => Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,5);
-            if(syndicateChartObj) syndicateChartObj.destroy();
-            syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: '#cc0000' }] }, options: barY });
-
+            if(syndicateChartObj) syndicateChartObj.destroy(); syndicateChartObj = new Chart(document.getElementById('syndicateChart'), { type: 'bar', data: { labels: sTop5(sups).map(s => s[0].substring(0,15)), datasets: [{ data: sTop5(sups).map(s => s[1]), backgroundColor: '#cc0000' }] }, options: barY });
             const sD = Object.keys(dates).sort();
-            if(timelineChartObj) timelineChartObj.destroy();
-            timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: '#cc0000', fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: '#1e3a8a' }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
-
+            if(timelineChartObj) timelineChartObj.destroy(); timelineChartObj = new Chart(document.getElementById('timelineChart'), { type: 'line', data: { labels: sD, datasets: [{ label: 'HIGH', data: sD.map(d => dates[d].HIGH), borderColor: '#cc0000', fill: true, backgroundColor: 'rgba(220,38,38,0.1)' }, { label: 'LOW', data: sD.map(d => dates[d].LOW), borderColor: '#1e3a8a' }] }, options: { ...cOpts, plugins:{legend:{display:true, labels:{color:'#fff', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}}}}, scales: { x: { ticks:{color:'#fff'} }, y: { display: false } } } });
             const pieOpts = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: {color: '#f8fafc', font:{family: "'Li Ador', 'Hind Siliguri', sans-serif"}} } } };
-            if(riskPieChartObj) riskPieChartObj.destroy(); 
-            riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
-
-            if(agencyChartObj) agencyChartObj.destroy(); 
-            agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: '#1e3a8a' }] }, options: barY });
-
-            if(redFlagChartObj) redFlagChartObj.destroy(); 
-            redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: sTop5(reasons).map(r => r[0]), datasets: [{ data: sTop5(reasons).map(r => r[1]), backgroundColor: '#60a5fa' }] }, options: barY });
-
-            if(singleBidderChartObj) singleBidderChartObj.destroy(); 
-            singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: ['#cc0000', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
-
-            if(riskValuePieChartObj) riskValuePieChartObj.destroy(); 
-            riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            if(riskPieChartObj) riskPieChartObj.destroy(); riskPieChartObj = new Chart(document.getElementById('riskPieChart'), { type: 'doughnut', data: { labels: ['HIGH', 'MEDIUM', 'LOW'], datasets: [{ data: [hc, mc, lc], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            if(agencyChartObj) agencyChartObj.destroy(); agencyChartObj = new Chart(document.getElementById('agencyChart'), { type: 'bar', data: { labels: sTop5(ags).map(s => s[0].substring(0,20)), datasets: [{ data: sTop5(ags).map(s => s[1]), backgroundColor: '#1e3a8a' }] }, options: barY });
+            if(redFlagChartObj) redFlagChartObj.destroy(); redFlagChartObj = new Chart(document.getElementById('redFlagChart'), { type: 'bar', data: { labels: sTop5(reasons).map(r => r[0]), datasets: [{ data: sTop5(reasons).map(r => r[1]), backgroundColor: '#60a5fa' }] }, options: barY });
+            if(singleBidderChartObj) singleBidderChartObj.destroy(); singleBidderChartObj = new Chart(document.getElementById('singleBidderChart'), { type: 'doughnut', data: { labels: ['১ জন যোগ্য', 'একাধিক যোগ্য'], datasets: [{ data: [v.monopoly, data.length - v.monopoly], backgroundColor: ['#cc0000', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
+            if(riskValuePieChartObj) riskValuePieChartObj.destroy(); riskValuePieChartObj = new Chart(document.getElementById('riskValuePieChart'), { type: 'pie', data: { labels: ['HIGH (৳)', 'MEDIUM (৳)', 'LOW (৳)'], datasets: [{ data: [hv, mv, lv], backgroundColor: ['#cc0000', '#60a5fa', '#1e3a8a'], borderWidth:0 }] }, options: pieOpts });
         }
 
         function openNetworkMap() {
             document.getElementById('networkModal').style.display = 'flex';
-            const nodes = new vis.DataSet();
-            const edges = new vis.DataSet();
-            const nodeIds = new Set();
-            const edgeMap = {};
-
+            const nodes = new vis.DataSet(); const edges = new vis.DataSet(); const nodeIds = new Set(); const edgeMap = {};
             currentFilteredData.forEach(t => {
                 if(t.Supplier_Name && t.Organization_Agency && (t.Tender_Status || "").toLowerCase().includes("awarded")) {
-                    let ag = extractCleanAgencyName(t.Organization_Agency);
-                    let sup = String(t.Supplier_Name).split('(')[0].trim();
-                    let agId = 'AG_' + ag;
-                    let supId = 'SUP_' + sup;
-
+                    let ag = extractCleanAgencyName(t.Organization_Agency); let sup = String(t.Supplier_Name).split('(')[0].trim();
+                    let agId = 'AG_' + ag; let supId = 'SUP_' + sup;
                     if(!nodeIds.has(agId)) { nodes.add({ id: agId, label: ag, shape: 'dot', color: '#eab308', size: 15, font: {color: '#fff', size: 12} }); nodeIds.add(agId); }
                     if(!nodeIds.has(supId)) { nodes.add({ id: supId, label: sup, shape: 'diamond', color: '#dc2626', size: 10, font: {color: '#cbd5e1', size: 10} }); nodeIds.add(supId); }
-
-                    let edgeKey = agId + '|||' + supId;
-                    if(!edgeMap[edgeKey]) edgeMap[edgeKey] = 0;
-                    edgeMap[edgeKey] += 1;
+                    let edgeKey = agId + '|||' + supId; if(!edgeMap[edgeKey]) edgeMap[edgeKey] = 0; edgeMap[edgeKey] += 1;
                 }
             });
-
-            for(const [key, val] of Object.entries(edgeMap)) {
-                let [f, t] = key.split('|||');
-                edges.add({ from: f, to: t, value: val, color: {color: 'rgba(56,189,248,0.5)'} });
-            }
-
+            for(const [key, val] of Object.entries(edgeMap)) { let [f, t] = key.split('|||'); edges.add({ from: f, to: t, value: val, color: {color: 'rgba(56,189,248,0.5)'} }); }
             const container = document.getElementById('networkGraph');
             new vis.Network(container, { nodes, edges }, { physics: { stabilization: true, barnesHut: { gravitationalConstant: -2000 } } });
         }
@@ -706,111 +644,72 @@
                 cleanVal = searchVal.replace(/[^\d\.]/g, '');
                 let intVal = cleanVal.includes('.') ? cleanVal.split('.')[0] : cleanVal;
                 let pattern = intVal.split('').join('[\\s\\,\\.\\r\\n]*');
-                
                 if (type === 'doc_price') {
                     let contextRegex = new RegExp(`Document\\s*Price\\s*\\(In\\s*BDT\\)\\s*:\\s*${pattern}`, 'gi');
-                    let match = text.match(contextRegex);
-                    if (match && match[0]) return match[0];
-                    
+                    let match = text.match(contextRegex); if (match && match[0]) return match[0];
                     contextRegex = new RegExp(`(Price|BDT)[^\\d]{0,20}${pattern}`, 'gi');
-                    match = text.match(contextRegex);
-                    if (match && match[0]) return match[0];
+                    match = text.match(contextRegex); if (match && match[0]) return match[0];
                 }
-                
                 regex = new RegExp(`.{0,40}${pattern}.{0,40}`, 'gi');
-                let match = text.match(regex);
-                if (match && match[0]) return match[0];
+                let match = text.match(regex); if (match && match[0]) return match[0];
             } else if (type === 'date') {
                 cleanVal = searchVal.split(' ')[0].trim();
                 let dateParts = cleanVal.split(/[-\/\s,]+/);
                 if(dateParts.length < 3) return null;
                 let pattern = dateParts.map(p => p.split('').join('[\\s]*')).join('[\\-\\s\\/\\,\\r\\n]*');
                 regex = new RegExp(`.{0,40}${pattern}.{0,40}`, 'gi');
-                let match = text.match(regex);
-                if (match && match[0]) return match[0];
+                let match = text.match(regex); if (match && match[0]) return match[0];
             } else {
                 let pattern = searchVal.split('').join('[\\s\\r\\n]*');
                 regex = new RegExp(`.{0,40}${pattern}.{0,40}`, 'gi');
-                let match = text.match(regex);
-                if (match && match[0]) return match[0];
+                let match = text.match(regex); if (match && match[0]) return match[0];
             }
             return null;
         }
 
         async function extractTextFromPDF(pdfUrl) {
             try {
-                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-                let text = '';
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const content = await page.getTextContent();
-                    text += content.items.map(item => item.str).join(' ') + '\n';
-                }
+                const pdf = await pdfjsLib.getDocument(pdfUrl).promise; let text = '';
+                for (let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const content = await page.getTextContent(); text += content.items.map(item => item.str).join(' ') + '\n'; }
                 if (text.trim().length < 50 && window.Tesseract) {
-                    const page = await pdf.getPage(1);
-                    const viewport = page.getViewport({ scale: 1.5 });
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.height = viewport.height; canvas.width = viewport.width;
-                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-                    const { data } = await Tesseract.recognize(canvas, 'eng+ben');
-                    text = data.text;
+                    const page = await pdf.getPage(1); const viewport = page.getViewport({ scale: 1.5 }); const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.height = viewport.height; canvas.width = viewport.width;
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise; const { data } = await Tesseract.recognize(canvas, 'eng+ben'); text = data.text;
                 }
-                const meta = await pdf.getMetadata();
-                return { text: text.toLowerCase(), meta: meta.info };
+                const meta = await pdf.getMetadata(); return { text: text.toLowerCase(), meta: meta.info };
             } catch (error) { return null; }
         }
 
         function showPdfInModal(filename, keyword) {
             const container = document.getElementById('pdfViewerContainer');
             const pdfUrl = `downloaded_pdfs/${filename}#search=${encodeURIComponent(keyword)}`;
-            document.getElementById('pdfIframe').src = pdfUrl;
-            document.getElementById('pdfFallbackLink').href = pdfUrl;
-            container.style.display = 'block';
-            setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+            document.getElementById('pdfIframe').src = pdfUrl; document.getElementById('pdfFallbackLink').href = pdfUrl;
+            container.style.display = 'block'; setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
         }
 
-        function mergePDFDataToDB() {
-            if(!currentTenderIdInModal || currentVerificationItems.length === 0) return;
-            
-            let t = globalData.find(x => x.Tender_Proposal_ID == currentTenderIdInModal);
-            if(t) {
-                t.PDF_Verified = true;
-                t.PDF_Verification_Date = new Date().toISOString();
+        function setFinalValue(inputId, val) { document.getElementById(inputId).value = val; }
+
+        function buildVerificationRow(key, dbVal, pdfVal, inputId) {
+            let extractedHtml = `<span style="color:#dc2626;">Not Found</span>`;
+            let cleanPdfVal = "";
+            if(pdfVal) {
+                // strip HTML to just get text
+                let temp = document.createElement("div"); temp.innerHTML = pdfVal;
+                cleanPdfVal = temp.textContent || temp.innerText || "";
+                // remove brackets like [Contract Value] 
+                cleanPdfVal = cleanPdfVal.replace(/^\[.*?\]\s*/, '').trim();
+                if(cleanPdfVal.startsWith('...')) cleanPdfVal = cleanPdfVal.substring(3);
+                if(cleanPdfVal.endsWith('...')) cleanPdfVal = cleanPdfVal.substring(0, cleanPdfVal.length-3);
                 
-                let extractedData = {};
-                currentVerificationItems.forEach(item => {
-                    extractedData[item.key] = {
-                        found_in_pdf: item.found || item.partial,
-                        matched_value: item.found ? "Exact Match" : (item.partial ? "Partial Match" : "Not Found")
-                    };
-                });
-                
-                t.PDF_Extracted_Audit = extractedData;
-                
-                // Re-render row to show the badge
-                renderTablePage();
-                
-                document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px;">✅ Successfully Merged to Database!</span>`;
+                extractedHtml = `<span style="color:#10b981;">${cleanPdfVal}</span> <button class="btn-use-pdf" onclick="setFinalValue('${inputId}', '${cleanPdfVal.replace(/'/g, "\\'")}')">[Use PDF]</button>`;
             }
-        }
+            if(dbVal === "0" && !pdfVal) extractedHtml = `<span style="color:#38bdf8;">Skipped (Value 0)</span>`;
 
-        function downloadUpdatedJSON() {
-            if(!globalData.length) return alert("No data available to export.");
-            
-            // Clean up internal properties before export
-            let exportData = globalData.map(t => {
-                let cleanT = { ...t };
-                delete cleanT._findings;
-                delete cleanT._searchStr;
-                return cleanT;
-            });
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "eGP_Verified_Database.json");
-            dlAnchorElem.click();
+            return `<tr>
+                <td style="font-weight:bold;">${key}</td>
+                <td style="color:#94a3b8;">${dbVal || 'N/A'}</td>
+                <td>${extractedHtml}</td>
+                <td><input type="text" id="${inputId}" class="edit-input" value="${dbVal || ''}"></td>
+            </tr>`;
         }
 
         async function showDataInspector(tenderId) {
@@ -818,10 +717,9 @@
             if(!t) return;
 
             currentTenderIdInModal = tenderId;
-            currentVerificationItems = [];
             document.getElementById('mergeActionContainer').innerHTML = '';
-
             document.getElementById('pdfViewerContainer').style.display = 'none';
+            document.getElementById('investigationBox').style.display = 'none';
             document.getElementById('timestampData').innerText = new Date().toISOString();
             document.getElementById('footprintID').innerText = t.Tender_Proposal_ID;
 
@@ -832,9 +730,7 @@
             document.getElementById('hashData').innerText = hashVal;
             
             document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: officialUrl, width: 64, height: 64, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.L
-            });
+            new QRCode(document.getElementById("qrcode"), { text: officialUrl, width: 64, height: 64, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.L });
 
             let safeScore = t._findings && t._findings.score ? t._findings.score : 0;
             document.getElementById('riskScoreText').innerText = safeScore + "%";
@@ -844,179 +740,160 @@
             else if (safeScore >= 40) document.getElementById('riskMeterFill').style.background = "#f59e0b";
             else document.getElementById('riskMeterFill').style.background = "#10b981";
 
-            document.getElementById('pdfMetaBox').innerHTML = "Extracting raw data from Original PDF...";
+            document.getElementById('pdfMetaBox').innerHTML = "Extracting & Matching PDF data...";
+            document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:#38bdf8;">Scanning PDF. Please wait...</td></tr>`;
+            document.getElementById('pdfActionButtons').innerHTML = '';
 
-            document.getElementById('insVal').innerText = formatCurrency(t.Contract_Value_BDT) + ` (৳${safeNum(t.Contract_Value_BDT)})`;
-            document.getElementById('insPrice').innerText = t.Document_Price_BDT ? `৳${t.Document_Price_BDT}` : "N/A";
-            document.getElementById('insSold').innerText = t.Tenders_Sold || "0";
-            document.getElementById('insRecv').innerText = t.Tenders_Received || "0";
-            document.getElementById('insResp').innerText = t.Responsive_Tenders || "0";
-            document.getElementById('insPub').innerText = t.Advertised_Date || "N/A";
-            document.getElementById('insClose').innerText = t.Closing_Date || "N/A";
-            
-            let meetStr = "N/A";
-            if(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date) {
-                meetStr = `${t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date} to ${t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date || "N/A"}`;
-            }
-            document.getElementById('insMeet').innerText = meetStr;
-            
-            document.getElementById('insNoa').innerText = t.Notification_of_Award_Date || "N/A";
-            document.getElementById('insSign').innerText = t.Contract_Signing_Date || "N/A";
-            document.getElementById('insCpv').innerText = t.CPV_Code || "N/A";
-
-            let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "No data.";
-            document.getElementById('insExp').innerHTML = rawExp.replace(/\b(rajuk|cda|kda|pwd|lged|petrobangla)\b/gi, '<span class="highlight-red">$&</span>').replace(/\d+\.[1-9]\d+\s*(crore|lac|lakh)/gi, '<span class="highlight-red">$&</span>');
-
-            const pdfCol = document.getElementById('pdfScanResultCol');
-            let pdfFiles = [];
-            if (t.Source_Files_Merged) pdfFiles = String(t.Source_Files_Merged).split(/\||,|;/).map(f => f.trim()).filter(f => f.toLowerCase().endsWith('.pdf'));
-            else if (t.Source_File) pdfFiles = [String(t.Source_File).trim()];
+            const pdfFiles = t.Source_Files_Merged ? String(t.Source_Files_Merged).split(/\||,|;/).map(f=>f.trim()).filter(f=>f.toLowerCase().endsWith('.pdf')) : (t.Source_File ? [String(t.Source_File).trim()] : []);
             
             if (pdfFiles.length > 0) {
                 const exactDbVal = safeNum(t.Contract_Value_BDT).toString();
                 const tenderIdStr = String(t.Tender_Proposal_ID);
                 const isZeroValue = exactDbVal === "0";
 
-                pdfCol.innerHTML = `<h4>📄 PDF Evidence (Source of Truth)</h4><div style="margin-top:20px; color:var(--neon-blue); font-weight:bold;">⏳ Scanning ${pdfFiles.length} attached document(s)...</div>`;
-
-                currentVerificationItems = [
-                    { key: "Tender ID", val: tenderIdStr, found: false, type: "exact" }
+                let verifyItems = [
+                    { key: "Tender ID", id: "fin_id", val: tenderIdStr, type: "exact" },
+                    { key: "Contract Value", id: "fin_val", val: exactDbVal, type: isZeroValue ? "skip" : "price" },
+                    { key: "Document Price", id: "fin_doc_price", val: String(t.Document_Price_BDT||"").trim(), type: "doc_price" },
+                    { key: "Publish Date", id: "fin_pub", val: String(t.Advertised_Date||"").trim(), type: "date" },
+                    { key: "Closing Date", id: "fin_close", val: String(t.Closing_Date||"").trim(), type: "date" },
+                    { key: "Meeting Start", id: "fin_mstart", val: String(t.Pre_Tender_Meeting_Start||t.Pre_Tender_Meeting_Start_Date||"").trim(), type: "date" },
+                    { key: "Meeting End", id: "fin_mend", val: String(t.Pre_Tender_Meeting_End||t.Pre_Tender_Meeting_End_Date||"").trim(), type: "date" },
+                    { key: "NOA Date", id: "fin_noa", val: String(t.Notification_of_Award_Date||"").trim(), type: "date" },
+                    { key: "Signing Date", id: "fin_sign", val: String(t.Contract_Signing_Date||"").trim(), type: "date" },
+                    { key: "CPV Code", id: "fin_cpv", val: String(t.CPV_Code||"").trim(), type: "exact" }
                 ];
-                
-                if (!isZeroValue) {
-                    currentVerificationItems.push({ key: "Contract Value", val: exactDbVal, found: false, partial: false, type: "price" });
-                } else {
-                    currentVerificationItems.push({ key: "Contract Value", val: "0", found: true, partial: false, type: "skip", note: "৳0 (Skipped)" });
-                }
 
-                if (t.Document_Price_BDT) currentVerificationItems.push({ key: "Document Price", val: String(t.Document_Price_BDT).trim(), found: false, type: "doc_price" });
-                if (t.Advertised_Date) currentVerificationItems.push({ key: "Publish Date", val: String(t.Advertised_Date).trim(), found: false, type: "date" });
-                if (t.Closing_Date) currentVerificationItems.push({ key: "Closing Date", val: String(t.Closing_Date).trim(), found: false, type: "date" });
-                if (t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date) currentVerificationItems.push({ key: "Meeting Start Date", val: String(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date).trim(), found: false, type: "date" });
-
-                let highlightSnippets = [];
-                let additionalFlags = [];
                 let finalMeta = null;
-                let pdfReadable = false;
-
                 for (let i = 0; i < pdfFiles.length; i++) {
                     const pdfResult = await extractTextFromPDF(`downloaded_pdfs/${pdfFiles[i]}`);
                     if (pdfResult && pdfResult.text && pdfResult.text.length > 50) {
-                        pdfReadable = true;
                         finalMeta = pdfResult.meta;
                         const livePdfText = pdfResult.text.replace(/[\r\n]+/g, ' '); 
-
-                        currentVerificationItems.forEach(item => {
-                            if (item.type === 'skip' || item.found) return;
-
+                        verifyItems.forEach(item => {
+                            if (item.type === 'skip' || item.pdfMatch) return;
                             let m = findInPDF(livePdfText, item.val, item.type);
-                            if (m) {
-                                item.found = true;
-                                let hl = `<mark style="background:#10b981; color:#fff; font-weight:bold;">${m}</mark>`;
-                                if ((item.type === 'price' || item.type === 'doc_price') && !m.includes(item.val.split('.')[0])) {
-                                    hl = `<mark style="background:#f59e0b; color:#000; font-weight:bold;">${m}</mark>`; 
-                                    item.partial = true;
-                                }
-                                highlightSnippets.push(`<strong>[${item.key}]</strong> ...${hl}...`);
-                            }
+                            if (m) item.pdfMatch = m;
                         });
-
-                        // Check Red Flags
-                        if (t._findings && t._findings.keys) {
-                            if (t._findings.keys.tailored) {
-                                let tailoredRegex = /\b(rajuk|cda|kda|pwd|lged|petrobangla)\b|\d+\.[1-9]\d+\s*(crore|lac|lakh)|(office|branch office|industry)\s+(must be|should be)?\s*(situated|located)?\s*(in|within)\s+(chattogram|dhaka|khulna|rajshahi|sylhet|barisal|rangpur)/i;
-                                let ruleMatch = livePdfText.match(new RegExp(`.{0,40}(${tailoredRegex.source}).{0,40}`, 'gi'));
-                                if(ruleMatch && ruleMatch[0] && !currentVerificationItems.find(i => i.key === 'Rule Evidence: Tailored Criteria')) {
-                                    currentVerificationItems.push({ key: 'Rule Evidence: Tailored Criteria', found: true, type: 'rule' });
-                                    highlightSnippets.push(`<strong>[Rule Evidence: Tailored]</strong> ...` + ruleMatch[0].replace(tailoredRegex, `<mark style="background:#ef4444; color:#fff; font-weight:bold;">$&</mark>`) + `...`);
-                                }
-                            }
-                            if (/cancel|re-tender|court|stay order/i.test(livePdfText) && !additionalFlags.includes("Possible Legal/Cancel issue mentioned.")) {
-                                additionalFlags.push("Possible Legal/Cancel issue mentioned.");
-                            }
-                        }
                     }
                 }
 
-                let matchStatusHtml = "";
+                if(finalMeta) document.getElementById('pdfMetaBox').innerHTML = `Created: <span class="meta-tag">${finalMeta.CreationDate ? finalMeta.CreationDate.substring(2,10) : 'Hidden'}</span><br>Creator: <span class="meta-tag">${finalMeta.Creator || 'Unknown'}</span><br>Producer: <span class="meta-tag">${finalMeta.Producer || 'Unknown'}</span>`;
+                else document.getElementById('pdfMetaBox').innerHTML = `<span style="color:var(--netra-red)">No Metadata Found / PDF Unreadable</span>`;
+
+                // Build Table
+                let rowsHtml = verifyItems.map(item => buildVerificationRow(item.key, item.val, item.pdfMatch, item.id)).join('');
                 
-                if (!pdfReadable) {
-                    matchStatusHtml = `<div class="scan-item" style="color: #f59e0b; font-weight: bold; line-height:1.4;">⚠️ অস্পষ্ট স্ক্যান: পিডিএফটি পড়া যাচ্ছে না। ডেটাবেস (JSON) থেকে তথ্য দেখানো হচ্ছে। (No Direct Red Flag)</div>`;
-                } else {
-                    currentVerificationItems.forEach(item => {
-                        if (item.type === 'skip') {
-                            matchStatusHtml += `<div class="scan-item" style="color: #38bdf8; font-weight: bold;">ℹ️ ${item.key}: ${item.note}</div>`;
-                        } else if (item.found && !item.partial) {
-                            matchStatusHtml += `<div class="scan-item" style="color: #10b981; font-weight: bold;">✅ ${item.key} Verified from PDF.</div>`;
-                        } else if (item.partial) {
-                            matchStatusHtml += `<div class="scan-item" style="color: #f59e0b; font-weight: bold;">⚠️ ${item.key} Partial Match (Check Snips).</div>`;
-                        } else if (item.type !== 'rule') {
-                            matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-weight: bold;">❌ ${item.key} NOT Found in PDF! (Database manipulation suspected)</div>`;
-                        }
-                    });
+                // Add Sold/Recv/Resp (Not typically extracted by basic regex, so manual input)
+                rowsHtml += `<tr><td style="font-weight:bold;">Sold / Recv / Resp</td><td style="color:#94a3b8;">${t.Tenders_Sold||0} / ${t.Tenders_Received||0} / ${t.Responsive_Tenders||0}</td><td><span style="color:#94a3b8; font-size:11px;">*Check PDF manually</span></td>
+                    <td>
+                        <input type="text" id="fin_sold" class="edit-input" style="width:30%; display:inline;" value="${t.Tenders_Sold||0}"> / 
+                        <input type="text" id="fin_recv" class="edit-input" style="width:30%; display:inline;" value="${t.Tenders_Received||0}"> / 
+                        <input type="text" id="fin_resp" class="edit-input" style="width:30%; display:inline;" value="${t.Responsive_Tenders||0}">
+                    </td></tr>`;
+                
+                let rawExp = t.Eligibility_of_Tenderer || t.Extracted_Specific_Experience || t.Qualification_Criteria || "";
+                rowsHtml += `<tr><td style="font-weight:bold;">Eligibility Criteria</td><td style="color:#94a3b8; font-size:11px;">${rawExp.substring(0,80)}...</td><td><span style="color:#94a3b8; font-size:11px;">*Edit below if needed</span></td>
+                    <td><textarea id="fin_exp" class="edit-textarea">${rawExp}</textarea></td></tr>`;
 
-                    if(additionalFlags.length > 0) {
-                        additionalFlags.forEach(flag => {
-                            matchStatusHtml += `<div class="scan-item" style="color: #dc2626; font-size:13px;">🚨 Flag: ${flag}</div>`;
-                        });
-                    }
-                }
+                document.getElementById('verifyTableBody').innerHTML = rowsHtml;
 
-                if(finalMeta) {
-                    document.getElementById('pdfMetaBox').innerHTML = `
-                        Created: <span class="meta-tag">${finalMeta.CreationDate ? finalMeta.CreationDate.substring(2,10) : 'Hidden'}</span><br>
-                        Creator Tool: <span class="meta-tag">${finalMeta.Creator || 'Unknown'}</span><br>
-                        Producer: <span class="meta-tag">${finalMeta.Producer || 'Unknown'}</span>
-                    `;
-                } else {
-                    document.getElementById('pdfMetaBox').innerHTML = `<span style="color:var(--netra-red)">No Metadata Found</span>`;
-                }
-
-                // Add Merge Button
-                if (t.PDF_Verified) {
-                    document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px;">✅ Verified & Merged</span>`;
-                } else {
-                    document.getElementById('mergeActionContainer').innerHTML = `<button class="btn-merge" onclick="mergePDFDataToDB()">💾 Verify & Merge to Database</button>`;
-                }
-
+                // Buttons
                 let buttonsHtml = '';
                 pdfFiles.forEach((file, i) => {
-                    let lower = file.toLowerCase();
-                    let label = "📄 Document " + (i+1);
-                    if (lower.includes('notice')) label = "📄 Tender Notice";
-                    else if (lower.includes('noa') || lower.includes('award')) label = "📄 NOA / Contract Award";
-                    else if (i === 0 && pdfFiles.length > 1) label = "📄 Tender Notice";
-                    else if (i === 1) label = "📄 NOA / Award";
-                    
+                    let lower = file.toLowerCase(); let label = "📄 Doc " + (i+1);
+                    if (lower.includes('notice')) label = "📄 Tender Notice"; else if (lower.includes('noa') || lower.includes('award')) label = "📄 NOA";
                     let btnClass = (i === 1 || lower.includes('noa')) ? "btn-highlight btn-highlight-alt" : "btn-highlight";
-                    buttonsHtml += `<button class="${btnClass}" style="margin: 5px;" onclick="showPdfInModal('${file}', '${tenderIdStr}')">${label}</button>`;
+                    buttonsHtml += `<button class="${btnClass}" onclick="showPdfInModal('${file}', '${tenderIdStr}')" style="margin-right:5px; padding: 6px 12px; font-size:13px;">${label}</button>`;
                 });
+                document.getElementById('pdfActionButtons').innerHTML = buttonsHtml;
 
-                pdfCol.innerHTML = `
-                    <h4>📄 PDF Evidence (Source of Truth)</h4>
-                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 4px; padding: 10px; margin-bottom: 10px;">
-                        ${matchStatusHtml}
-                    </div>
-                    ${highlightSnippets.length > 0 ? `<div style="font-family: monospace; font-size: 13px; color: #cbd5e1; background: #000; padding: 10px; border-left: 3px solid #38bdf8; margin-bottom: 15px; border-radius: 4px; max-height:150px; overflow-y:auto;">${highlightSnippets.join('<br><br>')}</div>` : ''}
-                    <div style="text-align: center; border-top: 1px dashed #334155; padding-top: 10px;">${buttonsHtml}</div>
-                `;
+                // Merge Button
+                if (t.PDF_Verified) document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px; background:rgba(16,185,129,0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid #10b981;">✅ Verified & Merged</span>`;
+                else document.getElementById('mergeActionContainer').innerHTML = `<button class="btn-merge" onclick="mergePDFDataToDB()">💾 Verify & Update Database</button>`;
+
+                // Investigation Analytics
+                let invHtml = "";
+                let pDate = new Date(t.Advertised_Date); let cDate = new Date(t.Closing_Date);
+                if(!isNaN(pDate) && !isNaN(cDate)) {
+                    let d = Math.ceil((cDate - pDate) / 86400000);
+                    if(d <= 14) invHtml += `<strong style="color:var(--netra-red);">🚨 Rush Tender:</strong> Only ${d} days given to submit bid.<br>`;
+                    else invHtml += `<strong style="color:#10b981;">✅ Timeline:</strong> ${d} days given to submit.<br>`;
+                }
+                
+                let mS = new Date(t.Pre_Tender_Meeting_Start || t.Pre_Tender_Meeting_Start_Date); let mE = new Date(t.Pre_Tender_Meeting_End || t.Pre_Tender_Meeting_End_Date);
+                if(!isNaN(mS) && !isNaN(mE)) {
+                    let h = (mE - mS) / 3600000;
+                    if(h < 24) invHtml += `<strong style="color:var(--netra-red);">🚨 Meeting Rigging:</strong> Pre-tender meeting was open for less than 24 hours (${h} hrs).<br>`;
+                }
+                
+                let nDate = new Date(t.Notification_of_Award_Date); let sDate = new Date(t.Contract_Signing_Date);
+                if(!isNaN(nDate) && !isNaN(sDate)) {
+                    let d = Math.ceil((sDate - nDate) / 86400000);
+                    if(d <= 3) invHtml += `<strong style="color:var(--netra-red);">🚨 Lightning Execution:</strong> Contract signed in just ${d} days after NOA.<br>`;
+                }
+
+                if(invHtml) {
+                    document.getElementById('investigationBox').innerHTML = `<div style="font-weight:bold; margin-bottom:5px; color:#fff;">🕵️ Investigation AI Insights:</div>${invHtml}`;
+                    document.getElementById('investigationBox').style.display = 'block';
+                }
+
             } else {
-                pdfCol.innerHTML = `<h4>📄 PDF Evidence (Source of Truth)</h4><div style="color:var(--text-muted); margin-top:20px;">⚠️ No original PDF attached to this record.</div>`;
+                document.getElementById('verifyTableBody').innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">⚠️ No original PDF attached to this record.</td></tr>`;
             }
 
             document.getElementById('inspectorModal').style.display = 'flex';
         }
 
+        // --- NEW: MERGE & EXPORT LOGIC ---
+        function mergePDFDataToDB() {
+            if(!currentTenderIdInModal) return;
+            let t = globalData.find(x => x.Tender_Proposal_ID == currentTenderIdInModal);
+            if(t) {
+                // Overwrite DB Object with form values
+                t.Contract_Value_BDT = document.getElementById('fin_val').value;
+                t.Document_Price_BDT = document.getElementById('fin_doc_price').value;
+                t.Advertised_Date = document.getElementById('fin_pub').value;
+                t.Closing_Date = document.getElementById('fin_close').value;
+                t.Pre_Tender_Meeting_Start = document.getElementById('fin_mstart').value;
+                t.Pre_Tender_Meeting_End = document.getElementById('fin_mend').value;
+                t.Notification_of_Award_Date = document.getElementById('fin_noa').value;
+                t.Contract_Signing_Date = document.getElementById('fin_sign').value;
+                t.CPV_Code = document.getElementById('fin_cpv').value;
+                t.Tenders_Sold = document.getElementById('fin_sold').value;
+                t.Tenders_Received = document.getElementById('fin_recv').value;
+                t.Responsive_Tenders = document.getElementById('fin_resp').value;
+                
+                if(t.Eligibility_of_Tenderer !== undefined) t.Eligibility_of_Tenderer = document.getElementById('fin_exp').value;
+                else t.Qualification_Criteria = document.getElementById('fin_exp').value;
+
+                t.PDF_Verified = true;
+                
+                // Recalculate findings and risk
+                t._findings = getDynamicFindings(t);
+                
+                // Force global UI refresh
+                triggerFilter();
+                
+                document.getElementById('mergeActionContainer').innerHTML = `<span style="color:#10b981; font-weight:bold; font-size:15px; background:rgba(16,185,129,0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid #10b981;">✅ Updated & Merged!</span>`;
+                
+                // Refresh AI insights box without closing modal
+                showDataInspector(currentTenderIdInModal);
+            }
+        }
+
+        function downloadUpdatedJSON() {
+            if(!globalData.length) return alert("No data available to export.");
+            let exportData = globalData.map(t => { let cleanT = { ...t }; delete cleanT._findings; delete cleanT._searchStr; return cleanT; });
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 4));
+            const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "eGP_Verified_Database.json"); dlAnchorElem.click();
+        }
+
         function downloadCSV() {
             if(!currentFilteredData.length) return alert("No data available to export.");
-            let csv = "\uFEFFTender_ID,Agency,Supplier,Risk,Value_BDT\n";
-            currentFilteredData.forEach(r => {
-                csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${(r.Supplier_Name||"").replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)}\n`;
-            });
-            const link = document.createElement("a");
-            link.href = encodeURI("data:text/csv;charset=utf-8," + csv);
-            link.download = "eGP_Forensic_Audit_Data.csv";
-            link.click();
+            let csv = "\uFEFFTender_ID,Agency,Supplier,Risk,Value_BDT,PDF_Verified\n";
+            currentFilteredData.forEach(r => { csv += `${r.Tender_Proposal_ID},"${extractCleanAgencyName(r.Organization_Agency).replace(/"/g, '""')}","${(r.Supplier_Name||"").replace(/"/g, '""')}",${r.Risk_Level || "N/A"},${safeNum(r.Contract_Value_BDT)},${r.PDF_Verified ? "Yes" : "No"}\n`; });
+            const link = document.createElement("a"); link.href = encodeURI("data:text/csv;charset=utf-8," + csv); link.download = "eGP_Forensic_Audit_Data.csv"; link.click();
         }
 
         window.addEventListener('load', init);
