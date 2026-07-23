@@ -314,7 +314,7 @@
         let currentFilteredData = [];
         let activeRuleKey = null; 
         let currentTenderIdInModal = null;
-        
+
         let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
         let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
         let redFlagChartObj = null, singleBidderChartObj = null, riskValuePieChartObj = null;
@@ -327,15 +327,23 @@
         const rowsPerPage = 50;
         let searchDebounceTimer = null;
 
+        // SMART E-GP REGEX PARSERS
+        const eGPLabels = {
+            'fin_id': [/(?:tender\/proposal id|tender id)\s*:\s*([0-9]+)/],
+            'fin_pub': [/date of advertisement\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/, /publication date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
+            'fin_close': [/closing\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
+            'fin_mstart': [/meeting start\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
+            'fin_mend': [/meeting end\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
+            'fin_noa': [/date of notification of award\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4})/],
+            'fin_sign': [/date of contract signing\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4})/],
+            'fin_doc_price': [/document price\s*\(in\s*bdt\)\s*:\s*([0-9\,]+)/]
+        };
+
         const RULE_TITLES = {
-            owner: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure",
-            split: "PPA 2006 Section 17 – Artificial Contract Splitting",
-            cpv: "EU CPV Regulation / e-GP Metadata Manipulation",
-            tailored: "PPR 2008 Rule 98 – Restrictive Qualification Criteria",
-            monopoly: "e-PG3 ITT 50.6 – Lack of Effective Competition",
-            outlier: "World Bank ALB Guideline – Abnormally Low/High Bids",
-            meeting: "PPR Schedule 2 – Pre-Tender Meeting Manipulation",
-            rigging: "Competition Act 2012 / Bid Rigging Guidelines"
+            owner: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure", split: "PPA 2006 Section 17 – Artificial Contract Splitting",
+            cpv: "EU CPV Regulation / e-GP Metadata Manipulation", tailored: "PPR 2008 Rule 98 – Restrictive Qualification Criteria",
+            monopoly: "e-PG3 ITT 50.6 – Lack of Effective Competition", outlier: "World Bank ALB Guideline – Abnormally Low/High Bids",
+            meeting: "PPR Schedule 2 – Pre-Tender Meeting Manipulation", rigging: "Competition Act 2012 / Bid Rigging Guidelines"
         };
 
         const RULE_DETAILS = {
@@ -391,9 +399,7 @@
                 const encodedUrl = encodeURI(url);
                 const response = await fetch(encodedUrl, { method: 'HEAD', cache: 'no-store' });
                 return response.ok;
-            } catch (e) {
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
         async function getPdfFilesListFromGithub(t) {
@@ -840,12 +846,34 @@
                                     
                                     verifyItems.forEach(item => {
                                         if (item.type === 'skip') return;
+                                        
+                                        // 1. OLD LOGIC: Find exact database value in PDF
                                         let m = findInPDF(livePdfText, item.val, item.type);
                                         if (m) {
                                             let isPart = false;
                                             if ((item.type === 'price' || item.type === 'doc_price') && !m.includes(item.val.split('.')[0])) isPart = true;
                                             if (!item.matches.some(x => x.text === m && x.doc === docName)) {
                                                 item.matches.push({ doc: docName, text: m, isPartial: isPart });
+                                            }
+                                        }
+
+                                        // 2. NEW LOGIC: Smart e-GP Label Extractor!
+                                        let labelRegexList = eGPLabels[item.id];
+                                        if (labelRegexList) {
+                                            for(let regex of labelRegexList) {
+                                                let extractedMatch = livePdfText.match(regex);
+                                                if (extractedMatch) {
+                                                    let extText = extractedMatch[1] || extractedMatch[2]; 
+                                                    if(extText) {
+                                                        extText = extText.trim();
+                                                        // Format Date correctly (e.g., 07-jul-2025 -> 07-Jul-2025)
+                                                        extText = extText.replace(/-([a-z]{3})-/, (match, p1) => '-' + p1.charAt(0).toUpperCase() + p1.slice(1) + '-');
+                                                        
+                                                        if (!item.matches.some(x => x.text.includes(extText) && x.doc === docName)) {
+                                                            item.matches.push({ doc: docName, text: `🎯 [E-GP PDF] ${extText}`, isPartial: false });
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     });
