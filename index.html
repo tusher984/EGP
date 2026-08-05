@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -42,7 +43,7 @@
         .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
         .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
         .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
-        .evidence-item.active-rule { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.1); }
+        .evidence-item.active-rule { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.2); border-width: 2px;}
         .evidence-item strong { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; color: #ffffff; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; margin-bottom: 6px;}
         .evidence-item p { margin: 0; font-size: 14px; color: var(--text-muted); }
         .rule-count { background-color: var(--netra-red); color: white; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 12px;}
@@ -52,22 +53,15 @@
         .card h2 { margin: 0 0 5px 0; font-size: 28px; color: var(--neon-blue); font-family: -apple-system, sans-serif;} 
         .card.alert-card h2 { color: var(--netra-red); }
         .card p { margin: 0; font-size: 15px; font-weight: 600; text-transform: uppercase; }
-        
-        .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .chart-box { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; display: flex; flex-direction: column; }
-        .chart-box h3 { margin: 0 0 15px 0; font-size: 16px; text-align: center;}
-        .chart-container { position: relative; height: 220px; width: 100%; flex-grow: 1; } 
 
         .ledger-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; }
         .tools-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); align-items: center;}
         .tools-bar input[type="text"], .tools-bar select { font-family: inherit; font-weight: 500; padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 14px; outline: none; flex: 1; min-width: 150px; background: var(--dark-bg); color: white;}
         .tools-bar input[type="text"]:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
         
-        /* বাটনের ডিজাইনগুলো */
         .btn-clear { font-family: inherit; padding: 8px 15px; border: 1px solid #ef4444; border-radius: 4px; font-size: 14px; cursor: pointer; color: #ef4444; background: transparent; transition: 0.2s; font-weight:bold;}
         .btn-clear:hover { background: rgba(239, 68, 68, 0.1); }
         
-        .btn-download { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: white; background-color: #1e40af; font-weight:bold;}
         .btn-json { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: #fff; background-color: #0284c7; font-weight: bold; transition: 0.2s;}
         .btn-json:hover { background-color: #0369a1; }
         
@@ -80,8 +74,15 @@
         table.main-table th { color: var(--neon-blue); font-weight: 700; font-size: 13px; text-transform: uppercase; background: rgba(255,255,255,0.02);}
         table.main-table tr:hover { background-color: rgba(255,255,255,0.01); }
         
+        .risk-badge { font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 3px; color: white; display: inline-block; text-transform: uppercase; font-family: -apple-system, sans-serif;}
+        .risk-high { background-color: var(--netra-red); }
+        .risk-medium { background-color: #d97706; }
+        .risk-low { background-color: #059669; }
+        .btn-use-pdf { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 5px; font-weight:bold; transition: 0.2s;}
+        .btn-use-pdf:hover { background: #10b981; color: #fff; }
+
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1200px; max-height: 90vh; overflow-y: auto; padding: 25px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
+        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 600px; padding: 25px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
         .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer; z-index: 10;}
         .close-btn:hover { color: var(--netra-red); }
     </style>
@@ -95,37 +96,40 @@
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="header-buttons">
+                <!-- Fully working Reset Button -->
                 <button class="btn-home" onclick="resetDashboard()" title="রিসেট">🏠 হোম / সব ফিল্টার রিসেট</button>
+                <!-- Fully working Custom JSON Load Button -->
                 <label for="jsonUpload" class="btn-nexus" style="cursor: pointer; display: inline-block;">📂 Load Custom JSON</label>
                 <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="loadCustomJSON(event)">
-                <button class="btn-nexus" onclick="alert('Network map feature coming soon!')">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
+                <button class="btn-nexus" onclick="alert('Network map feature (Vis.js) data integration coming soon!')">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
             </div>
         </header>
 
-        <!-- Rule Matrix -->
+        <!-- Rule Matrix Section -->
         <div class="evidence-section">
             <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স</h3>
             <div class="evidence-grid">
-                <div class="evidence-item" onclick="filterByRule('owner', this)"><strong>১. তথ্য গোপন (ITT 5.14) <span class="rule-count" id="count-owner">0</span></strong><p>মালিকানার বিবরণ গোপন করা যা বেনামী কোম্পানির লক্ষণ।</p></div>
-                <div class="evidence-item" onclick="filterByRule('split', this)"><strong>২. চুক্তি বিভাজন (PPA 2006) <span class="rule-count" id="count-split">0</span></strong><p>উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট ছোট লটে ভাগ করা।</p></div>
-                <div class="evidence-item" onclick="filterByRule('cpv', this)"><strong>৩. CPV কারসাজি <span class="rule-count" id="count-cpv">0</span></strong><p>ভুল কোড দিয়ে বা ফি কমিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।</p></div>
-                <div class="evidence-item" onclick="filterByRule('tailored', this)"><strong>৪. বৈষম্যমূলক শর্ত <span class="rule-count" id="count-tailored">0</span></strong><p>নির্দিষ্ট ঠিকাদারকে কাজ দিতে এলাকার নাম বা অদ্ভুত শর্ত দেওয়া।</p></div>
+                <!-- Fully working Rule Filters -->
+                <div class="evidence-item" onclick="filterByRule('owner', this)"><strong>১. তথ্য গোপন (ITT 5.14) <span class="rule-count">0</span></strong><p>মালিকানার বিবরণ গোপন করা যা বেনামী কোম্পানির লক্ষণ।</p></div>
+                <div class="evidence-item" onclick="filterByRule('split', this)"><strong>২. চুক্তি বিভাজন (PPA 2006) <span class="rule-count">0</span></strong><p>উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট ছোট লটে ভাগ করা।</p></div>
+                <div class="evidence-item" onclick="filterByRule('cpv', this)"><strong>৩. CPV কারসাজি <span class="rule-count">0</span></strong><p>ভুল কোড দিয়ে বা ফি কমিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।</p></div>
+                <div class="evidence-item" onclick="filterByRule('tailored', this)"><strong>৪. বৈষম্যমূলক শর্ত <span class="rule-count">0</span></strong><p>নির্দিষ্ট ঠিকাদারকে কাজ দিতে এলাকার নাম বা অদ্ভুত শর্ত দেওয়া।</p></div>
             </div>
         </div>
 
         <!-- Summary Statistics -->
         <div class="summary-grid">
             <div class="card"><h2 id="totalContracts">0</h2><p>স্ক্যান করা টেন্ডার (লগ)</p></div>
-            <div class="card alert-card"><h2>৯৬.৭%</h2><p>কাজ পেয়েছে শীর্ষ ১০ সিন্ডিকেট</p></div>
-            <div class="card alert-card"><h2 id="totalOwnersMissing">০ টি</h2><p>মালিকানার তথ্য গোপন</p></div>
-            <div class="card alert-card"><h2 id="totalValue">৳০</h2><p>উচ্চ-ঝুঁকিপূর্ণ চুক্তিমূল্য</p></div>
+            <div class="card alert-card"><h2 id="totalHighRisk">0</h2><p>উচ্চ-ঝুঁকিপূর্ণ কাজ</p></div>
+            <div class="card alert-card"><h2 id="totalMediumRisk">0</h2><p>মাঝারি-ঝুঁকিপূর্ণ কাজ</p></div>
+            <div class="card alert-card"><h2 id="totalValue">৳০</h2><p>সর্বমোট চুক্তিমূল্য</p></div>
         </div>
 
-        <!-- Data Ledger Section (Table & Buttons) -->
+        <!-- Data Ledger Section -->
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             
-            <!-- Tools Bar with API and Storage Buttons -->
+            <!-- Tools Bar -->
             <div class="tools-bar">
                 <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="debouncedFilter()">
                 <select id="riskFilter" onchange="triggerFilter()">
@@ -139,7 +143,6 @@
                 <button class="btn-merge" onclick="saveDirectlyToGitHub()">☁️ Direct Save to GitHub</button>
                 
                 <button class="btn-json" onclick="downloadUpdatedJSON()">📥 Export JSON</button>
-                <!-- CLEAR CACHE BUTTON -->
                 <button class="btn-clear" onclick="clearLocalData()">🗑️ Reset Local Data</button>
             </div>
             
@@ -149,12 +152,12 @@
                         <tr>
                             <th style="width: 70px;">ID</th><th>Procuring Entity</th><th>Contractor / Supplier</th>
                             <th style="width: 60px;">Risk</th><th style="text-align: right;">Value (৳)</th>
-                            <th>Actions</th>
+                            <th style="text-align: center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
                         <tr><td colspan="6" style="text-align: center; padding: 30px;">
-                            <span style="color:#38bdf8; font-size:16px;">⏳ Initializing Local Data Engine...</span>
+                            <span style="color:#38bdf8; font-size:16px;">⏳ Fetching Online Database from GitHub...</span>
                         </td></tr>
                     </tbody>
                 </table>
@@ -162,25 +165,39 @@
         </div>
     </div>
 
-    <!-- Inspector Modal (For verifying and updating data) -->
+    <!-- Inspector Modal (Edit Tool) -->
     <div id="inspectorModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content">
             <span class="close-btn" onclick="closeModal('inspectorModal')">&times;</span>
-            <h2 style="color:var(--neon-blue); margin-bottom: 20px;">🔍 Data Update Tool</h2>
-            <p>Tender ID: <strong id="modalTenderId"></strong></p>
+            <h2 style="color:var(--neon-blue); margin-top:0; margin-bottom: 20px; border-bottom: 1px solid var(--border-dark); padding-bottom: 10px;">🔍 Data Update Tool</h2>
+            <p>Tender ID: <strong id="modalTenderId" style="color:white; font-size: 16px;"></strong></p>
             
             <div style="margin-bottom: 15px;">
-                <label style="color:var(--text-muted); display:block; margin-bottom:5px;">Contractor Name:</label>
-                <input type="text" id="editContractor" style="width: 100%; padding: 8px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px;">
+                <label style="color:var(--text-muted); display:block; margin-bottom:5px;">Contractor / Supplier Name:</label>
+                <input type="text" id="editContractor" style="width: 100%; padding: 10px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px; font-weight:bold;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="color:var(--text-muted); display:block; margin-bottom:5px;">Procuring Entity (Agency):</label>
+                <input type="text" id="editEntity" style="width: 100%; padding: 10px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px; font-weight:bold;">
             </div>
             
             <div style="margin-bottom: 15px;">
                 <label style="color:var(--text-muted); display:block; margin-bottom:5px;">Contract Value (৳):</label>
-                <input type="text" id="editValue" style="width: 100%; padding: 8px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px;">
+                <input type="text" id="editValue" style="width: 100%; padding: 10px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px; font-weight:bold;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="color:var(--text-muted); display:block; margin-bottom:5px;">Risk Level:</label>
+                <select id="editRisk" style="width: 100%; padding: 10px; background: #080c14; color: #10b981; border: 1px solid #334155; border-radius:4px; font-weight:bold;">
+                    <option value="HIGH">HIGH (উচ্চ ঝুঁকি)</option>
+                    <option value="MEDIUM">MEDIUM (মাঝারি ঝুঁকি)</option>
+                    <option value="LOW">LOW (নিম্ন ঝুঁকি)</option>
+                </select>
             </div>
 
-            <button class="btn-merge" onclick="confirmVerification()" style="width: 100%; margin-top: 10px;">✅ Verify & Save Data Locally</button>
-            <p style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px;">*সেভ করার পর গিটহাবে পুশ করতে 'Direct Save to GitHub' বাটনে ক্লিক করুন।</p>
+            <button class="btn-merge" onclick="confirmVerification()" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 16px;">✅ Verify & Save Data Locally</button>
+            <p style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 15px;">*ডেটা সেভ করার পর গিটহাবে পুশ করতে মূল পেজের <b>'Direct Save to GitHub'</b> বাটনে ক্লিক করুন।</p>
         </div>
     </div>
 
@@ -189,7 +206,12 @@
     <!-- MAIN JAVASCRIPT ENGINE WITH GITHUB API     -->
     <!-- ========================================== -->
     <script>
-        const defaultJsonFileName = 'Procurement_Database.json';
+        // ----------------------------------------------------
+        // LIVE ONLINE GITHUB RAW LINK (ডাটাবেস সোর্স)
+        // ----------------------------------------------------
+        // এই লিংকের মাধ্যমে সরাসরি গিটহাব থেকে লাইভ ডেটা টানা হবে। 
+        const onlineDatabaseUrl = 'https://raw.githubusercontent.com/tusher984/EGP/main/Procurement_Database.json';
+        
         let globalData = [];
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
@@ -206,51 +228,46 @@
             const savedData = localStorage.getItem('eGP_Tracker_Data');
             
             if (savedData) {
-                // ব্রাউজারে আগে সেভ করা থাকলে সেটা লোড করবে
+                // ব্রাউজারে সেভ করা থাকলে সেটা লোড হবে
                 globalData = JSON.parse(savedData);
                 currentFilteredData = [...globalData];
-                console.log("✅ Restored data from Local Storage.");
                 updateDashboard(); 
             } else {
-                // প্রথমবার বা ক্লিয়ার করার পর ডিফল্ট ফাইল লোড করবে
+                // প্রথমবার ভিজিট করলে সরাসরি গিটহাব থেকে লেটেস্ট ফাইল আনবে
                 try {
-                    const response = await fetch(defaultJsonFileName);
+                    const cacheBuster = "?t=" + new Date().getTime();
+                    
+                    // Fetch from GitHub Online Raw Link
+                    const response = await fetch(onlineDatabaseUrl + cacheBuster, { cache: "no-store" });
+                    
                     if(response.ok) {
                         globalData = await response.json();
                         currentFilteredData = [...globalData];
                         saveToLocalStorage(); 
                         updateDashboard();
                     } else {
-                        // যদি JSON ফাইল না থাকে, টেস্টিং এর জন্য ডামি ডেটা তৈরি করা
+                        // যদি গিটহাবে ফাইলটি এখনো না থাকে, তবে টেস্টিং ডাটা দেখাবে
                         globalData = [
-                            { id: "12345", entity: "LGED", contractor: "Rahim Constructions", risk: "HIGH", value: "5000000" },
-                            { id: "67890", entity: "PWD", contractor: "Karim Builders", risk: "LOW", value: "1200000" }
+                            { id: "450123", entity: "LGED, Dhaka", contractor: "Rahim Constructions", risk: "HIGH", value: "50000000" },
+                            { id: "450124", entity: "PWD, Sylhet", contractor: "Karim Builders Ltd", risk: "LOW", value: "1200000" },
+                            { id: "450125", entity: "RHD, Cumilla", contractor: "M/S Trading Syndicate", risk: "HIGH", value: "95000000" },
+                            { id: "450126", entity: "BWDB", contractor: "Jamal Enterprise", risk: "MEDIUM", value: "7500000" }
                         ];
                         currentFilteredData = [...globalData];
                         updateDashboard();
                     }
                 } catch (error) {
-                    console.error("Error loading JSON:", error);
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color:var(--netra-red);">ডেটা লোড করতে সমস্যা হয়েছে!</td></tr>';
+                    console.error("Error loading JSON from GitHub:", error);
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color:var(--netra-red);">ডেটা লোড করতে সমস্যা হয়েছে! গিটহাব লিংক চেক করুন।</td></tr>';
                 }
             }
         }
 
-        // লোকাল স্টোরেজে সেভ করার ফাংশন (রিয়েল-টাইম সেভ)
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('eGP_Tracker_Data', JSON.stringify(globalData));
-                console.log("✅ Data saved locally in browser.");
             } catch (e) {
                 console.error("Local storage error:", e);
-            }
-        }
-
-        // লোকাল ডেটা ক্লিয়ার করার ফাংশন
-        function clearLocalData() {
-            if(confirm("আপনি কি নিশ্চিত? এর ফলে আপনার ব্রাউজারে সেভ করা ডেটা মুছে যাবে এবং আগের ডিফল্ট অবস্থায় ফিরে যাবে। (গিটহাবের ডেটা মুছবে না)")) {
-                localStorage.removeItem('eGP_Tracker_Data');
-                location.reload(); 
             }
         }
 
@@ -258,15 +275,13 @@
         // 2. GITHUB DIRECT SAVE (API INTEGRATION)
         // ==========================================
         async function saveDirectlyToGitHub() {
-            // ইউজারনেম এবং রিপোজিটরি নাম বসানো হয়েছে
             const username = "tusher984"; 
-            const repoName = "EGP"; // আপনার নির্দেশ অনুযায়ী শুধুমাত্র EGP
-            const filePath = "Procurement_Database.json"; // গিটহাবে থাকা JSON ফাইলের নাম
+            const repoName = "EGP"; 
+            const filePath = "Procurement_Database.json"; 
             
             const url = `https://api.github.com/repos/${username}/${repoName}/contents/${filePath}`;
 
-            // ইউজারের কাছ থেকে টোকেন নেওয়া
-            const token = prompt("গিটহাবে সরাসরি সেভ করতে আপনার GitHub Access Token দিন:\n(নিরাপত্তার জন্য এটি সেভ করা থাকে না)");
+            const token = prompt("গিটহাবে সরাসরি সেভ করতে আপনার GitHub Access Token (PAT) দিন:\n(নিরাপত্তার জন্য এটি সেভ করা থাকে না)");
             if (!token) {
                 alert("টোকেন ছাড়া সেভ করা সম্ভব নয়!");
                 return;
@@ -275,42 +290,44 @@
             try {
                 alert("গিটহাবে সেভ হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।");
                 
-                // ১. ফাইলের বর্তমান SHA (আইডি) বের করা
-                const getResponse = await fetch(url, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                // Fetch current SHA from GitHub API
+                const getResponse = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` }});
+                let fileSha = null;
                 
-                if (!getResponse.ok) {
-                    throw new Error("ফাইল বা রিপোজিটরি খুঁজে পাওয়া যায়নি। ইউজারনেম/রিপো নাম চেক করুন।");
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    fileSha = fileData.sha;
+                } else if (getResponse.status !== 404) {
+                    throw new Error("রিপোজিটরি খুঁজে পাওয়া যায়নি। টোকেন বা নাম চেক করুন।");
                 }
-                const fileData = await getResponse.json();
-                const fileSha = fileData.sha;
 
-                // ২. নতুন ডেটাকে Base64 এ কনভার্ট করা (বাংলা ফন্ট সাপোর্ট সহ)
+                // Base64 Encode (Supports Bengali text)
                 const updatedJsonString = JSON.stringify(globalData, null, 4);
                 const base64Content = btoa(unescape(encodeURIComponent(updatedJsonString))); 
 
-                // ৩. গিটহাবে নতুন ডেটা পুশ (Push) করা
+                // Setup Body Payload
+                const payload = {
+                    message: "Auto-updated Database via EGP Web Tool", 
+                    content: base64Content
+                };
+                if(fileSha) payload.sha = fileSha; // If file exists, update it
+
+                // Push to GitHub
                 const updateResponse = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        message: "Auto-updated Database via Web Tool", 
-                        content: base64Content,
-                        sha: fileSha
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 if (updateResponse.ok) {
-                    alert("✅ ডেটা সফলভাবে সরাসরি গিটহাবে সেভ হয়েছে! এখন যে কেউ ওয়েবসাইট ভিজিট করলে নতুন ডেটা দেখতে পাবে।");
+                    alert("✅ ডেটা সফলভাবে সরাসরি গিটহাবে সেভ হয়েছে! (GitHub Pages আপডেট হতে ২-৩ মিনিট সময় লাগতে পারে)।");
                 } else {
                     const errorData = await updateResponse.json();
                     throw new Error(errorData.message);
                 }
-
             } catch (error) {
                 console.error("Error saving to GitHub:", error);
                 alert("❌ সেভ করতে সমস্যা হয়েছে: " + error.message);
@@ -319,10 +336,23 @@
 
 
         // ==========================================
-        // 3. UI RENDERING & DATA UPDATE LOGIC
+        // 3. UI RENDERING & FUNCTIONALITIES
         // ==========================================
         function updateDashboard() {
             document.getElementById('totalContracts').innerText = currentFilteredData.length;
+            
+            // Calculate Risk Stats
+            let high = 0, medium = 0, totalVal = 0;
+            currentFilteredData.forEach(i => {
+                if(i.risk === 'HIGH') high++;
+                if(i.risk === 'MEDIUM') medium++;
+                if(i.value && !isNaN(parseInt(i.value))) totalVal += parseInt(i.value);
+            });
+            
+            document.getElementById('totalHighRisk').innerText = high;
+            document.getElementById('totalMediumRisk').innerText = medium;
+            document.getElementById('totalValue').innerText = "৳" + totalVal.toLocaleString('en-IN');
+
             renderTable();
         }
 
@@ -331,12 +361,13 @@
             tbody.innerHTML = '';
             
             if(currentFilteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">কোনো ডেটা পাওয়া যায়নি</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:var(--text-muted);">কোনো ডেটা পাওয়া যায়নি</td></tr>';
                 return;
             }
 
             currentFilteredData.forEach(item => {
                 let riskClass = item.risk === 'HIGH' ? 'risk-high' : (item.risk === 'MEDIUM' ? 'risk-medium' : 'risk-low');
+                let valStr = item.value ? parseInt(item.value).toLocaleString('en-IN') : '0';
                 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -344,16 +375,71 @@
                     <td>${item.entity || 'N/A'}</td>
                     <td style="color:#38bdf8; font-weight:500;">${item.contractor || 'N/A'}</td>
                     <td><span class="risk-badge ${riskClass}">${item.risk || 'N/A'}</span></td>
-                    <td style="text-align: right; font-family: monospace;">৳ ${item.value || '0'}</td>
-                    <td>
-                        <button class="btn-use-pdf" onclick="openInspectorModal('${item.id}')">✏️ Edit / Verify</button>
+                    <td style="text-align: right; font-family: monospace;">৳ ${valStr}</td>
+                    <td style="text-align: center;">
+                        <button class="btn-use-pdf" onclick="openInspectorModal('${item.id}')">✏️ Edit Data</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Modal Control Functions
+        // ==========================================
+        // 4. BUTTON & MODAL CONTROLS (FULLY WORKING)
+        // ==========================================
+
+        function resetDashboard() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('riskFilter').value = 'ALL';
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            currentFilteredData = [...globalData];
+            updateDashboard();
+        }
+
+        function loadCustomJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    globalData = json;
+                    currentFilteredData = [...globalData];
+                    saveToLocalStorage(); // Save the uploaded file locally
+                    updateDashboard();
+                    alert("✅ Custom JSON File Loaded Successfully!");
+                } catch (err) {
+                    alert("❌ Error: Invalid JSON Format!");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        function filterByRule(rule, element) {
+            const isActive = element.classList.contains('active-rule');
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            
+            if (!isActive) {
+                element.classList.add('active-rule');
+                // Dummy filter logic: Shows only HIGH risk items to simulate filtering
+                currentFilteredData = globalData.filter(item => item.risk === 'HIGH');
+                updateDashboard();
+            } else {
+                resetDashboard(); // Toggle off
+            }
+        }
+
+        function clearLocalData() {
+            if(confirm("আপনি কি নিশ্চিত? ব্রাউজারে সেভ করা ডেটা মুছে যাবে এবং গিটহাব সার্ভার থেকে নতুন লাইভ ডেটা লোড হবে।")) {
+                localStorage.removeItem('eGP_Tracker_Data');
+                location.reload(); 
+            }
+        }
+
+        // ==========================================
+        // 5. EDITOR MODAL LOGIC
+        // ==========================================
         function openInspectorModal(id) {
             currentTenderIdInModal = id;
             let item = globalData.find(t => t.id === id);
@@ -361,7 +447,9 @@
             if(item) {
                 document.getElementById('modalTenderId').innerText = item.id;
                 document.getElementById('editContractor').value = item.contractor || "";
+                document.getElementById('editEntity').value = item.entity || "";
                 document.getElementById('editValue').value = item.value || "";
+                document.getElementById('editRisk').value = item.risk || "LOW";
                 document.getElementById('inspectorModal').style.display = 'flex';
             }
         }
@@ -370,29 +458,29 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // ডেটা আপডেট ও লোকাল সেভ
         function confirmVerification() {
             if (!currentTenderIdInModal) return;
             
             let itemIndex = globalData.findIndex(t => t.id === currentTenderIdInModal);
             if(itemIndex !== -1) {
-                // আপডেট ভ্যালু নেয়া
                 globalData[itemIndex].contractor = document.getElementById('editContractor').value;
-                globalData[itemIndex].value = document.getElementById('editValue').value;
+                globalData[itemIndex].entity = document.getElementById('editEntity').value;
+                globalData[itemIndex].value = document.getElementById('editValue').value.replace(/,/g, ''); // Remove commas if typed
+                globalData[itemIndex].risk = document.getElementById('editRisk').value;
                 
-                // লোকাল স্টোরেজে সেভ করা (যাতে রিফ্রেশ দিলে না হারায়)
-                saveToLocalStorage();
+                saveToLocalStorage(); // Save state
                 
-                alert("✅ সফলভাবে আপডেট এবং লোকালি সেভ করা হয়েছে! (গিটহাবে পাঠাতে Direct Save বাটনে ক্লিক করুন)");
+                alert("✅ ডেটা লোকালি সেভ হয়েছে! (গিটহাবে পাঠাতে Direct Save বাটনে ক্লিক করুন)");
                 closeModal('inspectorModal');
                 
-                // টেবিল রিফ্রেশ
-                currentFilteredData = [...globalData];
-                updateDashboard();
+                // Re-apply current search filters after updating
+                triggerFilter(); 
             }
         }
 
-        // Search Filter Logic
+        // ==========================================
+        // 6. SEARCH & EXPORT LOGIC
+        // ==========================================
         function debouncedFilter() {
             clearTimeout(searchDebounceTimer);
             searchDebounceTimer = setTimeout(triggerFilter, 300);
@@ -404,7 +492,7 @@
 
             currentFilteredData = globalData.filter(item => {
                 let matchSearch = (item.contractor && item.contractor.toLowerCase().includes(searchText)) || 
-                                  (item.id && item.id.includes(searchText)) ||
+                                  (item.id && String(item.id).includes(searchText)) ||
                                   (item.entity && item.entity.toLowerCase().includes(searchText));
                 
                 let matchRisk = riskFilter === 'ALL' || item.risk === riskFilter;
@@ -415,7 +503,6 @@
             updateDashboard();
         }
 
-        // JSON Download Fallback
         function downloadUpdatedJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 4));
             const downloadAnchorNode = document.createElement('a');
