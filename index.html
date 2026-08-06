@@ -302,6 +302,13 @@
         const githubRepo = "EGP";
         const githubFile = "Procurement_Database.json";
         const apiUrl = `https://api.github.com/repos/${githubUsername}/${githubRepo}/contents/${githubFile}`;
+        const remoteDataUrls = [
+            `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/main/${githubFile}`,
+            `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/master/${githubFile}`,
+            `https://cdn.jsdelivr.net/gh/${githubUsername}/${githubRepo}@main/${githubFile}`,
+            `https://cdn.jsdelivr.net/gh/${githubUsername}/${githubRepo}@master/${githubFile}`
+        ];
+        const localDataUrl = './Procurement_Database.json';
 
         // সেশন চলাকালীন টোকেনটি একবার সেভ করে রাখার ভেরিয়েবল
         let savedGithubToken = null; 
@@ -329,6 +336,68 @@
             initializeData();
         };
 
+        function decodeBase64Content(content) {
+            const normalized = (content || '').replace(/\s/g, '');
+            if (!normalized) {
+                throw new Error('GitHub returned an empty file content.');
+            }
+
+            const binaryString = atob(normalized);
+            const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        async function loadDataFromGitHub() {
+            const response = await fetch(`${apiUrl}?t=${Date.now()}`, {
+                headers: { 'Accept': 'application/vnd.github.v3+json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`GitHub API returned ${response.status}`);
+            }
+
+            const fileData = await response.json();
+            if (!fileData.content) {
+                throw new Error('GitHub response did not include file content.');
+            }
+
+            const jsonString = decodeBase64Content(fileData.content);
+            return JSON.parse(jsonString);
+        }
+
+        async function loadDataFromRemoteSources() {
+            let lastError = null;
+
+            for (const remoteUrl of remoteDataUrls) {
+                try {
+                    const response = await fetch(`${remoteUrl}?t=${Date.now()}`);
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const payload = await response.text();
+                    const parsed = JSON.parse(payload);
+                    return parsed;
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+
+            if (lastError) {
+                throw lastError;
+            }
+
+            throw new Error('No public data source responded successfully.');
+        }
+
+        async function loadDataFromLocalFile() {
+            const response = await fetch(`${localDataUrl}?t=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error(`Local backup unavailable (${response.status})`);
+            }
+            return await response.json();
+        }
+
         // ==========================================
         // 1. DATA INITIALIZATION (FETCH FROM GITHUB API)
         // ==========================================
@@ -336,32 +405,42 @@
             const savedData = localStorage.getItem('eGP_Tracker_Data');
             
             if (savedData) {
-                globalData = JSON.parse(savedData);
-                currentFilteredData = [...globalData];
-                updateDashboard(); 
-            } else {
                 try {
-                    const response = await fetch(apiUrl + "?t=" + new Date().getTime());
-                    
-                    if(response.ok) {
-                        const fileData = await response.json();
-                        // Base64 Decode with utf-8 support
-                        const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
-                        globalData = JSON.parse(jsonString);
-                        
+                    globalData = JSON.parse(savedData);
+                    currentFilteredData = [...globalData];
+                    updateDashboard();
+                } catch (error) {
+                    console.warn('Saved data was invalid, trying remote sources.', error);
+                }
+            }
+
+            if (globalData.length > 0) {
+                return;
+            }
+
+            try {
+                globalData = await loadDataFromGitHub();
+                currentFilteredData = [...globalData];
+                saveToLocalStorage();
+                updateDashboard();
+            } catch (githubError) {
+                console.warn('GitHub API load failed, trying public mirror sources:', githubError);
+                try {
+                    globalData = await loadDataFromRemoteSources();
+                    currentFilteredData = [...globalData];
+                    saveToLocalStorage();
+                    updateDashboard();
+                } catch (remoteError) {
+                    console.warn('Remote mirror load failed, trying local backup:', remoteError);
+                    try {
+                        globalData = await loadDataFromLocalFile();
                         currentFilteredData = [...globalData];
                         saveToLocalStorage();
                         updateDashboard();
-                    } else if(response.status === 404) {
-                        globalData = [];
-                        currentFilteredData = [];
-                        updateDashboard();
-                    } else {
-                        throw new Error("API Fetch Failed");
+                    } catch (localError) {
+                        console.error('Data Fetch Error:', githubError, remoteError, localError);
+                        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color:var(--netra-red); padding:30px;"><b>ডেটা লোড করতে সমস্যা হয়েছে। ফাইলটি সঠিকভাবে সেবা পাচ্ছে কিনা দেখুন।</b></td></tr>';
                     }
-                } catch (error) {
-                    console.error("Data Fetch Error:", error);
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color:var(--netra-red); padding:30px;"><b>GitHub থেকে ফাইল রিড করতে সমস্যা হয়েছে!</b></td></tr>';
                 }
             }
         }
