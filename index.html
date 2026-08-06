@@ -8,9 +8,6 @@
     <!-- Tailwind CSS UI Framework -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- PDF.js Library for Browser PDF Processing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
     <!-- jQuery & DataTables CSS/JS for Interactive Tables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -43,8 +40,14 @@
             color: white !important;
             border: none !important;
         }
-        table.dataTable border-bottom {
+        table.dataTable.no-footer {
             border-bottom: 1px solid #334155 !important;
+        }
+        table.dataTable tbody tr {
+            background-color: transparent !important;
+        }
+        table.dataTable tbody tr:hover {
+            background-color: #1e293b !important;
         }
     </style>
 </head>
@@ -52,291 +55,141 @@
     <div class="max-w-7xl mx-auto">
         
         <!-- Header -->
-        <header class="mb-8 border-b border-slate-700 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-red-500 tracking-tight">🚨 e-GP Forensic Dashboard</h1>
-                <p class="text-slate-400 text-sm mt-1">Live GitHub Pages Analyzer for Bangladesh e-GP Data</p>
-            </div>
-            <button id="scanBtn" onclick="startAudit()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 flex items-center gap-2">
-                <span>▶ Run Live Audit</span>
-            </button>
+        <header class="mb-8 border-b border-slate-700 pb-6">
+            <h1 class="text-3xl font-extrabold text-red-500 tracking-tight">🚨 e-GP Forensic Dashboard</h1>
+            <p class="text-slate-400 text-sm mt-1">Instant Data Visualizer based on Pre-Compiled Procurement_Database.json</p>
         </header>
-
-        <!-- Live Progress Status -->
-        <div id="statusBox" class="mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700 hidden">
-            <div class="flex justify-between text-xs font-mono text-yellow-400 mb-2">
-                <span id="statusText">Initializing PDF Engine...</span>
-                <span id="statusPct">0%</span>
-            </div>
-            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div id="progressBar" class="bg-red-500 h-full w-0 transition-all duration-300"></div>
-            </div>
-        </div>
 
         <!-- KPI Metrics Overview -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700">
+            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 shadow-md">
                 <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Tenders Audited</h3>
                 <p id="totalCount" class="text-3xl font-extrabold mt-2 text-slate-100">0</p>
             </div>
-            <div class="bg-slate-800 p-5 rounded-lg border border-red-900/60 bg-red-950/10">
+            <div class="bg-slate-800 p-5 rounded-lg border border-red-900/60 bg-red-950/20 shadow-md">
                 <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">High Risk Tenders</h3>
                 <p id="highRiskCount" class="text-3xl font-extrabold mt-2 text-red-500">0</p>
             </div>
-            <div class="bg-slate-800 p-5 rounded-lg border border-yellow-900/60 bg-yellow-950/10">
+            <div class="bg-slate-800 p-5 rounded-lg border border-yellow-900/60 bg-yellow-950/20 shadow-md">
                 <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Medium Risk Tenders</h3>
                 <p id="medRiskCount" class="text-3xl font-extrabold mt-2 text-yellow-500">0</p>
             </div>
-            <div class="bg-slate-800 p-5 rounded-lg border border-emerald-900/60 bg-emerald-950/10">
+            <div class="bg-slate-800 p-5 rounded-lg border border-emerald-900/60 bg-emerald-950/20 shadow-md">
                 <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider">Clean Tenders</h3>
                 <p id="lowRiskCount" class="text-3xl font-extrabold mt-2 text-emerald-400">0</p>
             </div>
         </div>
 
         <!-- Findings Table -->
-        <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-2xl overflow-x-auto">
+        <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-xl overflow-x-auto">
             <h2 class="text-xl font-bold mb-4 text-slate-200">Forensic Investigation Results</h2>
+            <div id="errorMessage" class="hidden text-red-500 font-bold mb-4 bg-red-900/20 p-4 rounded border border-red-900">
+                Failed to load 'Procurement_Database.json'. Please make sure the file exists in the same folder as this index.html file!
+            </div>
             <table id="auditTable" class="w-full text-sm text-left text-slate-300 display">
                 <thead>
                     <tr class="bg-slate-700 text-slate-100">
-                        <th>Tender ID</th>
-                        <th>Risk Level</th>
-                        <th>Risk Score</th>
-                        <th>Awarded Supplier</th>
-                        <th>Value (BDT)</th>
-                        <th>Detected Rule Violations</th>
+                        <th class="py-3 px-2 rounded-tl-md">Tender ID</th>
+                        <th class="py-3 px-2">Risk Level</th>
+                        <th class="py-3 px-2">Risk Score</th>
+                        <th class="py-3 px-2">Awarded Supplier</th>
+                        <th class="py-3 px-2">Value (BDT)</th>
+                        <th class="py-3 px-2 rounded-tr-md">Detected Rule Violations</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="tableBody">
+                    <!-- Data injected via JavaScript -->
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Configure PDF.js Worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        const GITHUB_USER = "tusher984";
-        const GITHUB_REPO = "EGP";
-        let database = {};
-
-        async function startAudit() {
-            document.getElementById('scanBtn').disabled = true;
-            document.getElementById('scanBtn').classList.add('opacity-50', 'cursor-not-allowed');
-            document.getElementById('statusBox').classList.remove('hidden');
-
-            database = {};
-
-            try {
-                updateStatus("Querying GitHub API for PDF directories...", 10);
-                
-                // Fetch file lists via GitHub API
-                const noticeFiles = await fetchGitHubFolder(GITHUB_USER, GITHUB_REPO, "Tender Notice_PDFs");
-                const awardFiles = await fetchGitHubFolder(GITHUB_USER, GITHUB_REPO, "Contract_Awards_PDFs");
-
-                const allFiles = [...noticeFiles, ...awardFiles];
-                const tenderIds = [...new Set(allFiles.map(f => extractTenderId(f.name)).filter(Boolean))];
-
-                if (tenderIds.length === 0) {
-                    updateStatus("No PDF files found. Ensure your folders are named exactly 'Tender Notice_PDFs' and 'Contract_Awards_PDFs'.", 0);
-                    document.getElementById('scanBtn').disabled = false;
-                    document.getElementById('scanBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-                    return;
-                }
-
-                updateStatus(`Found ${tenderIds.length} Tender packages. Commencing text extraction & forensic evaluation...`, 20);
-
-                let processed = 0;
-                for (let tid of tenderIds) {
-                    database[tid] = {
-                        tenderId: tid,
-                        riskLevel: "LOW",
-                        riskScore: 0,
-                        redFlags: [],
-                        supplier: "N/A",
-                        contractValue: 0
-                    };
-
-                    // 1. Process Notice PDF (Using relative paths to bypass CORS on GitHub pages)
-                    const nFile = noticeFiles.find(f => f.name.includes(tid));
-                    if (nFile) {
-                        const fileUrl = `./Tender Notice_PDFs/${nFile.name}`;
-                        const text = await extractPdfText(fileUrl);
-                        auditNoticeText(tid, text);
+        $(document).ready(function() {
+            // Fetch the static JSON file directly
+            fetch('Procurement_Database.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("JSON file not found.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Extract the main array from the JSON structure
+                    const tenders = data.Merged_Database || [];
+                    
+                    if(tenders.length === 0) {
+                        console.warn("No data found in Merged_Database array.");
                     }
 
-                    // 2. Process Award PDF (Using relative paths to bypass CORS)
-                    const aFile = awardFiles.find(f => f.name.includes(tid));
-                    if (aFile) {
-                        const fileUrl = `./Contract_Awards_PDFs/${aFile.name}`;
-                        const text = await extractPdfText(fileUrl);
-                        auditAwardText(tid, text);
-                    }
+                    // Calculate Summary Stats
+                    const highRisk = tenders.filter(t => t.Risk_Level && t.Risk_Level.toUpperCase() === 'HIGH').length;
+                    const medRisk = tenders.filter(t => t.Risk_Level && t.Risk_Level.toUpperCase() === 'MEDIUM').length;
+                    const lowRisk = tenders.filter(t => t.Risk_Level && t.Risk_Level.toUpperCase() === 'LOW').length;
 
-                    processed++;
-                    let pct = 20 + Math.floor((processed / tenderIds.length) * 80);
-                    updateStatus(`Auditing Tender ID ${tid} (${processed}/${tenderIds.length})`, pct);
-                }
+                    document.getElementById('totalCount').innerText = tenders.length;
+                    document.getElementById('highRiskCount').innerText = highRisk;
+                    document.getElementById('medRiskCount').innerText = medRisk;
+                    document.getElementById('lowRiskCount').innerText = lowRisk;
 
-                updateStatus("Audit complete! Rendering dashboard...", 100);
-                renderDashboard();
+                    // Populate Table rows
+                    const tbody = document.getElementById('tableBody');
+                    
+                    tenders.forEach(t => {
+                        const row = document.createElement('tr');
+                        row.className = "border-b border-slate-700/50";
+                        
+                        // Default to LOW if missing
+                        const riskLevel = (t.Risk_Level || 'LOW').toUpperCase(); 
+                        
+                        // Badge Styling
+                        let badge = `<span class="px-2 py-1 rounded text-xs font-bold ${
+                            riskLevel === 'HIGH' ? 'bg-red-900/80 text-red-300 border border-red-700' :
+                            riskLevel === 'MEDIUM' ? 'bg-yellow-900/80 text-yellow-300 border border-yellow-700' : 
+                            'bg-emerald-900/80 text-emerald-300 border border-emerald-700'
+                        }">${riskLevel}</span>`;
 
-            } catch (err) {
-                console.error(err);
-                updateStatus("Audit failed. Ensure files exist and check console for errors.", 0);
-            } finally {
-                document.getElementById('scanBtn').disabled = false;
-                document.getElementById('scanBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        }
+                        // Handle Red Flags
+                        let rawFlags = t.Red_Flag_Reason || "";
+                        let flagsDisplay = '<span class="text-slate-500">None</span>';
+                        
+                        if (rawFlags && rawFlags !== "No significant issue detected") {
+                            // Split by the pipe character and format as list
+                            let flagsArray = rawFlags.split('|').map(s => s.trim()).filter(Boolean);
+                            flagsDisplay = flagsArray.map(f => `<span class="block text-red-400 mb-0.5 font-medium">• ${f}</span>`).join('');
+                        }
 
-        async function fetchGitHubFolder(user, repo, path) {
-            const url = `https://api.github.com/repos/${user}/${repo}/contents/${encodeURIComponent(path)}`;
-            const res = await fetch(url);
-            if (!res.ok) return [];
-            const data = await res.json();
-            return Array.isArray(data) ? data.filter(f => f.name.toLowerCase().endsWith('.pdf')) : [];
-        }
+                        // Supplier and Value logic
+                        let supplier = t.Supplier_Name || '<span class="text-slate-500 italic">Not Awarded / N/A</span>';
+                        let contractValue = t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US', {minimumFractionDigits: 2}) : '<span class="text-slate-500 italic">N/A</span>';
 
-        function extractTenderId(filename) {
-            const match = filename.match(/\b(\d{6,7})\b/);
-            return match ? match[1] : null;
-        }
+                        row.innerHTML = `
+                            <td class="font-mono font-bold text-slate-200 py-3 px-2">${t.Tender_Proposal_ID || 'N/A'}</td>
+                            <td class="py-3 px-2">${badge}</td>
+                            <td class="font-bold text-slate-200 py-3 px-2">${t.Risk_Score || 0}</td>
+                            <td class="text-slate-200 py-3 px-2">${supplier}</td>
+                            <td class="font-mono py-3 px-2">${contractValue}</td>
+                            <td class="py-3 px-2">${flagsDisplay}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
 
-        async function extractPdfText(url) {
-            try {
-                const pdf = await pdfjsLib.getDocument(url).promise;
-                let fullText = "";
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const tokenProps = await page.getTextContent();
-                    fullText += tokenProps.items.map(item => item.str).join(" ") + "\n";
-                }
-                return fullText;
-            } catch (e) {
-                console.warn(`Failed to read PDF from: ${url}`, e);
-                return "";
-            }
-        }
-
-        function auditNoticeText(tid, text) {
-            const rec = database[tid];
-
-            // Rule: 10% Price Cap Disqualification
-            if (/10%\s*(above|below)|more than\s*10%/i.test(text)) {
-                rec.redFlags.push("Unlawful 10% Price Deviation Disqualification Clause");
-                rec.riskScore += 20;
-            }
-
-            // Rule: Local Manufacturer Ban
-            if (/Local Manufacturer\s*will not be accepted/i.test(text)) {
-                rec.redFlags.push("Exclusion of Local Manufacturers (Violates ITT 5.1)");
-                rec.riskScore += 30;
-            }
-
-            // Rule: Restrictive Local Office Requirement
-            if (/Chattogram City Corporation Area|office.*in Chattogram|working center.*Chattogram/i.test(text)) {
-                rec.redFlags.push("Restrictive Local Office/Territory Clause");
-                rec.riskScore += 15;
-            }
-
-            // Rule: Unlawful Joint Venture Ban
-            if (/Joint Venture.*not.*permitted|JV.*not.*allowed/i.test(text)) {
-                rec.redFlags.push("Unlawful Prohibition of Joint Venture Participation");
-                rec.riskScore += 15;
-            }
-
-            // Rule: Restrictive Country of Origin
-            if (/Japan\/Europe\/UK\/North America/i.test(text)) {
-                rec.redFlags.push("Restrictive Country of Origin Criteria");
-                rec.riskScore += 15;
-            }
-        }
-
-        function auditAwardText(tid, text) {
-            const rec = database[tid];
-
-            // Parse Bidding Statistics
-            const sold = (text.match(/Sold\s*:\s*(\d+)/i) || [])[1] || 0;
-            const received = (text.match(/Received\s*:\s*(\d+)/i) || [])[1] || 0;
-            const responsive = (text.match(/Responsive\s*:\s*(\d+)/i) || [])[1] || 0;
-
-            // Rule: Single Responsive Bidder Risk
-            if (parseInt(responsive) === 1 && (parseInt(sold) > 1 || parseInt(received) > 1)) {
-                rec.redFlags.push("Single Responsive Bidder (Competition Stifled)");
-                rec.riskScore += 40;
-            }
-
-            // Rule: Beneficial Ownership Omission
-            if (!/Beneficial Owner|Shareholders|NID Number/i.test(text)) {
-                rec.redFlags.push("Missing Beneficial Ownership Disclosure (Format e-PG3A-C)");
-                rec.riskScore += 20;
-            }
-
-            // Extract Awarded Supplier Name
-            const supplierMatch = text.match(/Name of the Successful Tenderer\s*:\s*(.*)/i);
-            if (supplierMatch) rec.supplier = supplierMatch[1].trim();
-
-            // Extract Accepted Contract Value
-            const valMatch = text.match(/Accepted Tender\/Proposal Price\s*:\s*([\d,\.]+)/i);
-            if (valMatch) rec.contractValue = parseFloat(valMatch[1].replace(/,/g, '')) || 0;
-        }
-
-        function renderDashboard() {
-            const tenders = Object.values(database);
-
-            tenders.forEach(t => {
-                if (t.riskScore >= 50) t.riskLevel = "HIGH";
-                else if (t.riskScore >= 20) t.riskLevel = "MEDIUM";
-                else t.riskLevel = "LOW";
-            });
-
-            // Update Metrics
-            document.getElementById('totalCount').innerText = tenders.length;
-            document.getElementById('highRiskCount').innerText = tenders.filter(t => t.riskLevel === 'HIGH').length;
-            document.getElementById('medRiskCount').innerText = tenders.filter(t => t.riskLevel === 'MEDIUM').length;
-            document.getElementById('lowRiskCount').innerText = tenders.filter(t => t.riskLevel === 'LOW').length;
-
-            // Populate Table
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = "";
-
-            tenders.forEach(t => {
-                const row = document.createElement('tr');
-                let badge = `<span class="px-2 py-1 rounded text-xs font-bold ${
-                    t.riskLevel === 'HIGH' ? 'bg-red-900/80 text-red-300' :
-                    t.riskLevel === 'MEDIUM' ? 'bg-yellow-900/80 text-yellow-300' : 'bg-emerald-900/80 text-emerald-300'
-                }">${t.riskLevel}</span>`;
-
-                let flags = t.redFlags.length > 0 
-                    ? t.redFlags.map(f => `<span class="block text-red-400 mb-0.5">• ${f}</span>`).join('') 
-                    : '<span class="text-slate-500">None</span>';
-
-                row.innerHTML = `
-                    <td class="font-mono font-bold text-slate-200">${t.tenderId}</td>
-                    <td>${badge}</td>
-                    <td class="font-bold text-slate-200">${t.riskScore}</td>
-                    <td class="text-slate-200">${t.supplier}</td>
-                    <td class="font-mono">${t.contractValue ? t.contractValue.toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A'}</td>
-                    <td>${flags}</td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            $('#auditTable').DataTable({
-                destroy: true,
-                pageLength: 10,
-                order: [[2, 'desc']]
-            });
-
-            document.getElementById('statusBox').classList.add('hidden');
-        }
-
-        function updateStatus(msg, pct) {
-            document.getElementById('statusText').innerText = msg;
-            document.getElementById('statusPct').innerText = pct + "%";
-            document.getElementById('progressBar').style.width = pct + "%";
-        }
+                    // Initialize DataTable
+                    $('#auditTable').DataTable({
+                        destroy: true,
+                        pageLength: 15,
+                        order: [[2, 'desc']], // Sort by Risk Score descending initially
+                        language: {
+                            search: "Filter records:",
+                            lengthMenu: "Show _MENU_ tenders"
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading JSON data:", error);
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                });
+        });
     </script>
 </body>
 </html>
