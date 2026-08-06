@@ -322,17 +322,30 @@
             },
 
             async fetchData() {
+                const remoteUrl = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`;
+                const localUrl = `./${CONFIG.FILE_PATH}`;
+                let json;
                 try {
-                    const url = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`;
-                    const res = await fetch(url);
-                    if (!res.ok) throw new Error(`Unable to fetch database (${res.status})`);
-                    const json = await res.json();
+                    const res = await fetch(remoteUrl);
+                    if (!res.ok) throw new Error(`Remote fetch failed (${res.status})`);
+                    json = await res.json();
+                } catch (remoteError) {
+                    try {
+                        const localRes = await fetch(localUrl);
+                        if (!localRes.ok) throw new Error(`Local fetch failed (${localRes.status})`);
+                        json = await localRes.json();
+                    } catch (localError) {
+                        DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--netra-red);">Database load failed.<br><small style="color:var(--text-muted);">Remote: ${remoteError.message}<br>Local: ${localError.message}</small></td></tr>`;
+                        return;
+                    }
+                }
+                try {
                     State.originalJson = json;
                     State.jsonArray = this.extractArray(json);
                     State.data = State.jsonArray.map(item => this.normalizeRecord(item));
                     this.applyFilters();
-                } catch (error) {
-                    DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--netra-red);">Database load failed.<br><small style="color:var(--text-muted);">${error.message}</small></td></tr>`;
+                } catch (formatError) {
+                    DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--netra-red);">Unable to parse database.<br><small style="color:var(--text-muted);">${formatError.message}</small></td></tr>`;
                 }
             },
 
