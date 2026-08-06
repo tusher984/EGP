@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-GP Procurement Investigative Platform</title>
+    <title>e-GP Procurement Investigative Platform & Live PDF Reader</title>
 
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS UI Framework -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- PDF.js Library for Client-Side PDF Text Extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -43,11 +46,11 @@
         <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
                 <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-shield-cat mr-2"></i>e-GP Forensic Investigator</h1>
-                <p class="text-slate-400 text-sm mt-1">Repository: <span class="font-mono text-blue-400">EGP</span> | Auto-fetching data from Procurement_Database.json</p>
+                <p class="text-slate-400 text-sm mt-1">Repository: <span class="font-mono text-blue-400">EGP</span> | Scans JSON + Live Text Extraction from PDF Folders</p>
             </div>
             <div class="flex gap-3">
                 <span id="connStatus" class="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 text-yellow-400 text-xs px-3 py-1.5 rounded-full">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Loading Data...
+                    <i class="fa-solid fa-spinner fa-spin"></i> Initializing System...
                 </span>
                 <button onclick="exportAuditLogs()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2 text-sm">
                     <i class="fa-solid fa-download"></i> Export Audit Logs
@@ -55,14 +58,24 @@
             </div>
         </header>
 
-        <!-- Manual File Upload Fallback (Shows if local browser blocks auto-fetch) -->
-        <div id="uploadBox" class="hidden bg-slate-800 border-2 border-dashed border-blue-500/50 p-8 rounded-xl text-center shadow-lg">
-            <i class="fa-solid fa-file-arrow-up text-4xl text-blue-400 mb-3"></i>
-            <h2 class="text-xl font-bold text-slate-200">Local Browser Security Detected</h2>
-            <p class="text-sm text-slate-400 mt-2 mb-4">Your browser blocked the automatic loading of the JSON file. Please select your <strong>Procurement_Database.json</strong> file manually below.</p>
-            
+        <!-- Live Progress Status Bar -->
+        <div id="progressBox" class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+            <div class="flex justify-between text-xs font-mono">
+                <span id="progressText" class="text-yellow-400">Reading Procurement_Database.json...</span>
+                <span id="progressPct" class="text-slate-400">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
+            </div>
+        </div>
+
+        <!-- Manual File Upload Fallback -->
+        <div id="uploadBox" class="hidden bg-slate-800 border-2 border-dashed border-blue-500/50 p-6 rounded-xl text-center shadow-lg">
+            <i class="fa-solid fa-file-arrow-up text-3xl text-blue-400 mb-2"></i>
+            <h2 class="text-base font-bold text-slate-200">Local Browser Security Active</h2>
+            <p class="text-xs text-slate-400 mt-1 mb-3">If running locally without GitHub Pages, select your <strong>Procurement_Database.json</strong> file manually below.</p>
             <input type="file" id="jsonLoader" accept=".json" class="hidden" onchange="handleFileUpload(event)">
-            <label for="jsonLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow transition inline-block">
+            <label for="jsonLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow transition inline-block text-xs">
                 Select Procurement_Database.json
             </label>
         </div>
@@ -101,7 +114,7 @@
 
         <!-- Data Table -->
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
-            <h2 class="text-lg font-bold mb-4">Forensic Audit Log <span class="text-xs text-slate-500 font-normal ml-2">(Click any row to open the Split-Screen Inspector)</span></h2>
+            <h2 class="text-lg font-bold mb-4">Forensic Audit Log <span class="text-xs text-slate-500 font-normal ml-2">(Click any row to open the Split-Screen Inspector & Raw PDF Text)</span></h2>
             <div class="overflow-x-auto">
                 <table id="mainTable" class="w-full text-sm text-left text-slate-300">
                     <thead class="bg-slate-800 text-slate-200">
@@ -133,26 +146,29 @@
                 <h2 class="text-xl font-black">Tender <span id="inspTenderId" class="text-blue-400">---</span></h2>
                 <span id="inspRiskBadge" class="px-2.5 py-1 rounded text-xs font-bold">---</span>
             </div>
-            <div class="text-sm text-slate-400">PPA 2006 Engine: <span class="text-emerald-400 font-bold">Active</span></div>
+            <div class="text-sm text-slate-400">PPA / PPR Audit Engine: <span class="text-emerald-400 font-bold">Active</span></div>
         </header>
 
         <!-- Split Workspace -->
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- Left Pane: Live PDF Viewer -->
+            <!-- Left Pane: Live PDF Viewer & Extracted Text -->
             <div class="w-1/2 border-r border-slate-800 bg-slate-800 flex flex-col relative">
                 <div class="p-3 bg-slate-900 border-b border-slate-700 text-xs font-bold text-slate-400 flex justify-between items-center">
                     <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Source Document Viewer</span>
                     <span id="pdfFileName" class="text-blue-400 font-mono">---.pdf</span>
                 </div>
-                <div class="flex-1 w-full h-full bg-slate-300 relative">
-                    <!-- Warning layer if PDF fails to load locally -->
-                    <div class="absolute inset-0 flex items-center justify-center bg-slate-800 flex-col p-6 text-center pointer-events-none z-0">
-                        <i class="fa-solid fa-folder-open text-5xl text-slate-600 mb-4"></i>
-                        <p class="text-slate-400 text-sm font-bold">Local PDF Blocking</p>
-                        <p class="text-slate-500 text-xs mt-2">If you opened this file directly from your computer, your browser may block the PDF viewer. You can manually open the PDF listed above.</p>
-                    </div>
+                <!-- Dynamic PDF Viewer iframe -->
+                <div class="flex-1 w-full h-1/2 bg-slate-300 relative border-b border-slate-700">
                     <iframe id="pdfIframe" src="" class="w-full h-full border-none relative z-10 bg-transparent"></iframe>
+                </div>
+                <!-- Scanned Raw Text Box -->
+                <div class="h-1/2 bg-slate-950 p-3 overflow-y-auto">
+                    <h4 class="text-xs font-bold text-slate-400 mb-1 flex items-center justify-between">
+                        <span><i class="fa-solid fa-align-left text-yellow-500 mr-1"></i> Live Extracted PDF Text</span>
+                        <span id="pdfScanStatus" class="text-[10px] text-slate-500">PDF.js Text Extractor</span>
+                    </h4>
+                    <pre id="rawPdfText" class="text-[11px] text-slate-400 font-mono whitespace-pre-wrap leading-relaxed">Extracting PDF text...</pre>
                 </div>
             </div>
 
@@ -185,8 +201,8 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Raw Eligibility Criteria Text</label>
-                        <div id="rawEligibility" class="w-full bg-slate-950 border border-slate-700 rounded p-3 text-xs text-slate-400 font-mono h-32 overflow-y-auto leading-relaxed"></div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Eligibility Criteria Text (JSON/PDF)</label>
+                        <div id="rawEligibility" class="w-full bg-slate-950 border border-slate-700 rounded p-3 text-xs text-slate-400 font-mono h-28 overflow-y-auto leading-relaxed"></div>
                     </div>
                 </div>
 
@@ -207,30 +223,34 @@
     </div>
 
     <!-- ==========================================
-         APPLICATION LOGIC
+         APPLICATION LOGIC & PDF PARSER
     =========================================== -->
     <script>
+        // Configure PDF.js Worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
         let rawTenderData = [];
         let analyzedData = [];
+        let pdfTextCache = {};
         let auditLogs = JSON.parse(localStorage.getItem('egpAuditLogs')) || {};
         let currentTenderId = null;
 
         $(document).ready(function() {
             // Attempt to load JSON automatically
-            fetch('Procurement_Database.json')
+            fetch('./Procurement_Database.json')
                 .then(res => {
                     if(!res.ok) throw new Error("File not found");
                     return res.json();
                 })
-                .then(data => processData(data))
+                .then(data => processDatabase(data))
                 .catch(err => {
-                    console.warn("Auto-fetch failed due to Local File Security. Enabling Manual Upload.", err);
-                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> <span class="text-yellow-500">Local Mode Activated</span>`;
+                    console.warn("Auto-fetch failed due to local security. Enabling Manual Upload.", err);
+                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> <span class="text-yellow-500">Local Mode</span>`;
                     document.getElementById('uploadBox').classList.remove('hidden');
+                    document.getElementById('progressBox').classList.add('hidden');
                 });
         });
 
-        // Fallback for Local File Upload
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -240,34 +260,97 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     document.getElementById('uploadBox').classList.add('hidden');
-                    processData(data);
+                    document.getElementById('progressBox').classList.remove('hidden');
+                    processDatabase(data);
                 } catch (err) {
-                    alert("Error: The selected file is not a valid JSON document.");
+                    alert("Error: Invalid JSON document.");
                 }
             };
             reader.readAsText(file);
         }
 
-        // Process Database
-        function processData(data) {
+        async function processDatabase(data) {
             rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
             if(rawTenderData.length === 0) {
-                alert("The JSON file is empty or formatted incorrectly.");
+                alert("JSON file contains no tender records.");
                 return;
             }
-            
+
             document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-400">Database Connected</span>`;
+            
+            // Scan PDFs connected to the Tender records
+            await scanConnectedPDFs();
             initDashboard();
         }
 
-        // 1. FORENSIC RULES ENGINE
+        // Live Client-Side PDF Scanner Engine using PDF.js
+        async function scanConnectedPDFs() {
+            let total = rawTenderData.length;
+            let current = 0;
+
+            for (let t of rawTenderData) {
+                const tid = t.Tender_Proposal_ID;
+                if(!tid) continue;
+
+                // Determine filenames and folders
+                const noticeFile = `CDA_Tender_${tid}.pdf`;
+                const awardFile = `Tender_${tid}.pdf`;
+
+                // Scan Notice PDF
+                const noticePath = `./Tender Notice_PDFs/${noticeFile}`;
+                const noticeText = await extractPdfText(noticePath);
+                if (noticeText) {
+                    pdfTextCache[noticeFile] = noticeText;
+                }
+
+                // Scan Award PDF
+                const awardPath = `./Contract_Awards_PDFs/${awardFile}`;
+                const awardText = await extractPdfText(awardPath);
+                if (awardText) {
+                    pdfTextCache[awardFile] = awardText;
+                }
+
+                current++;
+                let pct = Math.floor((current / total) * 100);
+                document.getElementById('progressBar').style.width = pct + "%";
+                document.getElementById('progressPct').innerText = pct + "%";
+                document.getElementById('progressText').innerText = `Scanning PDF Folders... Auditing Tender ID ${tid} (${current}/${total})`;
+            }
+
+            document.getElementById('progressBox').classList.add('hidden');
+        }
+
+        // PDF Text Extraction Function
+        async function extractPdfText(url) {
+            try {
+                const pdf = await pdfjsLib.getDocument(url).promise;
+                let fullText = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const tokens = await page.getTextContent();
+                    fullText += tokens.items.map(item => item.str).join(" ") + "\n";
+                }
+                return fullText;
+            } catch (e) {
+                // PDF file doesn't exist at that exact path
+                return null;
+            }
+        }
+
+        // Forensic Rules Engine
         function runForensicEngine() {
             analyzedData = rawTenderData.map(t => {
                 let flags = [];
                 let score = 0;
-                let elig = (t.Eligibility_of_Tenderer || "").toLowerCase();
 
-                // Rule 1: Single Responsive Bidder (Stifles Competition)
+                // Combine text from JSON and any extracted PDF text
+                let elig = (t.Eligibility_of_Tenderer || "").toLowerCase();
+                const noticeText = pdfTextCache[`CDA_Tender_${t.Tender_Proposal_ID}.pdf`] || "";
+                const awardText = pdfTextCache[`Tender_${t.Tender_Proposal_ID}.pdf`] || "";
+                
+                let combinedText = (elig + " " + noticeText + " " + awardText).toLowerCase();
+
+                // Check 1: Single Responsive Bidder (Stifles Competition)
                 let received = parseInt(t.Tenders_Received) || 0;
                 let sold = parseInt(t.Tenders_Sold) || 0;
                 let responsive = parseInt(t.Responsive_Tenders) || 0;
@@ -277,38 +360,38 @@
                     score += 40;
                 }
                 
-                // Rule 2: Beneficial Owner Omission
+                // Check 2: Beneficial Owner Omission
                 if ((t.Red_Flag_Reason || "").includes("Beneficial Owner Missing")) {
                     flags.push("Missing Beneficial Ownership Data");
                     score += 20;
                 }
 
-                // Rule 3: Arbitrary 10% Price Cap
-                if (/10%\s*(above|below)|more than\s*10%/.test(elig)) {
+                // Check 3: Arbitrary 10% Price Cap
+                if (/10%\s*(above|below)|more than\s*10%/.test(combinedText)) {
                     flags.push("Unlawful 10% Price Deviation Disqualification");
                     score += 20;
                 }
 
-                // Rule 4: Ban on Local Manufacturers
-                if (/local manufacturer\s*will not be accepted/.test(elig)) {
+                // Check 4: Ban on Local Manufacturers
+                if (/local manufacturer\s*will not be accepted/.test(combinedText)) {
                     flags.push("Exclusion of Local Manufacturers (Violates ITT 5.1)");
                     score += 30;
                 }
 
-                // Rule 5: Geographic Restrictions
-                if (/chattogram city corporation area|office.*in chattogram|working center.*chattogram/.test(elig)) {
+                // Check 5: Geographic Restrictions
+                if (/chattogram city corporation area|office.*in chattogram|working center.*chattogram/.test(combinedText)) {
                     flags.push("Restrictive Geographic / Local Office Clause");
                     score += 15;
                 }
 
-                // Rule 6: Unlawful JV Ban
-                if (/joint venture.*not.*permitted|jv.*not.*allowed/.test(elig)) {
+                // Check 6: Unlawful JV Ban
+                if (/joint venture.*not.*permitted|jv.*not.*allowed/.test(combinedText)) {
                     flags.push("Unlawful Prohibition of Joint Ventures");
                     score += 15;
                 }
 
-                // Rule 7: Restrictive Origin
-                if (/japan\/europe\/uk\/north america/.test(elig)) {
+                // Check 7: Restrictive Origin
+                if (/japan\/europe\/uk\/north america/.test(combinedText)) {
                     flags.push("Restrictive Country of Origin Criteria");
                     score += 15;
                 }
@@ -318,7 +401,7 @@
             });
         }
 
-        // 2. RENDER DASHBOARD
+        // Render Dashboard Metrics & Table
         function initDashboard() {
             runForensicEngine();
 
@@ -354,7 +437,7 @@
                 const tr = document.createElement('tr');
                 tr.onclick = () => openInspector(t.Tender_Proposal_ID);
                 tr.innerHTML = `
-                    <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID}</td>
+                    <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID || 'N/A'}</td>
                     <td class="p-3">${badge}</td>
                     <td class="p-3 font-bold text-slate-200">${t.riskScore}</td>
                     <td class="p-3 text-xs text-slate-200">${t.Supplier_Name || '<span class="text-slate-500 italic">N/A</span>'}</td>
@@ -390,7 +473,7 @@
             });
         }
 
-        // 3. SPLIT-SCREEN INSPECTOR
+        // Open Inspector Window
         function openInspector(tid) {
             currentTenderId = tid;
             const t = analyzedData.find(x => x.Tender_Proposal_ID == tid);
@@ -410,6 +493,16 @@
             
             let pdfFolder = sourceFile.startsWith("CDA_") ? "Tender Notice_PDFs" : "Contract_Awards_PDFs";
             document.getElementById('pdfIframe').src = `./${pdfFolder}/${sourceFile}`;
+
+            // Display Extracted PDF Text if available in cache
+            const cachedText = pdfTextCache[sourceFile] || pdfTextCache[`CDA_Tender_${tid}.pdf`] || pdfTextCache[`Tender_${tid}.pdf`];
+            if (cachedText) {
+                document.getElementById('rawPdfText').innerText = cachedText;
+                document.getElementById('pdfScanStatus').innerText = "Text Live-Extracted from PDF File";
+            } else {
+                document.getElementById('rawPdfText').innerText = "No text extracted directly from this PDF file (File may not exist at target path).";
+                document.getElementById('pdfScanStatus').innerText = "PDF Not Found locally";
+            }
 
             document.getElementById('editPE').value = t.Procuring_Entity_Name || "";
             document.getElementById('editValue').value = t.Contract_Value_BDT || "";
@@ -435,7 +528,7 @@
             initDashboard(); 
         }
 
-        // 4. HUMAN-IN-THE-LOOP AUDIT LOGGING
+        // Human Audit Logging
         function saveAuditLog(statusLabel) {
             const justification = document.getElementById('auditJustification').value;
             if(!justification.trim()) {
