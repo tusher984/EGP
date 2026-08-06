@@ -222,6 +222,7 @@
         const State = {
             data: [],
             filtered: [],
+            originalJson: null,
             activeTenderId: null,
             activeRuleFilter: null,
             sessionToken: null // Stored in RAM only. Never in LocalStorage.
@@ -259,6 +260,15 @@
          * 4. CORE APPLICATION LOGIC
          */
         const App = {
+            getRawRecords(json) {
+                if (Array.isArray(json)) return json;
+                if (json && typeof json === 'object') {
+                    if (Array.isArray(json.Merged_Database)) return json.Merged_Database;
+                    return Object.values(json).find(Array.isArray) || [];
+                }
+                return [];
+            },
+
             normalizeTender(item) {
                 const riskValue = String(item.Risk_Level || item.Risk || item.Red_Flag || 'LOW').trim().toUpperCase();
                 return {
@@ -270,6 +280,18 @@
                     rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(r => r.trim()).filter(Boolean) : [],
                     raw: item
                 };
+            },
+
+            applyNormalizedChangesToRaw(target) {
+                if (!target || !target.raw || typeof target.raw !== 'object') return;
+                target.raw.Supplier_Name = target.contractor;
+                target.raw.Contractor = target.contractor;
+                target.raw.Procuring_Entity_Name = target.entity;
+                target.raw.Organization_Agency = target.entity;
+                target.raw.Contract_Value_BDT = target.value;
+                target.raw.Document_Price_BDT = target.value;
+                target.raw.Risk_Level = target.risk;
+                target.raw.Red_Flag = target.risk === 'HIGH' ? 'YES' : 'NO';
             },
 
             async init() {
@@ -295,12 +317,8 @@
                     if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
                     
                     const json = await res.json();
-                    let rawData = [];
-                    if (Array.isArray(json)) {
-                        rawData = json;
-                    } else if (json && typeof json === 'object') {
-                        rawData = Object.values(json).find(Array.isArray) || [];
-                    }
+                    State.originalJson = json;
+                    const rawData = this.getRawRecords(json);
                     State.data = rawData.map(item => this.normalizeTender(item));
                     this.applyFilters();
                 } catch (err) {
@@ -333,7 +351,8 @@
                     const sha = fileData.sha || null;
 
                     // 2. Prepare Payload (Base64 + UTF-8 Support)
-                    const jsonString = JSON.stringify(State.data, null, 4);
+                    const payload = State.originalJson ? State.originalJson : State.data.map(item => item.raw || item);
+                    const jsonString = JSON.stringify(payload, null, 4);
                     const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
 
                     // 3. Push Commit
@@ -374,6 +393,7 @@
                 target.entity = DOM.edit.entity.value.trim();
                 target.value = DOM.edit.val.value.replace(/,/g, '');
                 target.risk = DOM.edit.risk.value;
+                this.applyNormalizedChangesToRaw(target);
 
                 // Attempt Remote Save
                 const success = await this.secureGitHubSave();
