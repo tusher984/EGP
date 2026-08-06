@@ -282,8 +282,11 @@
 
                     <div id="forensicPanel" class="forensic-panel">
                         <h4 style="margin:0 0 10px 0; font-size:15px; color:var(--text-light);">🚨 Forensic Rule Triggers & Rationale</h4>
-                        <div id="modalRedFlagRationale" style="font-weight:600; margin-bottom: 15px; font-size:14px; color:#fca5a5;"></div>
-                        <strong style="font-size:13px; color:var(--text-muted);">Extracted Eligibility Criteria:</strong>
+                        
+                        <!-- RATIONALE BOX (DYNAMICALLY POPULATED) -->
+                        <div id="modalRedFlagRationale"></div>
+                        
+                        <strong style="font-size:13px; color:var(--text-muted); display:block; margin-top:15px;">Extracted Eligibility Criteria:</strong>
                         <ul id="modalEligibilityList" class="eligibility-list"></ul>
                     </div>
 
@@ -325,14 +328,14 @@
         const rowsPerPage = 50;
 
         const RULE_DETAILS = {
-            owner: { title: "e-PG3 ITT 5.14 – Beneficial Ownership", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক।" },
-            split: { title: "PPA 2006 Section 17 – Splitting", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।" },
-            cpv: { title: "CPV Manipulation", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।" },
-            tailored: { title: "Rule 98 – Restrictive Criteria", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।" },
-            monopoly: { title: "ITT 50.6 – Lack of Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।" },
-            outlier: { title: "Abnormally Low Bids", enacted: "World Bank", purpose: "অস্বাভাবিক কম বা বেশি দর দেওয়া।" },
-            meeting: { title: "Pre-Tender Meeting Fraud", enacted: "PPR Schedule 2", purpose: "মিটিংয়ের সময় কারসাজি করা।" },
-            rigging: { title: "Bid Rigging", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।" }
+            owner: { title: "১. তথ্য গোপন (Beneficial Ownership)", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক।" },
+            split: { title: "২. চুক্তি বিভাজন (Artificial Splitting)", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।" },
+            cpv: { title: "৩. CPV কারসাজি (Metadata Manipulation)", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।" },
+            tailored: { title: "৪. বৈষম্যমূলক শর্ত (Restrictive Criteria)", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।" },
+            monopoly: { title: "৫. মনোপলি ফানেলিং (Lack of Competition)", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।" },
+            outlier: { title: "৬. অস্বাভাবিক দর (Abnormally Low Bids)", enacted: "World Bank", purpose: "অস্বাভাবিক কম বা বেশি দর দেওয়া।" },
+            meeting: { title: "৭. মিটিং প্রহসন (Pre-Tender Meeting Fraud)", enacted: "PPR Schedule 2", purpose: "মিটিংয়ের সময় কারসাজি করা।" },
+            rigging: { title: "৮. বিড-রিগিং (Bid Rigging)", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।" }
         };
 
         // EXHAUSTIVE FALLBACK DATABASE (If API Fails)
@@ -355,9 +358,10 @@
                 ],
                 "Bidding_Statistics": { "Tenders_Sold": 0, "Tenders_Received": 0, "Tenders_Responsive": 0 },
                 "Risk_Level": "HIGH",
-                "rules": ["tailored"],
+                "rules": ["tailored", "monopoly"],
                 "Red_Flag_Rationale": {
-                    "tailored": "Restricts competition to firms already in Chattogram. Mandates unusually strict combination of proprietary certifications (CCNA, RHCE, CEH) for a basic 30 lac IT maintenance contract."
+                    "tailored": "Restricts competition to firms already in Chattogram. Mandates unusually strict combination of proprietary certifications (CCNA, RHCE, CEH) for a basic 30 lac IT maintenance contract.",
+                    "monopoly": "Due to highly restrictive criteria, early indicators suggest a single bidder outcome."
                 },
                 "Evidence_PDF_Path": "./Tender Notice_PDFs/CDA_Tender_924201.pdf"
             },
@@ -671,18 +675,61 @@
                 eligList.innerHTML = '<li style="color:var(--text-muted);">No distinct eligibility criteria extracted.</li>';
             }
 
-            // Render Forensic Rationale Map
+            // ==========================================
+            // RENDER EXPLICIT FORENSIC RULES & RATIONALE
+            // ==========================================
             const forensicPanel = document.getElementById('forensicPanel');
             const rationaleBox = document.getElementById('modalRedFlagRationale');
+            rationaleBox.innerHTML = ''; // Clear previous content
+
             if (item.rules && item.rules.length > 0) {
                 forensicPanel.className = 'forensic-panel';
-                let rationaleText = Object.values(item.Red_Flag_Rationale || {}).join(" ");
-                rationaleBox.innerText = rationaleText || "System triggered rules without explicit rationale mapping.";
-                rationaleBox.style.color = "#fca5a5";
+                
+                // Iterate through every logged rule and build a distinct block for it
+                item.rules.forEach(ruleKey => {
+                    let ruleDetails = RULE_DETAILS[ruleKey] ? RULE_DETAILS[ruleKey].title : ruleKey.toUpperCase();
+                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) 
+                                            ? item.Red_Flag_Rationale[ruleKey] 
+                                            : "Flagged by AI engine for manual review.";
+                    
+                    let ruleBlock = document.createElement('div');
+                    ruleBlock.style.marginBottom = '10px';
+                    ruleBlock.style.padding = '8px 12px';
+                    ruleBlock.style.background = 'rgba(0,0,0,0.2)';
+                    ruleBlock.style.borderLeft = '3px solid #ef4444';
+                    ruleBlock.style.borderRadius = '4px';
+                    
+                    ruleBlock.innerHTML = `
+                        <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 ${ruleDetails}</div>
+                        <div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${specificRationale}</div>
+                    `;
+                    rationaleBox.appendChild(ruleBlock);
+                });
+                
+                // Catch any extra rationales in the object that aren't explicitly in the rules array
+                if (item.Red_Flag_Rationale) {
+                    Object.keys(item.Red_Flag_Rationale).forEach(key => {
+                        if (!item.rules.includes(key)) {
+                            let ruleBlock = document.createElement('div');
+                            ruleBlock.style.marginBottom = '10px';
+                            ruleBlock.style.padding = '8px 12px';
+                            ruleBlock.style.background = 'rgba(0,0,0,0.2)';
+                            ruleBlock.style.borderLeft = '3px solid #ef4444';
+                            ruleBlock.style.borderRadius = '4px';
+                            ruleBlock.innerHTML = `
+                                <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 Additional Flag: ${key}</div>
+                                <div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${item.Red_Flag_Rationale[key]}</div>
+                            `;
+                            rationaleBox.appendChild(ruleBlock);
+                        }
+                    });
+                }
             } else {
                 forensicPanel.className = 'forensic-panel passed';
-                rationaleBox.innerText = (item.Red_Flag_Rationale && item.Red_Flag_Rationale.monopoly) ? item.Red_Flag_Rationale.monopoly : "Passed: No immediate red flags detected during automated scan.";
-                rationaleBox.style.color = "#10b981";
+                let passedMsg = (item.Red_Flag_Rationale && Object.values(item.Red_Flag_Rationale).length > 0) 
+                                ? Object.values(item.Red_Flag_Rationale).join(" ") 
+                                : "Passed: No immediate red flags detected during automated scan.";
+                rationaleBox.innerHTML = `<div style="color: #10b981; font-weight: 600; font-size: 14px;">✅ ${passedMsg}</div>`;
             }
 
             // Exhaustive Metadata Iteration
