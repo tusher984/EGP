@@ -54,25 +54,13 @@
         <!-- Header -->
         <header class="mb-8 border-b border-slate-700 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-red-500 tracking-tight">🚨 e-GP Procurement Forensic Dashboard</h1>
-                <p class="text-slate-400 text-sm mt-1">Standalone Browser Forensic Analyzer for Bangladesh e-GP Data (PPA 2006 / PPR 2025)</p>
+                <h1 class="text-3xl font-extrabold text-red-500 tracking-tight">🚨 e-GP Forensic Dashboard</h1>
+                <p class="text-slate-400 text-sm mt-1">Live GitHub Pages Analyzer for Bangladesh e-GP Data</p>
             </div>
             <button id="scanBtn" onclick="startAudit()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-200 flex items-center gap-2">
-                <span>▶ Run Forensic Audit</span>
+                <span>▶ Run Live Audit</span>
             </button>
         </header>
-
-        <!-- Repository Configuration Bar -->
-        <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">GitHub Username / Org</label>
-                <input type="text" id="ghUser" value="tusher984" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-red-500">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">GitHub Repository Name</label>
-                <input type="text" id="ghRepo" value="EGP" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-red-500">
-            </div>
-        </div>
 
         <!-- Live Progress Status -->
         <div id="statusBox" class="mb-6 p-4 bg-slate-800 rounded-lg border border-slate-700 hidden">
@@ -107,7 +95,7 @@
 
         <!-- Findings Table -->
         <div class="bg-slate-800 p-6 rounded-lg border border-slate-700 shadow-2xl overflow-x-auto">
-            <h2 class="text-xl font-bold mb-4 text-slate-200">Forensic Investigation Table</h2>
+            <h2 class="text-xl font-bold mb-4 text-slate-200">Forensic Investigation Results</h2>
             <table id="auditTable" class="w-full text-sm text-left text-slate-300 display">
                 <thead>
                     <tr class="bg-slate-700 text-slate-100">
@@ -128,31 +116,11 @@
         // Configure PDF.js Worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+        const GITHUB_USER = "tusher984";
+        const GITHUB_REPO = "EGP";
         let database = {};
 
-        // Auto-detect GitHub Username & Repository when hosted on GitHub Pages
-        window.addEventListener('DOMContentLoaded', () => {
-            const host = window.location.hostname;
-            const path = window.location.pathname.split('/').filter(Boolean);
-
-            if (host.endsWith('github.io')) {
-                document.getElementById('ghUser').value = host.split('.')[0];
-                document.getElementById('ghRepo').value = path[0] || 'EGP';
-            } else {
-                document.getElementById('ghUser').value = "tusher984";
-                document.getElementById('ghRepo').value = "EGP";
-            }
-        });
-
         async function startAudit() {
-            const ghUser = document.getElementById('ghUser').value.trim();
-            const ghRepo = document.getElementById('ghRepo').value.trim();
-
-            if (!ghUser || !ghRepo) {
-                alert("Please ensure your GitHub Username and Repository Name are filled out.");
-                return;
-            }
-
             document.getElementById('scanBtn').disabled = true;
             document.getElementById('scanBtn').classList.add('opacity-50', 'cursor-not-allowed');
             document.getElementById('statusBox').classList.remove('hidden');
@@ -162,20 +130,21 @@
             try {
                 updateStatus("Querying GitHub API for PDF directories...", 10);
                 
-                const noticeFiles = await fetchGitHubFolder(ghUser, ghRepo, "Tender Notice_PDFs");
-                const awardFiles = await fetchGitHubFolder(ghUser, ghRepo, "Contract_Awards_PDFs");
+                // Fetch file lists via GitHub API
+                const noticeFiles = await fetchGitHubFolder(GITHUB_USER, GITHUB_REPO, "Tender Notice_PDFs");
+                const awardFiles = await fetchGitHubFolder(GITHUB_USER, GITHUB_REPO, "Contract_Awards_PDFs");
 
                 const allFiles = [...noticeFiles, ...awardFiles];
                 const tenderIds = [...new Set(allFiles.map(f => extractTenderId(f.name)).filter(Boolean))];
 
                 if (tenderIds.length === 0) {
-                    updateStatus("No PDF files found matching Tender IDs in the target folders. Please check your folder names on GitHub.", 0);
+                    updateStatus("No PDF files found. Ensure your folders are named exactly 'Tender Notice_PDFs' and 'Contract_Awards_PDFs'.", 0);
                     document.getElementById('scanBtn').disabled = false;
                     document.getElementById('scanBtn').classList.remove('opacity-50', 'cursor-not-allowed');
                     return;
                 }
 
-                updateStatus(`Found ${tenderIds.length} Tender packages. Commencing text extraction & forensic rules evaluation...`, 20);
+                updateStatus(`Found ${tenderIds.length} Tender packages. Commencing text extraction & forensic evaluation...`, 20);
 
                 let processed = 0;
                 for (let tid of tenderIds) {
@@ -188,17 +157,19 @@
                         contractValue: 0
                     };
 
-                    // 1. Process Notice PDF
+                    // 1. Process Notice PDF (Using relative paths to bypass CORS on GitHub pages)
                     const nFile = noticeFiles.find(f => f.name.includes(tid));
                     if (nFile) {
-                        const text = await extractPdfText(nFile.download_url);
+                        const fileUrl = `./Tender Notice_PDFs/${nFile.name}`;
+                        const text = await extractPdfText(fileUrl);
                         auditNoticeText(tid, text);
                     }
 
-                    // 2. Process Award PDF
+                    // 2. Process Award PDF (Using relative paths to bypass CORS)
                     const aFile = awardFiles.find(f => f.name.includes(tid));
                     if (aFile) {
-                        const text = await extractPdfText(aFile.download_url);
+                        const fileUrl = `./Contract_Awards_PDFs/${aFile.name}`;
+                        const text = await extractPdfText(fileUrl);
                         auditAwardText(tid, text);
                     }
 
@@ -212,7 +183,7 @@
 
             } catch (err) {
                 console.error(err);
-                updateStatus("Audit failed. Verify repository folder names and GitHub API limits.", 0);
+                updateStatus("Audit failed. Ensure files exist and check console for errors.", 0);
             } finally {
                 document.getElementById('scanBtn').disabled = false;
                 document.getElementById('scanBtn').classList.remove('opacity-50', 'cursor-not-allowed');
@@ -243,6 +214,7 @@
                 }
                 return fullText;
             } catch (e) {
+                console.warn(`Failed to read PDF from: ${url}`, e);
                 return "";
             }
         }
