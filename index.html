@@ -96,8 +96,6 @@
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="header-buttons">
                 <button class="btn-home" onclick="App.resetFilters()">🏠 হোম / রিসেট</button>
-                <label for="jsonUpload" class="btn-nexus btn-label">📂 Load Custom JSON</label>
-                <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="App.loadLocalJSON(event)">
                 <button class="btn-nexus" onclick="App.openNetworkMap()">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
             </div>
         </header>
@@ -130,7 +128,7 @@
                     <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
                 </select>
                 <button class="btn-action" onclick="App.exportCSV()">📥 Export CSV</button>
-                <button class="btn-clear" onclick="App.clearCache()">🗑️ Clear Cache</button>
+                <button class="btn-clear" onclick="App.clearCache()">� Refresh from GitHub</button>
             </div>
             
             <div class="table-responsive">
@@ -278,25 +276,22 @@
 
             // ================= NETWORK & FETCH =================
             async fetchData() {
-                const cached = localStorage.getItem('egp_db_cache');
-                if (cached) {
-                    State.data = JSON.parse(cached);
-                    this.applyFilters();
-                }
-
                 try {
-                    // Fetch fresh online data via unauthenticated GitHub API (Raw cache buster)
+                    // Fetch fresh online data via GitHub raw file
                     const res = await fetch(`https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`);
-                    if (!res.ok) throw new Error("Database not found on GitHub");
+                    if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
                     
                     State.data = await res.json();
-                    localStorage.setItem('egp_db_cache', JSON.stringify(State.data));
                     this.applyFilters();
                 } catch (err) {
                     console.error("Fetch Error:", err);
-                    if (!cached) {
-                        DOM.tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--netra-red); padding:30px;"><b>Connection Failed.</b> Please check GitHub repository or load local JSON.</td></tr>`;
-                    }
+                    DOM.tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align:center; color:var(--netra-red); padding:30px;">
+                                <b>Connection Failed.</b> Please check GitHub repository or refresh the page.<br>
+                                <small style="color:var(--text-muted);">${err.message}</small>
+                            </td>
+                        </tr>`;
                 }
             },
 
@@ -360,9 +355,6 @@
                 target.value = DOM.edit.val.value.replace(/,/g, '');
                 target.risk = DOM.edit.risk.value;
 
-                // Save Local
-                localStorage.setItem('egp_db_cache', JSON.stringify(State.data));
-                
                 // Attempt Remote Save
                 const success = await this.secureGitHubSave();
                 if(success) {
@@ -525,27 +517,10 @@
             closeModal(id) { document.getElementById(id).style.display = 'none'; },
             
             clearCache() {
-                if(confirm("Wipe local cache and reload fresh data from GitHub?")) {
-                    localStorage.removeItem('egp_db_cache');
+                if(confirm("Reload data from GitHub?")) {
                     State.sessionToken = null;
-                    location.reload();
+                    this.fetchData();
                 }
-            },
-
-            loadLocalJSON(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    try {
-                        State.data = JSON.parse(ev.target.result);
-                        localStorage.setItem('egp_db_cache', JSON.stringify(State.data));
-                        App.applyFilters();
-                        alert("✅ Local JSON Loaded.");
-                    } catch (err) { alert("❌ Invalid JSON Format!"); }
-                };
-                reader.readAsText(file);
-                e.target.value = ''; 
             },
 
             exportCSV() {
