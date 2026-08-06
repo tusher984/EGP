@@ -314,6 +314,7 @@
             `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/main/${githubFile}`,
             `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/master/${githubFile}`
         ];
+        const localDataUrl = './Procurement_Database.json';
         
         let savedGithubToken = null; 
         let globalData = [];
@@ -443,16 +444,30 @@
             return JSON.parse(decodeBase64Content(fileData.content));
         }
 
+        async function loadDataFromLocalFile() {
+            const response = await fetch(`${localDataUrl}?t=${Date.now()}`);
+            if (!response.ok) throw new Error(`Local data file returned ${response.status}`);
+            return await response.json();
+        }
+
         async function initializeData() {
             try {
-                globalData = normalizeLoadedData(await loadDataFromGitHub());
+                const localPayload = await loadDataFromLocalFile();
+                globalData = normalizeLoadedData(localPayload);
                 currentFilteredData = [...globalData];
                 updateDashboard();
-            } catch (err) {
-                console.warn('GitHub failed, loading local default structure.', err);
-                globalData = normalizeLoadedData(DEFAULT_DATABASE);
-                currentFilteredData = [...globalData];
-                updateDashboard();
+            } catch (localError) {
+                console.warn('Local data file unavailable, trying GitHub fallback.', localError);
+                try {
+                    globalData = normalizeLoadedData(await loadDataFromGitHub());
+                    currentFilteredData = [...globalData];
+                    updateDashboard();
+                } catch (gitError) {
+                    console.warn('GitHub failed, loading local default structure.', gitError);
+                    globalData = normalizeLoadedData(DEFAULT_DATABASE);
+                    currentFilteredData = [...globalData];
+                    updateDashboard();
+                }
             }
         }
 
