@@ -78,7 +78,9 @@
         .input-group label { font-size: 0.88rem; color: var(--text-muted); }
         .input-group input, .input-group select, .input-group textarea { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0b1220; color: var(--text-light); padding: 12px 14px; font: inherit; }
         .input-group textarea { min-height: 140px; resize: vertical; }
-        .status-line { display: flex; align-items: center; gap: 10px; color: var(--text-muted); margin-top: 8px; font-size: 0.9rem; }
+        .pdf-choice { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+        .pdf-choice button { border: 1px solid rgba(56,189,248,0.28); border-radius: 12px; background: rgba(56,189,248,0.08); color: var(--neon-blue); padding: 8px 12px; cursor: pointer; transition: transform 0.18s ease, background-color 0.18s ease; }
+        .pdf-choice button.active, .pdf-choice button:hover { background: rgba(56,189,248,0.18); transform: translateY(-1px); }
         .network-content { min-height: 70vh; background: #050814; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; overflow: hidden; }
         #networkGraph { width: 100%; height: 70vh; }
         .report-body { display: grid; gap: 18px; }
@@ -193,6 +195,7 @@
                 <section class="panel">
                     <div class="input-group"><label>Record ID</label><input id="fieldId" type="text" disabled></div>
                     <div class="input-group"><label>Source PDF File</label><input id="fieldPdfFile" type="text" disabled></div>
+                    <div class="input-group"><label>Available PDF Sources</label><div id="pdfChoiceList" class="pdf-choice"></div></div>
                     <div class="input-group"><label>Contractor</label><input id="fieldContractor" type="text"></div>
                     <div class="input-group"><label>Procuring Entity</label><input id="fieldEntity" type="text"></div>
                     <div class="input-group"><label>Contract Value (BDT)</label><input id="fieldValue" type="number" min="0"></div>
@@ -263,7 +266,8 @@
             chart: null,
             autoSaveTimer: null,
             sessionToken: null,
-            activeRule: null
+            activeRule: null,
+            activePdfFile: ''
         };
 
         const DOM = {
@@ -345,6 +349,7 @@
             normalizeRecord(item) {
                 const riskRaw = String(item.Risk_Level || item.Risk || item.Red_Flag || 'LOW').trim().toUpperCase();
                 const risk = ['HIGH', 'MEDIUM', 'LOW'].includes(riskRaw) ? riskRaw : (riskRaw === 'YES' ? 'HIGH' : 'LOW');
+                const pdfFiles = this.extractPdfFiles(item);
                 return {
                     id: item.Tender_Proposal_ID || item.App_ID || item.id || `NEW-${Date.now()}`,
                     contractor: item.Supplier_Name || item.Contractor || item.contractor || '',
@@ -352,31 +357,28 @@
                     value: item.Contract_Value_BDT || item.Document_Price_BDT || item.value || 0,
                     risk,
                     rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(text => text.trim()).filter(Boolean) : [],
-                    pdfFile: this.extractPdfFile(item),
+                    pdfFiles,
+                    pdfFile: pdfFiles[0] || '',
                     notes: item.Investigator_Notes || item.Notes || '',
                     raw: item
                 };
             },
 
-            extractPdfFile(item) {
-                const candidates = [];
-                if (item.Source_File) candidates.push(String(item.Source_File).trim());
-                if (item.Source_Files_Merged) {
-                    String(item.Source_Files_Merged).split(/[|,;]+/).forEach(fragment => {
+            extractPdfFiles(item) {
+                const candidates = new Set();
+                const collect = (value) => {
+                    if (!value) return;
+                    String(value).split(/[|,;]+/).forEach(fragment => {
                         const fileName = fragment.trim();
-                        if (fileName) candidates.push(fileName);
+                        if (fileName && fileName.toLowerCase().endsWith('.pdf')) {
+                            candidates.add(fileName);
+                        }
                     });
-                }
-                return candidates.find(name => name.toLowerCase().endsWith('.pdf')) || '';
-            },
-
-            renderRuleCards() {
-                DOM.ruleGrid.innerHTML = RULES.map(rule => `
-                    <article class="rule-card" data-rule="${rule.id}" onclick="App.toggleRuleFilter('${rule.id}', this)">
-                        <h3>${rule.title}</h3>
-                        <p>${rule.desc}</p>
-                    </article>
-                `).join('');
+                };
+                collect(item.Source_File);
+                collect(item.Source_Files_Merged);
+                collect(item.Document_Link);
+                return Array.from(candidates);
             },
 
             initChart() {
@@ -452,8 +454,9 @@
                 const record = State.data.find(item => item.id == id);
                 if (!record) return alert('Record not found.');
                 State.activeId = record.id;
+                State.activePdfFile = record.pdfFile || record.pdfFiles[0] || '';
                 DOM.fieldId.value = record.id;
-                DOM.fieldPdfFile.value = record.pdfFile || 'No PDF attached';
+                DOM.fieldPdfFile.value = State.activePdfFile || 'No PDF attached';
                 DOM.fieldContractor.value = record.contractor;
                 DOM.fieldEntity.value = record.entity;
                 DOM.fieldValue.value = record.value;
@@ -461,8 +464,9 @@
                 DOM.fieldNotes.value = record.notes || '';
                 DOM.verifyStatus.textContent = 'Loaded record for verification. Make edits and save when ready.';
                 DOM.verifyStatus.style.color = 'var(--text-muted)';
+                this.renderPdfChoiceList(record.pdfFiles, State.activePdfFile);
                 this.setModalOpen('verifyModal');
-                if (record.pdfFile) await this.loadPdfFile(record.pdfFile);
+                if (State.activePdfFile) await this.loadPdfFile(State.activePdfFile);
                 else { DOM.pdfStatus.textContent = 'No PDF source configured for this record.'; DOM.pdfPageDisplay.textContent = 'Page 0 / 0'; }
             },
 
@@ -479,17 +483,26 @@
             },
 
             async loadPdfFile(pdfFile) {
+                if (!pdfFile) {
+                    DOM.pdfStatus.textContent = 'No PDF file selected.';
+                    DOM.pdfPageDisplay.textContent = 'Page 0 / 0';
+                    return;
+                }
                 const localUrls = CONFIG.LOCAL_PDF_URLS(pdfFile);
                 const remoteUrls = CONFIG.REMOTE_PDF_URLS(pdfFile);
                 DOM.pdfRemoteLink.href = remoteUrls[0] || '#';
                 let loaded = false;
+                State.activePdfUrl = null;
                 DOM.pdfStatus.textContent = 'Loading PDF...';
                 for (const url of [...localUrls, ...remoteUrls]) {
                     try {
                         await this.loadPdfDocument(url);
                         loaded = true;
-                        DOM.pdfStatus.textContent = localUrls.includes(url) ? 'Loaded from local folder.' : 'Loaded from GitHub.';
+                        const isLocal = localUrls.includes(url);
+                        DOM.pdfStatus.textContent = isLocal ? 'Loaded from local folder.' : 'Loaded from GitHub.';
                         DOM.pdfRemoteLink.href = url;
+                        State.activePdfUrl = url;
+                        State.activePdfFile = pdfFile;
                         break;
                     } catch (error) {
                         console.warn('PDF load failed:', url, error.message);
@@ -536,10 +549,15 @@
             },
 
             openPdfInNewTab() {
+                if (State.activePdfUrl) {
+                    window.open(State.activePdfUrl, '_blank');
+                    return;
+                }
                 const record = State.data.find(item => item.id == State.activeId);
-                if (!record || !record.pdfFile) return;
-                const localUrls = CONFIG.LOCAL_PDF_URLS(record.pdfFile);
-                const target = localUrls[0] || CONFIG.REMOTE_PDF_URLS(record.pdfFile)[0];
+                const pdfFile = State.activePdfFile || (record && record.pdfFile);
+                if (!record || !pdfFile) return;
+                const localUrls = CONFIG.LOCAL_PDF_URLS(pdfFile);
+                const target = localUrls[0] || CONFIG.REMOTE_PDF_URLS(pdfFile)[0];
                 if (target) window.open(target, '_blank');
             },
 
@@ -713,6 +731,27 @@
                     `;
                 }
                 this.setModalOpen('reportModal');
+            },
+
+            renderPdfChoiceList(files, selectedFile) {
+                const container = document.getElementById('pdfChoiceList');
+                if (!files || !files.length) {
+                    container.innerHTML = '<span style="color:var(--text-muted);">No PDF attachments</span>';
+                    return;
+                }
+                container.innerHTML = files.map(file => `
+                    <button type="button" class="${file === selectedFile ? 'active' : ''}" onclick="App.selectPdfFile(${JSON.stringify(file)})">${file}</button>
+                `).join('');
+            },
+
+            selectPdfFile(pdfFile) {
+                const record = State.data.find(item => item.id == State.activeId);
+                if (!record || !pdfFile) return;
+                State.activePdfFile = pdfFile;
+                record.pdfFile = pdfFile;
+                DOM.fieldPdfFile.value = pdfFile;
+                this.renderPdfChoiceList(record.pdfFiles, pdfFile);
+                this.loadPdfFile(pdfFile);
             },
 
             exportCSV() {
