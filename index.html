@@ -384,6 +384,7 @@
                     rules.push(String(item.Rule_Reference));
                 }
 
+                const review = item.Forensic_Review && typeof item.Forensic_Review === 'object' && !Array.isArray(item.Forensic_Review) ? item.Forensic_Review : {};
                 const buildEligibilityCriteria = () => {
                     const collected = [];
                     const push = (value) => {
@@ -391,6 +392,7 @@
                         const text = String(value).trim();
                         if (text && !collected.includes(text)) collected.push(text);
                     };
+                    if (Array.isArray(review.Eligibility_Criteria)) review.Eligibility_Criteria.forEach(entry => push(entry));
                     push(item.Eligibility_Criteria);
                     push(item.Eligibility_of_Tenderer);
                     push(item.Specific_Experience_Required);
@@ -402,6 +404,9 @@
                 };
 
                 const buildRationale = () => {
+                    if (review.Red_Flag_Rationale && typeof review.Red_Flag_Rationale === 'object' && !Array.isArray(review.Red_Flag_Rationale)) {
+                        return review.Red_Flag_Rationale;
+                    }
                     if (item.Red_Flag_Rationale && typeof item.Red_Flag_Rationale === 'object' && !Array.isArray(item.Red_Flag_Rationale)) {
                         return item.Red_Flag_Rationale;
                     }
@@ -414,6 +419,7 @@
                 };
 
                 const buildLotDetails = () => {
+                    if (Array.isArray(review.Lot_Details)) return review.Lot_Details;
                     if (Array.isArray(item.Lot_Details)) return item.Lot_Details;
                     return [{
                         lot_number: 1,
@@ -425,6 +431,9 @@
                 };
 
                 const buildOfficer = () => {
+                    if (review.Authorised_Officer && typeof review.Authorised_Officer === 'object' && !Array.isArray(review.Authorised_Officer)) {
+                        return review.Authorised_Officer;
+                    }
                     if (item.Authorised_Officer && typeof item.Authorised_Officer === 'object' && !Array.isArray(item.Authorised_Officer)) {
                         return item.Authorised_Officer;
                     }
@@ -437,6 +446,9 @@
                 };
 
                 const buildBidding = () => {
+                    if (review.Bidding_Statistics && typeof review.Bidding_Statistics === 'object' && !Array.isArray(review.Bidding_Statistics)) {
+                        return review.Bidding_Statistics;
+                    }
                     if (item.Bidding_Statistics && typeof item.Bidding_Statistics === 'object' && !Array.isArray(item.Bidding_Statistics)) {
                         return item.Bidding_Statistics;
                     }
