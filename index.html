@@ -170,6 +170,7 @@
                 </div>
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-success" onclick="App.saveRecord()">💾 Save & Update JSON</button>
+                    <button class="btn btn-danger" onclick="App.deleteRecord()">🗑 Delete Record</button>
                     <button class="btn btn-outline" onclick="App.closeModal('verifyModal')">Close</button>
                 </div>
             </div>
@@ -440,6 +441,10 @@
                 State.chart.update();
             },
 
+            escapeHtml(value) {
+                return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            },
+
             renderLedger() {
                 if (!State.filtered.length) {
                     DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No records match the current criteria.</td></tr>`;
@@ -447,15 +452,24 @@
                 }
                 DOM.ledgerBody.innerHTML = State.filtered.slice(0, 150).map(record => {
                     const valueText = Number(record.value || 0).toLocaleString('en-IN');
+                    const entityValue = this.escapeHtml(record.entity || '');
+                    const contractorValue = this.escapeHtml(record.contractor || '');
                     return `
                         <tr>
-                            <td><strong>${record.id}</strong></td>
-                            <td>${record.entity || '-'}</td>
-                            <td>${record.contractor || '-'}</td>
-                            <td><span class="risk-badge risk-${record.risk}">${record.risk}</span></td>
-                            <td style="text-align:right; font-family:monospace;">৳ ${valueText}</td>
+                            <td><strong>${this.escapeHtml(record.id)}</strong></td>
+                            <td><input type="text" value="${entityValue}" onchange="App.updateInlineField('${record.id}', 'entity', this.value)" style="width:100%; border:1px solid rgba(255,255,255,0.12); border-radius:8px; background:#0b1220; color:var(--text-light); padding:8px 10px;"></td>
+                            <td><input type="text" value="${contractorValue}" onchange="App.updateInlineField('${record.id}', 'contractor', this.value)" style="width:100%; border:1px solid rgba(255,255,255,0.12); border-radius:8px; background:#0b1220; color:var(--text-light); padding:8px 10px;"></td>
+                            <td>
+                                <select onchange="App.updateInlineField('${record.id}', 'risk', this.value)" style="width:100%; border:1px solid rgba(255,255,255,0.12); border-radius:8px; background:#0b1220; color:var(--text-light); padding:8px 10px;">
+                                    <option value="LOW" ${record.risk === 'LOW' ? 'selected' : ''}>LOW</option>
+                                    <option value="MEDIUM" ${record.risk === 'MEDIUM' ? 'selected' : ''}>MEDIUM</option>
+                                    <option value="HIGH" ${record.risk === 'HIGH' ? 'selected' : ''}>HIGH</option>
+                                </select>
+                            </td>
+                            <td style="text-align:right; font-family:monospace;"><input type="number" min="0" value="${Number(record.value || 0)}" onchange="App.updateInlineField('${record.id}', 'value', this.value)" style="width:100%; border:1px solid rgba(255,255,255,0.12); border-radius:8px; background:#0b1220; color:var(--text-light); padding:8px 10px; text-align:right;"></td>
                             <td style="text-align:center; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-                                <button class="btn-outline" onclick="App.openVerifyModal('${record.id}')">View / Verify</button>
+                                <button class="btn-outline" onclick="App.openVerifyModal('${record.id}')">Full Edit</button>
+                                <button class="btn-clear" onclick="App.deleteRecord('${record.id}')">Delete</button>
                                 <button class="btn-outline" onclick="App.highlightPdf('${record.id}')">PDF</button>
                             </td>
                         </tr>
@@ -574,6 +588,32 @@
                 if (target) window.open(target, '_blank');
             },
 
+            updateInlineField(id, field, value) {
+                const record = State.data.find(item => String(item.id) === String(id));
+                if (!record) return;
+
+                if (field === 'value') {
+                    record.value = Number(value) || 0;
+                } else if (field === 'risk') {
+                    record.risk = String(value).toUpperCase();
+                } else {
+                    record[field] = String(value).trim();
+                }
+
+                this.applyNormalizedChangesToRaw(record);
+                this.applyFilters();
+
+                if (State.activeId && String(State.activeId) === String(id)) {
+                    DOM.fieldContractor.value = record.contractor || '';
+                    DOM.fieldEntity.value = record.entity || '';
+                    DOM.fieldValue.value = record.value || 0;
+                    DOM.fieldRisk.value = record.risk || 'LOW';
+                }
+
+                DOM.verifyStatus.textContent = 'Inline edits updated locally. Use Full Edit or Save to sync.';
+                DOM.verifyStatus.style.color = '#7dd3fc';
+            },
+
             applyInspectorChanges() {
                 const record = State.data.find(item => item.id == State.activeId);
                 if (!record) return;
@@ -622,6 +662,32 @@
                     return;
                 }
                 this.secureGitHubSave();
+            },
+
+            deleteRecord(id = State.activeId) {
+                const record = State.data.find(item => String(item.id) === String(id));
+                if (!record) return;
+                const confirmed = window.confirm(`Delete record ${record.id}? This removes it from the current ledger and can sync the change to GitHub.`);
+                if (!confirmed) return;
+
+                State.data = State.data.filter(item => String(item.id) !== String(id));
+                State.jsonArray = State.jsonArray.filter(item => {
+                    const rawId = item.Tender_Proposal_ID ?? item.App_ID ?? item.id;
+                    return String(rawId) !== String(id);
+                });
+
+                if (State.activeId && String(State.activeId) === String(id)) {
+                    this.closeModal('verifyModal');
+                    State.activeId = null;
+                }
+
+                this.applyFilters();
+                if (State.sessionToken) {
+                    this.secureGitHubSave();
+                } else {
+                    DOM.verifyStatus.textContent = 'Record deleted locally. Enter GitHub PAT if you want to sync the removal.';
+                    DOM.verifyStatus.style.color = '#fbbf24';
+                }
             },
 
             async secureGitHubSave() {
