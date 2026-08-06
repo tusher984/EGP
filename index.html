@@ -259,6 +259,19 @@
          * 4. CORE APPLICATION LOGIC
          */
         const App = {
+            normalizeTender(item) {
+                const riskValue = String(item.Risk_Level || item.Risk || item.Red_Flag || 'LOW').trim().toUpperCase();
+                return {
+                    id: item.Tender_Proposal_ID || item.App_ID || item.id || '',
+                    entity: item.Procuring_Entity_Name || item.Organization_Agency || item.Procurement_Entity_District || item.entity || '',
+                    contractor: item.Supplier_Name || item.Contractor || item.contractor || '',
+                    value: item.Contract_Value_BDT || item.Document_Price_BDT || item.value || 0,
+                    risk: ['HIGH','MEDIUM','LOW'].includes(riskValue) ? riskValue : (riskValue === 'YES' ? 'HIGH' : 'LOW'),
+                    rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(r => r.trim()).filter(Boolean) : [],
+                    raw: item
+                };
+            },
+
             async init() {
                 this.setupEventListeners();
                 this.renderRuleMatrix();
@@ -282,8 +295,13 @@
                     if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
                     
                     const json = await res.json();
-                    State.data = Array.isArray(json) ? json : (Array.isArray(json.Merged_Database) ? json.Merged_Database : []);
-                    if (!Array.isArray(State.data)) State.data = [];
+                    let rawData = [];
+                    if (Array.isArray(json)) {
+                        rawData = json;
+                    } else if (json && typeof json === 'object') {
+                        rawData = Object.values(json).find(Array.isArray) || [];
+                    }
+                    State.data = rawData.map(item => this.normalizeTender(item));
                     this.applyFilters();
                 } catch (err) {
                     console.error("Fetch Error:", err);
@@ -369,8 +387,13 @@
             applyFilters() {
                 const term = DOM.search.value.toLowerCase();
                 const risk = DOM.riskFilter.value;
+                const dataArray = Array.isArray(State.data) ? State.data : [];
 
-                State.filtered = State.data.filter(item => {
+                if (!Array.isArray(State.data)) {
+                    console.warn('State.data is not an array:', State.data);
+                }
+
+                State.filtered = dataArray.filter(item => {
                     const matchTerm = !term || (item.contractor || '').toLowerCase().includes(term) || (item.entity || '').toLowerCase().includes(term) || String(item.id).includes(term);
                     const matchRisk = risk === 'ALL' || item.risk === risk;
                     const matchRule = !State.activeRuleFilter || (item.rules && item.rules.includes(State.activeRuleFilter));
