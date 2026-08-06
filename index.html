@@ -22,7 +22,7 @@
     <style>
         body { background-color: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, 
-        .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color: #94a3b8 !important; }
+        .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color: #94a3b8 !important; margin-bottom: 15px;}
         .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
             background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important; border-radius: 6px; padding: 4px 8px;
         }
@@ -40,32 +40,42 @@
     =========================================== -->
     <div id="dashboardView" class="max-w-[1400px] mx-auto p-4 md:p-6 space-y-6">
         
-        <header class="border-b border-slate-800 pb-4 flex justify-between items-center">
+        <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-user-secret mr-2"></i>e-GP Forensic Investigator</h1>
-                <p class="text-slate-400 text-sm mt-1">100% Offline Browser Audit & Verification System (PPA 2006 / PPR 2025)</p>
+                <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-shield-cat mr-2"></i>e-GP Forensic Investigator</h1>
+                <p class="text-slate-400 text-sm mt-1">Repository: <span class="font-mono text-blue-400">EGP</span> | Auto-fetching data from Procurement_Database.json</p>
             </div>
-            <button onclick="exportAuditLogs()" class="bg-emerald-600 hover:bg-emerald-500 px-5 py-2.5 rounded-lg font-bold shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-download"></i> Export Audit Logs
-            </button>
+            <div class="flex gap-3">
+                <span id="connStatus" class="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 text-yellow-400 text-xs px-3 py-1.5 rounded-full">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading Data...
+                </span>
+                <button onclick="exportAuditLogs()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-download"></i> Export Audit Logs
+                </button>
+            </div>
         </header>
+
+        <!-- Error Message -->
+        <div id="errorMsg" class="hidden bg-red-950/50 border border-red-800 p-4 rounded-lg text-red-300">
+            <strong>Error:</strong> <span id="errorTxt">Could not load JSON.</span>
+        </div>
 
         <!-- KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase">Total Tenders Audited</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase"><i class="fa-solid fa-folder-open mr-1"></i> Total Tenders</h3>
                 <p id="kpiTotal" class="text-3xl font-black mt-2">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-red-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase">High Risk Flags</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-red-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> High Risk</h3>
                 <p id="kpiHigh" class="text-3xl font-black mt-2 text-red-500">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-yellow-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase">Medium Risk Flags</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-yellow-400"><i class="fa-solid fa-flag mr-1"></i> Medium Risk</h3>
                 <p id="kpiMed" class="text-3xl font-black mt-2 text-yellow-500">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-blue-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase">Total Contract Value (BDT)</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-blue-400"><i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i> Contract Value</h3>
                 <p id="kpiValue" class="text-2xl font-black mt-2 text-blue-400">0</p>
             </div>
         </div>
@@ -73,69 +83,64 @@
         <!-- Charts -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-chart-pie text-red-400"></i> Risk Distribution</h3>
+                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-chart-pie text-red-400 mr-2"></i> Risk Distribution</h3>
                 <div class="h-48 relative"><canvas id="riskChart"></canvas></div>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-scale-unbalanced text-yellow-400"></i> Common Violations</h3>
+                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-scale-unbalanced text-yellow-400 mr-2"></i> Common Violations</h3>
                 <div class="h-48 relative"><canvas id="violChart"></canvas></div>
             </div>
         </div>
 
         <!-- Data Table -->
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
-            <h2 class="text-lg font-bold mb-4">Forensic Audit Log <span class="text-xs text-slate-500 font-normal ml-2">(Click a row to open Split-Screen Inspector)</span></h2>
-            <table id="mainTable" class="w-full text-sm text-left text-slate-300">
-                <thead class="bg-slate-800 text-slate-200">
-                    <tr>
-                        <th class="p-3">Tender ID</th>
-                        <th class="p-3">Risk Level</th>
-                        <th class="p-3">Score</th>
-                        <th class="p-3">Awarded Supplier</th>
-                        <th class="p-3">Value (BDT)</th>
-                        <th class="p-3">Red Flags Detected</th>
-                        <th class="p-3">Status</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+            <h2 class="text-lg font-bold mb-4">Forensic Audit Log <span class="text-xs text-slate-500 font-normal ml-2">(Click any row to open the Split-Screen Inspector)</span></h2>
+            <div class="overflow-x-auto">
+                <table id="mainTable" class="w-full text-sm text-left text-slate-300">
+                    <thead class="bg-slate-800 text-slate-200">
+                        <tr>
+                            <th class="p-3 rounded-tl-lg">Tender ID</th>
+                            <th class="p-3">Risk Level</th>
+                            <th class="p-3">Score</th>
+                            <th class="p-3">Awarded Supplier</th>
+                            <th class="p-3">Value (BDT)</th>
+                            <th class="p-3">Red Flags Detected</th>
+                            <th class="p-3 rounded-tr-lg">Audit Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- ==========================================
          VIEW 2: SPLIT-SCREEN INSPECTOR
     =========================================== -->
-    <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-slate-950">
+    <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-slate-950 fixed inset-0 z-50">
         
         <!-- Inspector Header -->
         <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shadow-md shrink-0">
             <div class="flex items-center gap-4">
-                <button onclick="closeInspector()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded text-sm font-bold transition"><i class="fa-solid fa-arrow-left mr-2"></i>Back</button>
-                <h2 class="text-xl font-black">Investigating Tender: <span id="inspTenderId" class="text-blue-400">---</span></h2>
+                <button onclick="closeInspector()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded text-sm font-bold transition"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Dashboard</button>
+                <h2 class="text-xl font-black">Tender <span id="inspTenderId" class="text-blue-400">---</span></h2>
                 <span id="inspRiskBadge" class="px-2.5 py-1 rounded text-xs font-bold">---</span>
             </div>
-            <div class="text-sm text-slate-400">Verification Engine: <span class="text-emerald-400 font-bold">Active</span></div>
+            <div class="text-sm text-slate-400">PPA 2006 Engine: <span class="text-emerald-400 font-bold">Active</span></div>
         </header>
 
         <!-- Split Workspace -->
         <div class="flex-1 flex overflow-hidden">
             
-            <!-- Left Pane: PDF Document Viewer -->
+            <!-- Left Pane: Live PDF Viewer -->
             <div class="w-1/2 border-r border-slate-800 bg-slate-800 flex flex-col relative">
-                <div class="p-3 bg-slate-900 border-b border-slate-700 text-xs font-bold text-slate-400 flex justify-between">
+                <div class="p-3 bg-slate-900 border-b border-slate-700 text-xs font-bold text-slate-400 flex justify-between items-center">
                     <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Source Document Viewer</span>
-                    <span id="pdfFileName">---.pdf</span>
+                    <span id="pdfFileName" class="text-blue-400 font-mono">---.pdf</span>
                 </div>
-                <!-- Note: In a pure local HTML file, browsers block local iframes due to CORS. 
-                     We use a placeholder telling the investigator which file to look at. -->
-                <div class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-900/50">
-                    <i class="fa-regular fa-folder-open text-6xl text-slate-700 mb-4"></i>
-                    <h3 class="text-lg font-bold text-slate-300">Local File Security Restriction</h3>
-                    <p class="text-sm text-slate-500 mt-2 max-w-md">Browsers block loading local PDFs directly into an iframe for security reasons. Please open the following file manually from your folder:</p>
-                    <div class="mt-4 p-4 bg-slate-950 border border-slate-700 rounded-lg text-left">
-                        <p class="text-xs text-slate-400">Expected File Path:</p>
-                        <p id="inspPdfPath" class="text-sm font-mono text-blue-400 mt-1">EGP-CDA/Tender Notice_PDFs/...</p>
-                    </div>
+                <!-- Dynamic Iframe for PDF -->
+                <div class="flex-1 w-full h-full bg-slate-300">
+                    <iframe id="pdfIframe" src="" class="w-full h-full border-none"></iframe>
                 </div>
             </div>
 
@@ -150,7 +155,7 @@
 
                 <!-- Editable Form -->
                 <div class="space-y-4">
-                    <h3 class="text-slate-300 font-bold border-b border-slate-700 pb-2"><i class="fa-solid fa-database mr-2"></i>Extracted Metadata (Editable)</h3>
+                    <h3 class="text-slate-300 font-bold border-b border-slate-700 pb-2"><i class="fa-solid fa-database mr-2"></i>Extracted Metadata</h3>
                     
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -158,7 +163,7 @@
                             <input type="text" id="editPE" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Estimated Value / Contract Value</label>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Contract Value (BDT)</label>
                             <input type="text" id="editValue" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 font-mono">
                         </div>
                         <div class="col-span-2">
@@ -177,11 +182,11 @@
                 <div class="bg-slate-800 p-5 rounded-xl border border-blue-900/50 mt-8">
                     <h3 class="text-blue-400 font-bold text-sm uppercase tracking-wider mb-3"><i class="fa-solid fa-user-check mr-2"></i>Human Verification Log</h3>
                     <label class="block text-xs text-slate-400 mb-2">Provide justification for verification or overriding red flags:</label>
-                    <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 h-24 mb-4" placeholder="E.g., Verified supplier name. Single bidder rule triggered but justified due to highly specialized required equipment..."></textarea>
+                    <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 h-24 mb-4" placeholder="E.g., Verified supplier name. Single bidder rule triggered but justified due to specialized equipment..."></textarea>
                     
                     <div class="flex gap-3">
-                        <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded shadow transition">Mark as Verified (Clean)</button>
-                        <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded shadow transition">Confirm Fraud Risk</button>
+                        <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded shadow transition text-sm">Mark as Verified (Clean)</button>
+                        <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded shadow transition text-sm">Confirm Fraud Risk</button>
                     </div>
                 </div>
 
@@ -190,42 +195,56 @@
     </div>
 
     <!-- ==========================================
-         APPLICATION LOGIC & EMBEDDED DATA
+         APPLICATION LOGIC
     =========================================== -->
     <script>
-        // 1. EMBEDDED DATABASE (Extracted from the user's provided JSON context)
-        const embeddedData = [
-            { "Tender_Proposal_ID": 1128572, "Supplier_Name": "M/S. Haroon & Brothers", "Contract_Value_BDT": 1875002.607, "Procurement_Method": "OTM", "Tenders_Sold": 3, "Tenders_Received": 3, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "Contractor having latest enlistment under category 1.3... If Quated Rate is found more thane 10% above or below Estimated cost, Tender will be Non-Responsive", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_1128572.pdf", "Procuring_Entity_Name": "Project Director(M.Uddin)" },
-            { "Tender_Proposal_ID": 1023333, "Supplier_Name": "M/S. Amanat Enterprise", "Contract_Value_BDT": 11731574.38, "Procurement_Method": "OTM", "Tenders_Sold": 2, "Tenders_Received": 2, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "A satisfactory completion of similar works... others qualification criteria as stated in TDS.", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_1023333.pdf", "Procuring_Entity_Name": "Construction Division-1" },
-            { "Tender_Proposal_ID": 1001782, "Supplier_Name": "CPDL LTD.", "Contract_Value_BDT": 52490000.53, "Procurement_Method": "OTM", "Tenders_Sold": 3, "Tenders_Received": 1, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "The minimum number of years of general experience... ", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_1001782.pdf", "Procuring_Entity_Name": "Project Director (CDA Square)" },
-            { "Tender_Proposal_ID": 954661, "Supplier_Name": "BM Energy (BD) limited", "Contract_Value_BDT": 2445000.12, "Procurement_Method": "OTM", "Tenders_Sold": 1, "Tenders_Received": 1, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "A satisfactory completion of similar works of at least Tk 15 Lac...", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_954661.pdf", "Procuring_Entity_Name": "Project Director (CDA Square)" },
-            { "Tender_Proposal_ID": 1231413, "Supplier_Name": "B & S ENGINEERING", "Contract_Value_BDT": 2054979.68, "Procurement_Method": "OTM", "Tenders_Sold": 0, "Tenders_Received": 0, "Responsive_Tenders": 0, "Eligibility_of_Tenderer": "Authentic Authorization Letter from OEM (Local Manufacturer will not be accepted). Valid documents having office / Sub office in Chittagong.", "Red_Flag_Reason": "Beneficial Owner Missing", "Source_File": "Tender_1231413.pdf", "Procuring_Entity_Name": "MIS" },
-            { "Tender_Proposal_ID": 1287229, "Supplier_Name": "", "Contract_Value_BDT": 0, "Procurement_Method": "OTM", "Tenders_Sold": 0, "Tenders_Received": 0, "Responsive_Tenders": 0, "Eligibility_of_Tenderer": "Joint Venture (JV) participation shall not be permitted. Valid MAF must be submitted.", "Red_Flag_Reason": "No significant issue detected", "Source_File": "CDA_Tender_1287229.pdf", "Procuring_Entity_Name": "Project Director (Master Plan)" },
-            { "Tender_Proposal_ID": 1305867, "Supplier_Name": "", "Contract_Value_BDT": 0, "Procurement_Method": "OTM", "Tenders_Sold": 0, "Tenders_Received": 0, "Responsive_Tenders": 0, "Eligibility_of_Tenderer": "Tenderer must have a working center/office/branch office in Chattogram City.", "Red_Flag_Reason": "No significant issue detected", "Source_File": "CDA_Tender_1305867.pdf", "Procuring_Entity_Name": "Office of the Secretary" },
-            { "Tender_Proposal_ID": 1002615, "Supplier_Name": "", "Contract_Value_BDT": 0, "Procurement_Method": "OTM", "Tenders_Sold": 0, "Tenders_Received": 0, "Responsive_Tenders": 0, "Eligibility_of_Tenderer": "similar Goods (Like minimum number of one Excavator, Country of orgin: Japan/Europe/UK/North America/South America)", "Red_Flag_Reason": "No significant issue detected", "Source_File": "CDA_Tender_1002615.pdf", "Procuring_Entity_Name": "Project Director(Water Logging)" },
-            { "Tender_Proposal_ID": 848555, "Supplier_Name": "SUNNY-RS-TML JV", "Contract_Value_BDT": 51133146.95, "Procurement_Method": "OTM", "Tenders_Sold": 6, "Tenders_Received": 3, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "The Contractor must have valid Trade license...", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_848555.pdf", "Procuring_Entity_Name": "Project Director (Loop Road)" },
-            { "Tender_Proposal_ID": 781266, "Supplier_Name": "Spectra Engineers Ltd.", "Contract_Value_BDT": 791796036.70, "Procurement_Method": "OTM", "Tenders_Sold": 3, "Tenders_Received": 3, "Responsive_Tenders": 1, "Eligibility_of_Tenderer": "Minimum specific experience...", "Red_Flag_Reason": "Single Responsive Bidder | Beneficial Owner Missing", "Source_File": "Tender_781266.pdf", "Procuring_Entity_Name": "Project Director (Loop Road)" }
-        ];
-
+        let rawTenderData = [];
         let analyzedData = [];
         let auditLogs = JSON.parse(localStorage.getItem('egpAuditLogs')) || {};
         let currentTenderId = null;
 
-        // 2. FORENSIC RULES ENGINE
+        // Boot Application
+        $(document).ready(function() {
+            // Fetch Data from JSON file in the EGP folder
+            fetch('./Procurement_Database.json')
+                .then(res => {
+                    if(!res.ok) throw new Error("File not found");
+                    return res.json();
+                })
+                .then(data => {
+                    // Extract array whether it's wrapped in Merged_Database or just an array
+                    rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
+                    if(rawTenderData.length === 0) throw new Error("JSON is empty");
+                    
+                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-400">Database Connected</span>`;
+                    initDashboard();
+                })
+                .catch(err => {
+                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-xmark text-red-500"></i> <span class="text-red-500">Connection Failed</span>`;
+                    document.getElementById('errorMsg').classList.remove('hidden');
+                    document.getElementById('errorTxt').innerText = `Ensure 'Procurement_Database.json' is in the root EGP folder. Detail: ${err.message}`;
+                });
+        });
+
+        // 1. FORENSIC RULES ENGINE
         function runForensicEngine() {
-            analyzedData = embeddedData.map(t => {
+            analyzedData = rawTenderData.map(t => {
                 let flags = [];
                 let score = 0;
                 let elig = (t.Eligibility_of_Tenderer || "").toLowerCase();
 
                 // Check 1: Single Responsive Bidder (Stifles Competition)
-                if (t.Responsive_Tenders == 1 && (t.Tenders_Received > 1 || t.Tenders_Sold > 1)) {
+                let received = parseInt(t.Tenders_Received) || 0;
+                let sold = parseInt(t.Tenders_Sold) || 0;
+                let responsive = parseInt(t.Responsive_Tenders) || 0;
+
+                if (responsive === 1 && (received > 1 || sold > 1)) {
                     flags.push("Single Responsive Bidder (Competition Stifled)");
                     score += 40;
                 }
                 
                 // Check 2: Beneficial Owner Omission
-                if (t.Red_Flag_Reason && t.Red_Flag_Reason.includes("Beneficial Owner Missing")) {
+                if ((t.Red_Flag_Reason || "").includes("Beneficial Owner Missing")) {
                     flags.push("Missing Beneficial Ownership Data");
                     score += 20;
                 }
@@ -261,16 +280,15 @@
                 }
 
                 let riskLevel = score >= 50 ? 'HIGH' : (score >= 20 ? 'MEDIUM' : 'LOW');
-
                 return { ...t, generatedFlags: flags, riskScore: score, riskLevel: riskLevel };
             });
         }
 
-        // 3. RENDER DASHBOARD
+        // 2. RENDER DASHBOARD
         function initDashboard() {
             runForensicEngine();
 
-            let high = 0, med = 0, totalVal = 0, singleCount = 0;
+            let high = 0, med = 0, totalVal = 0;
             let violCounts = {};
 
             const tbody = document.getElementById('tableBody');
@@ -280,10 +298,12 @@
                 // Update KPIs
                 if(t.riskLevel === 'HIGH') high++;
                 if(t.riskLevel === 'MEDIUM') med++;
-                if(t.Contract_Value_BDT) totalVal += parseFloat(t.Contract_Value_BDT);
+                if(t.Contract_Value_BDT) {
+                    let val = parseFloat(t.Contract_Value_BDT);
+                    if(!isNaN(val)) totalVal += val;
+                }
                 
                 t.generatedFlags.forEach(f => violCounts[f] = (violCounts[f] || 0) + 1);
-                if(t.generatedFlags.includes("Single Responsive Bidder (Competition Stifled)")) singleCount++;
 
                 // Table Row
                 let badge = `<span class="px-2 py-1 rounded text-xs font-bold ${
@@ -292,7 +312,7 @@
                 }">${t.riskLevel}</span>`;
 
                 let flagHtml = t.generatedFlags.length > 0 
-                    ? t.generatedFlags.map(f => `<span class="block text-red-400 text-xs">• ${f}</span>`).join('') 
+                    ? t.generatedFlags.map(f => `<span class="block text-red-400 text-xs mb-1">• ${f}</span>`).join('') 
                     : '<span class="text-slate-500 text-xs">No Violations</span>';
 
                 let statusBadge = auditLogs[t.Tender_Proposal_ID] 
@@ -302,11 +322,11 @@
                 const tr = document.createElement('tr');
                 tr.onclick = () => openInspector(t.Tender_Proposal_ID);
                 tr.innerHTML = `
-                    <td class="p-3 font-mono font-bold">${t.Tender_Proposal_ID}</td>
+                    <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID}</td>
                     <td class="p-3">${badge}</td>
-                    <td class="p-3 font-bold">${t.riskScore}</td>
-                    <td class="p-3 text-xs">${t.Supplier_Name || 'N/A'}</td>
-                    <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? t.Contract_Value_BDT.toLocaleString() : '0'}</td>
+                    <td class="p-3 font-bold text-slate-200">${t.riskScore}</td>
+                    <td class="p-3 text-xs text-slate-200">${t.Supplier_Name || '<span class="text-slate-500 italic">N/A</span>'}</td>
+                    <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0'}</td>
                     <td class="p-3">${flagHtml}</td>
                     <td class="p-3">${statusBadge}</td>
                 `;
@@ -337,7 +357,7 @@
             });
         }
 
-        // 4. SPLIT-SCREEN INSPECTOR
+        // 3. SPLIT-SCREEN INSPECTOR
         function openInspector(tid) {
             currentTenderId = tid;
             const t = analyzedData.find(x => x.Tender_Proposal_ID == tid);
@@ -348,15 +368,18 @@
 
             // Populate Headers
             document.getElementById('inspTenderId').innerText = t.Tender_Proposal_ID;
-            document.getElementById('pdfFileName').innerText = t.Source_File || "Unknown.pdf";
             
-            // Generate expected path instruction for user
-            const folder = t.Source_File.startsWith("CDA_") ? "Tender Notice_PDFs" : "Contract_Awards_PDFs";
-            document.getElementById('inspPdfPath').innerText = `EGP-CDA/${folder}/${t.Source_File}`;
-
             const badge = document.getElementById('inspRiskBadge');
             badge.innerText = `RISK: ${t.riskLevel} (${t.riskScore})`;
             badge.className = `px-2.5 py-1 rounded text-xs font-bold ${t.riskLevel === 'HIGH' ? 'bg-red-900 text-red-300' : t.riskLevel === 'MEDIUM' ? 'bg-yellow-900 text-yellow-300' : 'bg-emerald-900 text-emerald-300'}`;
+
+            // Load PDF into Iframe
+            const sourceFile = t.Source_File || `Tender_${tid}.pdf`;
+            document.getElementById('pdfFileName').innerText = sourceFile;
+            
+            // Logic to check if it's a Notice or Award PDF
+            let pdfFolder = sourceFile.startsWith("CDA_") ? "Tender Notice_PDFs" : "Contract_Awards_PDFs";
+            document.getElementById('pdfIframe').src = `./${pdfFolder}/${sourceFile}`;
 
             // Populate Form
             document.getElementById('editPE').value = t.Procuring_Entity_Name || "";
@@ -381,10 +404,12 @@
         function closeInspector() {
             document.getElementById('inspectorView').classList.add('hide');
             document.getElementById('dashboardView').classList.remove('hide');
+            // Clear iframe memory
+            document.getElementById('pdfIframe').src = "";
             initDashboard(); // refresh table statuses
         }
 
-        // 5. HUMAN-IN-THE-LOOP AUDIT LOGGING
+        // 4. HUMAN-IN-THE-LOOP AUDIT LOGGING
         function saveAuditLog(statusLabel) {
             const justification = document.getElementById('auditJustification').value;
             if(!justification.trim()) {
@@ -407,17 +432,18 @@
         }
 
         function exportAuditLogs() {
+            if(Object.keys(auditLogs).length === 0) {
+                alert("No audit logs to export yet!");
+                return;
+            }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs, null, 2));
             const a = document.createElement('a');
             a.setAttribute("href", dataStr);
-            a.setAttribute("download", "Verified_Audit_Logs.json");
+            a.setAttribute("download", "EGP_Verified_Audit_Logs.json");
             document.body.appendChild(a);
             a.click();
             a.remove();
         }
-
-        // Boot
-        window.onload = initDashboard;
     </script>
 </body>
 </html>
