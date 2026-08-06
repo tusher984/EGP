@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-GP Procurement Investigative Platform & Live PDF Reader</title>
+    <title>e-GP Procurement Investigative Platform</title>
 
-    <!-- Tailwind CSS UI Framework -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- PDF.js Library for Client-Side PDF Text Extraction -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -38,64 +35,50 @@
 </head>
 <body>
 
-    <!-- ==========================================
-         VIEW 1: MAIN DASHBOARD
-    =========================================== -->
+    <!-- VIEW 1: DASHBOARD -->
     <div id="dashboardView" class="max-w-[1400px] mx-auto p-4 md:p-6 space-y-6">
-        
-        <header class="border-b border-slate-800 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <header class="border-b border-slate-800 pb-4 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-shield-cat mr-2"></i>e-GP Forensic Investigator</h1>
-                <p class="text-slate-400 text-sm mt-1">Repository: <span class="font-mono text-blue-400">EGP</span> | Scans JSON + Live Text Extraction from PDF Folders</p>
+                <p class="text-slate-400 text-sm mt-1">Repository: <span class="font-mono text-blue-400">EGP</span> | Pre-Extracted OCR Text Engine</p>
             </div>
             <div class="flex gap-3">
                 <span id="connStatus" class="inline-flex items-center gap-2 bg-slate-900 border border-slate-800 text-yellow-400 text-xs px-3 py-1.5 rounded-full">
-                    <i class="fa-solid fa-spinner fa-spin"></i> Initializing System...
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading...
                 </span>
-                <button onclick="exportAuditLogs()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg font-bold shadow transition flex items-center gap-2 text-sm">
+                <button onclick="exportAuditLogs()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg font-bold text-sm">
                     <i class="fa-solid fa-download"></i> Export Audit Logs
                 </button>
             </div>
         </header>
 
-        <!-- Live Progress Status Bar -->
-        <div id="progressBox" class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-            <div class="flex justify-between text-xs font-mono">
-                <span id="progressText" class="text-yellow-400">Reading Procurement_Database.json...</span>
-                <span id="progressPct" class="text-slate-400">0%</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                <div id="progressBar" class="bg-red-500 h-full w-0 transition-all duration-200"></div>
-            </div>
-        </div>
-
         <!-- Manual File Upload Fallback -->
-        <div id="uploadBox" class="hidden bg-slate-800 border-2 border-dashed border-blue-500/50 p-6 rounded-xl text-center shadow-lg">
+        <div id="uploadBox" class="hidden bg-slate-800 border-2 border-dashed border-blue-500/50 p-6 rounded-xl text-center">
             <i class="fa-solid fa-file-arrow-up text-3xl text-blue-400 mb-2"></i>
             <h2 class="text-base font-bold text-slate-200">Local Browser Security Active</h2>
-            <p class="text-xs text-slate-400 mt-1 mb-3">If running locally without GitHub Pages, select your <strong>Procurement_Database.json</strong> file manually below.</p>
+            <p class="text-xs text-slate-400 mt-1 mb-3">Select your <strong>Procurement_Database.json</strong> manually below.</p>
             <input type="file" id="jsonLoader" accept=".json" class="hidden" onchange="handleFileUpload(event)">
-            <label for="jsonLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow transition inline-block text-xs">
+            <label for="jsonLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg text-xs inline-block">
                 Select Procurement_Database.json
             </label>
         </div>
 
         <!-- KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase"><i class="fa-solid fa-folder-open mr-1"></i> Total Tenders</h3>
+            <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+                <h3 class="text-slate-400 text-xs font-bold uppercase">Total Tenders</h3>
                 <p id="kpiTotal" class="text-3xl font-black mt-2">0</p>
             </div>
-            <div class="bg-slate-900 p-5 rounded-xl border border-red-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase text-red-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> High Risk</h3>
+            <div class="bg-slate-900 p-5 rounded-xl border border-red-900/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-red-400">High Risk</h3>
                 <p id="kpiHigh" class="text-3xl font-black mt-2 text-red-500">0</p>
             </div>
-            <div class="bg-slate-900 p-5 rounded-xl border border-yellow-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase text-yellow-400"><i class="fa-solid fa-flag mr-1"></i> Medium Risk</h3>
+            <div class="bg-slate-900 p-5 rounded-xl border border-yellow-900/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-yellow-400">Medium Risk</h3>
                 <p id="kpiMed" class="text-3xl font-black mt-2 text-yellow-500">0</p>
             </div>
-            <div class="bg-slate-900 p-5 rounded-xl border border-blue-900/50 shadow-lg">
-                <h3 class="text-slate-400 text-xs font-bold uppercase text-blue-400"><i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i> Contract Value</h3>
+            <div class="bg-slate-900 p-5 rounded-xl border border-blue-900/50">
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-blue-400">Contract Value</h3>
                 <p id="kpiValue" class="text-2xl font-black mt-2 text-blue-400">0</p>
             </div>
         </div>
@@ -103,29 +86,29 @@
         <!-- Charts -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-chart-pie text-red-400 mr-2"></i> Risk Distribution</h3>
+                <h3 class="text-sm font-bold mb-4 text-slate-300">Risk Distribution</h3>
                 <div class="h-48 relative"><canvas id="riskChart"></canvas></div>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
-                <h3 class="text-sm font-bold mb-4 text-slate-300"><i class="fa-solid fa-scale-unbalanced text-yellow-400 mr-2"></i> Common Violations</h3>
+                <h3 class="text-sm font-bold mb-4 text-slate-300">Common Violations</h3>
                 <div class="h-48 relative"><canvas id="violChart"></canvas></div>
             </div>
         </div>
 
         <!-- Data Table -->
-        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
-            <h2 class="text-lg font-bold mb-4">Forensic Audit Log <span class="text-xs text-slate-500 font-normal ml-2">(Click any row to open the Split-Screen Inspector & Raw PDF Text)</span></h2>
+        <div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+            <h2 class="text-lg font-bold mb-4">Forensic Audit Log</h2>
             <div class="overflow-x-auto">
                 <table id="mainTable" class="w-full text-sm text-left text-slate-300">
                     <thead class="bg-slate-800 text-slate-200">
                         <tr>
-                            <th class="p-3 rounded-tl-lg">Tender ID</th>
+                            <th class="p-3">Tender ID</th>
                             <th class="p-3">Risk Level</th>
                             <th class="p-3">Score</th>
                             <th class="p-3">Awarded Supplier</th>
                             <th class="p-3">Value (BDT)</th>
                             <th class="p-3">Red Flags Detected</th>
-                            <th class="p-3 rounded-tr-lg">Audit Status</th>
+                            <th class="p-3">Audit Status</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -134,223 +117,127 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         VIEW 2: SPLIT-SCREEN INSPECTOR
-    =========================================== -->
+    <!-- VIEW 2: SPLIT-SCREEN INSPECTOR -->
     <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-slate-950 fixed inset-0 z-50">
-        
-        <!-- Inspector Header -->
-        <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shadow-md shrink-0">
+        <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shrink-0">
             <div class="flex items-center gap-4">
-                <button onclick="closeInspector()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded text-sm font-bold transition"><i class="fa-solid fa-arrow-left mr-2"></i>Back to Dashboard</button>
+                <button onclick="closeInspector()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded text-sm font-bold"><i class="fa-solid fa-arrow-left mr-2"></i>Back</button>
                 <h2 class="text-xl font-black">Tender <span id="inspTenderId" class="text-blue-400">---</span></h2>
                 <span id="inspRiskBadge" class="px-2.5 py-1 rounded text-xs font-bold">---</span>
             </div>
-            <div class="text-sm text-slate-400">PPA / PPR Audit Engine: <span class="text-emerald-400 font-bold">Active</span></div>
+            <div class="text-sm text-slate-400">PPA / PPR Engine: <span class="text-emerald-400 font-bold">Active</span></div>
         </header>
 
-        <!-- Split Workspace -->
         <div class="flex-1 flex overflow-hidden">
-            
-            <!-- Left Pane: Live PDF Viewer & Extracted Text -->
+            <!-- Left Pane: PDF Viewer & Extracted Text -->
             <div class="w-1/2 border-r border-slate-800 bg-slate-800 flex flex-col relative">
                 <div class="p-3 bg-slate-900 border-b border-slate-700 text-xs font-bold text-slate-400 flex justify-between items-center">
-                    <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Source Document Viewer</span>
-                    <span id="pdfFileName" class="text-blue-400 font-mono">---.pdf</span>
+                    <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Document:</span>
+                    <div class="flex bg-slate-950 p-1 rounded border border-slate-800 gap-1">
+                        <button id="btnNoticePdf" onclick="switchPdfView('notice')" class="px-3 py-1 rounded text-xs font-bold bg-blue-600 text-white">Notice PDF</button>
+                        <button id="btnAwardPdf" onclick="switchPdfView('award')" class="px-3 py-1 rounded text-xs font-bold bg-slate-800 text-slate-400">Award PDF</button>
+                    </div>
                 </div>
-                <!-- Dynamic PDF Viewer iframe -->
+
                 <div class="flex-1 w-full h-1/2 bg-slate-300 relative border-b border-slate-700">
                     <iframe id="pdfIframe" src="" class="w-full h-full border-none relative z-10 bg-transparent"></iframe>
                 </div>
-                <!-- Scanned Raw Text Box -->
+                
                 <div class="h-1/2 bg-slate-950 p-3 overflow-y-auto">
-                    <h4 class="text-xs font-bold text-slate-400 mb-1 flex items-center justify-between">
-                        <span><i class="fa-solid fa-align-left text-yellow-500 mr-1"></i> Live Extracted PDF Text</span>
-                        <span id="pdfScanStatus" class="text-[10px] text-slate-500">PDF.js Text Extractor</span>
+                    <h4 class="text-xs font-bold text-slate-400 mb-1 flex justify-between">
+                        <span><i class="fa-solid fa-align-left text-yellow-500 mr-1"></i> Pre-Extracted Raw PDF Text</span>
+                        <span id="pdfScanStatus" class="text-[10px] text-emerald-400">Cache Active</span>
                     </h4>
-                    <pre id="rawPdfText" class="text-[11px] text-slate-400 font-mono whitespace-pre-wrap leading-relaxed">Extracting PDF text...</pre>
+                    <pre id="rawPdfText" class="text-[11px] text-slate-400 font-mono whitespace-pre-wrap leading-relaxed">Select a tender...</pre>
                 </div>
             </div>
 
-            <!-- Right Pane: Data Extraction & Audit Form -->
+            <!-- Right Pane: Metadata Form -->
             <div class="w-1/2 bg-slate-900 overflow-y-auto p-6 space-y-6">
-                
-                <!-- Red Flag Alerts -->
                 <div id="inspFlagsContainer" class="bg-red-950/30 border border-red-900/50 p-4 rounded-xl space-y-2">
-                    <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Triggered Rule Violations</h3>
+                    <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Triggered Violations</h3>
                     <ul id="inspFlagsList" class="text-sm text-red-200 list-disc pl-5 space-y-1"></ul>
                 </div>
 
-                <!-- Editable Form -->
                 <div class="space-y-4">
-                    <h3 class="text-slate-300 font-bold border-b border-slate-700 pb-2"><i class="fa-solid fa-database mr-2"></i>Extracted Metadata</h3>
-                    
+                    <h3 class="text-slate-300 font-bold border-b border-slate-700 pb-2">Extracted Metadata</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Procuring Entity</label>
-                            <input type="text" id="editPE" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500">
+                            <input type="text" id="editPE" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Contract Value (BDT)</label>
-                            <input type="text" id="editValue" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 font-mono">
+                            <input type="text" id="editValue" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 font-mono">
                         </div>
                         <div class="col-span-2">
                             <label class="block text-xs font-bold text-slate-500 mb-1">Awarded Supplier</label>
-                            <input type="text" id="editSupplier" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500">
+                            <input type="text" id="editSupplier" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200">
                         </div>
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Eligibility Criteria Text (JSON/PDF)</label>
-                        <div id="rawEligibility" class="w-full bg-slate-950 border border-slate-700 rounded p-3 text-xs text-slate-400 font-mono h-28 overflow-y-auto leading-relaxed"></div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Raw Eligibility Clause</label>
+                        <div id="rawEligibility" class="w-full bg-slate-950 border border-slate-700 rounded p-3 text-xs text-slate-400 font-mono h-28 overflow-y-auto"></div>
                     </div>
                 </div>
 
-                <!-- Human-in-the-Loop Audit Logging -->
                 <div class="bg-slate-800 p-5 rounded-xl border border-blue-900/50 mt-8">
-                    <h3 class="text-blue-400 font-bold text-sm uppercase tracking-wider mb-3"><i class="fa-solid fa-user-check mr-2"></i>Human Verification Log</h3>
-                    <label class="block text-xs text-slate-400 mb-2">Provide justification for verification or overriding red flags:</label>
-                    <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 h-24 mb-4" placeholder="E.g., Verified supplier name. Single bidder rule triggered but justified due to specialized equipment..."></textarea>
-                    
+                    <h3 class="text-blue-400 font-bold text-sm uppercase mb-3">Human Verification Log</h3>
+                    <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 h-24 mb-4" placeholder="Enter justification..."></textarea>
                     <div class="flex gap-3">
-                        <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded shadow transition text-sm">Mark as Verified (Clean)</button>
-                        <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded shadow transition text-sm">Confirm Fraud Risk</button>
+                        <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded text-sm">Mark as Clean</button>
+                        <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded text-sm">Confirm Fraud Risk</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         APPLICATION LOGIC & PDF PARSER
-    =========================================== -->
     <script>
-        // Configure PDF.js Worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
         let rawTenderData = [];
         let analyzedData = [];
-        let pdfTextCache = {};
+        let pdfCache = {};
         let auditLogs = JSON.parse(localStorage.getItem('egpAuditLogs')) || {};
         let currentTenderId = null;
+        let currentRecord = null;
 
         $(document).ready(function() {
-            // Attempt to load JSON automatically
+            // Load PDF Cache
+            fetch('./pdf_text_cache.json')
+                .then(res => res.json())
+                .then(cache => { pdfCache = cache; })
+                .catch(err => console.log("Cache file not found, using JSON data only."));
+
+            // Load Main Database
             fetch('./Procurement_Database.json')
-                .then(res => {
-                    if(!res.ok) throw new Error("File not found");
-                    return res.json();
-                })
-                .then(data => processDatabase(data))
+                .then(res => res.json())
+                .then(data => processData(data))
                 .catch(err => {
-                    console.warn("Auto-fetch failed due to local security. Enabling Manual Upload.", err);
-                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> <span class="text-yellow-500">Local Mode</span>`;
+                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> Local Mode`;
                     document.getElementById('uploadBox').classList.remove('hidden');
-                    document.getElementById('progressBox').classList.add('hidden');
                 });
         });
 
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    document.getElementById('uploadBox').classList.add('hidden');
-                    document.getElementById('progressBox').classList.remove('hidden');
-                    processDatabase(data);
-                } catch (err) {
-                    alert("Error: Invalid JSON document.");
-                }
-            };
+            reader.onload = e => processData(JSON.parse(e.target.result));
             reader.readAsText(file);
         }
 
-        async function processDatabase(data) {
+        function processData(data) {
             rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
-            if(rawTenderData.length === 0) {
-                alert("JSON file contains no tender records.");
-                return;
-            }
-
-            document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-400">Database Connected</span>`;
-            
-            // Scan PDFs connected to the Tender records
-            await scanConnectedPDFs();
+            document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Connected`;
             initDashboard();
         }
 
-        // Live Client-Side PDF Scanner Engine using PDF.js
-        async function scanConnectedPDFs() {
-            let total = rawTenderData.length;
-            let current = 0;
-
-            for (let t of rawTenderData) {
-                const tid = t.Tender_Proposal_ID;
-                if(!tid) continue;
-
-                // Determine filenames and folders
-                const noticeFile = `CDA_Tender_${tid}.pdf`;
-                const awardFile = `Tender_${tid}.pdf`;
-
-                // Scan Notice PDF
-                const noticePath = `./Tender Notice_PDFs/${noticeFile}`;
-                const noticeText = await extractPdfText(noticePath);
-                if (noticeText) {
-                    pdfTextCache[noticeFile] = noticeText;
-                }
-
-                // Scan Award PDF
-                const awardPath = `./Contract_Awards_PDFs/${awardFile}`;
-                const awardText = await extractPdfText(awardPath);
-                if (awardText) {
-                    pdfTextCache[awardFile] = awardText;
-                }
-
-                current++;
-                let pct = Math.floor((current / total) * 100);
-                document.getElementById('progressBar').style.width = pct + "%";
-                document.getElementById('progressPct').innerText = pct + "%";
-                document.getElementById('progressText').innerText = `Scanning PDF Folders... Auditing Tender ID ${tid} (${current}/${total})`;
-            }
-
-            document.getElementById('progressBox').classList.add('hidden');
-        }
-
-        // PDF Text Extraction Function
-        async function extractPdfText(url) {
-            try {
-                const pdf = await pdfjsLib.getDocument(url).promise;
-                let fullText = "";
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const tokens = await page.getTextContent();
-                    fullText += tokens.items.map(item => item.str).join(" ") + "\n";
-                }
-                return fullText;
-            } catch (e) {
-                // PDF file doesn't exist at that exact path
-                return null;
-            }
-        }
-
-        // Forensic Rules Engine
         function runForensicEngine() {
             analyzedData = rawTenderData.map(t => {
                 let flags = [];
                 let score = 0;
-
-                // Combine text from JSON and any extracted PDF text
                 let elig = (t.Eligibility_of_Tenderer || "").toLowerCase();
-                const noticeText = pdfTextCache[`CDA_Tender_${t.Tender_Proposal_ID}.pdf`] || "";
-                const awardText = pdfTextCache[`Tender_${t.Tender_Proposal_ID}.pdf`] || "";
-                
-                let combinedText = (elig + " " + noticeText + " " + awardText).toLowerCase();
 
-                // Check 1: Single Responsive Bidder (Stifles Competition)
                 let received = parseInt(t.Tenders_Received) || 0;
                 let sold = parseInt(t.Tenders_Sold) || 0;
                 let responsive = parseInt(t.Responsive_Tenders) || 0;
@@ -359,40 +246,20 @@
                     flags.push("Single Responsive Bidder (Competition Stifled)");
                     score += 40;
                 }
-                
-                // Check 2: Beneficial Owner Omission
                 if ((t.Red_Flag_Reason || "").includes("Beneficial Owner Missing")) {
                     flags.push("Missing Beneficial Ownership Data");
                     score += 20;
                 }
-
-                // Check 3: Arbitrary 10% Price Cap
-                if (/10%\s*(above|below)|more than\s*10%/.test(combinedText)) {
+                if (/10%\s*(above|below)|more than\s*10%/.test(elig)) {
                     flags.push("Unlawful 10% Price Deviation Disqualification");
                     score += 20;
                 }
-
-                // Check 4: Ban on Local Manufacturers
-                if (/local manufacturer\s*will not be accepted/.test(combinedText)) {
+                if (/local manufacturer\s*will not be accepted/.test(elig)) {
                     flags.push("Exclusion of Local Manufacturers (Violates ITT 5.1)");
                     score += 30;
                 }
-
-                // Check 5: Geographic Restrictions
-                if (/chattogram city corporation area|office.*in chattogram|working center.*chattogram/.test(combinedText)) {
+                if (/chattogram city corporation area|office.*in chattogram/.test(elig)) {
                     flags.push("Restrictive Geographic / Local Office Clause");
-                    score += 15;
-                }
-
-                // Check 6: Unlawful JV Ban
-                if (/joint venture.*not.*permitted|jv.*not.*allowed/.test(combinedText)) {
-                    flags.push("Unlawful Prohibition of Joint Ventures");
-                    score += 15;
-                }
-
-                // Check 7: Restrictive Origin
-                if (/japan\/europe\/uk\/north america/.test(combinedText)) {
-                    flags.push("Restrictive Country of Origin Criteria");
                     score += 15;
                 }
 
@@ -401,24 +268,16 @@
             });
         }
 
-        // Render Dashboard Metrics & Table
         function initDashboard() {
             runForensicEngine();
-
-            let high = 0, med = 0, totalVal = 0;
-            let violCounts = {};
-
+            let high = 0, med = 0, totalVal = 0, violCounts = {};
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
             analyzedData.forEach(t => {
                 if(t.riskLevel === 'HIGH') high++;
                 if(t.riskLevel === 'MEDIUM') med++;
-                if(t.Contract_Value_BDT) {
-                    let val = parseFloat(t.Contract_Value_BDT);
-                    if(!isNaN(val)) totalVal += val;
-                }
-                
+                if(t.Contract_Value_BDT) totalVal += parseFloat(t.Contract_Value_BDT) || 0;
                 t.generatedFlags.forEach(f => violCounts[f] = (violCounts[f] || 0) + 1);
 
                 let badge = `<span class="px-2 py-1 rounded text-xs font-bold ${
@@ -440,8 +299,8 @@
                     <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID || 'N/A'}</td>
                     <td class="p-3">${badge}</td>
                     <td class="p-3 font-bold text-slate-200">${t.riskScore}</td>
-                    <td class="p-3 text-xs text-slate-200">${t.Supplier_Name || '<span class="text-slate-500 italic">N/A</span>'}</td>
-                    <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US', {minimumFractionDigits: 2}) : '0'}</td>
+                    <td class="p-3 text-xs text-slate-200">${t.Supplier_Name || 'N/A'}</td>
+                    <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US') : '0'}</td>
                     <td class="p-3">${flagHtml}</td>
                     <td class="p-3">${statusBadge}</td>
                 `;
@@ -452,13 +311,10 @@
             document.getElementById('kpiHigh').innerText = high;
             document.getElementById('kpiMed').innerText = med;
             document.getElementById('kpiValue').innerText = (totalVal / 10000000).toFixed(2) + " Cr";
-            
-            if ($.fn.DataTable.isDataTable('#mainTable')) {
-                $('#mainTable').DataTable().destroy();
-            }
+
+            if ($.fn.DataTable.isDataTable('#mainTable')) $('#mainTable').DataTable().destroy();
             $('#mainTable').DataTable({ pageLength: 10, order: [[2, 'desc']] });
 
-            // Charts
             new Chart(document.getElementById('riskChart'), {
                 type: 'doughnut',
                 data: { labels: ['High Risk', 'Medium Risk', 'Low Risk'], datasets: [{ data: [high, med, analyzedData.length - high - med], backgroundColor: ['#ef4444', '#eab308', '#10b981'], borderWidth: 0 }] },
@@ -473,51 +329,50 @@
             });
         }
 
-        // Open Inspector Window
         function openInspector(tid) {
             currentTenderId = tid;
-            const t = analyzedData.find(x => x.Tender_Proposal_ID == tid);
-            if(!t) return;
+            currentRecord = analyzedData.find(x => x.Tender_Proposal_ID == tid);
+            if(!currentRecord) return;
 
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('inspectorView').classList.remove('hide');
 
-            document.getElementById('inspTenderId').innerText = t.Tender_Proposal_ID;
+            document.getElementById('inspTenderId').innerText = currentRecord.Tender_Proposal_ID;
             const badge = document.getElementById('inspRiskBadge');
-            badge.innerText = `RISK: ${t.riskLevel} (${t.riskScore})`;
-            badge.className = `px-2.5 py-1 rounded text-xs font-bold ${t.riskLevel === 'HIGH' ? 'bg-red-900 text-red-300' : t.riskLevel === 'MEDIUM' ? 'bg-yellow-900 text-yellow-300' : 'bg-emerald-900 text-emerald-300'}`;
+            badge.innerText = `RISK: ${currentRecord.riskLevel} (${currentRecord.riskScore})`;
+            badge.className = `px-2.5 py-1 rounded text-xs font-bold ${currentRecord.riskLevel === 'HIGH' ? 'bg-red-900 text-red-300' : currentRecord.riskLevel === 'MEDIUM' ? 'bg-yellow-900 text-yellow-300' : 'bg-emerald-900 text-emerald-300'}`;
 
-            // PDF Loading Logic
-            const sourceFile = t.Source_File || `Tender_${tid}.pdf`;
-            document.getElementById('pdfFileName').innerText = sourceFile;
-            
-            let pdfFolder = sourceFile.startsWith("CDA_") ? "Tender Notice_PDFs" : "Contract_Awards_PDFs";
-            document.getElementById('pdfIframe').src = `./${pdfFolder}/${sourceFile}`;
-
-            // Display Extracted PDF Text if available in cache
-            const cachedText = pdfTextCache[sourceFile] || pdfTextCache[`CDA_Tender_${tid}.pdf`] || pdfTextCache[`Tender_${tid}.pdf`];
-            if (cachedText) {
-                document.getElementById('rawPdfText').innerText = cachedText;
-                document.getElementById('pdfScanStatus').innerText = "Text Live-Extracted from PDF File";
-            } else {
-                document.getElementById('rawPdfText').innerText = "No text extracted directly from this PDF file (File may not exist at target path).";
-                document.getElementById('pdfScanStatus').innerText = "PDF Not Found locally";
-            }
-
-            document.getElementById('editPE').value = t.Procuring_Entity_Name || "";
-            document.getElementById('editValue').value = t.Contract_Value_BDT || "";
-            document.getElementById('editSupplier').value = t.Supplier_Name || "";
-            document.getElementById('rawEligibility').innerText = t.Eligibility_of_Tenderer || "No text available.";
+            document.getElementById('editPE').value = currentRecord.Procuring_Entity_Name || "";
+            document.getElementById('editValue').value = currentRecord.Contract_Value_BDT || "";
+            document.getElementById('editSupplier').value = currentRecord.Supplier_Name || "";
+            document.getElementById('rawEligibility').innerText = currentRecord.Eligibility_of_Tenderer || "No text available.";
 
             const flagUl = document.getElementById('inspFlagsList');
-            flagUl.innerHTML = t.generatedFlags.length > 0 
-                ? t.generatedFlags.map(f => `<li>${f}</li>`).join('') 
+            flagUl.innerHTML = currentRecord.generatedFlags.length > 0 
+                ? currentRecord.generatedFlags.map(f => `<li>${f}</li>`).join('') 
                 : '<li class="text-emerald-400">No strict rule violations detected.</li>';
 
-            if(auditLogs[tid]) {
-                document.getElementById('auditJustification').value = auditLogs[tid].justification;
+            switchPdfView('notice');
+        }
+
+        function switchPdfView(type) {
+            if(!currentRecord) return;
+            const tid = currentRecord.Tender_Proposal_ID;
+            const noticeFile = `CDA_Tender_${tid}.pdf`;
+            const awardFile = `Tender_${tid}.pdf`;
+
+            let targetPath = type === 'notice' ? `./Tender Notice_PDFs/${noticeFile}` : `./Contract_Awards_PDFs/${awardFile}`;
+            let targetFile = type === 'notice' ? noticeFile : awardFile;
+
+            document.getElementById('pdfIframe').src = targetPath;
+
+            // Retrieve from pre-extracted cache
+            if (pdfCache[targetFile]) {
+                document.getElementById('rawPdfText').innerText = pdfCache[targetFile];
+                document.getElementById('pdfScanStatus').innerText = "Loaded from OCR Cache";
             } else {
-                document.getElementById('auditJustification').value = "";
+                document.getElementById('rawPdfText').innerText = `No text found in cache for ${targetFile}.\nMake sure you ran the Python ocr_preprocessor.py script!`;
+                document.getElementById('pdfScanStatus').innerText = "Cache Miss";
             }
         }
 
@@ -528,11 +383,10 @@
             initDashboard(); 
         }
 
-        // Human Audit Logging
         function saveAuditLog(statusLabel) {
             const justification = document.getElementById('auditJustification').value;
             if(!justification.trim()) {
-                alert("Please provide a justification for this verification.");
+                alert("Please provide a justification.");
                 return;
             }
 
@@ -546,15 +400,11 @@
             };
 
             localStorage.setItem('egpAuditLogs', JSON.stringify(auditLogs));
-            alert("Record saved to Local Audit Log!");
+            alert("Record saved!");
             closeInspector();
         }
 
         function exportAuditLogs() {
-            if(Object.keys(auditLogs).length === 0) {
-                alert("No audit logs to export yet!");
-                return;
-            }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs, null, 2));
             const a = document.createElement('a');
             a.setAttribute("href", dataStr);
