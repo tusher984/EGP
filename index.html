@@ -219,7 +219,6 @@
             <div class="inspector-layout">
                 <!-- LEFT SIDE: PDF VIEWER (UPDATED FOR LIVE SERVER COMPATIBILITY) -->
                 <div class="pdf-viewer-container" id="pdfContainer">
-                    
                     <!-- Fallback Top Bar -->
                     <div id="pdfHeader" style="width: 100%; background: #1e293b; padding: 8px; text-align: right; display: none; box-sizing: border-box;">
                         <a id="pdfPopOut" href="#" target="_blank" style="color: #38bdf8; font-size: 13px; text-decoration: none; font-weight: bold; padding: 4px 8px; border: 1px solid #38bdf8; border-radius: 4px;">↗️ Open PDF in New Tab</a>
@@ -399,16 +398,24 @@
 
         window.onload = () => { initializeData(); };
 
-        // 1. NORMALIZE DATA (Handles both Old and New JSON structures)
+        // 1. NORMALIZE DATA (Handles robust Rule extraction)
         function normalizeLoadedData(payload) {
             const records = Array.isArray(payload) ? payload : (payload.Merged_Database || payload.data || []);
 
             return records.map((item, index) => {
                 const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
                 
+                // Robust rule extraction to catch all formats
                 const rules = [];
-                if (Array.isArray(item.rules)) item.rules.forEach(r => rules.push(String(r)));
-                else if (item.Rule_Reference) rules.push(String(item.Rule_Reference));
+                if (Array.isArray(item.rules)) {
+                    item.rules.forEach(r => rules.push(String(r)));
+                } else if (typeof item.rules === 'string') {
+                    rules.push(item.rules);
+                } else if (item.Rule_Reference) {
+                    rules.push(String(item.Rule_Reference));
+                } else if (item.Violated_Rules) {
+                    rules.push(String(item.Violated_Rules));
+                }
 
                 return {
                     ...item,
@@ -483,11 +490,31 @@
             }
         }
 
-        // 3. UI RENDERING
+        // 3. UI RENDERING (WITH LIVE RULE COUNTERS)
         function updateDashboard() {
             document.getElementById('totalContracts').innerText = currentFilteredData.length;
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
+            
+            // Count Violated Rules and update Top Matrix dynamically
+            const ruleCounts = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
+            
+            currentFilteredData.forEach(item => {
+                if (item.rules && Array.isArray(item.rules)) {
+                    item.rules.forEach(r => {
+                        let key = String(r).toLowerCase().trim();
+                        if (ruleCounts[key] !== undefined) {
+                            ruleCounts[key]++;
+                        }
+                    });
+                }
+            });
+
+            for (let key in ruleCounts) {
+                let countElement = document.getElementById(`count-${key}`);
+                if (countElement) countElement.innerText = ruleCounts[key];
+            }
+
             renderTable();
         }
 
@@ -532,7 +559,7 @@
 
         function changePage(direction) { currentPage += direction; renderTable(); }
 
-        // 4. THE SPLIT-SCREEN VERIFICATION MODAL (UPDATED FOR LIVE SERVER PDF)
+        // 4. THE SPLIT-SCREEN VERIFICATION MODAL
         function openInspectorModal(id) {
             currentTenderIdInModal = id;
             let item = globalData.find(t => t.id == id);
@@ -554,7 +581,7 @@
             document.getElementById('riskMeterFill').style.width = riskScore;
             document.getElementById('riskScoreText').innerText = riskScore;
 
-            // HANDLE PDF RENDERING FOR LIVE WEBSERVERS
+            // HANDLE PDF RENDERING
             const pdfFrame = document.getElementById('pdfFrame');
             const noPdfMsg = document.getElementById('noPdfMessage');
             const pdfHeader = document.getElementById('pdfHeader');
@@ -562,7 +589,7 @@
             const pdfFallbackLink = document.getElementById('pdfFallbackLink');
 
             if (item.Evidence_PDF_Path) {
-                // encodeURI handles spaces in folder names like "Tender Notice_PDFs"
+                // encodeURI handles spaces in folder paths
                 let encodedUrl = encodeURI(item.Evidence_PDF_Path);
                 
                 pdfFrame.data = encodedUrl;
