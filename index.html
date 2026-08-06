@@ -107,7 +107,6 @@
         
         .edit-input { width: 100%; background: #080c14; border: 1px solid #334155; color: #10b981; padding: 6px 8px; border-radius: 4px; font-family: monospace; font-size: 14px; font-weight: bold; outline: none; transition: 0.2s; box-sizing: border-box; }
         .edit-input:focus { border-color: var(--neon-blue); background: #1e293b; box-shadow: 0 0 5px rgba(56,189,248,0.3); }
-        .edit-textarea { width: 100%; height: 60px; background: #080c14; border: 1px solid #334155; color: #10b981; padding: 8px; border-radius: 4px; font-family: inherit; font-size: 13px; resize: vertical; outline: none; box-sizing: border-box; }
         
         .btn-use-pdf { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-left: 5px; font-weight:bold; transition: 0.2s;}
         .btn-use-pdf:hover { background: #10b981; color: #fff; }
@@ -115,9 +114,6 @@
         .docket-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 20px; }
         .docket-meta { font-family: monospace; font-size: 11px; color: var(--text-muted); line-height: 1.5; }
         #networkGraph { width: 100%; height: 70vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
-        .investigation-box { background: rgba(220, 38, 38, 0.05); border-left: 4px solid var(--netra-red); padding: 10px 15px; margin-bottom: 15px; font-size: 13.5px; border-radius: 0 4px 4px 0; }
-        .inv-item { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed rgba(255,255,255,0.1);}
-        .inv-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0;}
     </style>
 </head>
 <body>
@@ -156,23 +152,11 @@
             <div class="card alert-card"><h2 id="totalValue">৳০</h2><p>উচ্চ-ঝুঁকিপূর্ণ চুক্তিমূল্য</p></div>
         </div>
 
-        <div class="chart-grid">
-            <div class="chart-box"><h3>দুর্নীতির ধরন (Macro-analysis)</h3><div class="chart-container"><canvas id="violationChart"></canvas></div></div>
-            <div class="chart-box"><h3>টেন্ডার ড্রপ-আউট (Bid-Rigging)</h3><div class="chart-container"><canvas id="dropoutChart"></canvas></div></div>
-            <div class="chart-box"><h3>সিন্ডিকেট লিডারবোর্ড</h3><div class="chart-container"><canvas id="syndicateChart"></canvas></div></div>
-            <div class="chart-box"><h3>ম্যানিপুলেশন টাইমলাইন</h3><div class="chart-container"><canvas id="timelineChart"></canvas></div></div>
-            <div class="chart-box"><h3>টেন্ডার সংখ্যার ভিত্তিতে ঝুঁকি</h3><div class="chart-container"><canvas id="riskPieChart"></canvas></div></div>
-            <div class="chart-box"><h3>শীর্ষ ঝুঁকিপূর্ণ সংস্থা (Agencies)</h3><div class="chart-container"><canvas id="agencyChart"></canvas></div></div>
-            <div class="chart-box"><h3>অনিয়মের প্রধান হাতিয়ার</h3><div class="chart-container"><canvas id="redFlagChart"></canvas></div></div>
-            <div class="chart-box"><h3>একক দরদাতার আধিপত্য (Monopoly)</h3><div class="chart-container"><canvas id="singleBidderChart"></canvas></div></div>
-            <div class="chart-box"><h3>টাকার অঙ্কে ঝুঁকির অনুপাত</h3><div class="chart-container"><canvas id="riskValuePieChart"></canvas></div></div>
-        </div>
-
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
             <div class="active-filter-banner" id="filterBanner" style="display:none; margin-bottom:15px; padding:10px; background:rgba(56, 189, 248, 0.1); border-left:4px solid var(--neon-blue); border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
                 <span id="bannerText" style="color: var(--neon-blue); font-weight: bold;"></span>
-                <button class="btn-clear" onclick="resetRuleFilter()">ফিল্টার সরান (Show All)</button>
+                <button class="btn-clear" onclick="resetDashboard()">ফিল্টার সরান (Show All)</button>
             </div>
             
             <div class="tools-bar">
@@ -183,6 +167,7 @@
                     <option value="MEDIUM">মাঝারি ঝুঁকি (MEDIUM)</option>
                     <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
                 </select>
+                <button class="btn-merge" onclick="saveDirectlyToGitHub()">☁️ Direct Save to GitHub</button>
                 <button class="btn-download" onclick="downloadCSV()">CSV এক্সপোর্ট</button>
                 <button class="btn-json" onclick="downloadUpdatedJSON()" title="Download corrected DB for main website">📥 Export Updated JSON</button>
             </div>
@@ -198,7 +183,7 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr><td colspan="7" style="text-align: center; padding: 30px;">
-                            <span style="color:#38bdf8; font-size:16px;">⏳ Initializing Local Data Engine...</span>
+                            <span style="color:#38bdf8; font-size:16px;">⏳ Fetching Online Database from GitHub...</span>
                         </td></tr>
                     </tbody>
                 </table>
@@ -231,7 +216,6 @@
             <span class="close-btn" onclick="closeModal('networkModal')">&times;</span>
             <h2 class="modal-title" style="margin-bottom: 15px;">🕸️ Syndicate Nexus Map (Agency vs Suppliers)</h2>
             <div id="networkGraph"></div>
-            <p style="text-align:center; font-size: 12px; color: var(--text-muted); margin-top: 10px;">* Red = Supplier/Contractor, Yellow = Procuring Entity. Thicker lines indicate higher contract volumes.</p>
         </div>
     </div>
 
@@ -245,8 +229,6 @@
                     <h2 style="margin:0 0 5px 0; color:var(--neon-blue); font-family:-apple-system, sans-serif; font-weight:800; font-size: 22px;">🔍 Data Labelling & Correction Tool</h2>
                     <div class="docket-meta">
                         Tender ID: <strong id="footprintID" style="color:var(--text-light); font-size:13px;"></strong><br>
-                        Generated: <span id="timestampData"></span><br>
-                        System Hash: <span id="hashData" style="color:#10b981; font-family: monospace;"></span>
                     </div>
                 </div>
             </div>
@@ -257,102 +239,410 @@
                     <div class="risk-gauge"><div class="risk-fill" id="riskMeterFill" style="width: 0%;"></div></div>
                     <div style="font-size: 20px; font-weight: 800; color: var(--neon-blue); font-family: -apple-system, sans-serif;" id="riskScoreText">0%</div>
                 </div>
-                <div style="flex:1; border-left: 1px solid var(--border-dark); padding-left: 15px; text-align: left;">
-                    <div style="font-weight: 700; color: var(--text-light); margin-bottom: 5px;">PDF Hidden Metadata Tracker</div>
-                    <div id="pdfMetaBox" style="font-size: 13px; color: var(--text-muted);">Waiting for PDF Scan...</div>
-                </div>
             </div>
-
-            <div id="investigationBox" class="investigation-box" style="display:none;"></div>
 
             <!-- ACTION BUTTONS: Documents & Merge -->
             <div class="action-buttons" style="margin-bottom: 15px; display: flex; gap: 10px; align-items:center; flex-wrap: wrap;">
-                <div id="pdfActionButtons" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
-                <div id="mergeActionContainer" style="margin-left:auto;"></div>
+                <div id="mergeActionContainer" style="margin-left:auto;">
+                    <button class="btn-merge" onclick="confirmVerification()">✅ Verify & Update Database</button>
+                </div>
             </div>
 
             <!-- 3-WAY VERIFICATION TABLE -->
             <div id="verificationTableContainer">
-                <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 16px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Official DB vs All PDFs Verification</h4>
-                <p style="font-size:12px; color:var(--text-muted); margin-top: -5px; margin-bottom: 15px;">* Pick extracted data from any PDF to auto-fill the input, or edit manually. Then click 'Verify & Update Database'.</p>
+                <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 16px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Official DB vs Verification</h4>
+                <p style="font-size:12px; color:var(--text-muted); margin-top: -5px; margin-bottom: 15px;">* Edit the final verified inputs manually. Then click 'Verify & Update Database'.</p>
                 
                 <table class="verify-table" id="verifyTable">
                     <thead>
                         <tr>
                             <th style="width: 15%;">Data Field</th>
                             <th style="width: 25%;">Database (Claim)</th>
-                            <th style="width: 35%;">Extracted Options from All PDFs</th>
+                            <th style="width: 35%;">Notes</th>
                             <th style="width: 25%;">Final Verified Input</th>
                         </tr>
                     </thead>
                     <tbody id="verifyTableBody">
-                        <!-- Populated Dynamically -->
+                        <tr>
+                            <td>Contractor</td>
+                            <td id="dbContractor"></td>
+                            <td><span style="color:var(--text-muted)">Manual entry allowed</span></td>
+                            <td><input type="text" id="editContractor" class="edit-input"></td>
+                        </tr>
+                        <tr>
+                            <td>Value (৳)</td>
+                            <td id="dbValue"></td>
+                            <td><span style="color:var(--text-muted)">Numbers only</span></td>
+                            <td><input type="text" id="editValue" class="edit-input"></td>
+                        </tr>
+                        <tr>
+                            <td>Risk Level</td>
+                            <td id="dbRisk"></td>
+                            <td><span style="color:var(--text-muted)">HIGH / MEDIUM / LOW</span></td>
+                            <td>
+                                <select id="editRisk" class="edit-input">
+                                    <option value="HIGH">HIGH</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                    <option value="LOW">LOW</option>
+                                </select>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- NATIVE PDF VIEWER WITH HIGHLIGHT SUPPORT -->
-            <div id="pdfViewerContainer" style="display: none; margin-top: 20px; border: 2px solid var(--neon-blue); border-radius: 5px; overflow: hidden; background: #222;">
-                <div style="background: #111; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333;">
-                    <div>
-                        <span style="color:var(--neon-blue); font-weight:bold; font-size:14px; margin-right: 15px;">📄 Original Document Viewer</span>
-                        <a id="pdfFallbackLink" target="_blank" style="color:#10b981; font-size:13px; font-weight:bold; text-decoration:none; border: 1px solid #10b981; padding: 3px 8px; border-radius: 3px;">Full Screen / New Tab ↗</a>
-                    </div>
-                    <button class="btn-clear" onclick="document.getElementById('pdfViewerContainer').style.display='none'" style="padding: 4px 10px; font-size: 13px; border-color:var(--netra-red); color:var(--netra-red);">PDF বন্ধ করুন ✖</button>
-                </div>
-                <iframe id="pdfIframe" style="width: 100%; height: 600px; border: none; background: #fff;"></iframe>
             </div>
         </div>
     </div>
 
     <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        // ==========================================
+        // GITHUB CONFIGURATION
+        // ==========================================
+        const githubUsername = "tusher984";
+        const githubRepo = "EGP";
+        const githubFile = "Procurement_Database.json";
+        const apiUrl = `https://api.github.com/repos/${githubUsername}/${githubRepo}/contents/${githubFile}`;
 
-        const defaultJsonFileName = 'Procurement_Database.json';
+        // সেশন চলাকালীন টোকেনটি একবার সেভ করে রাখার ভেরিয়েবল
+        let savedGithubToken = null; 
+
         let globalData = [];
         let currentFilteredData = [];
         let activeRuleKey = null; 
         let currentTenderIdInModal = null;
-
-        let violationChartObj = null, syndicateChartObj = null, dropoutChartObj = null;
-        let timelineChartObj = null, riskPieChartObj = null, agencyChartObj = null;
-        let redFlagChartObj = null, singleBidderChartObj = null, riskValuePieChartObj = null;
-
-        Chart.defaults.color = '#94a3b8'; 
-        Chart.defaults.borderColor = '#1e3a5f';
-        Chart.defaults.font.family = "'Li Ador', 'Hind Siliguri', sans-serif";
-
+        let searchDebounceTimer = null;
         let currentPage = 1;
         const rowsPerPage = 50;
-        let searchDebounceTimer = null;
-
-        // SMART E-GP REGEX PARSERS
-        const eGPLabels = {
-            'fin_id': [/(?:tender\/proposal id|tender id)\s*:\s*([0-9]+)/],
-            'fin_pub': [/date of advertisement\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/, /publication date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
-            'fin_close': [/closing\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
-            'fin_mstart': [/meeting start\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
-            'fin_mend': [/meeting end\s*date and time\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4}(?:\s*[0-9]{1,2}:[0-9]{2})?)/],
-            'fin_noa': [/date of notification of award\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4})/],
-            'fin_sign': [/date of contract signing\s*:\s*([0-9]{1,2}-[a-z]{3}-[0-9]{4})/],
-            'fin_doc_price': [/document price\s*\(in\s*bdt\)\s*:\s*([0-9\,]+)/]
-        };
-
-        const RULE_TITLES = {
-            owner: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure", split: "PPA 2006 Section 17 – Artificial Contract Splitting",
-            cpv: "EU CPV Regulation / e-GP Metadata Manipulation", tailored: "PPR 2008 Rule 98 – Restrictive Qualification Criteria",
-            monopoly: "e-PG3 ITT 50.6 – Lack of Effective Competition", outlier: "World Bank ALB Guideline – Abnormally Low/High Bids",
-            meeting: "PPR Schedule 2 – Pre-Tender Meeting Manipulation", rigging: "Competition Act 2012 / Bid Rigging Guidelines"
-        };
 
         const RULE_DETAILS = {
             owner: { title: "e-PG3 ITT 5.14 – Beneficial Ownership Disclosure", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক। স্বার্থের সংঘাত ঠেকাতে এই রুল তৈরি হয়েছে।", penalty: "টেন্ডার বাতিল ও কালোতালিকাভুক্তি।" },
             split: { title: "PPA 2006 Section 17 – Artificial Contract Splitting", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।", penalty: "বিভাগীয় ব্যবস্থা এবং টেন্ডার বাতিল।" },
             cpv: { title: "EU CPV Regulation / e-GP Metadata Manipulation", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।", penalty: "টেন্ডার প্রক্রিয়া বাতিল।" },
             tailored: { title: "PPR 2008 Rule 98 – Restrictive Qualification Criteria", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।", penalty: "পুনঃদরপত্র আহ্বান।" },
-            monopoly: { title: "e-PG3 ITT 50.6 – Lack of Effective Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।", penalty: "টেন্ডার বাতিল।" }
+            monopoly: { title: "e-PG3 ITT 50.6 – Lack of Effective Competition", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।", penalty: "টেন্ডার বাতিল।" },
+            outlier: { title: "Abnormally Low Bids", enacted: "World Bank", purpose: "অস্বাভাবিক কম বা বেশি দর দেওয়া।", penalty: "ব্যাখ্যা তলব।" },
+            meeting: { title: "Pre-Tender Meeting Manipulation", enacted: "PPR Schedule 2", purpose: "মিটিংয়ের সময় কারসাজি করা।", penalty: "তদন্ত।" },
+            rigging: { title: "Bid Rigging Guidelines", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।", penalty: "কালোতালিকাভুক্তি।" }
         };
+
+        window.onload = () => {
+            initializeData();
+        };
+
+        // ==========================================
+        // 1. DATA INITIALIZATION (FETCH FROM GITHUB API)
+        // ==========================================
+        async function initializeData() {
+            const savedData = localStorage.getItem('eGP_Tracker_Data');
+            
+            if (savedData) {
+                globalData = JSON.parse(savedData);
+                currentFilteredData = [...globalData];
+                updateDashboard(); 
+            } else {
+                try {
+                    const response = await fetch(apiUrl + "?t=" + new Date().getTime());
+                    
+                    if(response.ok) {
+                        const fileData = await response.json();
+                        // Base64 Decode with utf-8 support
+                        const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+                        globalData = JSON.parse(jsonString);
+                        
+                        currentFilteredData = [...globalData];
+                        saveToLocalStorage();
+                        updateDashboard();
+                    } else if(response.status === 404) {
+                        globalData = [];
+                        currentFilteredData = [];
+                        updateDashboard();
+                    } else {
+                        throw new Error("API Fetch Failed");
+                    }
+                } catch (error) {
+                    console.error("Data Fetch Error:", error);
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color:var(--netra-red); padding:30px;"><b>GitHub থেকে ফাইল রিড করতে সমস্যা হয়েছে!</b></td></tr>';
+                }
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('eGP_Tracker_Data', JSON.stringify(globalData));
+        }
+
+        // ==========================================
+        // 2. GITHUB DIRECT SAVE (VIA TOKEN PROMPT)
+        // ==========================================
+        async function saveDirectlyToGitHub() {
+            if (!savedGithubToken) {
+                savedGithubToken = prompt("গিটহাবে সরাসরি সেভ করতে আপনার GitHub Access Token (PAT) দিন:\n(সেশন চলাকালীন টোকেনটি সেভ থাকবে)");
+                if (!savedGithubToken) return false;
+            }
+
+            try {
+                alert("গিটহাবে সেভ হচ্ছে... অপেক্ষা করুন।");
+                
+                const getResponse = await fetch(apiUrl, { headers: { 'Authorization': `Bearer ${savedGithubToken}` }});
+                let fileSha = null;
+                
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    fileSha = fileData.sha;
+                }
+
+                const updatedJsonString = JSON.stringify(globalData, null, 4);
+                const base64Content = btoa(unescape(encodeURIComponent(updatedJsonString))); 
+
+                const payload = {
+                    message: "Auto-updated Database via EGP Web Tool", 
+                    content: base64Content
+                };
+                if(fileSha) payload.sha = fileSha;
+
+                const updateResponse = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${savedGithubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (updateResponse.ok) {
+                    alert("✅ ডেটা সফলভাবে সরাসরি গিটহাবে সেভ হয়েছে!");
+                    return true;
+                } else {
+                    const errorData = await updateResponse.json();
+                    throw new Error(errorData.message);
+                }
+            } catch (error) {
+                console.error("GitHub Error:", error);
+                alert("❌ সেভ করতে সমস্যা হয়েছে: " + error.message);
+                savedGithubToken = null; // টোকেন ভুল হলে বা এরর হলে রিসেট করে দেবে
+                return false;
+            }
+        }
+
+        // ==========================================
+        // 3. UI RENDERING & PAGINATION
+        // ==========================================
+        function updateDashboard() {
+            document.getElementById('totalContracts').innerText = currentFilteredData.length;
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if(currentFilteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding:20px;">কোনো ডেটা পাওয়া যায়নি</td></tr>';
+                document.getElementById('paginationControls').style.display = 'none';
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const pageData = currentFilteredData.slice(startIndex, endIndex);
+
+            pageData.forEach(item => {
+                let riskClass = item.risk === 'HIGH' ? 'risk-high' : (item.risk === 'MEDIUM' ? 'risk-medium' : 'risk-low');
+                let valStr = item.value ? parseInt(item.value).toLocaleString('en-IN') : '0';
+                
+                let ruleBadges = '';
+                if(item.rules && Array.isArray(item.rules)) {
+                    item.rules.forEach(r => {
+                        ruleBadges += `<span class="meta-tag clickable-rule" onclick="openRuleModal('${r}')">${r}</span> `;
+                    });
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.id || 'N/A'}</strong></td>
+                    <td>${item.entity || 'N/A'}</td>
+                    <td style="color:#38bdf8; font-weight:500;">${item.contractor || 'N/A'}</td>
+                    <td><span class="risk-badge ${riskClass}">${item.risk || 'N/A'}</span></td>
+                    <td style="text-align: right; font-family: monospace;">৳ ${valStr}</td>
+                    <td><button class="btn-verify" onclick="openInspectorModal('${item.id}')">🔍 Verify / Edit</button></td>
+                    <td>${ruleBadges || '<span style="color:var(--text-muted)">-</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updatePaginationControls();
+        }
+
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
+            document.getElementById('paginationControls').style.display = totalPages > 1 ? 'flex' : 'none';
+            document.getElementById('currentPageLabel').innerText = currentPage;
+            document.getElementById('totalPagesLabel').innerText = totalPages;
+            document.getElementById('totalRowsLabel').innerText = currentFilteredData.length;
+            
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderTable();
+        }
+
+        // ==========================================
+        // 4. MODALS & VERIFICATION
+        // ==========================================
+        function openInspectorModal(id) {
+            currentTenderIdInModal = id;
+            let item = globalData.find(t => t.id == id);
+            
+            if(item) {
+                document.getElementById('footprintID').innerText = item.id;
+                document.getElementById('dbContractor').innerText = item.contractor || "N/A";
+                document.getElementById('dbValue').innerText = item.value || "N/A";
+                document.getElementById('dbRisk').innerText = item.risk || "N/A";
+                
+                document.getElementById('editContractor').value = item.contractor || "";
+                document.getElementById('editValue').value = item.value || "";
+                document.getElementById('editRisk').value = item.risk || "LOW";
+                
+                let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
+                document.getElementById('riskMeterFill').style.width = riskScore;
+                document.getElementById('riskScoreText').innerText = riskScore;
+
+                document.getElementById('inspectorModal').style.display = 'flex';
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        async function confirmVerification() {
+            if (!currentTenderIdInModal) return;
+            
+            let itemIndex = globalData.findIndex(t => t.id == currentTenderIdInModal);
+            if(itemIndex !== -1) {
+                globalData[itemIndex].contractor = document.getElementById('editContractor').value;
+                globalData[itemIndex].value = document.getElementById('editValue').value.replace(/,/g, ''); 
+                globalData[itemIndex].risk = document.getElementById('editRisk').value;
+                
+                saveToLocalStorage(); 
+                
+                // কল করছি ডাইরেক্ট সেভ ফাংশনকে
+                const isSuccess = await saveDirectlyToGitHub();
+                if(isSuccess) {
+                    closeModal('inspectorModal');
+                    updateDashboard();
+                }
+            }
+        }
+
+        function openRuleModal(ruleKey) {
+            const rule = RULE_DETAILS[ruleKey];
+            if(rule) {
+                document.getElementById('modalTitle').innerText = rule.title;
+                document.getElementById('modalEnacted').innerText = "আইন: " + rule.enacted;
+                document.getElementById('modalDesc').innerText = rule.purpose;
+                document.getElementById('modalPenalty').innerText = rule.penalty;
+                document.getElementById('ruleModal').style.display = 'flex';
+            }
+        }
+
+        function openNetworkMap() {
+            document.getElementById('networkModal').style.display = 'flex';
+        }
+
+        // ==========================================
+        // 5. SEARCH & FILTERS
+        // ==========================================
+        function resetDashboard() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('riskFilter').value = 'ALL';
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            currentFilteredData = [...globalData];
+            currentPage = 1;
+            updateDashboard();
+            document.getElementById('filterBanner').style.display = 'none';
+        }
+
+        function filterByRule(ruleId, element) {
+            const isActive = element.classList.contains('active-rule');
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            
+            if (!isActive) {
+                element.classList.add('active-rule');
+                currentFilteredData = globalData.filter(item => item.rules && item.rules.includes(ruleId));
+                document.getElementById('filterBanner').style.display = 'flex';
+                document.getElementById('bannerText').innerText = "ফিল্টার করা হচ্ছে: " + RULE_DETAILS[ruleId].title;
+            } else {
+                resetDashboard();
+            }
+            currentPage = 1;
+            updateDashboard();
+        }
+
+        function debouncedFilter() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(triggerFilter, 300);
+        }
+
+        function triggerFilter() {
+            let searchText = document.getElementById('searchInput').value.toLowerCase();
+            let riskFilter = document.getElementById('riskFilter').value;
+
+            currentFilteredData = globalData.filter(item => {
+                let matchSearch = (item.contractor && item.contractor.toLowerCase().includes(searchText)) || 
+                                  (item.id && String(item.id).includes(searchText)) ||
+                                  (item.entity && item.entity.toLowerCase().includes(searchText));
+                let matchRisk = riskFilter === 'ALL' || item.risk === riskFilter;
+                
+                return matchSearch && matchRisk;
+            });
+            currentPage = 1;
+            updateDashboard();
+        }
+
+        function loadCustomJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    globalData = JSON.parse(e.target.result);
+                    currentFilteredData = [...globalData];
+                    saveToLocalStorage();
+                    currentPage = 1;
+                    updateDashboard();
+                    alert("✅ Custom JSON File Loaded Successfully!");
+                } catch (err) {
+                    alert("❌ Invalid JSON Format!");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        }
+
+        function downloadCSV() {
+            let csv = 'ID,Entity,Contractor,Risk,Value\n';
+            currentFilteredData.forEach(i => {
+                csv += `"${i.id}","${i.entity || ''}","${i.contractor || ''}","${i.risk || ''}","${i.value || ''}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Procurement_Data.csv';
+            link.click();
+        }
+
+        function downloadUpdatedJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 4));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "Updated_Procurement_Database.json");
+            document.body.appendChild(dl);
+            dl.click();
+            dl.remove();
+        }
     </script>
 </body>
 </html>
