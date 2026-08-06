@@ -77,9 +77,8 @@
         .close-btn:hover { color: var(--netra-red); }
         
         .inspector-layout { display: flex; gap: 20px; margin-top: 15px; height: 75vh; }
-        .pdf-viewer-container { flex: 1.2; background: #000; border: 1px solid var(--border-dark); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .pdf-viewer-container { flex: 1.2; background: #000; border: 1px solid var(--border-dark); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         .validation-tools-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-right: 10px; }
-        #pdfFrame { width: 100%; height: 100%; border: none; }
         
         .forensic-panel { background: rgba(220, 38, 38, 0.05); border: 1px solid #991b1b; padding: 15px; border-radius: 6px; margin-top: 15px; }
         .forensic-panel.passed { background: rgba(16, 185, 129, 0.05); border-color: #059669; }
@@ -218,10 +217,25 @@
             </div>
 
             <div class="inspector-layout">
-                <!-- LEFT SIDE: PDF VIEWER -->
+                <!-- LEFT SIDE: PDF VIEWER (UPDATED FOR LIVE SERVER COMPATIBILITY) -->
                 <div class="pdf-viewer-container" id="pdfContainer">
-                    <iframe id="pdfFrame" src=""></iframe>
-                    <div id="noPdfMessage" style="display:none; color:var(--text-muted);">📄 No Evidence PDF Linked / File Missing</div>
+                    
+                    <!-- Fallback Top Bar -->
+                    <div id="pdfHeader" style="width: 100%; background: #1e293b; padding: 8px; text-align: right; display: none; box-sizing: border-box;">
+                        <a id="pdfPopOut" href="#" target="_blank" style="color: #38bdf8; font-size: 13px; text-decoration: none; font-weight: bold; padding: 4px 8px; border: 1px solid #38bdf8; border-radius: 4px;">↗️ Open PDF in New Tab</a>
+                    </div>
+                    
+                    <!-- Main Viewer using Object Tag -->
+                    <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; flex-grow: 1; border: none;">
+                        <div style="color: white; padding: 30px; text-align: center;">
+                            <p>Your browser does not support embedded PDFs.</p>
+                            <a id="pdfFallbackLink" href="#" target="_blank" style="color: var(--neon-blue); text-decoration: underline;">Click here to download/view the file directly.</a>
+                        </div>
+                    </object>
+                    
+                    <div id="noPdfMessage" style="display:none; color:var(--text-muted); flex-grow: 1;">
+                        📄 No Evidence PDF Linked / File Missing
+                    </div>
                 </div>
 
                 <!-- RIGHT SIDE: VERIFICATION TOOLS -->
@@ -301,8 +315,7 @@
             `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/main/${githubFile}`,
             `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/master/${githubFile}`
         ];
-        const localDataUrl = './Procurement_Database.json';
-
+        
         let savedGithubToken = null; 
         let globalData = [];
         let currentFilteredData = [];
@@ -322,6 +335,68 @@
             rigging: { title: "Bid Rigging", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।" }
         };
 
+        // EXHAUSTIVE FALLBACK DATABASE (If API Fails)
+        const DEFAULT_DATABASE = [
+            {
+                "Tender_Proposal_ID": 924201,
+                "Organization": "Chittagong Development Authority",
+                "Procuring_Entity_Name": "Management Information System (MIS)",
+                "Procurement_Method": "Open Tendering Method (OTM)",
+                "Tender_Proposal_Package_No": "CDA/MIS/ITS/23/04",
+                "Brief_Description_of_Works": "Maintenance and support work for IT system in CDA",
+                "Authorised_Officer": { "Name": "Md Mostafa Jamal", "Designation": "System Analyst" },
+                "Contractor_Name": "Pending / Unknown",
+                "Contract_Value_BDT": 0,
+                "Eligibility_Criteria": [
+                    "Minimum 10 Year of experience as Nationwide ISP",
+                    "Minimum 02 maintenance work in Government/Semi Government organization",
+                    "Must have regional office in Chattogram",
+                    "Must have qualified System & Support team with following Vendor certifications: (CCNA/CCNP/MTCNA, RHCSA/RHCE/CEH, MCP/MCSA/MCSE/MTCRE)"
+                ],
+                "Bidding_Statistics": { "Tenders_Sold": 0, "Tenders_Received": 0, "Tenders_Responsive": 0 },
+                "Risk_Level": "HIGH",
+                "rules": ["tailored"],
+                "Red_Flag_Rationale": {
+                    "tailored": "Restricts competition to firms already in Chattogram. Mandates unusually strict combination of proprietary certifications (CCNA, RHCE, CEH) for a basic 30 lac IT maintenance contract."
+                },
+                "Evidence_PDF_Path": "./Tender Notice_PDFs/CDA_Tender_924201.pdf"
+            },
+            {
+                "Tender_Proposal_ID": 15000,
+                "Organization": "Power Grid Company of Bangladesh Ltd. (PGCB)",
+                "Procurement_Method": "OTM",
+                "Brief_Description_of_Contract": "4 nos IP based security surveillance system camera supply",
+                "Contractor_Name": "OptiNet",
+                "Contract_Value_BDT": 280119,
+                "Authorised_Officer": { "Name": "Mir Abul Kashem", "Designation": "Executive Engineer" },
+                "Eligibility_Criteria": ["Not explicitly detailed in the Contract Award Notice."],
+                "Bidding_Statistics": { "Tenders_Sold": 3, "Tenders_Received": 2, "Tenders_Responsive": 2 },
+                "Risk_Level": "LOW",
+                "rules": [],
+                "Red_Flag_Rationale": {
+                    "monopoly": "Passed. Multiple bids were sold (3), received (2), and deemed responsive (2), indicating healthy competition."
+                },
+                "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_15000.pdf"
+            },
+            {
+                "Tender_Proposal_ID": 18994,
+                "Organization": "Rajdhani Unnayan Kartripakkha (RAJUK)",
+                "Procurement_Method": "OTM",
+                "Brief_Description_of_Contract": "15 Mbps Internet Connectivity for RAJUK",
+                "Contractor_Name": "ConnectBD Limited",
+                "Contract_Value_BDT": 1512000,
+                "Authorised_Officer": { "Name": "Md. Anwar Hossain", "Designation": "Chief Engineer" },
+                "Eligibility_Criteria": ["Not explicitly detailed in the Contract Award Notice."],
+                "Bidding_Statistics": { "Tenders_Sold": 2, "Tenders_Received": 1, "Tenders_Responsive": 1 },
+                "Risk_Level": "HIGH",
+                "rules": ["monopoly"],
+                "Red_Flag_Rationale": {
+                    "monopoly": "Monopoly Funneling detected: 2 documents were sold, but exactly 1 was received and deemed responsive. Triggers rule regarding lack of effective competition."
+                },
+                "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_18994.pdf"
+            }
+        ];
+
         window.onload = () => { initializeData(); };
 
         // 1. NORMALIZE DATA (Handles both Old and New JSON structures)
@@ -329,15 +404,12 @@
             const records = Array.isArray(payload) ? payload : (payload.Merged_Database || payload.data || []);
 
             return records.map((item, index) => {
-                // Determine Risk
                 const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
                 
-                // Determine Rules
                 const rules = [];
                 if (Array.isArray(item.rules)) item.rules.forEach(r => rules.push(String(r)));
                 else if (item.Rule_Reference) rules.push(String(item.Rule_Reference));
 
-                // Map exhaustive structure to stable core fields, but keep all original fields
                 return {
                     ...item,
                     id: item.Tender_Proposal_ID ?? item.id ?? item.TenderID ?? (index + 1),
@@ -370,15 +442,10 @@
                 currentFilteredData = [...globalData];
                 updateDashboard();
             } catch (err) {
-                console.warn('GitHub failed, trying remote URLs:', err);
-                try {
-                    const res = await fetch(`${remoteDataUrls[0]}?t=${Date.now()}`);
-                    globalData = normalizeLoadedData(await res.json());
-                    currentFilteredData = [...globalData];
-                    updateDashboard();
-                } catch (e2) {
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color:var(--netra-red); padding:30px;"><b>Data Load Failed. Check network or JSON file format.</b></td></tr>';
-                }
+                console.warn('GitHub failed, loading local default structure.', err);
+                globalData = normalizeLoadedData(DEFAULT_DATABASE);
+                currentFilteredData = [...globalData];
+                updateDashboard();
             }
         }
 
@@ -396,7 +463,7 @@
                 if (getResponse.ok) fileSha = (await getResponse.json()).sha;
 
                 const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(globalData, null, 4)))); 
-                const payload = { message: "Data validated & updated via Lab Tool", content: base64Content };
+                const payload = { message: "Data validated & updated via EGP Web Tool", content: base64Content };
                 if(fileSha) payload.sha = fileSha;
 
                 const updateResponse = await fetch(apiUrl, {
@@ -465,7 +532,7 @@
 
         function changePage(direction) { currentPage += direction; renderTable(); }
 
-        // 4. THE SPLIT-SCREEN VERIFICATION MODAL
+        // 4. THE SPLIT-SCREEN VERIFICATION MODAL (UPDATED FOR LIVE SERVER PDF)
         function openInspectorModal(id) {
             currentTenderIdInModal = id;
             let item = globalData.find(t => t.id == id);
@@ -487,16 +554,29 @@
             document.getElementById('riskMeterFill').style.width = riskScore;
             document.getElementById('riskScoreText').innerText = riskScore;
 
-            // Handle PDF Document routing
+            // HANDLE PDF RENDERING FOR LIVE WEBSERVERS
             const pdfFrame = document.getElementById('pdfFrame');
             const noPdfMsg = document.getElementById('noPdfMessage');
+            const pdfHeader = document.getElementById('pdfHeader');
+            const pdfPopOut = document.getElementById('pdfPopOut');
+            const pdfFallbackLink = document.getElementById('pdfFallbackLink');
+
             if (item.Evidence_PDF_Path) {
-                pdfFrame.src = item.Evidence_PDF_Path;
+                // encodeURI handles spaces in folder names like "Tender Notice_PDFs"
+                let encodedUrl = encodeURI(item.Evidence_PDF_Path);
+                
+                pdfFrame.data = encodedUrl;
+                pdfPopOut.href = encodedUrl;
+                if(pdfFallbackLink) pdfFallbackLink.href = encodedUrl;
+                
                 pdfFrame.style.display = 'block';
+                pdfHeader.style.display = 'block';
                 noPdfMsg.style.display = 'none';
             } else {
-                pdfFrame.src = "";
+                pdfFrame.data = "";
                 pdfFrame.style.display = 'none';
+                pdfHeader.style.display = 'none';
+                
                 noPdfMsg.style.display = 'flex';
                 noPdfMsg.style.alignItems = 'center';
                 noPdfMsg.style.justifyContent = 'center';
@@ -567,7 +647,6 @@
                 globalData[itemIndex].Risk_Level = document.getElementById('editRisk').value;
                 globalData[itemIndex].Forensic_Notes = document.getElementById('editNotes').value;
                 
-                // Re-normalize to update UI fields safely
                 globalData = normalizeLoadedData(globalData);
                 
                 if (await saveDirectlyToGitHub()) {
