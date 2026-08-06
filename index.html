@@ -575,7 +575,38 @@
         function changePage(direction) { currentPage += direction; renderTable(); }
 
         // 4. THE SPLIT-SCREEN VERIFICATION MODAL
-        function openInspectorModal(id) {
+        function buildEvidenceCandidates(pdfPath) {
+            if (!pdfPath) return [];
+            const cleanPath = String(pdfPath).trim();
+            if (!cleanPath) return [];
+
+            if (/^https?:\/\//i.test(cleanPath) || cleanPath.startsWith('data:') || cleanPath.startsWith('/') || cleanPath.startsWith('./') || cleanPath.startsWith('../')) {
+                return [cleanPath];
+            }
+
+            return [
+                `./${cleanPath}`,
+                `./Tender Notice_PDFs/${cleanPath}`,
+                `./Contract_Awards_PDFs/${cleanPath}`,
+                `./Tender%20Notice_PDFs/${cleanPath}`,
+                `./Contract_Awards_PDFs/${cleanPath}`
+            ].filter((value, index, values) => values.indexOf(value) === index);
+        }
+
+        async function resolveEvidenceUrl(pdfPath) {
+            const candidates = buildEvidenceCandidates(pdfPath);
+            for (const candidate of candidates) {
+                try {
+                    const response = await fetch(candidate, { method: 'HEAD' });
+                    if (response.ok) return candidate;
+                } catch (error) {
+                    console.warn('PDF probe failed for', candidate, error);
+                }
+            }
+            return candidates[0] || '';
+        }
+
+        async function openInspectorModal(id) {
             currentTenderIdInModal = id;
             let item = globalData.find(t => t.id == id);
             if(!item) return;
@@ -604,18 +635,20 @@
             const pdfFallbackLink = document.getElementById('pdfFallbackLink');
 
             if (item.Evidence_PDF_Path) {
-                // encodeURI handles spaces in folder paths
-                let encodedUrl = encodeURI(item.Evidence_PDF_Path);
+                const resolvedUrl = await resolveEvidenceUrl(item.Evidence_PDF_Path);
+                const viewUrl = resolvedUrl ? encodeURI(resolvedUrl) : '';
                 
-                pdfFrame.data = encodedUrl;
-                pdfPopOut.href = encodedUrl;
-                if(pdfFallbackLink) pdfFallbackLink.href = encodedUrl;
+                pdfFrame.data = viewUrl;
+                pdfFrame.setAttribute('data', viewUrl);
+                pdfPopOut.href = viewUrl;
+                if(pdfFallbackLink) pdfFallbackLink.href = viewUrl;
                 
                 pdfFrame.style.display = 'block';
                 pdfHeader.style.display = 'block';
                 noPdfMsg.style.display = 'none';
             } else {
                 pdfFrame.data = "";
+                pdfFrame.setAttribute('data', '');
                 pdfFrame.style.display = 'none';
                 pdfHeader.style.display = 'none';
                 
