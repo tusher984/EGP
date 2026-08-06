@@ -3,675 +3,505 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>e-GP Syndicate Tracker | Massive Data Lab</title>
-    
+    <title>e-GP Procurement Syndicate Tracker & Forensic Workspace</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    
     <style>
-        /* Base Variables & Typography */
-        :root { 
-            --dark-bg: #080c14; --dark-card: #111827; --netra-red: #ef4444; 
-            --neon-blue: #38bdf8; --text-light: #f8fafc; --text-muted: #94a3b8; 
-            --border-dark: #1e293b; --success: #10b981; --warning: #f59e0b;
+        :root {
+            --dark-bg: #080c14;
+            --dark-card: #111827;
+            --netra-red: #ef4444;
+            --neon-blue: #38bdf8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-dark: #1e293b;
         }
-        
-        body { font-family: 'Hind Siliguri', -apple-system, sans-serif; background-color: var(--dark-bg); color: var(--text-light); margin: 0; padding: 0; line-height: 1.6; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; position: relative; }
-        
-        /* Layout & Components */
-        header { background-color: var(--dark-card); padding: 30px 20px; margin-bottom: 25px; text-align: center; border-bottom: 4px solid var(--netra-red); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);}
-        header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;}
-        header p { margin: 8px 0 15px 0; font-size: 16px; color: var(--text-muted); font-weight: 500;}
-        
-        .header-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        button, .btn-label { font-family: inherit; font-size: 14px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; transition: 0.2s; padding: 8px 20px; display: inline-block;}
-        
-        .btn-home { background-color: #059669; color: white; }
-        .btn-home:hover { background: #047857; transform: translateY(-1px); }
-        .btn-nexus { background-color: #7e22ce; color: white; box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);}
-        .btn-nexus:hover { background-color: #6b21a8; transform: translateY(-2px);}
-        .btn-action { background-color: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
-        .btn-action:hover { background-color: #059669; transform: translateY(-2px); }
-        .btn-clear { background: transparent; border: 1px solid var(--netra-red); color: var(--netra-red); }
-        .btn-clear:hover { background: rgba(239, 68, 68, 0.1); }
-        .btn-outline { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 4px 10px; }
-        .btn-outline:hover { background: var(--neon-blue); color: #fff; }
 
-        /* Grid Sections */
-        .evidence-section, .ledger-section, .chart-box { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 8px; margin-bottom: 25px; }
-        .evidence-section { border-left: 5px solid var(--netra-red); }
-        .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
-        .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
-        .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
-        .evidence-item.active-rule { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.1); }
-        .evidence-item strong { display: flex; justify-content: space-between; align-items: center; color: #fff; border-bottom: 1px dashed var(--border-dark); padding-bottom: 5px; margin-bottom: 6px;}
-        .rule-count { background-color: var(--netra-red); color: white; font-size: 12px; padding: 2px 8px; border-radius: 12px;}
-
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .card { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 20px; border-radius: 6px; text-align: center; }
-        .card h2 { margin: 0 0 5px 0; font-size: 28px; color: var(--neon-blue); } 
-        .card.alert-card h2 { color: var(--netra-red); }
-
-        /* Table & Tools */
-        .tools-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); align-items: center;}
-        .tools-bar input, .tools-bar select { padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 14px; flex: 1; min-width: 150px; background: var(--dark-bg); color: white; outline: none;}
-        .tools-bar input:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
-
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: radial-gradient(circle at top, rgba(56,189,248,0.08), transparent 35%), linear-gradient(180deg, #080c14 0%, #05070f 100%); color: var(--text-light); font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .container { max-width: 1260px; margin: 0 auto; padding: 20px; }
+        header { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 26px; margin-bottom: 24px; box-shadow: 0 18px 60px rgba(0,0,0,0.22); }
+        header h1 { margin: 0 0 8px; font-size: 2rem; letter-spacing: 0.08em; text-transform: uppercase; }
+        header p { margin: 0 0 18px; color: var(--text-muted); font-size: 0.96rem; }
+        .header-buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+        .btn, .btn-outline, .btn-clear { font-family: inherit; border: none; border-radius: 8px; cursor: pointer; transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease; }
+        .btn { padding: 12px 18px; background: var(--neon-blue); color: #050816; font-weight: 700; }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-danger { background: var(--netra-red); color: white; }
+        .btn-success { background: var(--success); color: #050816; }
+        .btn-outline { padding: 10px 16px; background: rgba(56,189,248,0.08); color: var(--neon-blue); border: 1px solid rgba(56,189,248,0.28); }
+        .btn-clear { padding: 10px 16px; background: transparent; color: var(--netra-red); border: 1px solid rgba(239,68,68,0.5); }
+        .btn-outline:hover, .btn-clear:hover { background: rgba(56,189,248,0.16); }
+        .flex-row { display: flex; gap: 16px; flex-wrap: wrap; }
+        .card-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .metric-card, .section-card, .rule-card, .report-card { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; }
+        .metric-card h2 { margin: 0 0 6px; font-size: 2rem; color: var(--neon-blue); }
+        .metric-card p { margin: 0; color: var(--text-muted); }
+        .metric-card.alert h2 { color: var(--netra-red); }
+        .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .rule-card { cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease; }
+        .rule-card:hover, .rule-card.active { transform: translateY(-2px); border-color: var(--neon-blue); background: rgba(56,189,248,0.08); }
+        .rule-card h3 { margin: 0 0 8px; font-size: 1rem; }
+        .rule-card p { margin: 0; color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
+        .table-panel { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 20px; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+        .toolbar input, .toolbar select { background: #0b1220; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 14px; color: var(--text-light); min-width: 210px; flex: 1; }
+        .toolbar input::placeholder { color: var(--text-muted); }
         .table-responsive { overflow-x: auto; }
-        table.main-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        table.main-table th, table.main-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-dark); vertical-align: top; }
-        table.main-table th { color: var(--neon-blue); font-weight: 700; text-transform: uppercase; background: rgba(255,255,255,0.02);}
-        table.main-table tr:hover { background-color: rgba(255,255,255,0.01); }
-
-        .risk-badge { font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 3px; color: white; text-transform: uppercase;}
-        .risk-HIGH { background-color: var(--netra-red); }
-        .risk-MEDIUM { background-color: var(--warning); }
-        .risk-LOW { background-color: var(--success); }
-
-        /* Modals & Visuals */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 600px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto;}
-        .modal-wide { max-width: 1200px; }
-        .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; cursor: pointer; }
-        .close-btn:hover { color: var(--netra-red); }
-
-        #networkGraph { width: 100%; height: 75vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
-
-        .pdf-viewer-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-        .pdf-link-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-        .pdf-viewer { width: 100%; min-height: 60vh; background: #0b1220; padding: 12px; border: 1px solid var(--border-dark); border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: auto; }
-        .pdf-viewer canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
-        .pdf-action-btn { white-space: nowrap; }
-        .btn-action.pdf-open { background: #2563eb; }
-        .btn-action.pdf-open:hover { background: #1d4ed8; }
-        .pdf-status { color: var(--text-muted); font-size: 13px; margin-top: 12px; }
-        
-        .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--neon-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+        th, td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; vertical-align: middle; }
+        th { color: var(--neon-blue); text-transform: uppercase; letter-spacing: 0.07em; font-size: 0.8rem; }
+        tr:hover { background: rgba(56,189,248,0.06); }
+        .risk-badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .risk-HIGH { background: rgba(239,68,68,0.15); color: #ffe7e7; }
+        .risk-MEDIUM { background: rgba(245,158,11,0.16); color: #fff4d6; }
+        .risk-LOW { background: rgba(16,185,129,0.16); color: #e6f9ef; }
+        .modal { display: none; position: fixed; z-index: 1200; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 18px; }
+        .modal.open { display: flex; }
+        .modal-content { width: min(1180px, 100%); max-height: 94vh; overflow-y: auto; background: rgba(17,24,39,0.98); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; position: relative; }
+        .modal-wide { max-width: 1320px; }
+        .modal-header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 18px; }
+        .modal-header h2 { margin: 0; font-size: 1.4rem; }
+        .close-btn { border: none; background: transparent; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+        .modal-grid { display: grid; grid-template-columns: minmax(300px, 1.2fr) 0.8fr; gap: 22px; }
+        .panel { background: #0b1220; border: 1px solid rgba(255,255,255,0.06); border-radius: 18px; padding: 18px; }
+        .pdf-split { display: flex; flex-direction: column; gap: 16px; }
+        .pdf-toolbar, .form-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+        .pdf-viewer { width: 100%; min-height: 60vh; background: #050814; padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); display: grid; place-items: center; }
+        .pdf-viewer canvas { width: 100%; height: auto; border-radius: 14px; }
+        .pdf-status { color: var(--text-muted); font-size: 0.92rem; }
+        .input-group { display: grid; gap: 8px; margin-bottom: 14px; }
+        .input-group label { font-size: 0.88rem; color: var(--text-muted); }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: #0b1220; color: var(--text-light); padding: 12px 14px; font: inherit; }
+        .input-group textarea { min-height: 140px; resize: vertical; }
+        .status-line { display: flex; align-items: center; gap: 10px; color: var(--text-muted); margin-top: 8px; font-size: 0.9rem; }
+        .network-content { min-height: 70vh; background: #050814; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; overflow: hidden; }
+        #networkGraph { width: 100%; height: 70vh; }
+        .report-body { display: grid; gap: 18px; }
+        .report-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+        .report-header h3 { margin: 0; }
+        .report-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: rgba(255,255,255,0.02); border-radius: 16px; padding: 16px; }
+        .report-row strong { color: var(--neon-blue); }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .report-table th { color: var(--neon-blue); text-transform: uppercase; font-size: 0.78rem; }
+        @media (max-width: 980px) {
+            .modal-grid { grid-template-columns: 1fr; }
+            .report-row { grid-template-columns: 1fr; }
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .report-printable, .report-printable * { visibility: visible; }
+            .report-printable { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; background: white; color: black; }
+            .btn, .btn-outline, .toolbar, .header-buttons, .modal, .close-btn { display: none !important; }
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- Header -->
         <header>
-            <h1>e-GP Syndicate Tracker: Data Lab</h1>
-            <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
+            <h1>e-GP Procurement Syndicate Tracker</h1>
+            <p>Forensic investigative workspace for contract due diligence, PDF evidence review, and GitHub-backed audit persistence.</p>
             <div class="header-buttons">
-                <button class="btn-home" onclick="App.resetFilters()">🏠 হোম / রিসেট</button>
-                <button class="btn-nexus" onclick="App.openNetworkMap()">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
+                <button class="btn" onclick="App.resetFilters()">🏠 রিসেট</button>
+                <button class="btn" onclick="App.openNetworkMap()">🕸 সিন্ডিকেট ম্যাপ</button>
+                <button class="btn btn-success" onclick="App.createNewRecord()">➕ Add Record</button>
+                <button class="btn btn-outline" onclick="App.openReportModal()">📝 Generate Report</button>
             </div>
         </header>
 
-        <!-- Metrics -->
-        <div class="summary-grid">
-            <div class="card"><h2 id="ui-total-logs">0</h2><p>স্ক্যান করা টেন্ডার</p></div>
-            <div class="card alert-card"><h2 id="ui-total-high">0</h2><p>উচ্চ-ঝুঁকিপূর্ণ কাজ</p></div>
-            <div class="card alert-card"><h2 id="ui-total-medium">0</h2><p>মাঝারি-ঝুঁকিপূর্ণ কাজ</p></div>
-            <div class="card alert-card"><h2 id="ui-total-value">৳০</h2><p>সর্বমোট চুক্তিমূল্য</p></div>
+        <div class="card-row">
+            <div class="metric-card"><h2 id="ui-total-tenders">0</h2><p>মোট টেন্ডার</p></div>
+            <div class="metric-card alert"><h2 id="ui-high-risk">0</h2><p>উচ্চ ঝুঁকি</p></div>
+            <div class="metric-card alert"><h2 id="ui-medium-risk">0</h2><p>মাঝারি ঝুঁকি</p></div>
+            <div class="metric-card"><h2 id="ui-total-value">৳0</h2><p>সর্বমোট চুক্তিমূল্য</p></div>
         </div>
 
-        <!-- Rules Matrix -->
-        <div class="evidence-section">
-            <h3 style="margin-top:0;">e-GP Forensic Audit Rulebook</h3>
-            <div class="evidence-grid" id="ui-rule-matrix">
-                <!-- Populated Dynamically -->
-            </div>
+        <div class="section-card" style="margin-bottom:24px;">
+            <canvas id="riskChart" style="max-height:220px; width:100%;"></canvas>
         </div>
 
-        <!-- Ledger -->
-        <div class="ledger-section">
-            <h3 style="margin-top:0;">এভিডেন্স লেজার (Database)</h3>
-            <div class="tools-bar">
-                <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন...">
+        <section class="rule-grid" id="ruleGrid"></section>
+
+        <div class="table-panel">
+            <div class="toolbar">
+                <input id="searchInput" type="search" placeholder="Search by ID, Contractor, Entity...">
                 <select id="riskFilter">
                     <option value="ALL">সব ঝুঁকি (All Risks)</option>
-                    <option value="HIGH">উচ্চ ঝুঁকি (HIGH)</option>
-                    <option value="MEDIUM">মাঝারি ঝুঁকি (MEDIUM)</option>
-                    <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="LOW">LOW</option>
                 </select>
-                <button class="btn-action" onclick="App.exportCSV()">📥 Export CSV</button>
-                <button class="btn-clear" onclick="App.clearCache()">� Refresh from GitHub</button>
+                <button class="btn-outline" onclick="App.exportCSV()">CSV Export</button>
+                <button class="btn-clear" onclick="App.refreshData()">Refresh GitHub</button>
             </div>
-            
             <div class="table-responsive">
-                <table class="main-table" id="tenderTable">
+                <table>
                     <thead>
                         <tr>
-                            <th style="width: 80px;">ID</th><th>Procuring Entity</th><th>Contractor</th>
-                            <th style="width: 80px;">Risk</th><th style="text-align: right;">Value (৳)</th>
-                            <th style="text-align: center;">Actions</th>
+                            <th style="width:90px">ID</th>
+                            <th>Procuring Entity</th>
+                            <th>Contractor</th>
+                            <th>Risk</th>
+                            <th style="width:120px; text-align:right;">Value (৳)</th>
+                            <th style="width:190px; text-align:center;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody">
-                        <tr><td colspan="6" style="text-align: center; padding: 40px;"><div class="loader"></div> Fetching Database...</td></tr>
+                    <tbody id="ledgerBody">
+                        <tr><td colspan="6" style="text-align:center; padding:40px;"><span class="loader"></span> Loading database...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <!-- Network Map Modal -->
-    <div id="networkModal" class="modal">
+    <div id="verifyModal" class="modal" aria-hidden="true">
         <div class="modal-content modal-wide">
-            <span class="close-btn" onclick="App.closeModal('networkModal')">&times;</span>
-            <h2 style="margin-top:0; color:var(--neon-blue);">🕸️ Syndicate Nexus Map</h2>
-            <div id="networkGraph"></div>
-            <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:10px;">
-                <span style="color:#f59e0b;">■</span> Procuring Entity &nbsp; | &nbsp; <span style="color:#ef4444;">●</span> Contractor &nbsp; | &nbsp; Line thickness = Contract Value
-            </p>
-        </div>
-    </div>
-
-    <!-- Inspector/Editor Modal -->
-    <div id="inspectorModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="App.closeModal('inspectorModal')">&times;</span>
-            <h2 style="color:var(--neon-blue); margin-top:0; border-bottom: 1px solid var(--border-dark); padding-bottom: 10px;">🔍 Verification Tool</h2>
-            <p style="color:var(--text-muted); font-size:13px;">Tender ID: <strong id="edit-id" style="color:white; font-size:15px;"></strong></p>
-            
-            <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+            <div class="modal-header">
                 <div>
-                    <label style="color:var(--text-muted); font-size:13px;">Contractor Name</label>
-                    <input type="text" id="edit-contractor" style="width:100%; padding:10px; background:#080c14; color:#10b981; border:1px solid #1e293b; border-radius:4px; font-weight:bold;">
+                    <h2>🔍 Verification Workspace</h2>
+                    <p style="margin:6px 0 0; color:var(--text-muted);">Review scanned PDF evidence and update JSON record details in real time.</p>
                 </div>
-                <div>
-                    <label style="color:var(--text-muted); font-size:13px;">Procuring Entity</label>
-                    <input type="text" id="edit-entity" style="width:100%; padding:10px; background:#080c14; color:#10b981; border:1px solid #1e293b; border-radius:4px; font-weight:bold;">
-                </div>
-                <div>
-                    <label style="color:var(--text-muted); font-size:13px;">Contract Value (৳)</label>
-                    <input type="text" id="edit-value" style="width:100%; padding:10px; background:#080c14; color:#10b981; border:1px solid #1e293b; border-radius:4px; font-weight:bold;">
-                </div>
-                <div>
-                    <label style="color:var(--text-muted); font-size:13px;">Risk Level</label>
-                    <select id="edit-risk" style="width:100%; padding:10px; background:#080c14; color:#10b981; border:1px solid #1e293b; border-radius:4px; font-weight:bold;">
-                        <option value="HIGH">HIGH (উচ্চ ঝুঁকি)</option>
-                        <option value="MEDIUM">MEDIUM (মাঝারি ঝুঁকি)</option>
-                        <option value="LOW">LOW (নিম্ন ঝুঁকি)</option>
-                    </select>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="App.saveRecord()">💾 Save & Update JSON</button>
+                    <button class="btn btn-outline" onclick="App.closeModal('verifyModal')">Close</button>
                 </div>
             </div>
-            <button id="btn-save" class="btn-action" onclick="App.verifyAndSave()" style="width: 100%; padding: 12px; font-size: 16px;">✅ Verify & Secure Save</button>
-            <p id="save-status" style="font-size:12px; text-align:center; margin-top:10px; color:var(--text-muted);"></p>
+            <div class="modal-grid">
+                <section class="panel pdf-split">
+                    <div class="pdf-toolbar">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                            <button class="btn-outline" onclick="App.changePdfPage(-1)">Prev</button>
+                            <span id="pdfPageDisplay">Page 0 / 0</span>
+                            <button class="btn-outline" onclick="App.changePdfPage(1)">Next</button>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <a id="pdfRemoteLink" class="btn-outline" target="_blank" rel="noreferrer noopener">Open GitHub PDF</a>
+                            <button class="btn btn" onclick="App.openPdfInNewTab()">Open Local PDF</button>
+                        </div>
+                    </div>
+                    <div class="pdf-viewer" id="pdfViewer">
+                        <canvas id="pdfCanvas"></canvas>
+                    </div>
+                    <div class="status-line"><span id="pdfStatus">PDF status will appear here.</span></div>
+                </section>
+
+                <section class="panel">
+                    <div class="input-group"><label>Record ID</label><input id="fieldId" type="text" disabled></div>
+                    <div class="input-group"><label>Source PDF File</label><input id="fieldPdfFile" type="text" disabled></div>
+                    <div class="input-group"><label>Contractor</label><input id="fieldContractor" type="text"></div>
+                    <div class="input-group"><label>Procuring Entity</label><input id="fieldEntity" type="text"></div>
+                    <div class="input-group"><label>Contract Value (BDT)</label><input id="fieldValue" type="number" min="0"></div>
+                    <div class="input-group"><label>Risk Level</label><select id="fieldRisk"><option value="LOW">LOW</option><option value="MEDIUM">MEDIUM</option><option value="HIGH">HIGH</option></select></div>
+                    <div class="input-group"><label>Investigator Notes</label><textarea id="fieldNotes" placeholder="Enter findings, anomalies, flagged evidence..."></textarea></div>
+                    <div class="status-line"><span id="verifyStatus">Draft changes will appear immediately in the ledger.</span></div>
+                </section>
+            </div>
         </div>
     </div>
 
-    <!-- PDF Viewer Modal -->
-    <div id="pdfModal" class="modal">
+    <div id="networkModal" class="modal" aria-hidden="true">
         <div class="modal-content modal-wide">
-            <span class="close-btn" onclick="App.closeModal('pdfModal')">&times;</span>
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+            <div class="modal-header">
                 <div>
-                    <h2 style="margin:0; color:var(--neon-blue);">📄 Tender PDF Viewer</h2>
-                    <p id="pdf-title" style="margin:4px 0 0 0; color:var(--text-muted); font-size:13px;"></p>
+                    <h2>🕸 Syndicate Relationship Network</h2>
+                    <p style="margin:6px 0 0; color:var(--text-muted);">Interactive map connecting entities and contractors with contract value-weighted links.</p>
                 </div>
-                <div class="pdf-link-row">
-                    <a id="pdfOpenRemote" class="btn-outline" target="_blank" rel="noreferrer noopener">Open GitHub PDF</a>
-                    <button class="btn-action pdf-open pdf-action-btn" onclick="App.openPdfInNewTab()">Open Local PDF</button>
-                </div>
+                <button class="btn btn-outline" onclick="App.closeModal('networkModal')">Close</button>
             </div>
-            <div class="pdf-viewer-toolbar">
-                <button class="btn-outline" onclick="App.changePdfPage(-1)">Prev</button>
-                <span id="pdfPageDisplay" style="font-size:14px; color:#fff;">Page 0 / 0</span>
-                <button class="btn-outline" onclick="App.changePdfPage(1)">Next</button>
-            </div>
-            <div class="pdf-viewer" id="pdfViewer">
-                <canvas id="pdfCanvas"></canvas>
-            </div>
-            <p id="pdf-status" class="pdf-status"></p>
+            <div class="network-content"><div id="networkGraph"></div></div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT APPLICATION ARCHITECTURE -->
+    <div id="reportModal" class="modal" aria-hidden="true">
+        <div class="modal-content modal-wide report-printable">
+            <div class="modal-header">
+                <div>
+                    <h2>📋 Investigative Report</h2>
+                    <p style="margin:6px 0 0; color:var(--text-muted);">High-risk contracts and investigator notes ready for review or print export.</p>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="window.print()">Print Report</button>
+                    <button class="btn btn-outline" onclick="App.closeModal('reportModal')">Close</button>
+                </div>
+            </div>
+            <div class="report-body" id="reportContent"></div>
+        </div>
+    </div>
+
     <script>
-        /**
-         * 1. CONSTANTS & CONFIGURATION
-         */
         const CONFIG = {
-            GITHUB_USER: "tusher984",
-            GITHUB_REPO: "EGP",
-            FILE_PATH: "Procurement_Database.json",
-            PDF_FOLDERS: ["Contract_Awards_PDFs", "Tender Notice_PDFs"],
+            GITHUB_USER: 'tusher984',
+            GITHUB_REPO: 'EGP',
+            FILE_PATH: 'Procurement_Database.json',
+            PDF_FOLDERS: ['Contract_Awards_PDFs', 'Tender Notice_PDFs'],
             API_URL: () => `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.FILE_PATH}`,
             LOCAL_PDF_URLS: (file) => CONFIG.PDF_FOLDERS.map(folder => `./${encodeURIComponent(folder)}/${encodeURIComponent(file)}`),
             REMOTE_PDF_URLS: (file) => CONFIG.PDF_FOLDERS.map(folder => `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`)
-        };  
-
-        const RISK = { HIGH: 'HIGH', MEDIUM: 'MEDIUM', LOW: 'LOW' };
+        };
 
         const RULES = [
-            { id: 'owner', title: "১. তথ্য গোপন (ITT 5.14)", desc: "মালিকানার বিবরণ গোপন করা যা বেনামী কোম্পানির লক্ষণ।" },
-            { id: 'split', title: "২. চুক্তি বিভাজন (PPA 2006)", desc: "উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট লটে ভাগ করা।" },
-            { id: 'cpv', title: "৩. CPV কারসাজি", desc: "ভুল কোড দিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।" },
-            { id: 'tailored', title: "৪. বৈষম্যমূলক শর্ত", desc: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে অদ্ভুত শর্ত দেওয়া।" }
+            { id: 'owner', title: 'ITT 5.14 Hidden Ownership', desc: 'Owner details are obscured or anonymised to conceal final beneficiaries.' },
+            { id: 'split', title: 'PPA 2006 Split Contracts', desc: 'Large scope contracts are artificially divided to avoid oversight thresholds.' },
+            { id: 'cpv', title: 'CPV Manipulation', desc: 'CPV classifications are intentionally wrong to hide the true nature of contracts.' },
+            { id: 'tailored', title: 'Tailored Conditions', desc: 'Bid conditions appear to favour a single contractor or supplier.' }
         ];
 
-        /**
-         * 2. STATE MANAGEMENT
-         */
         const State = {
             data: [],
             filtered: [],
             originalJson: null,
-            activeTenderId: null,
-            activeRuleFilter: null,
+            jsonArray: [],
+            activeId: null,
             pdfDoc: null,
             currentPdfPage: 1,
             totalPdfPages: 0,
+            chart: null,
             autoSaveTimer: null,
-            sessionToken: null // Stored in RAM only. Never in LocalStorage.
+            sessionToken: null,
+            activeRule: null
         };
 
-        /**
-         * 3. DOM CACHE
-         */
         const DOM = {
-            tableBody: document.getElementById('tableBody'),
-            search: document.getElementById('searchInput'),
+            ledgerBody: document.getElementById('ledgerBody'),
+            searchInput: document.getElementById('searchInput'),
             riskFilter: document.getElementById('riskFilter'),
-            metrics: {
-                total: document.getElementById('ui-total-logs'),
-                high: document.getElementById('ui-total-high'),
-                medium: document.getElementById('ui-total-medium'),
-                val: document.getElementById('ui-total-value')
-            },
-            modals: {
-                inspector: document.getElementById('inspectorModal'),
-                network: document.getElementById('networkModal')
-            },
-            edit: {
-                id: document.getElementById('edit-id'),
-                contractor: document.getElementById('edit-contractor'),
-                entity: document.getElementById('edit-entity'),
-                val: document.getElementById('edit-value'),
-                risk: document.getElementById('edit-risk'),
-                btn: document.getElementById('btn-save'),
-                status: document.getElementById('save-status')
-            },
-            pdf: document.getElementById('pdfModal'),
-            pdfTitle: document.getElementById('pdf-title'),
-            pdfStatus: document.getElementById('pdf-status'),
-            pdfPageDisplay: document.getElementById('pdfPageDisplay')
-        }; 
+            ruleGrid: document.getElementById('ruleGrid'),
+            totalTenders: document.getElementById('ui-total-tenders'),
+            highRisk: document.getElementById('ui-high-risk'),
+            mediumRisk: document.getElementById('ui-medium-risk'),
+            totalValue: document.getElementById('ui-total-value'),
+            pdfStatus: document.getElementById('pdfStatus'),
+            pdfRemoteLink: document.getElementById('pdfRemoteLink'),
+            pdfPageDisplay: document.getElementById('pdfPageDisplay'),
+            fieldId: document.getElementById('fieldId'),
+            fieldPdfFile: document.getElementById('fieldPdfFile'),
+            fieldContractor: document.getElementById('fieldContractor'),
+            fieldEntity: document.getElementById('fieldEntity'),
+            fieldValue: document.getElementById('fieldValue'),
+            fieldRisk: document.getElementById('fieldRisk'),
+            fieldNotes: document.getElementById('fieldNotes'),
+            verifyStatus: document.getElementById('verifyStatus'),
+            riskChart: document.getElementById('riskChart')
+        };
 
-        /**
-         * 4. CORE APPLICATION LOGIC
-         */
         const App = {
-            getRawRecords(json) {
+            init() {
+                this.bindEvents();
+                this.renderRuleCards();
+                this.initChart();
+                this.fetchData();
+            },
+
+            bindEvents() {
+                let timer;
+                DOM.searchInput.addEventListener('input', () => {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => this.applyFilters(), 280);
+                });
+                DOM.riskFilter.addEventListener('change', () => this.applyFilters());
+                [DOM.fieldContractor, DOM.fieldEntity, DOM.fieldValue, DOM.fieldRisk, DOM.fieldNotes].forEach(field => {
+                    field.addEventListener('input', () => this.applyInspectorChanges());
+                });
+            },
+
+            resetFilters() {
+                DOM.searchInput.value = '';
+                DOM.riskFilter.value = 'ALL';
+                State.activeRule = null;
+                document.querySelectorAll('.rule-card.active').forEach(card => card.classList.remove('active'));
+                this.applyFilters();
+            },
+
+            async fetchData() {
+                try {
+                    const url = `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error(`Unable to fetch database (${res.status})`);
+                    const json = await res.json();
+                    State.originalJson = json;
+                    State.jsonArray = this.extractArray(json);
+                    State.data = State.jsonArray.map(item => this.normalizeRecord(item));
+                    this.applyFilters();
+                } catch (error) {
+                    DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--netra-red);">Database load failed.<br><small style="color:var(--text-muted);">${error.message}</small></td></tr>`;
+                }
+            },
+
+            extractArray(json) {
                 if (Array.isArray(json)) return json;
                 if (json && typeof json === 'object') {
                     if (Array.isArray(json.Merged_Database)) return json.Merged_Database;
-                    return Object.values(json).find(Array.isArray) || [];
+                    const arrayKey = Object.keys(json).find(key => Array.isArray(json[key]));
+                    return arrayKey ? json[arrayKey] : [];
                 }
                 return [];
             },
 
-            normalizeTender(item) {
-                const riskValue = String(item.Risk_Level || item.Risk || item.Red_Flag || 'LOW').trim().toUpperCase();
+            normalizeRecord(item) {
+                const riskRaw = String(item.Risk_Level || item.Risk || item.Red_Flag || 'LOW').trim().toUpperCase();
+                const risk = ['HIGH', 'MEDIUM', 'LOW'].includes(riskRaw) ? riskRaw : (riskRaw === 'YES' ? 'HIGH' : 'LOW');
                 return {
-                    id: item.Tender_Proposal_ID || item.App_ID || item.id || '',
-                    entity: item.Procuring_Entity_Name || item.Organization_Agency || item.Procurement_Entity_District || item.entity || '',
+                    id: item.Tender_Proposal_ID || item.App_ID || item.id || `NEW-${Date.now()}`,
                     contractor: item.Supplier_Name || item.Contractor || item.contractor || '',
+                    entity: item.Procuring_Entity_Name || item.Organization_Agency || item.Procurement_Entity_District || item.entity || '',
                     value: item.Contract_Value_BDT || item.Document_Price_BDT || item.value || 0,
-                    risk: ['HIGH','MEDIUM','LOW'].includes(riskValue) ? riskValue : (riskValue === 'YES' ? 'HIGH' : 'LOW'),
-                    rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(r => r.trim()).filter(Boolean) : [],
+                    risk,
+                    rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(text => text.trim()).filter(Boolean) : [],
                     pdfFile: this.extractPdfFile(item),
+                    notes: item.Investigator_Notes || item.Notes || '',
                     raw: item
                 };
             },
 
             extractPdfFile(item) {
-                const sourceFile = String(item.Source_File || '').trim();
-                if (sourceFile.toLowerCase().endsWith('.pdf')) return sourceFile;
-
-                const merged = String(item.Source_Files_Merged || '');
-                const candidates = merged.split(/[|,;]+/).map(s => s.trim()).filter(Boolean);
+                const candidates = [];
+                if (item.Source_File) candidates.push(String(item.Source_File).trim());
+                if (item.Source_Files_Merged) {
+                    String(item.Source_Files_Merged).split(/[|,;]+/).forEach(fragment => {
+                        const fileName = fragment.trim();
+                        if (fileName) candidates.push(fileName);
+                    });
+                }
                 return candidates.find(name => name.toLowerCase().endsWith('.pdf')) || '';
             },
 
-            applyNormalizedChangesToRaw(target) { 
-                if (!target || !target.raw || typeof target.raw !== 'object') return;
-                target.raw.Supplier_Name = target.contractor;
-                target.raw.Contractor = target.contractor;
-                target.raw.Procuring_Entity_Name = target.entity;
-                target.raw.Organization_Agency = target.entity;
-                target.raw.Contract_Value_BDT = target.value;
-                target.raw.Document_Price_BDT = target.value;
-                target.raw.Risk_Level = target.risk;
-                target.raw.Red_Flag = target.risk === 'HIGH' ? 'YES' : 'NO';
+            renderRuleCards() {
+                DOM.ruleGrid.innerHTML = RULES.map(rule => `
+                    <article class="rule-card" data-rule="${rule.id}" onclick="App.toggleRuleFilter('${rule.id}', this)">
+                        <h3>${rule.title}</h3>
+                        <p>${rule.desc}</p>
+                    </article>
+                `).join('');
             },
 
-            async init() {
-                this.setupEventListeners();
-                this.renderRuleMatrix();
-                await this.fetchData();
-            },
-
-            setupEventListeners() {
-                let timer;
-                DOM.search.addEventListener('keyup', () => {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => this.applyFilters(), 300);
-                });
-                DOM.riskFilter.addEventListener('change', () => this.applyFilters());
-            },
-
-            // ================= NETWORK & FETCH =================
-            async fetchData() {
-                try {
-                    // Fetch fresh online data via GitHub raw file
-                    const res = await fetch(`https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`);
-                    if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
-                    
-                    const json = await res.json();
-                    State.originalJson = json;
-                    const rawData = this.getRawRecords(json);
-                    State.data = rawData.map(item => this.normalizeTender(item));
-                    this.applyFilters();
-                } catch (err) {
-                    console.error("Fetch Error:", err);
-                    DOM.tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align:center; color:var(--netra-red); padding:30px;">
-                                <b>Connection Failed.</b> Please check GitHub repository or refresh the page.<br>
-                                <small style="color:var(--text-muted);">${err.message}</small>
-                            </td>
-                        </tr>`;
-                }
-            },
-
-            async secureGitHubSave() {
-                if (!State.sessionToken) {
-                    State.sessionToken = prompt("Authentication Required:\nEnter GitHub Personal Access Token (PAT) to save directly to the repository.\n(This token will only be held in active memory)");
-                    if (!State.sessionToken) return false;
-                }
-
-                DOM.edit.btn.innerHTML = '<div class="loader"></div> Securing Payload...';
-                DOM.edit.btn.disabled = true;
-
-                try {
-                    // 1. Get current File SHA
-                    const getRes = await fetch(CONFIG.API_URL(), { headers: { 'Authorization': `Bearer ${State.sessionToken}` }});
-                    if(getRes.status === 401) throw new Error("Invalid or Expired Token");
-                    
-                    const fileData = getRes.ok ? await getRes.json() : {};
-                    const sha = fileData.sha || null;
-
-                    // 2. Prepare Payload (Base64 + UTF-8 Support)
-                    const payload = State.originalJson ? State.originalJson : State.data.map(item => item.raw || item);
-                    const jsonString = JSON.stringify(payload, null, 4);
-                    const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-
-                    // 3. Push Commit
-                    const putRes = await fetch(CONFIG.API_URL(), {
-                        method: 'PUT',
-                        headers: { 'Authorization': `Bearer ${State.sessionToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `DB Edit: Verified record via Web Inspector`,
-                            content: base64Content,
-                            sha: sha
-                        })
-                    });
-
-                    if (!putRes.ok) throw new Error("Failed to write to repository.");
-
-                    DOM.edit.status.innerText = "✅ Saved securely to remote database.";
-                    DOM.edit.status.style.color = "var(--success)";
-                    return true;
-                } catch (err) {
-                    console.error(err);
-                    DOM.edit.status.innerText = `❌ Error: ${err.message}`;
-                    DOM.edit.status.style.color = "var(--netra-red)";
-                    State.sessionToken = null; // Purge bad token
-                    return false;
-                } finally {
-                    DOM.edit.btn.innerHTML = '✅ Verify & Secure Save';
-                    DOM.edit.btn.disabled = false;
-                }
-            },
-
-            bindInspectorEvents() {
-                const fields = [DOM.edit.contractor, DOM.edit.entity, DOM.edit.val, DOM.edit.risk];
-                fields.forEach(field => {
-                    field.oninput = () => this.applyInspectorChanges();
+            initChart() {
+                State.chart = new Chart(DOM.riskChart, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                        datasets: [{ data: [0,0,0], backgroundColor: ['#ef4444','#f59e0b','#10b981'], borderWidth: 0 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#f8fafc' }}}}
                 });
             },
 
-            applyInspectorChanges() {
-                const target = State.data.find(t => t.id == State.activeTenderId);
-                if (!target) return;
-
-                target.contractor = DOM.edit.contractor.value.trim();
-                target.entity = DOM.edit.entity.value.trim();
-                target.value = DOM.edit.val.value.replace(/,/g, '');
-                target.risk = DOM.edit.risk.value;
-                this.applyNormalizedChangesToRaw(target);
-                this.renderMetrics();
-                this.renderTable();
-
-                DOM.edit.status.innerText = State.sessionToken
-                    ? '📝 Changes applied; auto-save scheduled.'
-                    : '📝 Changes applied locally. Enter GitHub token and click Save to persist.';
-                DOM.edit.status.style.color = State.sessionToken ? 'var(--neon-blue)' : 'var(--warning)';
-
-                if (State.sessionToken) {
-                    this.scheduleAutoSave();
-                }
-            },
-
-            scheduleAutoSave() {
-                if (State.autoSaveTimer) {
-                    clearTimeout(State.autoSaveTimer);
-                }
-                State.autoSaveTimer = setTimeout(async () => {
-                    DOM.edit.status.innerText = '⏳ Auto-saving changes...';
-                    DOM.edit.status.style.color = 'var(--neon-blue)';
-                    const success = await this.secureGitHubSave();
-                    if (success) {
-                        DOM.edit.status.innerText = '✅ Auto-saved changes to GitHub.';
-                        DOM.edit.status.style.color = 'var(--success)';
-                    }
-                }, 1800);
-            },
-
-            // ================= DATA MUTATION =================
-            async verifyAndSave() {
-                const target = State.data.find(t => t.id == State.activeTenderId);
-                if(!target) return;
-
-                // Update Object
-                target.contractor = DOM.edit.contractor.value.trim();
-                target.entity = DOM.edit.entity.value.trim();
-                target.value = DOM.edit.val.value.replace(/,/g, '');
-                target.risk = DOM.edit.risk.value;
-                this.applyNormalizedChangesToRaw(target);
-
-                // Attempt Remote Save
-                const success = await this.secureGitHubSave();
-                if(success) {
-                    if (State.autoSaveTimer) {
-                        clearTimeout(State.autoSaveTimer);
-                        State.autoSaveTimer = null;
-                    }
-                    setTimeout(() => this.closeModal('inspectorModal'), 1000);
-                    this.applyFilters();
-                }
-            },
-
-            // ================= RENDERING =================
             applyFilters() {
-                const term = DOM.search.value.toLowerCase();
-                const risk = DOM.riskFilter.value;
-                const dataArray = Array.isArray(State.data) ? State.data : [];
-
-                if (!Array.isArray(State.data)) {
-                    console.warn('State.data is not an array:', State.data);
-                }
-
-                State.filtered = dataArray.filter(item => {
-                    const matchTerm = !term || (item.contractor || '').toLowerCase().includes(term) || (item.entity || '').toLowerCase().includes(term) || String(item.id).includes(term);
-                    const matchRisk = risk === 'ALL' || item.risk === risk;
-                    const matchRule = !State.activeRuleFilter || (item.rules && item.rules.includes(State.activeRuleFilter));
-                    
-                    return matchTerm && matchRisk && matchRule;
+                const searchTerm = DOM.searchInput.value.toLowerCase().trim();
+                const riskFilter = DOM.riskFilter.value;
+                State.filtered = State.data.filter(record => {
+                    const matchesSearch = !searchTerm || [record.id, record.contractor, record.entity].some(field => String(field).toLowerCase().includes(searchTerm));
+                    const matchesRisk = riskFilter === 'ALL' || record.risk === riskFilter;
+                    const matchesRule = !State.activeRule || record.rules.includes(State.activeRule);
+                    return matchesSearch && matchesRisk && matchesRule;
                 });
-
+                this.renderLedger();
                 this.renderMetrics();
-                this.renderTable();
+                this.updateChart();
             },
 
             renderMetrics() {
-                let h = 0, m = 0, val = 0;
-                State.filtered.forEach(i => {
-                    if(i.risk === RISK.HIGH) h++;
-                    if(i.risk === RISK.MEDIUM) m++;
-                    if(i.value && !isNaN(i.value)) val += parseInt(i.value);
-                });
-                
-                DOM.metrics.total.innerText = State.filtered.length.toLocaleString('en-IN');
-                DOM.metrics.high.innerText = h.toLocaleString('en-IN');
-                DOM.metrics.medium.innerText = m.toLocaleString('en-IN');
-                DOM.metrics.val.innerText = "৳" + val.toLocaleString('en-IN');
+                const total = State.filtered.length;
+                const high = State.filtered.filter(record => record.risk === 'HIGH').length;
+                const medium = State.filtered.filter(record => record.risk === 'MEDIUM').length;
+                const totalValue = State.filtered.reduce((sum, record) => sum + Number(record.value || 0), 0);
+                DOM.totalTenders.textContent = total.toLocaleString('en-IN');
+                DOM.highRisk.textContent = high.toLocaleString('en-IN');
+                DOM.mediumRisk.textContent = medium.toLocaleString('en-IN');
+                DOM.totalValue.textContent = `৳ ${totalValue.toLocaleString('en-IN')}`;
             },
 
-            renderTable() {
-                if(State.filtered.length === 0) {
-                    DOM.tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No records found matching criteria.</td></tr>';
+            updateChart() {
+                if (!State.chart) return;
+                State.chart.data.datasets[0].data = [
+                    State.filtered.filter(r => r.risk === 'HIGH').length,
+                    State.filtered.filter(r => r.risk === 'MEDIUM').length,
+                    State.filtered.filter(r => r.risk === 'LOW').length
+                ];
+                State.chart.update();
+            },
+
+            renderLedger() {
+                if (!State.filtered.length) {
+                    DOM.ledgerBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No records match the current criteria.</td></tr>`;
                     return;
                 }
-
-                DOM.tableBody.innerHTML = State.filtered.slice(0, 100).map(item => {
-                    const rClass = `risk-${item.risk || 'LOW'}`;
-                    const vStr = item.value ? parseInt(item.value).toLocaleString('en-IN') : '0';
-                    const pdfAction = item.pdfFile
-                        ? `<button class="btn-outline" onclick="App.openPdfViewer('${item.id}')">PDF</button>`
-                        : `<button class="btn-clear" disabled style="padding:4px 10px; opacity:0.6;">No PDF</button>`;
+                DOM.ledgerBody.innerHTML = State.filtered.slice(0, 150).map(record => {
+                    const valueText = Number(record.value || 0).toLocaleString('en-IN');
                     return `
                         <tr>
-                            <td><strong>${item.id || '-'}</strong></td>
-                            <td>${item.entity || '-'}</td>
-                            <td style="color:var(--neon-blue);">${item.contractor || '-'}</td>
-                            <td><span class="risk-badge ${rClass}">${item.risk || 'LOW'}</span></td>
-                            <td style="text-align:right; font-family:monospace;">৳ ${vStr}</td>
-                            <td style="text-align:center;">
-                                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                                    ${pdfAction}
-                                    <button class="btn-outline" onclick="App.openInspector('${item.id}')">Edit</button>
-                                </div>
+                            <td><strong>${record.id}</strong></td>
+                            <td>${record.entity || '-'}</td>
+                            <td>${record.contractor || '-'}</td>
+                            <td><span class="risk-badge risk-${record.risk}">${record.risk}</span></td>
+                            <td style="text-align:right; font-family:monospace;">৳ ${valueText}</td>
+                            <td style="text-align:center; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+                                <button class="btn-outline" onclick="App.openVerifyModal('${record.id}')">View / Verify</button>
+                                <button class="btn-outline" onclick="App.highlightPdf('${record.id}')">PDF</button>
                             </td>
                         </tr>
                     `;
                 }).join('');
             },
 
-            renderRuleMatrix() {
-                const container = document.getElementById('ui-rule-matrix');
-                container.innerHTML = RULES.map(r => `
-                    <div class="evidence-item" onclick="App.toggleRuleFilter('${r.id}', this)">
-                        <strong>${r.title}</strong>
-                        <p>${r.desc}</p>
-                    </div>
-                `).join('');
+            async openVerifyModal(id) {
+                const record = State.data.find(item => item.id == id);
+                if (!record) return alert('Record not found.');
+                State.activeId = record.id;
+                DOM.fieldId.value = record.id;
+                DOM.fieldPdfFile.value = record.pdfFile || 'No PDF attached';
+                DOM.fieldContractor.value = record.contractor;
+                DOM.fieldEntity.value = record.entity;
+                DOM.fieldValue.value = record.value;
+                DOM.fieldRisk.value = record.risk;
+                DOM.fieldNotes.value = record.notes || '';
+                DOM.verifyStatus.textContent = 'Loaded record for verification. Make edits and save when ready.';
+                DOM.verifyStatus.style.color = 'var(--text-muted)';
+                this.setModalOpen('verifyModal');
+                if (record.pdfFile) await this.loadPdfFile(record.pdfFile);
+                else { DOM.pdfStatus.textContent = 'No PDF source configured for this record.'; DOM.pdfPageDisplay.textContent = 'Page 0 / 0'; }
             },
 
-            // ================= VIS.JS NETWORK MAP =================
-            openNetworkMap() {
-                if(State.data.length === 0) return alert("No data available to map.");
-                
-                DOM.modals.network.style.display = 'flex';
-                const container = document.getElementById('networkGraph');
-                
-                const nodes = new vis.DataSet();
-                const edges = new vis.DataSet();
-                const entityMap = {};
-                const contractorMap = {};
-
-                // Process up to 500 records to prevent browser freeze
-                const sample = State.data.slice(0, 500);
-
-                sample.forEach((item, idx) => {
-                    if(!item.entity || !item.contractor) return;
-
-                    // Add Entity Node
-                    if(!entityMap[item.entity]) {
-                        entityMap[item.entity] = { id: `E_${idx}`, label: item.entity, group: 'entity' };
-                        nodes.add(entityMap[item.entity]);
-                    }
-                    // Add Contractor Node
-                    if(!contractorMap[item.contractor]) {
-                        contractorMap[item.contractor] = { id: `C_${idx}`, label: item.contractor, group: 'contractor' };
-                        nodes.add(contractorMap[item.contractor]);
-                    }
-
-                    // Add Edge
-                    edges.add({
-                        from: entityMap[item.entity].id,
-                        to: contractorMap[item.contractor].id,
-                        value: parseInt(item.value) || 1, // Edge thickness
-                        title: `Contract ID: ${item.id} | ৳${item.value}`
-                    });
-                });
-
-                const data = { nodes, edges };
-                const options = {
-                    nodes: { font: { color: '#fff', face: 'Hind Siliguri' }, borderWidth: 0 },
-                    edges: { color: { color: 'rgba(56, 189, 248, 0.3)', highlight: '#ef4444' }, smooth: { type: 'continuous' } },
-                    groups: {
-                        entity: { color: { background: '#f59e0b' }, shape: 'box', margin: 10 },
-                        contractor: { color: { background: '#ef4444' }, shape: 'ellipse' }
-                    },
-                    physics: { barnesHut: { gravitationalConstant: -3000, centralGravity: 0.3, springLength: 150 } }
-                };
-
-                new vis.Network(container, data, options);
+            setModalOpen(id) {
+                const modal = document.getElementById(id);
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
             },
 
-            async openPdfViewer(id) {
-                const item = State.data.find(t => t.id == id);
-                if (!item) return alert('Tender record not found.');
-                if (!item.pdfFile) return alert('No PDF available for this record.');
+            closeModal(id) {
+                const modal = document.getElementById(id);
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+            },
 
-                State.activeTenderId = id;
-                DOM.pdfTitle.innerText = `${item.id} — ${item.pdfFile}`;
-                const localUrls = CONFIG.LOCAL_PDF_URLS(item.pdfFile);
-                const remoteUrls = CONFIG.REMOTE_PDF_URLS(item.pdfFile);
-                DOM.pdfOpenRemote.href = remoteUrls[0];
-                DOM.pdfStatus.innerText = 'Loading PDF...';
-                DOM.pdfPageDisplay.innerText = 'Page 0 / 0';
-                DOM.pdf.style.display = 'flex';
-
+            async loadPdfFile(pdfFile) {
+                const localUrls = CONFIG.LOCAL_PDF_URLS(pdfFile);
+                const remoteUrls = CONFIG.REMOTE_PDF_URLS(pdfFile);
+                DOM.pdfRemoteLink.href = remoteUrls[0] || '#';
                 let loaded = false;
+                DOM.pdfStatus.textContent = 'Loading PDF...';
                 for (const url of [...localUrls, ...remoteUrls]) {
                     try {
-                        await this.loadPdfFromUrl(url);
+                        await this.loadPdfDocument(url);
                         loaded = true;
-                        if (remoteUrls.includes(url)) {
-                            DOM.pdfOpenRemote.href = url;
-                            DOM.pdfStatus.innerText = 'Loaded from GitHub.';
-                        } else {
-                            DOM.pdfStatus.innerText = 'Loaded from local folder.';
-                        }
+                        DOM.pdfStatus.textContent = localUrls.includes(url) ? 'Loaded from local folder.' : 'Loaded from GitHub.';
+                        DOM.pdfRemoteLink.href = url;
                         break;
-                    } catch (err) {
-                        console.warn('PDF load failed:', url, err);
+                    } catch (error) {
+                        console.warn('PDF load failed:', url, error.message);
                     }
                 }
-
                 if (!loaded) {
-                    DOM.pdfStatus.innerText = 'Unable to load PDF from local or GitHub. Use the manual link above.';
+                    DOM.pdfStatus.textContent = 'Unable to load PDF from local or GitHub. Use the manual link above.';
+                    DOM.pdfPageDisplay.textContent = 'Page 0 / 0';
                 }
             },
 
-            async loadPdfFromUrl(url) {
+            async loadPdfDocument(url) {
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
                 const loadingTask = pdfjsLib.getDocument(url);
                 State.pdfDoc = await loadingTask.promise;
@@ -682,101 +512,221 @@
 
             renderPdfPage(pageNum) {
                 if (!State.pdfDoc) return;
-                pageNum = Math.max(1, Math.min(pageNum, State.totalPdfPages));
-                State.currentPdfPage = pageNum;
-                State.pdfDoc.getPage(pageNum).then(page => {
+                const pageIndex = Math.max(1, Math.min(pageNum, State.totalPdfPages));
+                State.currentPdfPage = pageIndex;
+                State.pdfDoc.getPage(pageIndex).then(page => {
                     const viewport = page.getViewport({ scale: 1.3 });
                     const canvas = document.getElementById('pdfCanvas');
                     const context = canvas.getContext('2d');
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
-                    const renderContext = { canvasContext: context, viewport };
-                    page.render(renderContext);
-                    DOM.pdfPageDisplay.innerText = `Page ${State.currentPdfPage} / ${State.totalPdfPages}`;
-                }).catch(err => {
-                    console.error('Render PDF page failed', err);
-                    DOM.pdfStatus.innerText = 'Failed to render PDF page.';
+                    page.render({ canvasContext: context, viewport });
+                    DOM.pdfPageDisplay.textContent = `Page ${pageIndex} / ${State.totalPdfPages}`;
+                }).catch(error => {
+                    console.error('Render PDF error', error);
+                    DOM.pdfStatus.textContent = 'Unable to render PDF page.';
                 });
             },
 
             changePdfPage(delta) {
                 if (!State.pdfDoc) return;
-                const pageNumber = State.currentPdfPage + delta;
-                if (pageNumber < 1 || pageNumber > State.totalPdfPages) return;
-                this.renderPdfPage(pageNumber);
+                const nextPage = State.currentPdfPage + delta;
+                if (nextPage < 1 || nextPage > State.totalPdfPages) return;
+                this.renderPdfPage(nextPage);
             },
 
             openPdfInNewTab() {
-                const item = State.data.find(t => t.id == State.activeTenderId);
-                if (!item || !item.pdfFile) return;
-                const localUrls = CONFIG.LOCAL_PDF_URLS(item.pdfFile);
-                if (localUrls.length) {
-                    return window.open(localUrls[0], '_blank');
+                const record = State.data.find(item => item.id == State.activeId);
+                if (!record || !record.pdfFile) return;
+                const localUrls = CONFIG.LOCAL_PDF_URLS(record.pdfFile);
+                const target = localUrls[0] || CONFIG.REMOTE_PDF_URLS(record.pdfFile)[0];
+                if (target) window.open(target, '_blank');
+            },
+
+            applyInspectorChanges() {
+                const record = State.data.find(item => item.id == State.activeId);
+                if (!record) return;
+                record.contractor = DOM.fieldContractor.value.trim();
+                record.entity = DOM.fieldEntity.value.trim();
+                record.value = Number(DOM.fieldValue.value) || 0;
+                record.risk = DOM.fieldRisk.value;
+                record.notes = DOM.fieldNotes.value.trim();
+                this.applyNormalizedChangesToRaw(record);
+                this.applyFilters();
+                DOM.verifyStatus.textContent = State.sessionToken ? 'Draft saved locally and scheduled for auto-sync.' : 'Draft saved locally. Enter GitHub PAT and save to commit.';
+                DOM.verifyStatus.style.color = State.sessionToken ? '#7dd3fc' : '#fbbf24';
+                if (State.sessionToken) this.scheduleAutoSave();
+            },
+
+            applyNormalizedChangesToRaw(record) {
+                const raw = record.raw || {};
+                raw.Tender_Proposal_ID = record.id;
+                raw.Supplier_Name = record.contractor;
+                raw.Contractor = record.contractor;
+                raw.Procuring_Entity_Name = record.entity;
+                raw.Organization_Agency = record.entity;
+                raw.Contract_Value_BDT = record.value;
+                raw.Document_Price_BDT = record.value;
+                raw.Risk_Level = record.risk;
+                raw.Red_Flag = record.risk === 'HIGH' ? 'YES' : 'NO';
+                raw.Investigator_Notes = record.notes;
+            },
+
+            scheduleAutoSave() {
+                if (State.autoSaveTimer) clearTimeout(State.autoSaveTimer);
+                State.autoSaveTimer = setTimeout(async () => {
+                    DOM.verifyStatus.textContent = '⏳ Auto-syncing changes to GitHub...';
+                    const success = await this.secureGitHubSave();
+                    if (success) DOM.verifyStatus.textContent = '✅ Auto-synced changes to GitHub.';
+                }, 1800);
+            },
+
+            saveRecord() {
+                const record = State.data.find(item => item.id == State.activeId);
+                if (!record) return;
+                this.applyInspectorChanges();
+                if (!State.sessionToken) {
+                    DOM.verifyStatus.textContent = 'Enter GitHub PAT to save remotely.';
+                    DOM.verifyStatus.style.color = '#fbbf24';
+                    return;
                 }
-                const remoteUrls = CONFIG.REMOTE_PDF_URLS(item.pdfFile);
-                if (remoteUrls.length) {
-                    return window.open(remoteUrls[0], '_blank');
+                this.secureGitHubSave();
+            },
+
+            async secureGitHubSave() {
+                if (!State.sessionToken) {
+                    State.sessionToken = prompt('Enter GitHub Personal Access Token (PAT) to commit changes. This token remains in RAM only.');
+                    if (!State.sessionToken) return false;
+                }
+                try {
+                    const sha = await this.getRemoteFileSha();
+                    const payload = this.buildPayload();
+                    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+                    const res = await fetch(CONFIG.API_URL(), {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${State.sessionToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: 'Update procurement record via e-GP forensic workspace', content, sha })
+                    });
+                    if (!res.ok) throw new Error(`GitHub save failed (${res.status})`);
+                    DOM.verifyStatus.textContent = '✅ Saved securely to GitHub.';
+                    DOM.verifyStatus.style.color = '#34d399';
+                    return true;
+                } catch (error) {
+                    console.error(error);
+                    DOM.verifyStatus.textContent = `❌ ${error.message}`;
+                    DOM.verifyStatus.style.color = '#ef4444';
+                    State.sessionToken = null;
+                    return false;
                 }
             },
 
-            // ================= UTILITIES =================
-            toggleRuleFilter(ruleId, element) {
-                const isActive = element.classList.contains('active-rule');
-                document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-                
-                if (!isActive) {
-                    element.classList.add('active-rule');
-                    State.activeRuleFilter = ruleId;
+            async getRemoteFileSha() {
+                const res = await fetch(CONFIG.API_URL(), { headers: { Authorization: `Bearer ${State.sessionToken}` } });
+                if (!res.ok) throw new Error('Unable to verify GitHub file SHA');
+                const data = await res.json();
+                return data.sha;
+            },
+
+            buildPayload() {
+                if (Array.isArray(State.originalJson)) return State.jsonArray;
+                const payload = JSON.parse(JSON.stringify(State.originalJson || {}));
+                const key = Array.isArray(payload.Merged_Database) ? 'Merged_Database' : Object.keys(payload).find(k => Array.isArray(payload[k]));
+                if (key) payload[key] = State.jsonArray;
+                return key ? payload : State.jsonArray;
+            },
+
+            createNewRecord() {
+                const newId = `NEW-${Date.now()}`;
+                const rawRecord = { Tender_Proposal_ID: newId, Risk_Level: 'LOW', Red_Flag: 'NO', Investigator_Notes: '' };
+                const record = this.normalizeRecord(rawRecord);
+                record.raw = rawRecord;
+                State.jsonArray.unshift(rawRecord);
+                State.data.unshift(record);
+                this.applyFilters();
+                this.openVerifyModal(record.id);
+            },
+
+            toggleRuleFilter(ruleId, el) {
+                const cards = document.querySelectorAll('.rule-card');
+                cards.forEach(card => card.classList.remove('active'));
+                if (State.activeRule === ruleId) {
+                    State.activeRule = null;
                 } else {
-                    State.activeRuleFilter = null;
+                    State.activeRule = ruleId;
+                    el.classList.add('active');
                 }
                 this.applyFilters();
             },
 
-            resetFilters() {
-                DOM.search.value = '';
-                DOM.riskFilter.value = 'ALL';
-                State.activeRuleFilter = null;
-                document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-                this.applyFilters();
+            highlightPdf(id) {
+                this.openVerifyModal(id);
             },
 
-            openInspector(id) {
-                State.activeTenderId = id;
-                const item = State.data.find(t => t.id == id);
-                if(item) {
-                    DOM.edit.id.innerText = item.id;
-                    DOM.edit.contractor.value = item.contractor || '';
-                    DOM.edit.entity.value = item.entity || '';
-                    DOM.edit.val.value = item.value || '';
-                    DOM.edit.risk.value = item.risk || RISK.LOW;
-                    DOM.edit.status.innerText = '';
-                    DOM.modals.inspector.style.display = 'flex';
-                    this.bindInspectorEvents();
-                }
-            },
-
-            closeModal(id) { document.getElementById(id).style.display = 'none'; },
-            
-            clearCache() {
-                if(confirm("Reload data from GitHub?")) {
+            refreshData() {
+                if (window.confirm('Reload dataset from GitHub and discard unsaved local changes?')) {
                     State.sessionToken = null;
                     this.fetchData();
                 }
             },
 
+            openNetworkMap() {
+                if (!State.data.length) return alert('No data to display in network map.');
+                this.setModalOpen('networkModal');
+                const nodes = new vis.DataSet();
+                const edges = new vis.DataSet();
+                const entityMap = {};
+                const contractorMap = {};
+                State.data.slice(0, 800).forEach((record, idx) => {
+                    if (!record.entity || !record.contractor) return;
+                    if (!entityMap[record.entity]) {
+                        entityMap[record.entity] = { id: `E-${idx}`, label: record.entity, group: 'entity' };
+                        nodes.add(entityMap[record.entity]);
+                    }
+                    if (!contractorMap[record.contractor]) {
+                        contractorMap[record.contractor] = { id: `C-${idx}`, label: record.contractor, group: 'contractor' };
+                        nodes.add(contractorMap[record.contractor]);
+                    }
+                    edges.add({ from: entityMap[record.entity].id, to: contractorMap[record.contractor].id, value: Number(record.value) || 1, title: `Value: ৳${Number(record.value || 0).toLocaleString('en-IN')}` });
+                });
+                const data = { nodes, edges };
+                const options = {
+                    physics: { stabilization: true, barnesHut: { gravitationalConstant: -1400, centralGravity: 0.25, springLength: 140 } },
+                    groups: { entity: { shape: 'box', color: { background: '#f59e0b' } }, contractor: { shape: 'dot', color: { background: '#ef4444' } } },
+                    edges: { color: { color: '#38bdf8', highlight: '#ef4444' }, smooth: { enabled: true, type: 'dynamic' } },
+                    nodes: { font: { color: '#fff' }, borderWidth: 2 }
+                };
+                new vis.Network(document.getElementById('networkGraph'), data, options);
+            },
+
+            openReportModal() {
+                const reportContent = document.getElementById('reportContent');
+                const flagged = State.data.filter(record => record.risk === 'HIGH');
+                if (!flagged.length) {
+                    reportContent.innerHTML = `<div class="report-row"><strong>No high-risk contracts currently flagged.</strong></div>`;
+                } else {
+                    const summary = `Flagged High-Risk Contracts: ${flagged.length}`;
+                    reportContent.innerHTML = `
+                        <div class="report-header"><div><h3>Investigative Report Summary</h3><p>${summary}</p></div></div>
+                        <table class="report-table"><thead><tr><th>ID</th><th>Entity</th><th>Contractor</th><th>Value</th><th>Notes</th></tr></thead><tbody>
+                            ${flagged.map(record => `<tr><td>${record.id}</td><td>${record.entity || '-'}</td><td>${record.contractor || '-'}</td><td>৳ ${Number(record.value || 0).toLocaleString('en-IN')}</td><td>${record.notes || 'No notes provided'}</td></tr>`).join('')}
+                        </tbody></table>
+                    `;
+                }
+                this.setModalOpen('reportModal');
+            },
+
             exportCSV() {
-                let csv = 'ID,Entity,Contractor,Risk,Value\n';
-                State.filtered.forEach(i => csv += `"${i.id}","${i.entity || ''}","${i.contractor || ''}","${i.risk || ''}","${i.value || ''}"\n`);
+                const rows = [['ID', 'Entity', 'Contractor', 'Risk', 'Value', 'PDF File', 'Notes']];
+                State.filtered.forEach(record => rows.push([record.id, record.entity, record.contractor, record.risk, record.value, record.pdfFile || '', record.notes || '']));
+                const csv = rows.map(row => row.map(value => `"${String(value || '').replace(/"/g, '""')}"`).join(',')).join('\n');
                 const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `EGP_Export_${Date.now()}.csv`;
+                link.download = `EGP_Records_${Date.now()}.csv`;
                 link.click();
             }
         };
 
-        // Boot App
         App.init();
     </script>
 </body>
