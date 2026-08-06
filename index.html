@@ -324,7 +324,9 @@
         ];
         const localDataUrl = './Procurement_Database.json';
         
-        let savedGithubToken = null; 
+        // Load the saved PAT token from browser localStorage
+        let savedGithubToken = localStorage.getItem('egp_github_pat') || null; 
+        
         let globalData = [];
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
@@ -408,24 +410,24 @@
 
         window.onload = () => { initializeData(); };
 
-        // 1. NORMALIZE DATA (Handles robust Rule extraction)
+        // 1. NORMALIZE DATA (Handles robust Rule extraction and String splitting)
         function normalizeLoadedData(payload) {
             const records = Array.isArray(payload) ? payload : (payload.Merged_Database || payload.data || []);
 
             return records.map((item, index) => {
                 const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
                 
-                // Robust rule extraction to catch all formats
-                const rules = [];
-                if (Array.isArray(item.rules)) {
-                    item.rules.forEach(r => rules.push(String(r)));
-                } else if (typeof item.rules === 'string') {
-                    rules.push(item.rules);
-                } else if (item.Rule_Reference) {
-                    rules.push(String(item.Rule_Reference));
-                } else if (item.Violated_Rules) {
-                    rules.push(String(item.Violated_Rules));
+                // Robust rule extraction for strings and arrays
+                let rulesArray = [];
+                let rawRules = item.rules || item.Violated_Rules || item.Rule_Reference || [];
+                
+                if (typeof rawRules === 'string') {
+                    rulesArray = rawRules.split(',');
+                } else if (Array.isArray(rawRules)) {
+                    rulesArray = rawRules;
                 }
+
+                const rules = rulesArray.map(r => String(r).trim());
 
                 return {
                     ...item,
@@ -483,13 +485,21 @@
         // 2. SAVE & EXPORT
         async function saveDirectlyToGitHub() {
             if (!savedGithubToken) {
-                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT) to save directly:");
+                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT) to save directly:\n(It will be saved in your browser for future use)");
                 if (!savedGithubToken) return false;
+                localStorage.setItem('egp_github_pat', savedGithubToken);
             }
 
             try {
                 alert("Saving to GitHub... Please wait.");
                 const getResponse = await fetch(apiUrl, { headers: { 'Authorization': `Bearer ${savedGithubToken}` }});
+                
+                if (getResponse.status === 401) {
+                    localStorage.removeItem('egp_github_pat');
+                    savedGithubToken = null;
+                    throw new Error("Invalid Token! Please try again.");
+                }
+                
                 let fileSha = null;
                 if (getResponse.ok) fileSha = (await getResponse.json()).sha;
 
@@ -509,27 +519,31 @@
                 } else throw new Error((await updateResponse.json()).message);
             } catch (error) {
                 alert("❌ Save failed: " + error.message);
-                savedGithubToken = null;
                 return false;
             }
         }
 
-        // 3. UI RENDERING (WITH LIVE RULE COUNTERS)
+        // 3. UI RENDERING (WITH LIVE KEYWORD RULE COUNTERS)
         function updateDashboard() {
             document.getElementById('totalContracts').innerText = currentFilteredData.length;
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
             
-            // Count Violated Rules and update Top Matrix dynamically
-            const ruleCounts = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
+            // Count Violated Rules and update Top Matrix dynamically based on keywords
+            let ruleCounts = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
             
             currentFilteredData.forEach(item => {
                 if (item.rules && Array.isArray(item.rules)) {
                     item.rules.forEach(r => {
-                        let key = String(r).toLowerCase().trim();
-                        if (ruleCounts[key] !== undefined) {
-                            ruleCounts[key]++;
-                        }
+                        let text = String(r).toLowerCase();
+                        if (text.includes('owner') || text.includes('তথ্য গোপন')) ruleCounts.owner++;
+                        if (text.includes('split') || text.includes('চুক্তি বিভাজন')) ruleCounts.split++;
+                        if (text.includes('cpv') || text.includes('কারসাজি')) ruleCounts.cpv++;
+                        if (text.includes('tailored') || text.includes('বৈষম্যমূলক')) ruleCounts.tailored++;
+                        if (text.includes('monopoly') || text.includes('মনোপলি')) ruleCounts.monopoly++;
+                        if (text.includes('outlier') || text.includes('low bid') || text.includes('অস্বাভাবিক')) ruleCounts.outlier++;
+                        if (text.includes('meeting') || text.includes('মিটিং')) ruleCounts.meeting++;
+                        if (text.includes('rigging') || text.includes('বিড-রিগিং')) ruleCounts.rigging++;
                     });
                 }
             });
@@ -613,7 +627,7 @@
                     console.warn('PDF probe failed for', candidate, error);
                 }
             }
-            return candidates[0] || '';
+            return candidates[0] || ''; // Fallback to raw string if all fail
         }
 
         // LOAD PDF MANUALLY ON BUTTON CLICK
@@ -660,7 +674,7 @@
             document.getElementById('riskMeterFill').style.width = riskScore;
             document.getElementById('riskScoreText').innerText = riskScore;
 
-            // Trigger the auto-load of the PDF
+            // Trigger the auto-load of the PDF based on value
             await reloadPdfViewer();
 
             // Render Eligibility Criteria Array
