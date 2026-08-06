@@ -217,14 +217,12 @@
             </div>
 
             <div class="inspector-layout">
-                <!-- LEFT SIDE: PDF VIEWER (UPDATED FOR LIVE SERVER COMPATIBILITY) -->
+                <!-- LEFT SIDE: PDF VIEWER -->
                 <div class="pdf-viewer-container" id="pdfContainer">
-                    <!-- Fallback Top Bar -->
                     <div id="pdfHeader" style="width: 100%; background: #1e293b; padding: 8px; text-align: right; display: none; box-sizing: border-box;">
                         <a id="pdfPopOut" href="#" target="_blank" style="color: #38bdf8; font-size: 13px; text-decoration: none; font-weight: bold; padding: 4px 8px; border: 1px solid #38bdf8; border-radius: 4px;">↗️ Open PDF in New Tab</a>
                     </div>
                     
-                    <!-- Main Viewer using Object Tag -->
                     <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; flex-grow: 1; border: none;">
                         <div style="color: white; padding: 30px; text-align: center;">
                             <p>Your browser does not support embedded PDFs.</p>
@@ -259,21 +257,28 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td id="dbContractor" style="font-size: 12px; color:var(--text-muted);"></td>
+                                    <td id="dbContractor" style="font-size: 12px; color:var(--text-muted);">Contractor / Firm</td>
                                     <td><input type="text" id="editContractor" class="edit-input" placeholder="Contractor Name"></td>
                                 </tr>
                                 <tr>
-                                    <td id="dbValue" style="font-size: 12px; color:var(--text-muted);"></td>
+                                    <td id="dbValue" style="font-size: 12px; color:var(--text-muted);">Contract Value (৳)</td>
                                     <td><input type="text" id="editValue" class="edit-input" placeholder="Value (৳)"></td>
                                 </tr>
                                 <tr>
-                                    <td id="dbRisk" style="font-size: 12px; color:var(--text-muted);"></td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">AI Risk Level</td>
                                     <td>
                                         <select id="editRisk" class="edit-input">
                                             <option value="HIGH">HIGH</option>
                                             <option value="MEDIUM">MEDIUM</option>
                                             <option value="LOW">LOW</option>
                                         </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 12px; color:var(--text-muted);">PDF File / Path<br><small style="color:#64748b;">(Tender / Contract PDF)</small></td>
+                                    <td>
+                                        <input type="text" id="editPdfPath" class="edit-input" placeholder="e.g. Tender_123.pdf">
+                                        <button type="button" onclick="reloadPdfViewer()" style="margin-top:5px; background:#0ea5e9; border:none; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; width:100%;">🔄 Scan & Load PDF</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -588,12 +593,13 @@
                 return [cleanPath];
             }
 
+            // Fallback scanner for both folders
             return [
                 `./${cleanPath}`,
                 `./Tender Notice_PDFs/${cleanPath}`,
                 `./Contract_Awards_PDFs/${cleanPath}`,
                 `./Tender%20Notice_PDFs/${cleanPath}`,
-                `./Contract_Awards_PDFs/${cleanPath}`
+                `./Contract%20Awards_PDFs/${cleanPath}`
             ].filter((value, index, values) => values.indexOf(value) === index);
         }
 
@@ -610,36 +616,17 @@
             return candidates[0] || '';
         }
 
-        async function openInspectorModal(id) {
-            currentTenderIdInModal = id;
-            let item = globalData.find(t => t.id == id);
-            if(!item) return;
-            
-            // Set basic verification fields
-            document.getElementById('footprintID').innerText = item.id;
-            document.getElementById('dbContractor').innerText = item.contractor;
-            document.getElementById('dbValue').innerText = "৳" + Number(item.value).toLocaleString('en-IN');
-            document.getElementById('dbRisk').innerText = item.risk;
-            
-            document.getElementById('editContractor').value = item.contractor;
-            document.getElementById('editValue').value = item.value;
-            document.getElementById('editRisk').value = item.risk;
-            document.getElementById('editNotes').value = item.Forensic_Notes || "";
-            
-            // Risk Meter UI
-            let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
-            document.getElementById('riskMeterFill').style.width = riskScore;
-            document.getElementById('riskScoreText').innerText = riskScore;
-
-            // HANDLE PDF RENDERING
+        // LOAD PDF MANUALLY ON BUTTON CLICK
+        async function reloadPdfViewer() {
+            let manualPath = document.getElementById('editPdfPath').value;
             const pdfFrame = document.getElementById('pdfFrame');
             const noPdfMsg = document.getElementById('noPdfMessage');
             const pdfHeader = document.getElementById('pdfHeader');
             const pdfPopOut = document.getElementById('pdfPopOut');
             const pdfFallbackLink = document.getElementById('pdfFallbackLink');
 
-            if (item.Evidence_PDF_Path) {
-                const resolvedUrl = await resolveEvidenceUrl(item.Evidence_PDF_Path);
+            if (manualPath) {
+                const resolvedUrl = await resolveEvidenceUrl(manualPath);
                 const viewUrl = resolvedUrl ? encodeURI(resolvedUrl) : '';
                 
                 pdfFrame.data = viewUrl;
@@ -650,17 +637,31 @@
                 pdfFrame.style.display = 'block';
                 pdfHeader.style.display = 'block';
                 noPdfMsg.style.display = 'none';
-            } else {
-                pdfFrame.data = "";
-                pdfFrame.setAttribute('data', '');
-                pdfFrame.style.display = 'none';
-                pdfHeader.style.display = 'none';
-                
-                noPdfMsg.style.display = 'flex';
-                noPdfMsg.style.alignItems = 'center';
-                noPdfMsg.style.justifyContent = 'center';
-                noPdfMsg.style.height = '100%';
             }
+        }
+
+        async function openInspectorModal(id) {
+            currentTenderIdInModal = id;
+            let item = globalData.find(t => t.id == id);
+            if(!item) return;
+            
+            // Set basic verification fields
+            document.getElementById('footprintID').innerText = item.id;
+            
+            // Editable Inputs
+            document.getElementById('editContractor').value = item.contractor;
+            document.getElementById('editValue').value = item.value;
+            document.getElementById('editRisk').value = item.risk;
+            document.getElementById('editPdfPath').value = item.Evidence_PDF_Path || "";
+            document.getElementById('editNotes').value = item.Forensic_Notes || "";
+            
+            // Risk Meter UI
+            let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
+            document.getElementById('riskMeterFill').style.width = riskScore;
+            document.getElementById('riskScoreText').innerText = riskScore;
+
+            // Trigger the auto-load of the PDF
+            await reloadPdfViewer();
 
             // Render Eligibility Criteria Array
             const eligList = document.getElementById('modalEligibilityList');
@@ -767,6 +768,7 @@
                 globalData[itemIndex].Contractor_Name = document.getElementById('editContractor').value;
                 globalData[itemIndex].Contract_Value_BDT = Number(document.getElementById('editValue').value.replace(/,/g, '')); 
                 globalData[itemIndex].Risk_Level = document.getElementById('editRisk').value;
+                globalData[itemIndex].Evidence_PDF_Path = document.getElementById('editPdfPath').value;
                 globalData[itemIndex].Forensic_Notes = document.getElementById('editNotes').value;
                 
                 globalData = normalizeLoadedData(globalData);
