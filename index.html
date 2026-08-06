@@ -336,6 +336,42 @@
             initializeData();
         };
 
+        function normalizeLoadedData(payload) {
+            const records = Array.isArray(payload)
+                ? payload
+                : (payload && typeof payload === 'object'
+                    ? (
+                        Array.isArray(payload.Merged_Database) ? payload.Merged_Database :
+                        Array.isArray(payload.data) ? payload.data :
+                        Array.isArray(payload.records) ? payload.records :
+                        Array.isArray(payload.tenders) ? payload.tenders :
+                        []
+                    )
+                    : []);
+
+            return records.map((item, index) => {
+                const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
+                const rules = [];
+
+                if (Array.isArray(item.rules)) {
+                    item.rules.forEach(rule => rules.push(String(rule)));
+                }
+                if (item.Rule_Reference) {
+                    rules.push(String(item.Rule_Reference));
+                }
+
+                return {
+                    ...item,
+                    id: item.Tender_Proposal_ID ?? item.id ?? item.TenderID ?? (index + 1),
+                    entity: item.Procuring_Entity_Name || item.Organization_Agency || item.entity || item.Procurement_Entity_Name || 'N/A',
+                    contractor: item.Contractor_Name || item.Supplier_Name || item.Contractor || item.Organization_Agency || item.Procuring_Entity_Name || item.Procurement_Entity_Name || 'N/A',
+                    risk: String(riskLevel).toUpperCase(),
+                    value: item.Document_Price_BDT ?? item.value ?? item.Contract_Value_BDT ?? item.Amount ?? 0,
+                    rules
+                };
+            });
+        }
+
         function decodeBase64Content(content) {
             const normalized = (content || '').replace(/\s/g, '');
             if (!normalized) {
@@ -406,7 +442,7 @@
             
             if (savedData) {
                 try {
-                    globalData = JSON.parse(savedData);
+                    globalData = normalizeLoadedData(JSON.parse(savedData));
                     currentFilteredData = [...globalData];
                     updateDashboard();
                 } catch (error) {
@@ -419,21 +455,21 @@
             }
 
             try {
-                globalData = await loadDataFromGitHub();
+                globalData = normalizeLoadedData(await loadDataFromGitHub());
                 currentFilteredData = [...globalData];
                 saveToLocalStorage();
                 updateDashboard();
             } catch (githubError) {
                 console.warn('GitHub API load failed, trying public mirror sources:', githubError);
                 try {
-                    globalData = await loadDataFromRemoteSources();
+                    globalData = normalizeLoadedData(await loadDataFromRemoteSources());
                     currentFilteredData = [...globalData];
                     saveToLocalStorage();
                     updateDashboard();
                 } catch (remoteError) {
                     console.warn('Remote mirror load failed, trying local backup:', remoteError);
                     try {
-                        globalData = await loadDataFromLocalFile();
+                        globalData = normalizeLoadedData(await loadDataFromLocalFile());
                         currentFilteredData = [...globalData];
                         saveToLocalStorage();
                         updateDashboard();
