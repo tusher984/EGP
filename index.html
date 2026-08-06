@@ -55,9 +55,16 @@
             </div>
         </header>
 
-        <!-- Error Message -->
-        <div id="errorMsg" class="hidden bg-red-950/50 border border-red-800 p-4 rounded-lg text-red-300">
-            <strong>Error:</strong> <span id="errorTxt">Could not load JSON.</span>
+        <!-- Manual File Upload Fallback (Shows if local browser blocks auto-fetch) -->
+        <div id="uploadBox" class="hidden bg-slate-800 border-2 border-dashed border-blue-500/50 p-8 rounded-xl text-center shadow-lg">
+            <i class="fa-solid fa-file-arrow-up text-4xl text-blue-400 mb-3"></i>
+            <h2 class="text-xl font-bold text-slate-200">Local Browser Security Detected</h2>
+            <p class="text-sm text-slate-400 mt-2 mb-4">Your browser blocked the automatic loading of the JSON file. Please select your <strong>Procurement_Database.json</strong> file manually below.</p>
+            
+            <input type="file" id="jsonLoader" accept=".json" class="hidden" onchange="handleFileUpload(event)">
+            <label for="jsonLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow transition inline-block">
+                Select Procurement_Database.json
+            </label>
         </div>
 
         <!-- KPIs -->
@@ -138,9 +145,14 @@
                     <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>Source Document Viewer</span>
                     <span id="pdfFileName" class="text-blue-400 font-mono">---.pdf</span>
                 </div>
-                <!-- Dynamic Iframe for PDF -->
-                <div class="flex-1 w-full h-full bg-slate-300">
-                    <iframe id="pdfIframe" src="" class="w-full h-full border-none"></iframe>
+                <div class="flex-1 w-full h-full bg-slate-300 relative">
+                    <!-- Warning layer if PDF fails to load locally -->
+                    <div class="absolute inset-0 flex items-center justify-center bg-slate-800 flex-col p-6 text-center pointer-events-none z-0">
+                        <i class="fa-solid fa-folder-open text-5xl text-slate-600 mb-4"></i>
+                        <p class="text-slate-400 text-sm font-bold">Local PDF Blocking</p>
+                        <p class="text-slate-500 text-xs mt-2">If you opened this file directly from your computer, your browser may block the PDF viewer. You can manually open the PDF listed above.</p>
+                    </div>
+                    <iframe id="pdfIframe" src="" class="w-full h-full border-none relative z-10 bg-transparent"></iframe>
                 </div>
             </div>
 
@@ -203,28 +215,50 @@
         let auditLogs = JSON.parse(localStorage.getItem('egpAuditLogs')) || {};
         let currentTenderId = null;
 
-        // Boot Application
         $(document).ready(function() {
-            // Fetch Data from JSON file in the EGP folder
-            fetch('./Procurement_Database.json')
+            // Attempt to load JSON automatically
+            fetch('Procurement_Database.json')
                 .then(res => {
                     if(!res.ok) throw new Error("File not found");
                     return res.json();
                 })
-                .then(data => {
-                    // Extract array whether it's wrapped in Merged_Database or just an array
-                    rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
-                    if(rawTenderData.length === 0) throw new Error("JSON is empty");
-                    
-                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-400">Database Connected</span>`;
-                    initDashboard();
-                })
+                .then(data => processData(data))
                 .catch(err => {
-                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-xmark text-red-500"></i> <span class="text-red-500">Connection Failed</span>`;
-                    document.getElementById('errorMsg').classList.remove('hidden');
-                    document.getElementById('errorTxt').innerText = `Ensure 'Procurement_Database.json' is in the root EGP folder. Detail: ${err.message}`;
+                    console.warn("Auto-fetch failed due to Local File Security. Enabling Manual Upload.", err);
+                    document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> <span class="text-yellow-500">Local Mode Activated</span>`;
+                    document.getElementById('uploadBox').classList.remove('hidden');
                 });
         });
+
+        // Fallback for Local File Upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    document.getElementById('uploadBox').classList.add('hidden');
+                    processData(data);
+                } catch (err) {
+                    alert("Error: The selected file is not a valid JSON document.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Process Database
+        function processData(data) {
+            rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
+            if(rawTenderData.length === 0) {
+                alert("The JSON file is empty or formatted incorrectly.");
+                return;
+            }
+            
+            document.getElementById('connStatus').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-400">Database Connected</span>`;
+            initDashboard();
+        }
 
         // 1. FORENSIC RULES ENGINE
         function runForensicEngine() {
@@ -233,7 +267,7 @@
                 let score = 0;
                 let elig = (t.Eligibility_of_Tenderer || "").toLowerCase();
 
-                // Check 1: Single Responsive Bidder (Stifles Competition)
+                // Rule 1: Single Responsive Bidder (Stifles Competition)
                 let received = parseInt(t.Tenders_Received) || 0;
                 let sold = parseInt(t.Tenders_Sold) || 0;
                 let responsive = parseInt(t.Responsive_Tenders) || 0;
@@ -243,37 +277,37 @@
                     score += 40;
                 }
                 
-                // Check 2: Beneficial Owner Omission
+                // Rule 2: Beneficial Owner Omission
                 if ((t.Red_Flag_Reason || "").includes("Beneficial Owner Missing")) {
                     flags.push("Missing Beneficial Ownership Data");
                     score += 20;
                 }
 
-                // Check 3: Arbitrary 10% Price Cap (Violates Standard Evaluation)
+                // Rule 3: Arbitrary 10% Price Cap
                 if (/10%\s*(above|below)|more than\s*10%/.test(elig)) {
                     flags.push("Unlawful 10% Price Deviation Disqualification");
                     score += 20;
                 }
 
-                // Check 4: Ban on Local Manufacturers
+                // Rule 4: Ban on Local Manufacturers
                 if (/local manufacturer\s*will not be accepted/.test(elig)) {
                     flags.push("Exclusion of Local Manufacturers (Violates ITT 5.1)");
                     score += 30;
                 }
 
-                // Check 5: Geographic Restrictions
+                // Rule 5: Geographic Restrictions
                 if (/chattogram city corporation area|office.*in chattogram|working center.*chattogram/.test(elig)) {
                     flags.push("Restrictive Geographic / Local Office Clause");
                     score += 15;
                 }
 
-                // Check 6: Unlawful JV Ban
+                // Rule 6: Unlawful JV Ban
                 if (/joint venture.*not.*permitted|jv.*not.*allowed/.test(elig)) {
                     flags.push("Unlawful Prohibition of Joint Ventures");
                     score += 15;
                 }
 
-                // Check 7: Restrictive Origin
+                // Rule 7: Restrictive Origin
                 if (/japan\/europe\/uk\/north america/.test(elig)) {
                     flags.push("Restrictive Country of Origin Criteria");
                     score += 15;
@@ -295,7 +329,6 @@
             tbody.innerHTML = '';
 
             analyzedData.forEach(t => {
-                // Update KPIs
                 if(t.riskLevel === 'HIGH') high++;
                 if(t.riskLevel === 'MEDIUM') med++;
                 if(t.Contract_Value_BDT) {
@@ -305,7 +338,6 @@
                 
                 t.generatedFlags.forEach(f => violCounts[f] = (violCounts[f] || 0) + 1);
 
-                // Table Row
                 let badge = `<span class="px-2 py-1 rounded text-xs font-bold ${
                     t.riskLevel === 'HIGH' ? 'bg-red-900 text-red-300' :
                     t.riskLevel === 'MEDIUM' ? 'bg-yellow-900 text-yellow-300' : 'bg-emerald-900 text-emerald-300'
@@ -333,16 +365,17 @@
                 tbody.appendChild(tr);
             });
 
-            // Set KPI Text
             document.getElementById('kpiTotal').innerText = analyzedData.length;
             document.getElementById('kpiHigh').innerText = high;
             document.getElementById('kpiMed').innerText = med;
             document.getElementById('kpiValue').innerText = (totalVal / 10000000).toFixed(2) + " Cr";
             
-            // Initialize DataTables
-            $('#mainTable').DataTable({ destroy: true, order: [[2, 'desc']] });
+            if ($.fn.DataTable.isDataTable('#mainTable')) {
+                $('#mainTable').DataTable().destroy();
+            }
+            $('#mainTable').DataTable({ pageLength: 10, order: [[2, 'desc']] });
 
-            // Render Charts
+            // Charts
             new Chart(document.getElementById('riskChart'), {
                 type: 'doughnut',
                 data: { labels: ['High Risk', 'Medium Risk', 'Low Risk'], datasets: [{ data: [high, med, analyzedData.length - high - med], backgroundColor: ['#ef4444', '#eab308', '#10b981'], borderWidth: 0 }] },
@@ -366,34 +399,28 @@
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('inspectorView').classList.remove('hide');
 
-            // Populate Headers
             document.getElementById('inspTenderId').innerText = t.Tender_Proposal_ID;
-            
             const badge = document.getElementById('inspRiskBadge');
             badge.innerText = `RISK: ${t.riskLevel} (${t.riskScore})`;
             badge.className = `px-2.5 py-1 rounded text-xs font-bold ${t.riskLevel === 'HIGH' ? 'bg-red-900 text-red-300' : t.riskLevel === 'MEDIUM' ? 'bg-yellow-900 text-yellow-300' : 'bg-emerald-900 text-emerald-300'}`;
 
-            // Load PDF into Iframe
+            // PDF Loading Logic
             const sourceFile = t.Source_File || `Tender_${tid}.pdf`;
             document.getElementById('pdfFileName').innerText = sourceFile;
             
-            // Logic to check if it's a Notice or Award PDF
             let pdfFolder = sourceFile.startsWith("CDA_") ? "Tender Notice_PDFs" : "Contract_Awards_PDFs";
             document.getElementById('pdfIframe').src = `./${pdfFolder}/${sourceFile}`;
 
-            // Populate Form
             document.getElementById('editPE').value = t.Procuring_Entity_Name || "";
             document.getElementById('editValue').value = t.Contract_Value_BDT || "";
             document.getElementById('editSupplier').value = t.Supplier_Name || "";
             document.getElementById('rawEligibility').innerText = t.Eligibility_of_Tenderer || "No text available.";
 
-            // Populate Flags
             const flagUl = document.getElementById('inspFlagsList');
             flagUl.innerHTML = t.generatedFlags.length > 0 
                 ? t.generatedFlags.map(f => `<li>${f}</li>`).join('') 
                 : '<li class="text-emerald-400">No strict rule violations detected.</li>';
 
-            // Check if existing audit log exists
             if(auditLogs[tid]) {
                 document.getElementById('auditJustification').value = auditLogs[tid].justification;
             } else {
@@ -404,9 +431,8 @@
         function closeInspector() {
             document.getElementById('inspectorView').classList.add('hide');
             document.getElementById('dashboardView').classList.remove('hide');
-            // Clear iframe memory
             document.getElementById('pdfIframe').src = "";
-            initDashboard(); // refresh table statuses
+            initDashboard(); 
         }
 
         // 4. HUMAN-IN-THE-LOOP AUDIT LOGGING
