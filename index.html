@@ -26,8 +26,6 @@
         .btn-home:hover { background: #047857; transform: translateY(-1px); }
         .btn-nexus { padding: 8px 20px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #7e22ce; font-family: inherit; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(126, 34, 206, 0.4);}
         .btn-nexus:hover { background-color: #6b21a8; transform: translateY(-2px);}
-        .btn-folder { padding: 8px 20px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: white; background-color: #ea580c; font-family: inherit; font-weight: bold; transition: 0.3s;}
-        .btn-folder:hover { background-color: #c2410c; transform: translateY(-2px);}
 
         .evidence-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 5px solid var(--netra-red); }
         .evidence-section h3 { margin: 0 0 15px 0; font-size: 20px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px;}
@@ -247,21 +245,15 @@
                     </div>
 
                     <div id="verificationTableContainer">
-                        <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 15px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Core Database Claim vs Verified Input</h4>
+                        <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 15px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Final Verification Table</h4>
                         <table class="verify-table" id="verifyTable">
-                            <thead>
-                                <tr>
-                                    <th style="width: 35%;">Database Claim</th>
-                                    <th style="width: 65%;">Final Verified Input</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 <tr>
-                                    <td id="dbContractor" style="font-size: 12px; color:var(--text-muted);">Contractor / Firm</td>
+                                    <td style="font-size: 12px; color:var(--text-muted); width: 35%;">Contractor Name</td>
                                     <td><input type="text" id="editContractor" class="edit-input" placeholder="Contractor Name"></td>
                                 </tr>
                                 <tr>
-                                    <td id="dbValue" style="font-size: 12px; color:var(--text-muted);">Contract Value (৳)</td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">Contract Value (৳)</td>
                                     <td><input type="text" id="editValue" class="edit-input" placeholder="Value (৳)"></td>
                                 </tr>
                                 <tr>
@@ -275,10 +267,20 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="font-size: 12px; color:var(--text-muted);">PDF File / Path<br><small style="color:#64748b;">(Tender / Contract PDF)</small></td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">PDF Folder</td>
                                     <td>
-                                        <input type="text" id="editPdfPath" class="edit-input" placeholder="e.g. Tender_123.pdf">
-                                        <button type="button" onclick="reloadPdfViewer()" style="margin-top:5px; background:#0ea5e9; border:none; color:white; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; width:100%;">🔄 Scan & Load PDF</button>
+                                        <select id="editPdfFolder" class="edit-input">
+                                            <option value="">-- No Folder (Root) --</option>
+                                            <option value="Contract_Awards_PDFs/">Contract_Awards_PDFs</option>
+                                            <option value="Tender Notice_PDFs/">Tender Notice_PDFs</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 12px; color:var(--text-muted);">PDF File Name<br><small>(e.g. Tender_123.pdf)</small></td>
+                                    <td>
+                                        <input type="text" id="editPdfPath" class="edit-input" placeholder="Type filename here...">
+                                        <button type="button" onclick="reloadPdfViewer()" style="margin-top:5px; background:#0ea5e9; border:none; color:white; padding:6px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; width:100%; transition:0.2s;">🔄 Scan & Load PDF</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -287,10 +289,7 @@
 
                     <div id="forensicPanel" class="forensic-panel">
                         <h4 style="margin:0 0 10px 0; font-size:15px; color:var(--text-light);">🚨 Forensic Rule Triggers & Rationale</h4>
-                        
-                        <!-- RATIONALE BOX (DYNAMICALLY POPULATED) -->
                         <div id="modalRedFlagRationale"></div>
-                        
                         <strong style="font-size:13px; color:var(--text-muted); display:block; margin-top:15px;">Extracted Eligibility Criteria:</strong>
                         <ul id="modalEligibilityList" class="eligibility-list"></ul>
                     </div>
@@ -324,9 +323,7 @@
         ];
         const localDataUrl = './Procurement_Database.json';
         
-        // Load the saved PAT token from browser localStorage
         let savedGithubToken = localStorage.getItem('egp_github_pat') || null; 
-        
         let globalData = [];
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
@@ -345,87 +342,47 @@
             rigging: { title: "৮. বিড-রিগিং (Bid Rigging)", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।" }
         };
 
-        // EXHAUSTIVE FALLBACK DATABASE (If API Fails)
         const DEFAULT_DATABASE = [
             {
                 "Tender_Proposal_ID": 924201,
                 "Organization": "Chittagong Development Authority",
-                "Procuring_Entity_Name": "Management Information System (MIS)",
-                "Procurement_Method": "Open Tendering Method (OTM)",
-                "Tender_Proposal_Package_No": "CDA/MIS/ITS/23/04",
-                "Brief_Description_of_Works": "Maintenance and support work for IT system in CDA",
-                "Authorised_Officer": { "Name": "Md Mostafa Jamal", "Designation": "System Analyst" },
-                "Contractor_Name": "Pending / Unknown",
                 "Contract_Value_BDT": 0,
-                "Eligibility_Criteria": [
-                    "Minimum 10 Year of experience as Nationwide ISP",
-                    "Minimum 02 maintenance work in Government/Semi Government organization",
-                    "Must have regional office in Chattogram",
-                    "Must have qualified System & Support team with following Vendor certifications: (CCNA/CCNP/MTCNA, RHCSA/RHCE/CEH, MCP/MCSA/MCSE/MTCRE)"
-                ],
-                "Bidding_Statistics": { "Tenders_Sold": 0, "Tenders_Received": 0, "Tenders_Responsive": 0 },
+                "Eligibility_Criteria": [ "Minimum 10 Year of experience as Nationwide ISP", "Must have regional office in Chattogram" ],
                 "Risk_Level": "HIGH",
                 "rules": ["tailored", "monopoly"],
-                "Red_Flag_Rationale": {
-                    "tailored": "Restricts competition to firms already in Chattogram. Mandates unusually strict combination of proprietary certifications (CCNA, RHCE, CEH) for a basic 30 lac IT maintenance contract.",
-                    "monopoly": "Due to highly restrictive criteria, early indicators suggest a single bidder outcome."
-                },
+                "Red_Flag_Rationale": { "tailored": "Restricts competition to firms already in Chattogram." },
                 "Evidence_PDF_Path": "./Tender Notice_PDFs/CDA_Tender_924201.pdf"
             },
             {
                 "Tender_Proposal_ID": 15000,
                 "Organization": "Power Grid Company of Bangladesh Ltd. (PGCB)",
-                "Procurement_Method": "OTM",
-                "Brief_Description_of_Contract": "4 nos IP based security surveillance system camera supply",
-                "Contractor_Name": "OptiNet",
                 "Contract_Value_BDT": 280119,
-                "Authorised_Officer": { "Name": "Mir Abul Kashem", "Designation": "Executive Engineer" },
-                "Eligibility_Criteria": ["Not explicitly detailed in the Contract Award Notice."],
-                "Bidding_Statistics": { "Tenders_Sold": 3, "Tenders_Received": 2, "Tenders_Responsive": 2 },
                 "Risk_Level": "LOW",
                 "rules": [],
-                "Red_Flag_Rationale": {
-                    "monopoly": "Passed. Multiple bids were sold (3), received (2), and deemed responsive (2), indicating healthy competition."
-                },
                 "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_15000.pdf"
             },
             {
                 "Tender_Proposal_ID": 18994,
                 "Organization": "Rajdhani Unnayan Kartripakkha (RAJUK)",
-                "Procurement_Method": "OTM",
-                "Brief_Description_of_Contract": "15 Mbps Internet Connectivity for RAJUK",
-                "Contractor_Name": "ConnectBD Limited",
                 "Contract_Value_BDT": 1512000,
-                "Authorised_Officer": { "Name": "Md. Anwar Hossain", "Designation": "Chief Engineer" },
-                "Eligibility_Criteria": ["Not explicitly detailed in the Contract Award Notice."],
-                "Bidding_Statistics": { "Tenders_Sold": 2, "Tenders_Received": 1, "Tenders_Responsive": 1 },
                 "Risk_Level": "HIGH",
                 "rules": ["monopoly"],
-                "Red_Flag_Rationale": {
-                    "monopoly": "Monopoly Funneling detected: 2 documents were sold, but exactly 1 was received and deemed responsive. Triggers rule regarding lack of effective competition."
-                },
                 "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_18994.pdf"
             }
         ];
 
         window.onload = () => { initializeData(); };
 
-        // 1. NORMALIZE DATA (Handles robust Rule extraction and String splitting)
+        // 1. NORMALIZE DATA
         function normalizeLoadedData(payload) {
             const records = Array.isArray(payload) ? payload : (payload.Merged_Database || payload.data || []);
-
             return records.map((item, index) => {
                 const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
                 
-                // Robust rule extraction for strings and arrays
                 let rulesArray = [];
                 let rawRules = item.rules || item.Violated_Rules || item.Rule_Reference || [];
-                
-                if (typeof rawRules === 'string') {
-                    rulesArray = rawRules.split(',');
-                } else if (Array.isArray(rawRules)) {
-                    rulesArray = rawRules;
-                }
+                if (typeof rawRules === 'string') rulesArray = rawRules.split(',');
+                else if (Array.isArray(rawRules)) rulesArray = rawRules;
 
                 const rules = rulesArray.map(r => String(r).trim());
 
@@ -468,13 +425,11 @@
                 currentFilteredData = [...globalData];
                 updateDashboard();
             } catch (localError) {
-                console.warn('Local data file unavailable, trying GitHub fallback.', localError);
                 try {
                     globalData = normalizeLoadedData(await loadDataFromGitHub());
                     currentFilteredData = [...globalData];
                     updateDashboard();
                 } catch (gitError) {
-                    console.warn('GitHub failed, loading local default structure.', gitError);
                     globalData = normalizeLoadedData(DEFAULT_DATABASE);
                     currentFilteredData = [...globalData];
                     updateDashboard();
@@ -485,7 +440,7 @@
         // 2. SAVE & EXPORT
         async function saveDirectlyToGitHub() {
             if (!savedGithubToken) {
-                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT) to save directly:\n(It will be saved in your browser for future use)");
+                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT):");
                 if (!savedGithubToken) return false;
                 localStorage.setItem('egp_github_pat', savedGithubToken);
             }
@@ -497,7 +452,7 @@
                 if (getResponse.status === 401) {
                     localStorage.removeItem('egp_github_pat');
                     savedGithubToken = null;
-                    throw new Error("Invalid Token! Please try again.");
+                    throw new Error("Invalid Token!");
                 }
                 
                 let fileSha = null;
@@ -514,7 +469,7 @@
                 });
 
                 if (updateResponse.ok) {
-                    alert("✅ Success! Database successfully updated on GitHub.");
+                    alert("✅ Database successfully updated on GitHub.");
                     return true;
                 } else throw new Error((await updateResponse.json()).message);
             } catch (error) {
@@ -523,15 +478,13 @@
             }
         }
 
-        // 3. UI RENDERING (WITH LIVE KEYWORD RULE COUNTERS)
+        // 3. UI RENDERING
         function updateDashboard() {
             document.getElementById('totalContracts').innerText = currentFilteredData.length;
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
             
-            // Count Violated Rules and update Top Matrix dynamically based on keywords
             let ruleCounts = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
-            
             currentFilteredData.forEach(item => {
                 if (item.rules && Array.isArray(item.rules)) {
                     item.rules.forEach(r => {
@@ -549,10 +502,9 @@
             });
 
             for (let key in ruleCounts) {
-                let countElement = document.getElementById(`count-${key}`);
-                if (countElement) countElement.innerText = ruleCounts[key];
+                let el = document.getElementById(`count-${key}`);
+                if (el) el.innerText = ruleCounts[key];
             }
-
             renderTable();
         }
 
@@ -590,7 +542,6 @@
             document.getElementById('paginationControls').style.display = totalPages > 1 ? 'flex' : 'none';
             document.getElementById('currentPageLabel').innerText = currentPage;
             document.getElementById('totalPagesLabel').innerText = totalPages;
-            document.getElementById('totalRowsLabel').innerText = currentFilteredData.length;
             document.getElementById('prevPageBtn').disabled = currentPage === 1;
             document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
         }
@@ -598,86 +549,67 @@
         function changePage(direction) { currentPage += direction; renderTable(); }
 
         // 4. THE SPLIT-SCREEN VERIFICATION MODAL
-        function buildEvidenceCandidates(pdfPath) {
-            if (!pdfPath) return [];
-            const cleanPath = String(pdfPath).trim();
-            if (!cleanPath) return [];
-
-            if (/^https?:\/\//i.test(cleanPath) || cleanPath.startsWith('data:') || cleanPath.startsWith('/') || cleanPath.startsWith('./') || cleanPath.startsWith('../')) {
-                return [cleanPath];
-            }
-
-            // Fallback scanner for both folders
-            return [
-                `./${cleanPath}`,
-                `./Tender Notice_PDFs/${cleanPath}`,
-                `./Contract_Awards_PDFs/${cleanPath}`,
-                `./Tender%20Notice_PDFs/${cleanPath}`,
-                `./Contract%20Awards_PDFs/${cleanPath}`
-            ].filter((value, index, values) => values.indexOf(value) === index);
-        }
-
-        async function resolveEvidenceUrl(pdfPath) {
-            const candidates = buildEvidenceCandidates(pdfPath);
-            for (const candidate of candidates) {
-                try {
-                    const response = await fetch(candidate, { method: 'HEAD' });
-                    if (response.ok) return candidate;
-                } catch (error) {
-                    console.warn('PDF probe failed for', candidate, error);
-                }
-            }
-            return candidates[0] || ''; // Fallback to raw string if all fail
-        }
-
-        // LOAD PDF MANUALLY ON BUTTON CLICK
-        async function reloadPdfViewer() {
-            let manualPath = document.getElementById('editPdfPath').value;
+        function reloadPdfViewer() {
+            let folder = document.getElementById('editPdfFolder').value;
+            let filename = document.getElementById('editPdfPath').value.trim();
+            
             const pdfFrame = document.getElementById('pdfFrame');
             const noPdfMsg = document.getElementById('noPdfMessage');
             const pdfHeader = document.getElementById('pdfHeader');
             const pdfPopOut = document.getElementById('pdfPopOut');
             const pdfFallbackLink = document.getElementById('pdfFallbackLink');
 
-            if (manualPath) {
-                const resolvedUrl = await resolveEvidenceUrl(manualPath);
-                const viewUrl = resolvedUrl ? encodeURI(resolvedUrl) : '';
+            if (filename !== "") {
+                let fullPath = "./" + folder + filename;
+                let encodedUrl = encodeURI(fullPath);
                 
-                pdfFrame.data = viewUrl;
-                pdfFrame.setAttribute('data', viewUrl);
-                pdfPopOut.href = viewUrl;
-                if(pdfFallbackLink) pdfFallbackLink.href = viewUrl;
+                pdfFrame.data = encodedUrl;
+                pdfFrame.setAttribute('data', encodedUrl);
+                pdfPopOut.href = encodedUrl;
+                if(pdfFallbackLink) pdfFallbackLink.href = encodedUrl;
                 
                 pdfFrame.style.display = 'block';
                 pdfHeader.style.display = 'block';
                 noPdfMsg.style.display = 'none';
+            } else {
+                pdfFrame.data = "";
+                pdfFrame.setAttribute('data', '');
+                pdfFrame.style.display = 'none';
+                pdfHeader.style.display = 'none';
+                noPdfMsg.style.display = 'flex';
             }
         }
 
-        async function openInspectorModal(id) {
+        function openInspectorModal(id) {
             currentTenderIdInModal = id;
             let item = globalData.find(t => t.id == id);
             if(!item) return;
             
-            // Set basic verification fields
             document.getElementById('footprintID').innerText = item.id;
-            
-            // Editable Inputs
             document.getElementById('editContractor').value = item.contractor;
             document.getElementById('editValue').value = item.value;
             document.getElementById('editRisk').value = item.risk;
-            document.getElementById('editPdfPath').value = item.Evidence_PDF_Path || "";
             document.getElementById('editNotes').value = item.Forensic_Notes || "";
             
-            // Risk Meter UI
             let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
             document.getElementById('riskMeterFill').style.width = riskScore;
             document.getElementById('riskScoreText').innerText = riskScore;
 
-            // Trigger the auto-load of the PDF based on value
-            await reloadPdfViewer();
+            // Parse PDF Path for Folder Dropdown
+            let dbPath = item.Evidence_PDF_Path || "";
+            if (dbPath.includes('Contract_Awards_PDFs')) {
+                document.getElementById('editPdfFolder').value = "Contract_Awards_PDFs/";
+                document.getElementById('editPdfPath').value = dbPath.split('/').pop();
+            } else if (dbPath.includes('Tender Notice_PDFs')) {
+                document.getElementById('editPdfFolder').value = "Tender Notice_PDFs/";
+                document.getElementById('editPdfPath').value = dbPath.split('/').pop();
+            } else {
+                document.getElementById('editPdfFolder').value = "";
+                document.getElementById('editPdfPath').value = dbPath.replace('./', '');
+            }
 
-            // Render Eligibility Criteria Array
+            reloadPdfViewer();
+
             const eligList = document.getElementById('modalEligibilityList');
             eligList.innerHTML = '';
             if (item.Eligibility_Criteria && Array.isArray(item.Eligibility_Criteria)) {
@@ -690,77 +622,37 @@
                 eligList.innerHTML = '<li style="color:var(--text-muted);">No distinct eligibility criteria extracted.</li>';
             }
 
-            // ==========================================
-            // RENDER EXPLICIT FORENSIC RULES & RATIONALE
-            // ==========================================
             const forensicPanel = document.getElementById('forensicPanel');
             const rationaleBox = document.getElementById('modalRedFlagRationale');
-            rationaleBox.innerHTML = ''; // Clear previous content
+            rationaleBox.innerHTML = '';
 
             if (item.rules && item.rules.length > 0) {
                 forensicPanel.className = 'forensic-panel';
-                
-                // Iterate through every logged rule and build a distinct block for it
                 item.rules.forEach(ruleKey => {
                     let ruleDetails = RULE_DETAILS[ruleKey] ? RULE_DETAILS[ruleKey].title : ruleKey.toUpperCase();
-                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) 
-                                            ? item.Red_Flag_Rationale[ruleKey] 
-                                            : "Flagged by AI engine for manual review.";
-                    
+                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) ? item.Red_Flag_Rationale[ruleKey] : "Flagged by AI engine for manual review.";
                     let ruleBlock = document.createElement('div');
                     ruleBlock.style.marginBottom = '10px';
                     ruleBlock.style.padding = '8px 12px';
                     ruleBlock.style.background = 'rgba(0,0,0,0.2)';
                     ruleBlock.style.borderLeft = '3px solid #ef4444';
                     ruleBlock.style.borderRadius = '4px';
-                    
-                    ruleBlock.innerHTML = `
-                        <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 ${ruleDetails}</div>
-                        <div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${specificRationale}</div>
-                    `;
+                    ruleBlock.innerHTML = `<div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 ${ruleDetails}</div><div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${specificRationale}</div>`;
                     rationaleBox.appendChild(ruleBlock);
                 });
-                
-                // Catch any extra rationales in the object that aren't explicitly in the rules array
-                if (item.Red_Flag_Rationale) {
-                    Object.keys(item.Red_Flag_Rationale).forEach(key => {
-                        if (!item.rules.includes(key)) {
-                            let ruleBlock = document.createElement('div');
-                            ruleBlock.style.marginBottom = '10px';
-                            ruleBlock.style.padding = '8px 12px';
-                            ruleBlock.style.background = 'rgba(0,0,0,0.2)';
-                            ruleBlock.style.borderLeft = '3px solid #ef4444';
-                            ruleBlock.style.borderRadius = '4px';
-                            ruleBlock.innerHTML = `
-                                <div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 Additional Flag: ${key}</div>
-                                <div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${item.Red_Flag_Rationale[key]}</div>
-                            `;
-                            rationaleBox.appendChild(ruleBlock);
-                        }
-                    });
-                }
             } else {
                 forensicPanel.className = 'forensic-panel passed';
-                let passedMsg = (item.Red_Flag_Rationale && Object.values(item.Red_Flag_Rationale).length > 0) 
-                                ? Object.values(item.Red_Flag_Rationale).join(" ") 
-                                : "Passed: No immediate red flags detected during automated scan.";
-                rationaleBox.innerHTML = `<div style="color: #10b981; font-weight: 600; font-size: 14px;">✅ ${passedMsg}</div>`;
+                rationaleBox.innerHTML = `<div style="color: #10b981; font-weight: 600; font-size: 14px;">✅ Passed: No immediate red flags detected.</div>`;
             }
 
-            // Exhaustive Metadata Iteration
             const metaList = document.getElementById('extendedMetadataList');
             metaList.innerHTML = '';
             const skipKeys = ['id', 'entity', 'contractor', 'risk', 'value', 'rules', 'Eligibility_Criteria', 'Red_Flag_Rationale', 'Evidence_PDF_Path', 'Forensic_Notes'];
-            
             for (const [key, val] of Object.entries(item)) {
                 if (skipKeys.includes(key) || val === undefined || val === null) continue;
-                
                 let displayVal = val;
-                if (typeof val === 'object') {
-                    displayVal = Object.entries(val).map(([k, v]) => `<br>&nbsp;&nbsp;↳ <i>${k}</i>: <b>${v}</b>`).join('');
-                } else {
-                    displayVal = `<b>${val}</b>`;
-                }
+                if (typeof val === 'object') displayVal = Object.entries(val).map(([k, v]) => `<br>&nbsp;&nbsp;↳ <i>${k}</i>: <b>${v}</b>`).join('');
+                else displayVal = `<b>${val}</b>`;
                 
                 let div = document.createElement('div');
                 div.style.background = 'rgba(255,255,255,0.02)';
@@ -782,7 +674,11 @@
                 globalData[itemIndex].Contractor_Name = document.getElementById('editContractor').value;
                 globalData[itemIndex].Contract_Value_BDT = Number(document.getElementById('editValue').value.replace(/,/g, '')); 
                 globalData[itemIndex].Risk_Level = document.getElementById('editRisk').value;
-                globalData[itemIndex].Evidence_PDF_Path = document.getElementById('editPdfPath').value;
+                
+                let folder = document.getElementById('editPdfFolder').value;
+                let filename = document.getElementById('editPdfPath').value.trim();
+                globalData[itemIndex].Evidence_PDF_Path = filename ? ("./" + folder + filename) : "";
+                
                 globalData[itemIndex].Forensic_Notes = document.getElementById('editNotes').value;
                 
                 globalData = normalizeLoadedData(globalData);
