@@ -82,6 +82,15 @@
         .close-btn:hover { color: var(--netra-red); }
 
         #networkGraph { width: 100%; height: 75vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
+
+        .pdf-viewer-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+        .pdf-link-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .pdf-viewer { width: 100%; min-height: 60vh; background: #0b1220; padding: 12px; border: 1px solid var(--border-dark); border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: auto; }
+        .pdf-viewer canvas { width: 100%; height: auto; display: block; margin: 0 auto; }
+        .pdf-action-btn { white-space: nowrap; }
+        .btn-action.pdf-open { background: #2563eb; }
+        .btn-action.pdf-open:hover { background: #1d4ed8; }
+        .pdf-status { color: var(--text-muted); font-size: 13px; margin-top: 12px; }
         
         .loader { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--neon-blue); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px;}
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -195,6 +204,32 @@
         </div>
     </div>
 
+    <!-- PDF Viewer Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content modal-wide">
+            <span class="close-btn" onclick="App.closeModal('pdfModal')">&times;</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                <div>
+                    <h2 style="margin:0; color:var(--neon-blue);">📄 Tender PDF Viewer</h2>
+                    <p id="pdf-title" style="margin:4px 0 0 0; color:var(--text-muted); font-size:13px;"></p>
+                </div>
+                <div class="pdf-link-row">
+                    <a id="pdfOpenRemote" class="btn-outline" target="_blank" rel="noreferrer noopener">Open GitHub PDF</a>
+                    <button class="btn-action pdf-open pdf-action-btn" onclick="App.openPdfInNewTab()">Open Local PDF</button>
+                </div>
+            </div>
+            <div class="pdf-viewer-toolbar">
+                <button class="btn-outline" onclick="App.changePdfPage(-1)">Prev</button>
+                <span id="pdfPageDisplay" style="font-size:14px; color:#fff;">Page 0 / 0</span>
+                <button class="btn-outline" onclick="App.changePdfPage(1)">Next</button>
+            </div>
+            <div class="pdf-viewer" id="pdfViewer">
+                <canvas id="pdfCanvas"></canvas>
+            </div>
+            <p id="pdf-status" class="pdf-status"></p>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT APPLICATION ARCHITECTURE -->
     <script>
         /**
@@ -204,8 +239,11 @@
             GITHUB_USER: "tusher984",
             GITHUB_REPO: "EGP",
             FILE_PATH: "Procurement_Database.json",
-            API_URL: () => `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.FILE_PATH}`
-        };
+            PDF_FOLDERS: ["Contract_Awards_PDFs", "Tender Notice_PDFs"],
+            API_URL: () => `https://api.github.com/repos/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.FILE_PATH}`,
+            LOCAL_PDF_URLS: (file) => CONFIG.PDF_FOLDERS.map(folder => `./${encodeURIComponent(folder)}/${encodeURIComponent(file)}`),
+            REMOTE_PDF_URLS: (file) => CONFIG.PDF_FOLDERS.map(folder => `https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`)
+        };  
 
         const RISK = { HIGH: 'HIGH', MEDIUM: 'MEDIUM', LOW: 'LOW' };
 
@@ -225,6 +263,10 @@
             originalJson: null,
             activeTenderId: null,
             activeRuleFilter: null,
+            pdfDoc: null,
+            currentPdfPage: 1,
+            totalPdfPages: 0,
+            autoSaveTimer: null,
             sessionToken: null // Stored in RAM only. Never in LocalStorage.
         };
 
@@ -253,8 +295,12 @@
                 risk: document.getElementById('edit-risk'),
                 btn: document.getElementById('btn-save'),
                 status: document.getElementById('save-status')
-            }
-        };
+            },
+            pdf: document.getElementById('pdfModal'),
+            pdfTitle: document.getElementById('pdf-title'),
+            pdfStatus: document.getElementById('pdf-status'),
+            pdfPageDisplay: document.getElementById('pdfPageDisplay')
+        }; 
 
         /**
          * 4. CORE APPLICATION LOGIC
@@ -278,11 +324,21 @@
                     value: item.Contract_Value_BDT || item.Document_Price_BDT || item.value || 0,
                     risk: ['HIGH','MEDIUM','LOW'].includes(riskValue) ? riskValue : (riskValue === 'YES' ? 'HIGH' : 'LOW'),
                     rules: item.Rule_Reference ? String(item.Rule_Reference).split(/[;,]/).map(r => r.trim()).filter(Boolean) : [],
+                    pdfFile: this.extractPdfFile(item),
                     raw: item
                 };
             },
 
-            applyNormalizedChangesToRaw(target) {
+            extractPdfFile(item) {
+                const sourceFile = String(item.Source_File || '').trim();
+                if (sourceFile.toLowerCase().endsWith('.pdf')) return sourceFile;
+
+                const merged = String(item.Source_Files_Merged || '');
+                const candidates = merged.split(/[|,;]+/).map(s => s.trim()).filter(Boolean);
+                return candidates.find(name => name.toLowerCase().endsWith('.pdf')) || '';
+            },
+
+            applyNormalizedChangesToRaw(target) { 
                 if (!target || !target.raw || typeof target.raw !== 'object') return;
                 target.raw.Supplier_Name = target.contractor;
                 target.raw.Contractor = target.contractor;
@@ -383,6 +439,50 @@
                 }
             },
 
+            bindInspectorEvents() {
+                const fields = [DOM.edit.contractor, DOM.edit.entity, DOM.edit.val, DOM.edit.risk];
+                fields.forEach(field => {
+                    field.oninput = () => this.applyInspectorChanges();
+                });
+            },
+
+            applyInspectorChanges() {
+                const target = State.data.find(t => t.id == State.activeTenderId);
+                if (!target) return;
+
+                target.contractor = DOM.edit.contractor.value.trim();
+                target.entity = DOM.edit.entity.value.trim();
+                target.value = DOM.edit.val.value.replace(/,/g, '');
+                target.risk = DOM.edit.risk.value;
+                this.applyNormalizedChangesToRaw(target);
+                this.renderMetrics();
+                this.renderTable();
+
+                DOM.edit.status.innerText = State.sessionToken
+                    ? '📝 Changes applied; auto-save scheduled.'
+                    : '📝 Changes applied locally. Enter GitHub token and click Save to persist.';
+                DOM.edit.status.style.color = State.sessionToken ? 'var(--neon-blue)' : 'var(--warning)';
+
+                if (State.sessionToken) {
+                    this.scheduleAutoSave();
+                }
+            },
+
+            scheduleAutoSave() {
+                if (State.autoSaveTimer) {
+                    clearTimeout(State.autoSaveTimer);
+                }
+                State.autoSaveTimer = setTimeout(async () => {
+                    DOM.edit.status.innerText = '⏳ Auto-saving changes...';
+                    DOM.edit.status.style.color = 'var(--neon-blue)';
+                    const success = await this.secureGitHubSave();
+                    if (success) {
+                        DOM.edit.status.innerText = '✅ Auto-saved changes to GitHub.';
+                        DOM.edit.status.style.color = 'var(--success)';
+                    }
+                }, 1800);
+            },
+
             // ================= DATA MUTATION =================
             async verifyAndSave() {
                 const target = State.data.find(t => t.id == State.activeTenderId);
@@ -398,6 +498,10 @@
                 // Attempt Remote Save
                 const success = await this.secureGitHubSave();
                 if(success) {
+                    if (State.autoSaveTimer) {
+                        clearTimeout(State.autoSaveTimer);
+                        State.autoSaveTimer = null;
+                    }
                     setTimeout(() => this.closeModal('inspectorModal'), 1000);
                     this.applyFilters();
                 }
@@ -448,6 +552,9 @@
                 DOM.tableBody.innerHTML = State.filtered.slice(0, 100).map(item => {
                     const rClass = `risk-${item.risk || 'LOW'}`;
                     const vStr = item.value ? parseInt(item.value).toLocaleString('en-IN') : '0';
+                    const pdfAction = item.pdfFile
+                        ? `<button class="btn-outline" onclick="App.openPdfViewer('${item.id}')">PDF</button>`
+                        : `<button class="btn-clear" disabled style="padding:4px 10px; opacity:0.6;">No PDF</button>`;
                     return `
                         <tr>
                             <td><strong>${item.id || '-'}</strong></td>
@@ -455,7 +562,12 @@
                             <td style="color:var(--neon-blue);">${item.contractor || '-'}</td>
                             <td><span class="risk-badge ${rClass}">${item.risk || 'LOW'}</span></td>
                             <td style="text-align:right; font-family:monospace;">৳ ${vStr}</td>
-                            <td style="text-align:center;"><button class="btn-outline" onclick="App.openInspector('${item.id}')">Edit</button></td>
+                            <td style="text-align:center;">
+                                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                                    ${pdfAction}
+                                    <button class="btn-outline" onclick="App.openInspector('${item.id}')">Edit</button>
+                                </div>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -523,6 +635,90 @@
                 new vis.Network(container, data, options);
             },
 
+            async openPdfViewer(id) {
+                const item = State.data.find(t => t.id == id);
+                if (!item) return alert('Tender record not found.');
+                if (!item.pdfFile) return alert('No PDF available for this record.');
+
+                State.activeTenderId = id;
+                DOM.pdfTitle.innerText = `${item.id} — ${item.pdfFile}`;
+                const localUrls = CONFIG.LOCAL_PDF_URLS(item.pdfFile);
+                const remoteUrls = CONFIG.REMOTE_PDF_URLS(item.pdfFile);
+                DOM.pdfOpenRemote.href = remoteUrls[0];
+                DOM.pdfStatus.innerText = 'Loading PDF...';
+                DOM.pdfPageDisplay.innerText = 'Page 0 / 0';
+                DOM.pdf.style.display = 'flex';
+
+                let loaded = false;
+                for (const url of [...localUrls, ...remoteUrls]) {
+                    try {
+                        await this.loadPdfFromUrl(url);
+                        loaded = true;
+                        if (remoteUrls.includes(url)) {
+                            DOM.pdfOpenRemote.href = url;
+                            DOM.pdfStatus.innerText = 'Loaded from GitHub.';
+                        } else {
+                            DOM.pdfStatus.innerText = 'Loaded from local folder.';
+                        }
+                        break;
+                    } catch (err) {
+                        console.warn('PDF load failed:', url, err);
+                    }
+                }
+
+                if (!loaded) {
+                    DOM.pdfStatus.innerText = 'Unable to load PDF from local or GitHub. Use the manual link above.';
+                }
+            },
+
+            async loadPdfFromUrl(url) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const loadingTask = pdfjsLib.getDocument(url);
+                State.pdfDoc = await loadingTask.promise;
+                State.currentPdfPage = 1;
+                State.totalPdfPages = State.pdfDoc.numPages;
+                this.renderPdfPage(State.currentPdfPage);
+            },
+
+            renderPdfPage(pageNum) {
+                if (!State.pdfDoc) return;
+                pageNum = Math.max(1, Math.min(pageNum, State.totalPdfPages));
+                State.currentPdfPage = pageNum;
+                State.pdfDoc.getPage(pageNum).then(page => {
+                    const viewport = page.getViewport({ scale: 1.3 });
+                    const canvas = document.getElementById('pdfCanvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    const renderContext = { canvasContext: context, viewport };
+                    page.render(renderContext);
+                    DOM.pdfPageDisplay.innerText = `Page ${State.currentPdfPage} / ${State.totalPdfPages}`;
+                }).catch(err => {
+                    console.error('Render PDF page failed', err);
+                    DOM.pdfStatus.innerText = 'Failed to render PDF page.';
+                });
+            },
+
+            changePdfPage(delta) {
+                if (!State.pdfDoc) return;
+                const pageNumber = State.currentPdfPage + delta;
+                if (pageNumber < 1 || pageNumber > State.totalPdfPages) return;
+                this.renderPdfPage(pageNumber);
+            },
+
+            openPdfInNewTab() {
+                const item = State.data.find(t => t.id == State.activeTenderId);
+                if (!item || !item.pdfFile) return;
+                const localUrls = CONFIG.LOCAL_PDF_URLS(item.pdfFile);
+                if (localUrls.length) {
+                    return window.open(localUrls[0], '_blank');
+                }
+                const remoteUrls = CONFIG.REMOTE_PDF_URLS(item.pdfFile);
+                if (remoteUrls.length) {
+                    return window.open(remoteUrls[0], '_blank');
+                }
+            },
+
             // ================= UTILITIES =================
             toggleRuleFilter(ruleId, element) {
                 const isActive = element.classList.contains('active-rule');
@@ -556,6 +752,7 @@
                     DOM.edit.risk.value = item.risk || RISK.LOW;
                     DOM.edit.status.innerText = '';
                     DOM.modals.inspector.style.display = 'flex';
+                    this.bindInspectorEvents();
                 }
             },
 
