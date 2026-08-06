@@ -106,29 +106,30 @@
         </header>
 
         <div class="evidence-section">
-            <h3>e-GP Forensic Core Rules</h3>
+            <h3>Forensic Audit Rules &amp; Violation Checkpoints</h3>
             <div class="evidence-grid">
-                <div class="evidence-item" onclick="filterByRule('collusion', this)">
-                    <strong>১. Collusion & Bid-Rigging <span class="rule-count" id="count-collusion">0</span></strong>
-                    <p>Arrangements to reduce tenders, fix prices, or multiple bids from jointly liable firms.</p>
+                <div class="evidence-item" onclick="filterByRule('pricing', this)">
+                    <strong>১. Pricing &amp; Financial Evaluation <span class="rule-count" id="count-pricing">0</span></strong>
+                    <p>Price caps, liquid asset thresholds, annual turnover, and tender capacity calculations.</p>
                 </div>
-                <div class="evidence-item" onclick="filterByRule('conflict', this)">
-                    <strong>২. Conflicts of Interest <span class="rule-count" id="count-conflict">0</span></strong>
-                    <p>Shared control, identical legal representation, or consultants bidding as contractors.</p>
+                <div class="evidence-item" onclick="filterByRule('anti_competitive', this)">
+                    <strong>২. Anti-Competitive &amp; Eligibility Restrictions <span class="rule-count" id="count-anti_competitive">0</span></strong>
+                    <p>Domestic producer exclusions, geographic limits, origin restrictions, and JV bans.</p>
                 </div>
-                <div class="evidence-item" onclick="filterByRule('alb', this)">
-                    <strong>৩. Abnormally Low Bids <span class="rule-count" id="count-alb">0</span></strong>
-                    <p>Tenders falling mathematically below the Weighted Standard Deviation limit.</p>
+                <div class="evidence-item" onclick="filterByRule('transparency', this)">
+                    <strong>৩. Transparency &amp; Public Disclosure <span class="rule-count" id="count-transparency">0</span></strong>
+                    <p>Beneficial ownership disclosure, single responsive bidder anomalies, and disclosure gaps.</p>
                 </div>
-                <div class="evidence-item" onclick="filterByRule('criteria', this)">
-                    <strong>৪. Rated Criteria Violations <span class="rule-count" id="count-criteria">0</span></strong>
-                    <p>Misapplied risk/value weightings or illegal domestic preference margins.</p>
+                <div class="evidence-item" onclick="filterByRule('integrity', this)">
+                    <strong>৪. Integrity &amp; Ethical Rules <span class="rule-count" id="count-integrity">0</span></strong>
+                    <p>Corrupt, fraudulent, collusive, coercive, and obstructive practices.</p>
                 </div>
-                <div class="evidence-item" onclick="filterByRule('subcontract', this)">
-                    <strong>৫. Subcontracting Breaches <span class="rule-count" id="count-subcontract">0</span></strong>
-                    <p>Unauthorized post-contract subcontracting or exceeding the 30% contract value limit.</p>
+                <div class="evidence-item" onclick="filterByRule('statutory', this)">
+                    <strong>৫. Statutory Documentation &amp; Qualification <span class="rule-count" id="count-statutory">0</span></strong>
+                    <p>Trade license, TIN/VAT compliance, and authenticated experience evidence.</p>
                 </div>
             </div>
+            <p style="margin: 15px 0 0 0; font-size: 13px; color: var(--text-muted);">Checkpoint focus: arbitrary exclusions, discriminatory eligibility, missing ownership data, integrity breaches, and incomplete statutory records.</p>
         </div>
 
         <div class="summary-grid">
@@ -248,11 +249,11 @@
                     <div class="audit-checklist" id="manualRuleFlags">
                         <h4>🚩 Manual Forensic Rule Flagging</h4>
                         <div class="checklist-grid">
-                            <label class="check-item"><input type="checkbox" value="collusion"> 1. Collusion & Bid-Rigging</label>
-                            <label class="check-item"><input type="checkbox" value="conflict"> 2. Conflicts of Interest</label>
-                            <label class="check-item"><input type="checkbox" value="alb"> 3. Abnormally Low Bids (ALB)</label>
-                            <label class="check-item"><input type="checkbox" value="criteria"> 4. Rated Criteria Violations</label>
-                            <label class="check-item"><input type="checkbox" value="subcontract"> 5. Subcontracting Breaches</label>
+                            <label class="check-item"><input type="checkbox" value="pricing"> 1. Pricing &amp; Financial Evaluation</label>
+                            <label class="check-item"><input type="checkbox" value="anti_competitive"> 2. Anti-Competitive &amp; Eligibility Restrictions</label>
+                            <label class="check-item"><input type="checkbox" value="transparency"> 3. Transparency &amp; Public Disclosure</label>
+                            <label class="check-item"><input type="checkbox" value="integrity"> 4. Integrity &amp; Ethical Rules</label>
+                            <label class="check-item"><input type="checkbox" value="statutory"> 5. Statutory Documentation &amp; Qualification</label>
                         </div>
                     </div>
 
@@ -271,32 +272,57 @@
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
 
-        // Core 5 Rules Definition
+        // Forensic audit rules and violation checkpoints
         const RULE_DETAILS = {
-            collusion: { 
-                title: "১. Collusion & Bid-Rigging", 
-                enacted: "Competition Act / e-PG3A", 
-                purpose: "Arrangements designed to artificially reduce the number of submitted tenders or fix prices at non-competitive levels. Prohibits multiple tenders for a single lot or bids from jointly liable firms." 
+            pricing: {
+                title: "১. Pricing & Financial Evaluation",
+                enacted: "e-PG3A / Procurement Rules",
+                purpose: "Flags arbitrary price-cap clauses, inflated liquid asset or working capital requirements, unjustified turnover thresholds, and unfair tender-capacity calculations."
             },
-            conflict: { 
-                title: "২. Conflicts of Interest", 
-                enacted: "e-PG3A Guideline", 
-                purpose: "Triggered if a tenderer is directly/indirectly controlled by another, shares legal representation, or if a consulting firm for the project bids as a contractor." 
+            anti_competitive: {
+                title: "২. Anti-Competitive & Eligibility Restrictions",
+                enacted: "ITT Clause 5.1 / Open Tendering Principles",
+                purpose: "Flags exclusion of local manufacturers, geographic participation limits, restrictive country-of-origin clauses, and blanket bans on joint ventures without statutory basis."
             },
-            alb: { 
-                title: "৩. Abnormally Low Bids (ALB)", 
-                enacted: "e-PG3A / World Bank", 
-                purpose: "Raises material concerns regarding capability. Identified when a tender falls mathematically below the calculated lower limit using Weighted Average and Standard Deviation." 
+            transparency: {
+                title: "৩. Transparency & Public Disclosure",
+                enacted: "Format e-PG3A-C / ITT Sub-Clause 5.14",
+                purpose: "Covers beneficial ownership disclosure, publication of award information, and anomalies where only one bidder is declared responsive despite multiple document purchases."
             },
-            criteria: { 
-                title: "৪. Rated Criteria Violations", 
-                enacted: "World Bank IPF / JICA ODA", 
-                purpose: "Misapplication of Rated Criteria or weightings (e.g., High Risk/High Value must be 50%-80%). Also flags illegal preferential margins for local firms under certain loans." 
+            integrity: {
+                title: "৪. Integrity & Ethical Rules",
+                enacted: "Anti-Corruption / Procurement Integrity Framework",
+                purpose: "Covers corrupt, fraudulent, collusive, coercive, and obstructive practices that compromise procurement integrity."
             },
-            subcontract: { 
-                title: "৫. Subcontracting Breaches", 
-                enacted: "e-PG3A Guideline", 
-                purpose: "Flags intentions to subcontract more than 30% of the total value or any unauthorized subcontracting executed after entering into the contract." 
+            statutory: {
+                title: "৫. Statutory Documentation & Qualification",
+                enacted: "Statutory Compliance / Qualification Guidelines",
+                purpose: "Reviews trade license validity, TIN/VAT registration, and authenticated experience certificates issued by authorized officers."
+            },
+            collusion: {
+                title: "Legacy: Collusion & Bid-Rigging",
+                enacted: "Competition Act / e-PG3A",
+                purpose: "Arrangements designed to artificially reduce the number of submitted tenders or fix prices at non-competitive levels."
+            },
+            conflict: {
+                title: "Legacy: Conflicts of Interest",
+                enacted: "e-PG3A Guideline",
+                purpose: "Triggered where tenderers share control, legal representation, or consultants bid as contractors."
+            },
+            alb: {
+                title: "Legacy: Abnormally Low Bids (ALB)",
+                enacted: "e-PG3A / World Bank",
+                purpose: "Raises capability concerns when a tender falls below the calculated lower limit using weighted average and standard deviation."
+            },
+            criteria: {
+                title: "Legacy: Rated Criteria Violations",
+                enacted: "World Bank IPF / JICA ODA",
+                purpose: "Flags misapplied ratings, weightings, or illegal preferential margins."
+            },
+            subcontract: {
+                title: "Legacy: Subcontracting Breaches",
+                enacted: "e-PG3A Guideline",
+                purpose: "Flags unauthorized or excessive subcontracting above the prescribed threshold."
             }
         };
 
@@ -365,17 +391,18 @@
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
             
-            // 5 Rule Counters
-            let ruleCounts = { collusion:0, conflict:0, alb:0, criteria:0, subcontract:0 };
+            // Rule Counters for the new forensic categories
+            let ruleCounts = { pricing:0, anti_competitive:0, transparency:0, integrity:0, statutory:0 };
             
             currentFilteredData.forEach(item => {
                 if (item.rules && Array.isArray(item.rules)) {
                     item.rules.forEach(r => {
-                        if (r.includes('collusion')) ruleCounts.collusion++;
-                        if (r.includes('conflict')) ruleCounts.conflict++;
-                        if (r.includes('alb')) ruleCounts.alb++;
-                        if (r.includes('criteria')) ruleCounts.criteria++;
-                        if (r.includes('subcontract')) ruleCounts.subcontract++;
+                        const normalized = String(r).toLowerCase();
+                        if (normalized.includes('pricing') || normalized.includes('financial') || normalized.includes('price') || normalized.includes('turnover') || normalized.includes('capacity')) ruleCounts.pricing++;
+                        if (normalized.includes('anti') || normalized.includes('competitive') || normalized.includes('manufacturer') || normalized.includes('geographical') || normalized.includes('origin') || normalized.includes('joint')) ruleCounts.anti_competitive++;
+                        if (normalized.includes('transparency') || normalized.includes('ownership') || normalized.includes('responsive') || normalized.includes('disclosure')) ruleCounts.transparency++;
+                        if (normalized.includes('integrity') || normalized.includes('corrupt') || normalized.includes('fraud') || normalized.includes('collusive') || normalized.includes('coercive') || normalized.includes('obstructive')) ruleCounts.integrity++;
+                        if (normalized.includes('statutory') || normalized.includes('license') || normalized.includes('tin') || normalized.includes('vat') || normalized.includes('experience')) ruleCounts.statutory++;
                     });
                 }
             });
