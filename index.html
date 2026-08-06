@@ -97,6 +97,46 @@
         
         .docket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 10px; }
         #networkGraph { width: 100%; height: 70vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
+
+        /* Forensic Audit Checklist Styles */
+        .audit-checklist {
+            background: #0f172a;
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .audit-checklist h4 {
+            margin: 0 0 10px 0;
+            color: #fca5a5;
+            font-size: 14px;
+            border-bottom: 1px dashed #334155;
+            padding-bottom: 5px;
+        }
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+        .check-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .check-item input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: var(--netra-red);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -117,14 +157,38 @@
         <div class="evidence-section">
             <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স</h3>
             <div class="evidence-grid">
-                <div class="evidence-item" onclick="filterByRule('owner', this)"><strong>১. তথ্য গোপন <span class="rule-count" id="count-owner">0</span></strong><p>মালিকানার বিবরণ গোপন করা যা বেনামী কোম্পানির লক্ষণ।</p></div>
-                <div class="evidence-item" onclick="filterByRule('split', this)"><strong>২. চুক্তি বিভাজন <span class="rule-count" id="count-split">0</span></strong><p>উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট ছোট লটে ভাগ করা।</p></div>
-                <div class="evidence-item" onclick="filterByRule('cpv', this)"><strong>৩. CPV কারসাজি <span class="rule-count" id="count-cpv">0</span></strong><p>ভুল কোড দিয়ে বা ফি কমিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।</p></div>
-                <div class="evidence-item" onclick="filterByRule('tailored', this)"><strong>৪. বৈষম্যমূলক শর্ত <span class="rule-count" id="count-tailored">0</span></strong><p>নির্দিষ্ট ঠিকাদারকে কাজ দিতে এলাকার নাম বা অদ্ভুত শর্ত দেওয়া।</p></div>
-                <div class="evidence-item" onclick="filterByRule('monopoly', this)"><strong>৫. মনোপলি ফানেলিং <span class="rule-count" id="count-monopoly">0</span></strong><p>১ জনকে রেস্পন্সিভ করে কাজ দেওয়া।</p></div>
-                <div class="evidence-item" onclick="filterByRule('outlier', this)"><strong>৬. অস্বাভাবিক দর <span class="rule-count" id="count-outlier">0</span></strong><p>বাজেট লিক বা অস্বাভাবিক প্রাইস ড্রপ।</p></div>
-                <div class="evidence-item" onclick="filterByRule('meeting', this)"><strong>৭. মিটিং প্রহসন <span class="rule-count" id="count-meeting">0</span></strong><p>অস্বাভাবিক দ্রুত সময়ে প্রি-টেন্ডার মিটিং ক্লোজ করা।</p></div>
-                <div class="evidence-item" onclick="filterByRule('rigging', this)"><strong>৮. বিড-রিগিং <span class="rule-count" id="count-rigging">0</span></strong><p>শিডিউল কিনেও জমা না দেওয়ার লক্ষণ।</p></div>
+                <div class="evidence-item" onclick="filterByRule('conflict', this)">
+                    <strong>১. Conflict of Interest <span class="rule-count" id="count-conflict">0</span></strong>
+                    <p>Shared legal representatives, common control, or project consultants acting as bidders.</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('collusion', this)">
+                    <strong>২. Collusion & Bid-Rigging <span class="rule-count" id="count-collusion">0</span></strong>
+                    <p>Multiple bids from jointly liable firms or schemes to artificially reduce competition.</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('alb', this)">
+                    <strong>৩. Abnormally Low Bids <span class="rule-count" id="count-alb">0</span></strong>
+                    <p>Bids falling below the mathematical limit (Weighted Standard Deviation threshold).</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('criteria', this)">
+                    <strong>৪. Rated Criteria Violation <span class="rule-count" id="count-criteria">0</span></strong>
+                    <p>Misapplication of risk/value weightings or illegal domestic preference margins.</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('subcontract', this)">
+                    <strong>৫. Subcontracting Breach <span class="rule-count" id="count-subcontract">0</span></strong>
+                    <p>Unauthorized subcontracting or exceeding the maximum 30% contract value limit.</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('split', this)">
+                    <strong>৬. চুক্তি বিভাজন (Artificial Splitting) <span class="rule-count" id="count-split">0</span></strong>
+                    <p>উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট ছোট লটে ভাগ করা।</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('cpv', this)">
+                    <strong>৭. CPV কারসাজি (Metadata) <span class="rule-count" id="count-cpv">0</span></strong>
+                    <p>ভুল কোড দিয়ে বা ফি কমিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('monopoly', this)">
+                    <strong>৮. মনোপলি ফানেলিং (Monopoly) <span class="rule-count" id="count-monopoly">0</span></strong>
+                    <p>১ জনকে রেস্পন্সিভ করে কাজ দেওয়া।</p>
+                </div>
             </div>
         </div>
 
@@ -257,12 +321,12 @@
                                     <td><input type="text" id="editValue" class="edit-input" placeholder="Value (৳)"></td>
                                 </tr>
                                 <tr>
-                                    <td style="font-size: 12px; color:var(--text-muted);">AI Risk Level</td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">Risk Level Assessment</td>
                                     <td>
                                         <select id="editRisk" class="edit-input">
-                                            <option value="HIGH">HIGH</option>
-                                            <option value="MEDIUM">MEDIUM</option>
-                                            <option value="LOW">LOW</option>
+                                            <option value="HIGH">HIGH (Immediate Review)</option>
+                                            <option value="MEDIUM">MEDIUM (Suspicious)</option>
+                                            <option value="LOW">LOW (Cleared)</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -285,6 +349,21 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- NEW: Manual Forensic Auditing Checklist -->
+                    <div class="audit-checklist" id="manualRuleFlags">
+                        <h4>🚩 Manual Forensic Rule Flagging</h4>
+                        <div class="checklist-grid">
+                            <label class="check-item"><input type="checkbox" value="conflict"> 1. Conflict of Interest</label>
+                            <label class="check-item"><input type="checkbox" value="collusion"> 2. Collusion & Bid-Rigging</label>
+                            <label class="check-item"><input type="checkbox" value="alb"> 3. Abnormally Low Bid (ALB)</label>
+                            <label class="check-item"><input type="checkbox" value="criteria"> 4. Rated Criteria Violation</label>
+                            <label class="check-item"><input type="checkbox" value="subcontract"> 5. Subcontracting Breach</label>
+                            <label class="check-item"><input type="checkbox" value="split"> 6. Artificial Splitting</label>
+                            <label class="check-item"><input type="checkbox" value="cpv"> 7. CPV Manipulation</label>
+                            <label class="check-item"><input type="checkbox" value="monopoly"> 8. Monopoly Funneling</label>
+                        </div>
                     </div>
 
                     <div id="forensicPanel" class="forensic-panel">
@@ -332,14 +411,46 @@
         const rowsPerPage = 50;
 
         const RULE_DETAILS = {
-            owner: { title: "১. তথ্য গোপন (Beneficial Ownership)", enacted: "২০০৬ (PPA)", purpose: "প্রকৃত মালিকের নাম প্রকাশ বাধ্যতামূলক।" },
-            split: { title: "২. চুক্তি বিভাজন (Artificial Splitting)", enacted: "২০০৬ (PPA)", purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।" },
-            cpv: { title: "৩. CPV কারসাজি (Metadata Manipulation)", enacted: "ই-জিপি গাইডলাইন", purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।" },
-            tailored: { title: "৪. বৈষম্যমূলক শর্ত (Restrictive Criteria)", enacted: "২০০৮ (PPR)", purpose: "নির্দিষ্ট ঠিকাদারকে কাজ দিতে শর্ত ফিক্স করা।" },
-            monopoly: { title: "৫. মনোপলি ফানেলিং (Lack of Competition)", enacted: "২০০৬ (PPA)", purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।" },
-            outlier: { title: "৬. অস্বাভাবিক দর (Abnormally Low Bids)", enacted: "World Bank", purpose: "অস্বাভাবিক কম বা বেশি দর দেওয়া।" },
-            meeting: { title: "৭. মিটিং প্রহসন (Pre-Tender Meeting Fraud)", enacted: "PPR Schedule 2", purpose: "মিটিংয়ের সময় কারসাজি করা।" },
-            rigging: { title: "৮. বিড-রিগিং (Bid Rigging)", enacted: "Competition Act", purpose: "সিন্ডিকেট করে দরপত্র জমা দেওয়া।" }
+            conflict: { 
+                title: "১. Conflict of Interest", 
+                enacted: "e-PG3A Guideline", 
+                purpose: "Disqualifies bids where firms share common control, legal representation, or where the project consultant attempts to bid on the same project." 
+            },
+            collusion: { 
+                title: "২. Collusion & Bid-Rigging", 
+                enacted: "Competition Act & e-PG3A", 
+                purpose: "Flags schemes to fix prices at non-competitive levels or multiple submissions for a single lot by jointly liable firms." 
+            },
+            alb: { 
+                title: "৩. Abnormally Low Bids (ALB)", 
+                enacted: "World Bank / e-PG3A", 
+                purpose: "Identifies prices mathematically below the lower limit [x - Sd] calculated via National Public Procurement Price Index and Weighted Average." 
+            },
+            criteria: { 
+                title: "৪. Rated Criteria Violations", 
+                enacted: "World Bank IPF", 
+                purpose: "Flags illegal domestic preferences or failure to apply mandatory weightings (e.g., 50%-80% for High Risk/High Value procurements)." 
+            },
+            subcontract: { 
+                title: "৫. Subcontracting Breaches", 
+                enacted: "e-PG3A Guideline", 
+                purpose: "Flags unauthorized post-contract subcontracting or subcontracting portions that exceed 30% of the total goods value." 
+            },
+            split: { 
+                title: "৬. চুক্তি বিভাজন (Artificial Splitting)", 
+                enacted: "২০০৬ (PPA)", 
+                purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।" 
+            },
+            cpv: { 
+                title: "৭. CPV কারসাজি (Metadata Manipulation)", 
+                enacted: "ই-জিপি গাইডলাইন", 
+                purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।" 
+            },
+            monopoly: { 
+                title: "৮. মনোপলি ফানেলিং (Lack of Competition)", 
+                enacted: "২০০৬ (PPA)", 
+                purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।" 
+            }
         };
 
         const DEFAULT_DATABASE = [
@@ -349,8 +460,8 @@
                 "Contract_Value_BDT": 0,
                 "Eligibility_Criteria": [ "Minimum 10 Year of experience as Nationwide ISP", "Must have regional office in Chattogram" ],
                 "Risk_Level": "HIGH",
-                "rules": ["tailored", "monopoly"],
-                "Red_Flag_Rationale": { "tailored": "Restricts competition to firms already in Chattogram." },
+                "rules": ["criteria", "monopoly"],
+                "Red_Flag_Rationale": { "criteria": "Restricts competition to firms already in Chattogram." },
                 "Evidence_PDF_Path": "./Tender Notice_PDFs/CDA_Tender_924201.pdf"
             },
             {
@@ -484,19 +595,19 @@
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
             
-            let ruleCounts = { owner:0, split:0, cpv:0, tailored:0, monopoly:0, outlier:0, meeting:0, rigging:0 };
+            let ruleCounts = { conflict:0, collusion:0, alb:0, criteria:0, subcontract:0, split:0, cpv:0, monopoly:0 };
             currentFilteredData.forEach(item => {
                 if (item.rules && Array.isArray(item.rules)) {
                     item.rules.forEach(r => {
                         let text = String(r).toLowerCase();
-                        if (text.includes('owner') || text.includes('তথ্য গোপন')) ruleCounts.owner++;
-                        if (text.includes('split') || text.includes('চুক্তি বিভাজন')) ruleCounts.split++;
+                        if (text.includes('conflict')) ruleCounts.conflict++;
+                        if (text.includes('collusion') || text.includes('rigging')) ruleCounts.collusion++;
+                        if (text.includes('alb') || text.includes('abnormal') || text.includes('low bid')) ruleCounts.alb++;
+                        if (text.includes('criteria') || text.includes('rated')) ruleCounts.criteria++;
+                        if (text.includes('subcontract')) ruleCounts.subcontract++;
+                        if (text.includes('split') || text.includes('বিভাজন')) ruleCounts.split++;
                         if (text.includes('cpv') || text.includes('কারসাজি')) ruleCounts.cpv++;
-                        if (text.includes('tailored') || text.includes('বৈষম্যমূলক')) ruleCounts.tailored++;
                         if (text.includes('monopoly') || text.includes('মনোপলি')) ruleCounts.monopoly++;
-                        if (text.includes('outlier') || text.includes('low bid') || text.includes('অস্বাভাবিক')) ruleCounts.outlier++;
-                        if (text.includes('meeting') || text.includes('মিটিং')) ruleCounts.meeting++;
-                        if (text.includes('rigging') || text.includes('বিড-রিগিং')) ruleCounts.rigging++;
                     });
                 }
             });
@@ -610,6 +721,18 @@
 
             reloadPdfViewer();
 
+            // Load existing rules into the checkboxes
+            document.querySelectorAll('#manualRuleFlags input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+            if (item.rules && Array.isArray(item.rules)) {
+                item.rules.forEach(rule => {
+                    let normalizedRule = String(rule).toLowerCase().trim();
+                    let cb = document.querySelector(`#manualRuleFlags input[value="${normalizedRule}"]`);
+                    if (cb) cb.checked = true;
+                });
+            }
+
             const eligList = document.getElementById('modalEligibilityList');
             eligList.innerHTML = '';
             if (item.Eligibility_Criteria && Array.isArray(item.Eligibility_Criteria)) {
@@ -630,7 +753,7 @@
                 forensicPanel.className = 'forensic-panel';
                 item.rules.forEach(ruleKey => {
                     let ruleDetails = RULE_DETAILS[ruleKey] ? RULE_DETAILS[ruleKey].title : ruleKey.toUpperCase();
-                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) ? item.Red_Flag_Rationale[ruleKey] : "Flagged by AI engine for manual review.";
+                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) ? item.Red_Flag_Rationale[ruleKey] : "Flagged by investigator or AI engine for manual review.";
                     let ruleBlock = document.createElement('div');
                     ruleBlock.style.marginBottom = '10px';
                     ruleBlock.style.padding = '8px 12px';
@@ -681,12 +804,19 @@
                 
                 globalData[itemIndex].Forensic_Notes = document.getElementById('editNotes').value;
                 
+                // Save Manual Checkbox Flags
+                let checkedRules = [];
+                document.querySelectorAll('#manualRuleFlags input[type="checkbox"]:checked').forEach(cb => {
+                    checkedRules.push(cb.value);
+                });
+                globalData[itemIndex].rules = checkedRules; 
+                
                 globalData = normalizeLoadedData(globalData);
                 
                 if (await saveDirectlyToGitHub()) {
                     closeModal('inspectorModal');
                     currentFilteredData = [...globalData];
-                    triggerFilter();
+                    updateDashboard(); 
                 }
             }
         }
