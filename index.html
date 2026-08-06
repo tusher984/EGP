@@ -46,8 +46,8 @@
         .tools-bar input[type="text"], .tools-bar select { font-family: inherit; font-weight: 500; padding: 8px 12px; border: 1px solid var(--border-dark); border-radius: 4px; font-size: 14px; outline: none; flex: 1; min-width: 150px; background: var(--dark-bg); color: white;}
         .tools-bar input[type="text"]:focus, .tools-bar select:focus { border-color: var(--neon-blue); }
         .btn-clear { font-family: inherit; padding: 8px 15px; border: 1px solid var(--neon-blue); border-radius: 4px; font-size: 14px; cursor: pointer; color: var(--neon-blue); background: transparent; transition: 0.2s; }
-        .btn-download { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: white; background-color: #1e40af; }
-        .btn-json { font-family: inherit; padding: 8px 15px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; color: #fff; background-color: #0284c7; font-weight: bold;}
+        .btn-json { font-family: inherit; padding: 8px 25px; border: none; border-radius: 4px; font-size: 15px; cursor: pointer; color: #fff; background-color: #0284c7; font-weight: bold; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);}
+        .btn-json:hover { background-color: #0369a1; transform: translateY(-2px); }
         .btn-merge { background-color: #10b981; color: white; border: none; padding: 8px 20px; border-radius: 4px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); transition: 0.3s; }
         .btn-merge:hover { background-color: #059669; transform: translateY(-2px); }
 
@@ -70,7 +70,7 @@
         .close-btn:hover { color: var(--netra-red); }
         
         .inspector-layout { display: flex; gap: 20px; margin-top: 15px; height: 75vh; }
-        .pdf-viewer-container { flex: 1.2; background: #000; border: 1px solid var(--border-dark); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .pdf-viewer-container { flex: 1.2; background: #1e293b; border: 1px solid var(--border-dark); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
         .validation-tools-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-right: 10px; }
         
         .docket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 10px; }
@@ -101,6 +101,7 @@
                 <button class="btn-home" onclick="resetDashboard()">🏠 হোম / রিসেট</button>
                 <label for="jsonUpload" class="btn-nexus" style="cursor: pointer;">📂 Load Custom JSON</label>
                 <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="loadCustomJSON(event)">
+                <button class="btn-nexus" onclick="clearLocalStorage()">🗑️ Clear Saved Data</button>
             </div>
         </header>
 
@@ -150,7 +151,6 @@
                     <option value="MEDIUM">মাঝারি ঝুঁকি (MEDIUM)</option>
                     <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
                 </select>
-                <button class="btn-merge" onclick="saveDirectlyToGitHub()">☁️ Direct Save to GitHub</button>
                 <button class="btn-json" onclick="downloadUpdatedJSON()">📥 Export JSON</button>
             </div>
             
@@ -203,11 +203,11 @@
             <div class="inspector-layout">
                 <!-- LEFT SIDE: PDF VIEWER -->
                 <div class="pdf-viewer-container" id="pdfContainer">
-                    <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; height: 100%; border: none;">
-                        <div style="color: white; padding: 30px; text-align: center;">
-                            <p>No PDF Linked or File Missing.</p>
-                        </div>
-                    </object>
+                    <div style="padding: 10px; text-align: center; border-bottom: 1px solid var(--border-dark); width: 100%;">
+                        <a id="pdfExternalLink" href="#" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-weight: bold; font-size: 14px;">↗️ Click here to Open PDF in New Tab / Download</a>
+                    </div>
+                    <!-- Using iframe with a white background for PDF rendering -->
+                    <iframe id="pdfFrame" src="" style="width: 100%; flex-grow: 1; border: none; background-color: #ffffff;"></iframe>
                 </div>
 
                 <!-- RIGHT SIDE: VERIFICATION TOOLS -->
@@ -267,12 +267,6 @@
 
     <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
-        const githubUsername = "tusher984";
-        const githubRepo = "EGP";
-        const githubFile = "Procurement_Database.json";
-        const apiUrl = `https://api.github.com/repos/${githubUsername}/${githubRepo}/contents/${githubFile}`;
-        
-        let savedGithubToken = localStorage.getItem('egp_github_pat') || null; 
         let globalData = [];
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
@@ -350,10 +344,15 @@
             });
         }
 
-        async function initializeData() {
+        function initializeData() {
             try {
-                // For demonstration, defaulting to dummy data. In production, this fetches from GitHub.
-                globalData = normalizeLoadedData(DEFAULT_DATABASE);
+                // Try to load from Local Storage first
+                let savedData = localStorage.getItem('egp_database');
+                if (savedData) {
+                    globalData = normalizeLoadedData(JSON.parse(savedData));
+                } else {
+                    globalData = normalizeLoadedData(DEFAULT_DATABASE);
+                }
                 currentFilteredData = [...globalData];
                 updateDashboard();
             } catch (error) {
@@ -408,7 +407,7 @@
                     <td style="color:#38bdf8;">${item.contractor}</td>
                     <td><span class="risk-badge ${riskClass}">${item.risk}</span></td>
                     <td style="text-align: right; font-family: monospace;">৳ ${Number(item.value).toLocaleString('en-IN')}</td>
-                    <td><button class="btn-verify" onclick="openInspectorModal('${item.id}')">🔍 Inspect</button></td>
+                    <td><button class="btn-verify" onclick="openInspectorModal('${item.id}')">🔍 Inspect & Verify</button></td>
                     <td>${ruleBadges || '<span style="color:var(--text-muted)">-</span>'}</td>
                 `;
                 tbody.appendChild(tr);
@@ -427,8 +426,10 @@
             document.getElementById('editPdfPath').value = item.Evidence_PDF_Path || "";
             document.getElementById('editNotes').value = item.Forensic_Notes || "";
             
-            // Render PDF
-            document.getElementById('pdfFrame').data = item.Evidence_PDF_Path || "";
+            // Render PDF via iframe and External Link
+            let pdfUrl = item.Evidence_PDF_Path || "";
+            document.getElementById('pdfFrame').src = pdfUrl;
+            document.getElementById('pdfExternalLink').href = pdfUrl !== "" ? pdfUrl : "#";
 
             // Reset and Check Manual Audit Flags
             document.querySelectorAll('#manualRuleFlags input[type="checkbox"]').forEach(cb => cb.checked = false);
@@ -442,7 +443,7 @@
             document.getElementById('inspectorModal').style.display = 'flex';
         }
 
-        async function confirmVerification() {
+        function confirmVerification() {
             if (!currentTenderIdInModal) return;
             
             let itemIndex = globalData.findIndex(t => t.id == currentTenderIdInModal);
@@ -463,9 +464,13 @@
                 
                 globalData = normalizeLoadedData(globalData);
                 currentFilteredData = [...globalData];
+                
+                // Save safely to LocalStorage
+                localStorage.setItem('egp_database', JSON.stringify(globalData));
+                
                 updateDashboard();
                 closeModal('inspectorModal');
-                alert("Data verified and updated locally. (Use 'Direct Save to GitHub' to push remotely).");
+                alert("✅ Verification Saved Successfully!\n\nThe update has been stored in your browser's local memory. Use the 'Export JSON' button to download a permanent backup of the database.");
             }
         }
 
@@ -520,15 +525,6 @@
 
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
         
-        async function saveDirectlyToGitHub() {
-            if (!savedGithubToken) {
-                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT):");
-                if (!savedGithubToken) return false;
-                localStorage.setItem('egp_github_pat', savedGithubToken);
-            }
-            alert("This connects to the GitHub API in production. (Feature stubbed for demo).");
-        }
-
         function downloadUpdatedJSON() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 4));
             const dl = document.createElement('a');
@@ -546,12 +542,23 @@
                 try {
                     globalData = normalizeLoadedData(JSON.parse(e.target.result));
                     currentFilteredData = [...globalData];
+                    localStorage.setItem('egp_database', JSON.stringify(globalData)); // Save loaded data
                     updateDashboard();
-                    alert("JSON Loaded!");
-                } catch (err) { alert("Invalid JSON!"); }
+                    alert("JSON Loaded and Saved to Browser!");
+                } catch (err) { alert("Invalid JSON format!"); }
             };
             reader.readAsText(file);
             event.target.value = ''; 
+        }
+
+        function clearLocalStorage() {
+            if(confirm("Are you sure you want to delete all saved changes? This will revert back to the default database.")) {
+                localStorage.removeItem('egp_database');
+                globalData = normalizeLoadedData(DEFAULT_DATABASE);
+                currentFilteredData = [...globalData];
+                updateDashboard();
+                alert("Data cleared. Reverted to default.");
+            }
         }
     </script>
 </body>
