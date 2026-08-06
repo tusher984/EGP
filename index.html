@@ -306,6 +306,12 @@
 
                     <label for="editNotes" style="margin-top: 12px; font-size: 13px; color: var(--neon-blue); font-weight: 700;">📝 Forensic Notes</label>
                     <textarea id="editNotes" class="edit-input" style="height: 100px; resize: vertical; margin-top: 5px;" placeholder="Enter audit notes here..."></textarea>
+
+                    <div id="forensicDetailsPanel" style="margin-top: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 6px; padding: 12px;">
+                        <div style="font-size: 13px; color: var(--neon-blue); font-weight: 700; margin-bottom: 8px;">🧠 Forensic Mapping</div>
+                        <div id="forensicRationale" style="font-size: 13px; color: var(--text-light); line-height: 1.5;"></div>
+                        <div id="forensicEligibility" style="font-size: 13px; color: var(--text-light); line-height: 1.5; margin-top: 10px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -378,6 +384,70 @@
                     rules.push(String(item.Rule_Reference));
                 }
 
+                const buildEligibilityCriteria = () => {
+                    const collected = [];
+                    const push = (value) => {
+                        if (!value) return;
+                        const text = String(value).trim();
+                        if (text && !collected.includes(text)) collected.push(text);
+                    };
+                    push(item.Eligibility_Criteria);
+                    push(item.Eligibility_of_Tenderer);
+                    push(item.Specific_Experience_Required);
+                    push(item.Extracted_General_Experience);
+                    push(item.Extracted_Specific_Experience);
+                    push(item.Extracted_Liquid_Assets);
+                    push(item.Extracted_Turnover);
+                    return collected;
+                };
+
+                const buildRationale = () => {
+                    if (item.Red_Flag_Rationale && typeof item.Red_Flag_Rationale === 'object' && !Array.isArray(item.Red_Flag_Rationale)) {
+                        return item.Red_Flag_Rationale;
+                    }
+                    return {
+                        primary_risk: item.Red_Flag_Reason || item.Red_Flag || item.Risk_Level || 'No explicit rationale captured',
+                        rule_reference: item.Rule_Reference || '',
+                        red_flag_count: item.Red_Flag_Count || 0,
+                        evidence_note: item.Full_Rule_Text || item.Evidence || ''
+                    };
+                };
+
+                const buildLotDetails = () => {
+                    if (Array.isArray(item.Lot_Details)) return item.Lot_Details;
+                    return [{
+                        lot_number: 1,
+                        description: item.Brief_Description_of_Works || 'Primary contract scope',
+                        location: item.Delivery_Location || '',
+                        estimated_value_bdt: item.Contract_Value_BDT || item.Document_Price_BDT || item.value || 0,
+                        procurement_method: item.Procurement_Method || ''
+                    }];
+                };
+
+                const buildOfficer = () => {
+                    if (item.Authorised_Officer && typeof item.Authorised_Officer === 'object' && !Array.isArray(item.Authorised_Officer)) {
+                        return item.Authorised_Officer;
+                    }
+                    return {
+                        name: item.Authorised_Officer || '',
+                        designation: item.Authorised_Officer_Designation || 'Officer',
+                        department: item.Ministry_Division || item.Organization_Agency || '',
+                        contact: item.PE_Phone || ''
+                    };
+                };
+
+                const buildBidding = () => {
+                    if (item.Bidding_Statistics && typeof item.Bidding_Statistics === 'object' && !Array.isArray(item.Bidding_Statistics)) {
+                        return item.Bidding_Statistics;
+                    }
+                    return {
+                        tenders_received: item.Tenders_Received || 0,
+                        tenders_sold: item.Tenders_Sold || 0,
+                        responsive_tenders: item.Responsive_Tenders || 0,
+                        competition_risk: item.Competition_Risk || item.Risk_Level || 'LOW'
+                    };
+                };
+
                 return {
                     ...item,
                     id: item.Tender_Proposal_ID ?? item.id ?? item.TenderID ?? (index + 1),
@@ -385,7 +455,14 @@
                     contractor: item.Contractor_Name || item.Supplier_Name || item.Contractor || item.Organization_Agency || item.Procuring_Entity_Name || item.Procurement_Entity_Name || 'N/A',
                     risk: String(riskLevel).toUpperCase(),
                     value: item.Document_Price_BDT ?? item.value ?? item.Contract_Value_BDT ?? item.Amount ?? 0,
-                    rules
+                    rules,
+                    Forensic_Notes: item.Forensic_Notes || item.Investigator_Notes || item.Notes || '',
+                    Evidence_PDF_Path: item.Evidence_PDF_Path || item.Source_File || item.Source_Files_Merged || '',
+                    Red_Flag_Rationale: buildRationale(),
+                    Eligibility_Criteria: buildEligibilityCriteria(),
+                    Lot_Details: buildLotDetails(),
+                    Authorised_Officer: buildOfficer(),
+                    Bidding_Statistics: buildBidding()
                 };
             });
         }
@@ -641,6 +718,24 @@
                 document.getElementById('editValue').value = item.value || "";
                 document.getElementById('editRisk').value = item.risk || "LOW";
                 document.getElementById('editNotes').value = item.Forensic_Notes || "";
+
+                const rationaleContainer = document.getElementById('forensicRationale');
+                const eligibilityContainer = document.getElementById('forensicEligibility');
+                const rationaleEntries = Object.entries(item.Red_Flag_Rationale || {});
+                const lotDetails = Array.isArray(item.Lot_Details) && item.Lot_Details.length ? item.Lot_Details : [];
+                const officer = item.Authorised_Officer && typeof item.Authorised_Officer === 'object' ? item.Authorised_Officer : {};
+                const bidding = item.Bidding_Statistics && typeof item.Bidding_Statistics === 'object' ? item.Bidding_Statistics : {};
+                rationaleContainer.innerHTML = [
+                    rationaleEntries.length ? rationaleEntries.map(([key, value]) => `<div style="margin-bottom: 6px;"><strong style="color:#7dd3fc;">${String(key).replace(/_/g, ' ')}</strong><div>${String(value)}</div></div>`).join('') : '<div style="color:var(--text-muted);">No red-flag rationale recorded.</div>',
+                    lotDetails.length ? `<div style="margin-top: 10px;"><strong style="color:#7dd3fc;">Lot Details</strong>${lotDetails.map(lot => `<div style="margin-top: 6px; background: rgba(255,255,255,0.03); padding: 6px 8px; border-radius: 4px;">${Object.entries(lot).map(([key, value]) => `<div><strong>${String(key).replace(/_/g, ' ')}:</strong> ${String(value || '—')}</div>`).join('')}</div>`).join('')}</div>` : ''
+                ].filter(Boolean).join('');
+                eligibilityContainer.innerHTML = [
+                    Array.isArray(item.Eligibility_Criteria) && item.Eligibility_Criteria.length
+                        ? `<div style="margin-bottom: 8px;"><strong style="color:#7dd3fc;">Eligibility Criteria</strong><ul style="margin: 6px 0 0 16px;">${item.Eligibility_Criteria.map(entry => `<li>${String(entry)}</li>`).join('')}</ul></div>`
+                        : '<div style="color:var(--text-muted);">No eligibility criteria recorded.</div>',
+                    officer && Object.keys(officer).length ? `<div style="margin-top: 8px;"><strong style="color:#7dd3fc;">Authorised Officer</strong>${Object.entries(officer).map(([key, value]) => `<div style="margin-top: 4px;"><strong>${String(key).replace(/_/g, ' ')}:</strong> ${String(value || '—')}</div>`).join('')}</div>` : '',
+                    bidding && Object.keys(bidding).length ? `<div style="margin-top: 8px;"><strong style="color:#7dd3fc;">Bidding Statistics</strong>${Object.entries(bidding).map(([key, value]) => `<div style="margin-top: 4px;"><strong>${String(key).replace(/_/g, ' ')}:</strong> ${String(value || '—')}</div>`).join('')}</div>` : ''
+                ].filter(Boolean).join('');
                 
                 let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
                 document.getElementById('riskMeterFill').style.width = riskScore;
@@ -756,7 +851,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    globalData = JSON.parse(e.target.result);
+                    globalData = normalizeLoadedData(JSON.parse(e.target.result));
                     currentFilteredData = [...globalData];
                     saveToLocalStorage();
                     currentPage = 1;
