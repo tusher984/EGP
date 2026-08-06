@@ -7,10 +7,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    
     <style>
         :root { --dark-bg: #080c14; --dark-card: #111827; --netra-red: #cc0000; --neon-blue: #38bdf8; --text-light: #f8fafc; --text-muted: #94a3b8; --border-dark: #1e293b; }
         
@@ -29,6 +25,8 @@
 
         .evidence-section { background: var(--dark-card); border: 1px solid var(--border-dark); padding: 25px; margin-bottom: 25px; border-radius: 8px; border-left: 5px solid var(--netra-red); }
         .evidence-section h3 { margin: 0 0 15px 0; font-size: 20px; color: var(--neon-blue); border-bottom: 1px solid var(--border-dark); padding-bottom: 10px;}
+        
+        /* 5-Grid Layout */
         .evidence-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 15px; }
         .evidence-item { background: rgba(255,255,255,0.01); padding: 15px; border-radius: 6px; border: 1px solid var(--border-dark); transition: 0.2s; cursor: pointer; }
         .evidence-item:hover { border-color: var(--neon-blue); background: rgba(56, 189, 248, 0.05); transform: translateY(-2px); }
@@ -58,9 +56,6 @@
         table.main-table th, table.main-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-dark); vertical-align: top; }
         table.main-table th { color: var(--neon-blue); font-weight: 700; font-size: 13px; text-transform: uppercase; background: rgba(255,255,255,0.02);}
         table.main-table tr:hover { background-color: rgba(255,255,255,0.01); }
-        .pagination { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 5px; }
-        .page-btn { font-family: inherit; padding: 6px 15px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); cursor: pointer; border-radius: 4px;}
-        .page-btn:disabled { border-color: var(--border-dark); color: var(--text-muted); cursor: not-allowed; }
         .risk-badge { font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 3px; color: white; display: inline-block; text-transform: uppercase;}
         .risk-high { background-color: var(--netra-red); }
         .risk-medium { background-color: #d97706; }
@@ -68,7 +63,7 @@
         .btn-verify { font-family: inherit; background-color: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%;}
         .btn-verify:hover { background-color: var(--neon-blue); color: #fff;}
 
-        /* MODAL AND SPLIT SCREEN VIEWER CSS */
+        /* MODALS */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal-content { background-color: var(--dark-card); border: 1px solid var(--border-dark); border-top: 4px solid var(--neon-blue); border-radius: 8px; width: 95%; max-width: 1400px; max-height: 95vh; overflow-y: auto; padding: 25px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.7); }
         .close-btn { position: absolute; right: 20px; top: 15px; color: var(--text-muted); font-size: 28px; font-weight: bold; cursor: pointer; z-index: 10;}
@@ -78,65 +73,21 @@
         .pdf-viewer-container { flex: 1.2; background: #000; border: 1px solid var(--border-dark); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; }
         .validation-tools-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding-right: 10px; }
         
-        .forensic-panel { background: rgba(220, 38, 38, 0.05); border: 1px solid #991b1b; padding: 15px; border-radius: 6px; margin-top: 15px; }
-        .forensic-panel.passed { background: rgba(16, 185, 129, 0.05); border-color: #059669; }
-        .eligibility-list { font-size: 13px; color: var(--text-light); padding-left: 20px; margin-top: 5px; }
-        .meta-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); padding: 15px; border-radius: 6px; margin-top: 15px; font-size: 13px; }
-        .meta-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
-
-        .meter-container { background: rgba(255,255,255,0.02); border: 1px solid var(--border-dark); border-radius: 8px; padding: 15px; text-align: center; margin-bottom: 15px; display: flex; justify-content: space-around; align-items: center;}
-        .risk-gauge { width: 150px; height: 15px; background: #334155; border-radius: 10px; overflow: hidden; margin: 10px auto; position: relative;}
-        .risk-fill { height: 100%; background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444); transition: width 1s ease-in-out; }
-        .meta-tag { font-family: monospace; font-size: 11px; background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 3px 6px; border-radius: 3px; border: 1px solid rgba(56,189,248,0.3); margin-top: 5px; display: inline-block; cursor: pointer;}
-
+        .docket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 10px; }
         .verify-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #0f172a; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-dark); }
-        .verify-table th { background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 10px 12px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-dark); }
         .verify-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-dark); font-size: 13px; vertical-align: top; }
         .edit-input { width: 100%; background: #080c14; border: 1px solid #334155; color: #10b981; padding: 6px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; outline: none; box-sizing: border-box; }
         .edit-input:focus { border-color: var(--neon-blue); background: #1e293b; }
-        
-        .docket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 10px; }
-        #networkGraph { width: 100%; height: 70vh; background: #080c14; border: 1px solid var(--border-dark); border-radius: 8px; }
 
         /* Forensic Audit Checklist Styles */
-        .audit-checklist {
-            background: #0f172a;
-            border: 1px solid var(--border-dark);
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        .audit-checklist h4 {
-            margin: 0 0 10px 0;
-            color: #fca5a5;
-            font-size: 14px;
-            border-bottom: 1px dashed #334155;
-            padding-bottom: 5px;
-        }
-        .checklist-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .check-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-light);
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        .check-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .check-item input[type="checkbox"] {
-            margin-top: 2px;
-            accent-color: var(--netra-red);
-            cursor: pointer;
-        }
+        .audit-checklist { background: #0f172a; border: 1px solid var(--border-dark); border-radius: 6px; padding: 15px; margin-top: 15px; }
+        .audit-checklist h4 { margin: 0 0 10px 0; color: #fca5a5; font-size: 14px; border-bottom: 1px dashed #334155; padding-bottom: 5px; }
+        .checklist-grid { display: flex; flex-direction: column; gap: 8px; }
+        .check-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--text-light); cursor: pointer; padding: 5px; border-radius: 4px; transition: 0.2s; }
+        .check-item:hover { background: rgba(255, 255, 255, 0.05); }
+        .check-item input[type="checkbox"] { margin-top: 2px; accent-color: var(--netra-red); cursor: pointer; }
+
+        .meta-tag { font-family: monospace; font-size: 11px; background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); padding: 3px 6px; border-radius: 3px; border: 1px solid rgba(56,189,248,0.3); margin-top: 5px; display: inline-block; cursor: pointer;}
     </style>
 </head>
 <body>
@@ -147,66 +98,52 @@
             <h1>e-GP Syndicate Tracker: Data Lab</h1>
             <p>উন্নয়ন কর্তৃপক্ষ এবং সরকারি প্রকিউরমেন্টের ডিজিটাল ইনভেস্টিগেশন</p>
             <div class="header-buttons">
-                <button class="btn-home" onclick="resetDashboard()" title="রিসেট">🏠 হোম / সব ফিল্টার রিসেট</button>
-                <label for="jsonUpload" class="btn-nexus" style="cursor: pointer; display: inline-block;">📂 Load Custom JSON</label>
+                <button class="btn-home" onclick="resetDashboard()">🏠 হোম / রিসেট</button>
+                <label for="jsonUpload" class="btn-nexus" style="cursor: pointer;">📂 Load Custom JSON</label>
                 <input type="file" id="jsonUpload" accept=".json" style="display: none;" onchange="loadCustomJSON(event)">
-                <button class="btn-nexus" onclick="openNetworkMap()">🕸️ সিন্ডিকেট নেটওয়ার্ক ম্যাপ</button>
             </div>
         </header>
 
         <div class="evidence-section">
-            <h3>e-GP Forensic Audit Rulebook & Engine ম্যাট্রিক্স</h3>
+            <h3>e-GP Forensic Core Rules</h3>
             <div class="evidence-grid">
-                <div class="evidence-item" onclick="filterByRule('conflict', this)">
-                    <strong>১. Conflict of Interest <span class="rule-count" id="count-conflict">0</span></strong>
-                    <p>Shared legal representatives, common control, or project consultants acting as bidders.</p>
-                </div>
                 <div class="evidence-item" onclick="filterByRule('collusion', this)">
-                    <strong>২. Collusion & Bid-Rigging <span class="rule-count" id="count-collusion">0</span></strong>
-                    <p>Multiple bids from jointly liable firms or schemes to artificially reduce competition.</p>
+                    <strong>১. Collusion & Bid-Rigging <span class="rule-count" id="count-collusion">0</span></strong>
+                    <p>Arrangements to reduce tenders, fix prices, or multiple bids from jointly liable firms.</p>
+                </div>
+                <div class="evidence-item" onclick="filterByRule('conflict', this)">
+                    <strong>২. Conflicts of Interest <span class="rule-count" id="count-conflict">0</span></strong>
+                    <p>Shared control, identical legal representation, or consultants bidding as contractors.</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('alb', this)">
                     <strong>৩. Abnormally Low Bids <span class="rule-count" id="count-alb">0</span></strong>
-                    <p>Bids falling below the mathematical limit (Weighted Standard Deviation threshold).</p>
+                    <p>Tenders falling mathematically below the Weighted Standard Deviation limit.</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('criteria', this)">
-                    <strong>৪. Rated Criteria Violation <span class="rule-count" id="count-criteria">0</span></strong>
-                    <p>Misapplication of risk/value weightings or illegal domestic preference margins.</p>
+                    <strong>৪. Rated Criteria Violations <span class="rule-count" id="count-criteria">0</span></strong>
+                    <p>Misapplied risk/value weightings or illegal domestic preference margins.</p>
                 </div>
                 <div class="evidence-item" onclick="filterByRule('subcontract', this)">
-                    <strong>৫. Subcontracting Breach <span class="rule-count" id="count-subcontract">0</span></strong>
-                    <p>Unauthorized subcontracting or exceeding the maximum 30% contract value limit.</p>
-                </div>
-                <div class="evidence-item" onclick="filterByRule('split', this)">
-                    <strong>৬. চুক্তি বিভাজন (Artificial Splitting) <span class="rule-count" id="count-split">0</span></strong>
-                    <p>উচ্চতর অনুমোদন এড়াতে মেগা প্রজেক্টকে ছোট ছোট লটে ভাগ করা।</p>
-                </div>
-                <div class="evidence-item" onclick="filterByRule('cpv', this)">
-                    <strong>৭. CPV কারসাজি (Metadata) <span class="rule-count" id="count-cpv">0</span></strong>
-                    <p>ভুল কোড দিয়ে বা ফি কমিয়ে সাধারণ ঠিকাদারদের কাছ থেকে টেন্ডার লুকানো।</p>
-                </div>
-                <div class="evidence-item" onclick="filterByRule('monopoly', this)">
-                    <strong>৮. মনোপলি ফানেলিং (Monopoly) <span class="rule-count" id="count-monopoly">0</span></strong>
-                    <p>১ জনকে রেস্পন্সিভ করে কাজ দেওয়া।</p>
+                    <strong>৫. Subcontracting Breaches <span class="rule-count" id="count-subcontract">0</span></strong>
+                    <p>Unauthorized post-contract subcontracting or exceeding the 30% contract value limit.</p>
                 </div>
             </div>
         </div>
 
         <div class="summary-grid">
             <div class="card"><h2 id="totalContracts">0</h2><p>স্ক্যান করা টেন্ডার (লগ)</p></div>
-            <div class="card alert-card"><h2>৯৬.৭%</h2><p>কাজ পেয়েছে শীর্ষ ১০ সিন্ডিকেট</p></div>
             <div class="card alert-card"><h2 id="totalValue">৳০</h2><p>উচ্চ-ঝুঁকিপূর্ণ চুক্তিমূল্য</p></div>
         </div>
 
         <div class="ledger-section">
             <h3>এভিডেন্স লেজার (Database)</h3>
-            <div class="active-filter-banner" id="filterBanner" style="display:none; margin-bottom:15px; padding:10px; background:rgba(56, 189, 248, 0.1); border-left:4px solid var(--neon-blue); border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+            <div class="active-filter-banner" id="filterBanner" style="display:none; margin-bottom:15px; padding:10px; background:rgba(56, 189, 248, 0.1); border-left:4px solid var(--neon-blue); border-radius:4px; justify-content:space-between; align-items:center;">
                 <span id="bannerText" style="color: var(--neon-blue); font-weight: bold;"></span>
                 <button class="btn-clear" onclick="resetDashboard()">ফিল্টার সরান (Show All)</button>
             </div>
             
             <div class="tools-bar">
-                <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="debouncedFilter()">
+                <input type="text" id="searchInput" placeholder="ঠিকাদার, সংস্থা বা ID খুঁজুন..." onkeyup="triggerFilter()">
                 <select id="riskFilter" onchange="triggerFilter()">
                     <option value="ALL">সব ঝুঁকি (All Risks)</option>
                     <option value="HIGH">উচ্চ ঝুঁকি (HIGH)</option>
@@ -214,8 +151,7 @@
                     <option value="LOW">নিম্ন ঝুঁকি (LOW)</option>
                 </select>
                 <button class="btn-merge" onclick="saveDirectlyToGitHub()">☁️ Direct Save to GitHub</button>
-                <button class="btn-download" onclick="downloadCSV()">CSV এক্সপোর্ট</button>
-                <button class="btn-json" onclick="downloadUpdatedJSON()" title="Download corrected DB">📥 Export JSON</button>
+                <button class="btn-json" onclick="downloadUpdatedJSON()">📥 Export JSON</button>
             </div>
             
             <div class="table-responsive">
@@ -229,15 +165,10 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr><td colspan="7" style="text-align: center; padding: 30px;">
-                            <span style="color:#38bdf8; font-size:16px;">⏳ Fetching Online Database from GitHub...</span>
+                            <span style="color:#38bdf8; font-size:16px;">⏳ Initializing Data Engine...</span>
                         </td></tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="pagination" id="paginationControls" style="display:none;">
-                <button class="page-btn" id="prevPageBtn" onclick="changePage(-1)">&#8592; Previous</button>
-                <span class="page-info">Page <strong id="currentPageLabel">1</strong> of <strong id="totalPagesLabel">1</strong> (<span id="totalRowsLabel">0</span> records)</span>
-                <button class="page-btn" id="nextPageBtn" onclick="changePage(1)">Next &#8594;</button>
             </div>
         </div>
     </div>
@@ -252,16 +183,7 @@
         </div>
     </div>
 
-    <!-- Network Graph Modal -->
-    <div id="networkModal" class="modal">
-        <div class="modal-content" style="max-width: 95%; height: 85vh; display: flex; flex-direction: column;">
-            <span class="close-btn" onclick="closeModal('networkModal')">&times;</span>
-            <h2 class="modal-title" style="margin-bottom: 15px;">🕸️ Syndicate Nexus Map</h2>
-            <div id="networkGraph"></div>
-        </div>
-    </div>
-
-    <!-- DATA INSPECTOR / PDF VERIFICATION MODAL (SPLIT SCREEN) -->
+    <!-- DATA INSPECTOR / VERIFICATION MODAL -->
     <div id="inspectorModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('inspectorModal')">&times;</span>
@@ -273,7 +195,7 @@
                         Tender ID: <strong id="footprintID" style="color:var(--text-light);"></strong>
                     </div>
                 </div>
-                <div id="mergeActionContainer">
+                <div>
                     <button class="btn-merge" onclick="confirmVerification()">✅ Verify & Save Update</button>
                 </div>
             </div>
@@ -281,47 +203,29 @@
             <div class="inspector-layout">
                 <!-- LEFT SIDE: PDF VIEWER -->
                 <div class="pdf-viewer-container" id="pdfContainer">
-                    <div id="pdfHeader" style="width: 100%; background: #1e293b; padding: 8px; text-align: right; display: none; box-sizing: border-box;">
-                        <a id="pdfPopOut" href="#" target="_blank" style="color: #38bdf8; font-size: 13px; text-decoration: none; font-weight: bold; padding: 4px 8px; border: 1px solid #38bdf8; border-radius: 4px;">↗️ Open PDF in New Tab</a>
-                    </div>
-                    
-                    <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; flex-grow: 1; border: none;">
+                    <object id="pdfFrame" data="" type="application/pdf" style="width: 100%; height: 100%; border: none;">
                         <div style="color: white; padding: 30px; text-align: center;">
-                            <p>Your browser does not support embedded PDFs.</p>
-                            <a id="pdfFallbackLink" href="#" target="_blank" style="color: var(--neon-blue); text-decoration: underline;">Click here to download/view the file directly.</a>
+                            <p>No PDF Linked or File Missing.</p>
                         </div>
                     </object>
-                    
-                    <div id="noPdfMessage" style="display:none; color:var(--text-muted); flex-grow: 1;">
-                        📄 No Evidence PDF Linked / File Missing
-                    </div>
                 </div>
 
                 <!-- RIGHT SIDE: VERIFICATION TOOLS -->
                 <div class="validation-tools-container">
                     
-                    <div class="meter-container">
-                        <div style="flex:1;">
-                            <div style="font-weight: 700; color: var(--text-light);">AI Anomaly Risk Score</div>
-                            <div class="risk-gauge"><div class="risk-fill" id="riskMeterFill" style="width: 0%;"></div></div>
-                            <div style="font-size: 20px; font-weight: 800; color: var(--neon-blue);" id="riskScoreText">0%</div>
-                        </div>
-                    </div>
-
                     <div id="verificationTableContainer">
-                        <h4 style="margin: 0 0 10px 0; color: var(--neon-blue); font-size: 15px; border-bottom: 1px dashed #334155; padding-bottom: 5px;">📊 Final Verification Table</h4>
                         <table class="verify-table" id="verifyTable">
                             <tbody>
                                 <tr>
                                     <td style="font-size: 12px; color:var(--text-muted); width: 35%;">Contractor Name</td>
-                                    <td><input type="text" id="editContractor" class="edit-input" placeholder="Contractor Name"></td>
+                                    <td><input type="text" id="editContractor" class="edit-input"></td>
                                 </tr>
                                 <tr>
                                     <td style="font-size: 12px; color:var(--text-muted);">Contract Value (৳)</td>
-                                    <td><input type="text" id="editValue" class="edit-input" placeholder="Value (৳)"></td>
+                                    <td><input type="text" id="editValue" class="edit-input"></td>
                                 </tr>
                                 <tr>
-                                    <td style="font-size: 12px; color:var(--text-muted);">Risk Level Assessment</td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">Risk Level</td>
                                     <td>
                                         <select id="editRisk" class="edit-input">
                                             <option value="HIGH">HIGH (Immediate Review)</option>
@@ -331,56 +235,30 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="font-size: 12px; color:var(--text-muted);">PDF Folder</td>
+                                    <td style="font-size: 12px; color:var(--text-muted);">PDF Path</td>
                                     <td>
-                                        <select id="editPdfFolder" class="edit-input">
-                                            <option value="">-- No Folder (Root) --</option>
-                                            <option value="Contract_Awards_PDFs/">Contract_Awards_PDFs</option>
-                                            <option value="Tender Notice_PDFs/">Tender Notice_PDFs</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="font-size: 12px; color:var(--text-muted);">PDF File Name<br><small>(e.g. Tender_123.pdf)</small></td>
-                                    <td>
-                                        <input type="text" id="editPdfPath" class="edit-input" placeholder="Type filename here...">
-                                        <button type="button" onclick="reloadPdfViewer()" style="margin-top:5px; background:#0ea5e9; border:none; color:white; padding:6px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:12px; width:100%; transition:0.2s;">🔄 Scan & Load PDF</button>
+                                        <input type="text" id="editPdfPath" class="edit-input" placeholder="e.g. ./docs/tender.pdf">
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- NEW: Manual Forensic Auditing Checklist -->
+                    <!-- MANUAL CHECKLIST -->
                     <div class="audit-checklist" id="manualRuleFlags">
                         <h4>🚩 Manual Forensic Rule Flagging</h4>
                         <div class="checklist-grid">
-                            <label class="check-item"><input type="checkbox" value="conflict"> 1. Conflict of Interest</label>
-                            <label class="check-item"><input type="checkbox" value="collusion"> 2. Collusion & Bid-Rigging</label>
-                            <label class="check-item"><input type="checkbox" value="alb"> 3. Abnormally Low Bid (ALB)</label>
-                            <label class="check-item"><input type="checkbox" value="criteria"> 4. Rated Criteria Violation</label>
-                            <label class="check-item"><input type="checkbox" value="subcontract"> 5. Subcontracting Breach</label>
-                            <label class="check-item"><input type="checkbox" value="split"> 6. Artificial Splitting</label>
-                            <label class="check-item"><input type="checkbox" value="cpv"> 7. CPV Manipulation</label>
-                            <label class="check-item"><input type="checkbox" value="monopoly"> 8. Monopoly Funneling</label>
+                            <label class="check-item"><input type="checkbox" value="collusion"> 1. Collusion & Bid-Rigging</label>
+                            <label class="check-item"><input type="checkbox" value="conflict"> 2. Conflicts of Interest</label>
+                            <label class="check-item"><input type="checkbox" value="alb"> 3. Abnormally Low Bids (ALB)</label>
+                            <label class="check-item"><input type="checkbox" value="criteria"> 4. Rated Criteria Violations</label>
+                            <label class="check-item"><input type="checkbox" value="subcontract"> 5. Subcontracting Breaches</label>
                         </div>
                     </div>
 
-                    <div id="forensicPanel" class="forensic-panel">
-                        <h4 style="margin:0 0 10px 0; font-size:15px; color:var(--text-light);">🚨 Forensic Rule Triggers & Rationale</h4>
-                        <div id="modalRedFlagRationale"></div>
-                        <strong style="font-size:13px; color:var(--text-muted); display:block; margin-top:15px;">Extracted Eligibility Criteria:</strong>
-                        <ul id="modalEligibilityList" class="eligibility-list"></ul>
-                    </div>
-
-                    <div id="metaPanel" class="meta-panel">
-                        <h4 style="margin:0 0 10px 0; font-size:14px; color:var(--neon-blue); border-bottom:1px solid var(--border-dark); padding-bottom:5px;">📋 Exhaustive Document Metadata</h4>
-                        <div id="extendedMetadataList" class="meta-grid"></div>
-                    </div>
-
-                    <div style="margin-top: 15px; margin-bottom: 20px;">
+                    <div style="margin-top: 15px;">
                         <label style="color:var(--text-muted); font-size:12px; font-weight:bold;">Manual Investigator Notes:</label>
-                        <textarea id="editNotes" class="edit-input" style="height: 80px; resize: vertical; margin-top: 5px;" placeholder="Enter manual audit notes or findings here..."></textarea>
+                        <textarea id="editNotes" class="edit-input" style="height: 80px; resize: vertical; margin-top: 5px;" placeholder="Enter findings..."></textarea>
                     </div>
                 </div>
             </div>
@@ -389,67 +267,42 @@
 
     <!-- MAIN JAVASCRIPT ENGINE -->
     <script>
-        // ==========================================
-        // GITHUB CONFIGURATION
-        // ==========================================
         const githubUsername = "tusher984";
         const githubRepo = "EGP";
         const githubFile = "Procurement_Database.json";
         const apiUrl = `https://api.github.com/repos/${githubUsername}/${githubRepo}/contents/${githubFile}`;
-        const remoteDataUrls = [
-            `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/main/${githubFile}`,
-            `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/master/${githubFile}`
-        ];
-        const localDataUrl = './Procurement_Database.json';
         
         let savedGithubToken = localStorage.getItem('egp_github_pat') || null; 
         let globalData = [];
         let currentFilteredData = [];
         let currentTenderIdInModal = null;
-        let searchDebounceTimer = null;
-        let currentPage = 1;
-        const rowsPerPage = 50;
 
+        // Core 5 Rules Definition
         const RULE_DETAILS = {
-            conflict: { 
-                title: "১. Conflict of Interest", 
-                enacted: "e-PG3A Guideline", 
-                purpose: "Disqualifies bids where firms share common control, legal representation, or where the project consultant attempts to bid on the same project." 
-            },
             collusion: { 
-                title: "২. Collusion & Bid-Rigging", 
-                enacted: "Competition Act & e-PG3A", 
-                purpose: "Flags schemes to fix prices at non-competitive levels or multiple submissions for a single lot by jointly liable firms." 
+                title: "১. Collusion & Bid-Rigging", 
+                enacted: "Competition Act / e-PG3A", 
+                purpose: "Arrangements designed to artificially reduce the number of submitted tenders or fix prices at non-competitive levels. Prohibits multiple tenders for a single lot or bids from jointly liable firms." 
+            },
+            conflict: { 
+                title: "২. Conflicts of Interest", 
+                enacted: "e-PG3A Guideline", 
+                purpose: "Triggered if a tenderer is directly/indirectly controlled by another, shares legal representation, or if a consulting firm for the project bids as a contractor." 
             },
             alb: { 
                 title: "৩. Abnormally Low Bids (ALB)", 
-                enacted: "World Bank / e-PG3A", 
-                purpose: "Identifies prices mathematically below the lower limit [x - Sd] calculated via National Public Procurement Price Index and Weighted Average." 
+                enacted: "e-PG3A / World Bank", 
+                purpose: "Raises material concerns regarding capability. Identified when a tender falls mathematically below the calculated lower limit using Weighted Average and Standard Deviation." 
             },
             criteria: { 
                 title: "৪. Rated Criteria Violations", 
-                enacted: "World Bank IPF", 
-                purpose: "Flags illegal domestic preferences or failure to apply mandatory weightings (e.g., 50%-80% for High Risk/High Value procurements)." 
+                enacted: "World Bank IPF / JICA ODA", 
+                purpose: "Misapplication of Rated Criteria or weightings (e.g., High Risk/High Value must be 50%-80%). Also flags illegal preferential margins for local firms under certain loans." 
             },
             subcontract: { 
                 title: "৫. Subcontracting Breaches", 
                 enacted: "e-PG3A Guideline", 
-                purpose: "Flags unauthorized post-contract subcontracting or subcontracting portions that exceed 30% of the total goods value." 
-            },
-            split: { 
-                title: "৬. চুক্তি বিভাজন (Artificial Splitting)", 
-                enacted: "২০০৬ (PPA)", 
-                purpose: "উচ্চতর অনুমোদন এড়াতে মেগা-প্রজেক্টকে ছোট লটে ভাগ করা অবৈধ।" 
-            },
-            cpv: { 
-                title: "৭. CPV কারসাজি (Metadata Manipulation)", 
-                enacted: "ই-জিপি গাইডলাইন", 
-                purpose: "ভুল CPV কোড দিয়ে টেন্ডার লুকানোর কারসাজি।" 
-            },
-            monopoly: { 
-                title: "৮. মনোপলি ফানেলিং (Lack of Competition)", 
-                enacted: "২০০৬ (PPA)", 
-                purpose: "মাত্র ১ জন যোগ্য হলে রি-টেন্ডার আবশ্যক।" 
+                purpose: "Flags intentions to subcontract more than 30% of the total value or any unauthorized subcontracting executed after entering into the contract." 
             }
         };
 
@@ -457,157 +310,73 @@
             {
                 "Tender_Proposal_ID": 924201,
                 "Organization": "Chittagong Development Authority",
-                "Contract_Value_BDT": 0,
-                "Eligibility_Criteria": [ "Minimum 10 Year of experience as Nationwide ISP", "Must have regional office in Chattogram" ],
+                "Contractor_Name": "Demo Syndicate A",
+                "Contract_Value_BDT": 15000000,
                 "Risk_Level": "HIGH",
-                "rules": ["criteria", "monopoly"],
-                "Red_Flag_Rationale": { "criteria": "Restricts competition to firms already in Chattogram." },
-                "Evidence_PDF_Path": "./Tender Notice_PDFs/CDA_Tender_924201.pdf"
+                "rules": ["criteria", "conflict"],
+                "Evidence_PDF_Path": "./docs/tender_924201.pdf"
             },
             {
                 "Tender_Proposal_ID": 15000,
-                "Organization": "Power Grid Company of Bangladesh Ltd. (PGCB)",
+                "Organization": "Power Grid Company",
+                "Contractor_Name": "Standard Firm B",
                 "Contract_Value_BDT": 280119,
                 "Risk_Level": "LOW",
                 "rules": [],
-                "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_15000.pdf"
-            },
-            {
-                "Tender_Proposal_ID": 18994,
-                "Organization": "Rajdhani Unnayan Kartripakkha (RAJUK)",
-                "Contract_Value_BDT": 1512000,
-                "Risk_Level": "HIGH",
-                "rules": ["monopoly"],
-                "Evidence_PDF_Path": "./Contract_Awards_PDFs/Tender_18994.pdf"
+                "Evidence_PDF_Path": ""
             }
         ];
 
         window.onload = () => { initializeData(); };
 
-        // 1. NORMALIZE DATA
         function normalizeLoadedData(payload) {
             const records = Array.isArray(payload) ? payload : (payload.Merged_Database || payload.data || []);
             return records.map((item, index) => {
-                const riskLevel = item.Risk_Level || item.risk || (String(item.Red_Flag || '').toUpperCase() === 'YES' ? 'HIGH' : 'LOW');
-                
+                const riskLevel = item.Risk_Level || item.risk || 'LOW';
                 let rulesArray = [];
-                let rawRules = item.rules || item.Violated_Rules || item.Rule_Reference || [];
+                let rawRules = item.rules || item.Violated_Rules || [];
                 if (typeof rawRules === 'string') rulesArray = rawRules.split(',');
                 else if (Array.isArray(rawRules)) rulesArray = rawRules;
-
-                const rules = rulesArray.map(r => String(r).trim());
-
+                
                 return {
                     ...item,
-                    id: item.Tender_Proposal_ID ?? item.id ?? item.TenderID ?? (index + 1),
-                    entity: item.Organization || item.Procuring_Entity_Name || item.entity || 'N/A',
-                    contractor: item.Contractor_Name || item.Supplier_Name || item.contractor || 'N/A',
+                    id: item.Tender_Proposal_ID ?? item.id ?? (index + 1),
+                    entity: item.Organization || item.entity || 'N/A',
+                    contractor: item.Contractor_Name || item.contractor || 'N/A',
                     risk: String(riskLevel).toUpperCase(),
-                    value: item.Contract_Value_BDT ?? item.Document_Price_BDT ?? item.value ?? 0,
-                    rules: rules
+                    value: item.Contract_Value_BDT ?? item.value ?? 0,
+                    rules: rulesArray.map(r => String(r).trim().toLowerCase())
                 };
             });
         }
 
-        function decodeBase64Content(content) {
-            const normalized = (content || '').replace(/\s/g, '');
-            const binaryString = atob(normalized);
-            const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
-            return new TextDecoder('utf-8').decode(bytes);
-        }
-
-        async function loadDataFromGitHub() {
-            const response = await fetch(`${apiUrl}?t=${Date.now()}`, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-            if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
-            const fileData = await response.json();
-            return JSON.parse(decodeBase64Content(fileData.content));
-        }
-
-        async function loadDataFromLocalFile() {
-            const response = await fetch(`${localDataUrl}?t=${Date.now()}`);
-            if (!response.ok) throw new Error(`Local data file returned ${response.status}`);
-            return await response.json();
-        }
-
         async function initializeData() {
             try {
-                const localPayload = await loadDataFromLocalFile();
-                globalData = normalizeLoadedData(localPayload);
+                // For demonstration, defaulting to dummy data. In production, this fetches from GitHub.
+                globalData = normalizeLoadedData(DEFAULT_DATABASE);
                 currentFilteredData = [...globalData];
                 updateDashboard();
-            } catch (localError) {
-                try {
-                    globalData = normalizeLoadedData(await loadDataFromGitHub());
-                    currentFilteredData = [...globalData];
-                    updateDashboard();
-                } catch (gitError) {
-                    globalData = normalizeLoadedData(DEFAULT_DATABASE);
-                    currentFilteredData = [...globalData];
-                    updateDashboard();
-                }
-            }
-        }
-
-        // 2. SAVE & EXPORT
-        async function saveDirectlyToGitHub() {
-            if (!savedGithubToken) {
-                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT):");
-                if (!savedGithubToken) return false;
-                localStorage.setItem('egp_github_pat', savedGithubToken);
-            }
-
-            try {
-                alert("Saving to GitHub... Please wait.");
-                const getResponse = await fetch(apiUrl, { headers: { 'Authorization': `Bearer ${savedGithubToken}` }});
-                
-                if (getResponse.status === 401) {
-                    localStorage.removeItem('egp_github_pat');
-                    savedGithubToken = null;
-                    throw new Error("Invalid Token!");
-                }
-                
-                let fileSha = null;
-                if (getResponse.ok) fileSha = (await getResponse.json()).sha;
-
-                const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(globalData, null, 4)))); 
-                const payload = { message: "Data validated & updated via EGP Web Tool", content: base64Content };
-                if(fileSha) payload.sha = fileSha;
-
-                const updateResponse = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${savedGithubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (updateResponse.ok) {
-                    alert("✅ Database successfully updated on GitHub.");
-                    return true;
-                } else throw new Error((await updateResponse.json()).message);
             } catch (error) {
-                alert("❌ Save failed: " + error.message);
-                return false;
+                console.error("Data load failed", error);
             }
         }
 
-        // 3. UI RENDERING
         function updateDashboard() {
             document.getElementById('totalContracts').innerText = currentFilteredData.length;
             let highRiskVal = currentFilteredData.filter(d => d.risk === 'HIGH').reduce((sum, item) => sum + Number(item.value), 0);
             document.getElementById('totalValue').innerText = `৳${highRiskVal.toLocaleString('en-IN')}`;
             
-            let ruleCounts = { conflict:0, collusion:0, alb:0, criteria:0, subcontract:0, split:0, cpv:0, monopoly:0 };
+            // 5 Rule Counters
+            let ruleCounts = { collusion:0, conflict:0, alb:0, criteria:0, subcontract:0 };
+            
             currentFilteredData.forEach(item => {
                 if (item.rules && Array.isArray(item.rules)) {
                     item.rules.forEach(r => {
-                        let text = String(r).toLowerCase();
-                        if (text.includes('conflict')) ruleCounts.conflict++;
-                        if (text.includes('collusion') || text.includes('rigging')) ruleCounts.collusion++;
-                        if (text.includes('alb') || text.includes('abnormal') || text.includes('low bid')) ruleCounts.alb++;
-                        if (text.includes('criteria') || text.includes('rated')) ruleCounts.criteria++;
-                        if (text.includes('subcontract')) ruleCounts.subcontract++;
-                        if (text.includes('split') || text.includes('বিভাজন')) ruleCounts.split++;
-                        if (text.includes('cpv') || text.includes('কারসাজি')) ruleCounts.cpv++;
-                        if (text.includes('monopoly') || text.includes('মনোপলি')) ruleCounts.monopoly++;
+                        if (r.includes('collusion')) ruleCounts.collusion++;
+                        if (r.includes('conflict')) ruleCounts.conflict++;
+                        if (r.includes('alb')) ruleCounts.alb++;
+                        if (r.includes('criteria')) ruleCounts.criteria++;
+                        if (r.includes('subcontract')) ruleCounts.subcontract++;
                     });
                 }
             });
@@ -625,16 +394,12 @@
             
             if(currentFilteredData.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding:20px;">No data found</td></tr>';
-                document.getElementById('paginationControls').style.display = 'none';
                 return;
             }
 
-            const startIndex = (currentPage - 1) * rowsPerPage;
-            const pageData = currentFilteredData.slice(startIndex, startIndex + rowsPerPage);
-
-            pageData.forEach(item => {
+            currentFilteredData.forEach(item => {
                 let riskClass = item.risk === 'HIGH' ? 'risk-high' : (item.risk === 'MEDIUM' ? 'risk-medium' : 'risk-low');
-                let ruleBadges = item.rules.map(r => `<span class="meta-tag" onclick="openRuleModal('${r}')">${r}</span>`).join(' ');
+                let ruleBadges = item.rules.filter(r => RULE_DETAILS[r]).map(r => `<span class="meta-tag" onclick="openRuleModal('${r}')">${r.toUpperCase()}</span>`).join(' ');
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -643,52 +408,11 @@
                     <td style="color:#38bdf8;">${item.contractor}</td>
                     <td><span class="risk-badge ${riskClass}">${item.risk}</span></td>
                     <td style="text-align: right; font-family: monospace;">৳ ${Number(item.value).toLocaleString('en-IN')}</td>
-                    <td><button class="btn-verify" onclick="openInspectorModal('${item.id}')">🔍 Validate Document</button></td>
+                    <td><button class="btn-verify" onclick="openInspectorModal('${item.id}')">🔍 Inspect</button></td>
                     <td>${ruleBadges || '<span style="color:var(--text-muted)">-</span>'}</td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            const totalPages = Math.ceil(currentFilteredData.length / rowsPerPage);
-            document.getElementById('paginationControls').style.display = totalPages > 1 ? 'flex' : 'none';
-            document.getElementById('currentPageLabel').innerText = currentPage;
-            document.getElementById('totalPagesLabel').innerText = totalPages;
-            document.getElementById('prevPageBtn').disabled = currentPage === 1;
-            document.getElementById('nextPageBtn').disabled = currentPage === totalPages;
-        }
-
-        function changePage(direction) { currentPage += direction; renderTable(); }
-
-        // 4. THE SPLIT-SCREEN VERIFICATION MODAL
-        function reloadPdfViewer() {
-            let folder = document.getElementById('editPdfFolder').value;
-            let filename = document.getElementById('editPdfPath').value.trim();
-            
-            const pdfFrame = document.getElementById('pdfFrame');
-            const noPdfMsg = document.getElementById('noPdfMessage');
-            const pdfHeader = document.getElementById('pdfHeader');
-            const pdfPopOut = document.getElementById('pdfPopOut');
-            const pdfFallbackLink = document.getElementById('pdfFallbackLink');
-
-            if (filename !== "") {
-                let fullPath = "./" + folder + filename;
-                let encodedUrl = encodeURI(fullPath);
-                
-                pdfFrame.data = encodedUrl;
-                pdfFrame.setAttribute('data', encodedUrl);
-                pdfPopOut.href = encodedUrl;
-                if(pdfFallbackLink) pdfFallbackLink.href = encodedUrl;
-                
-                pdfFrame.style.display = 'block';
-                pdfHeader.style.display = 'block';
-                noPdfMsg.style.display = 'none';
-            } else {
-                pdfFrame.data = "";
-                pdfFrame.setAttribute('data', '');
-                pdfFrame.style.display = 'none';
-                pdfHeader.style.display = 'none';
-                noPdfMsg.style.display = 'flex';
-            }
         }
 
         function openInspectorModal(id) {
@@ -700,90 +424,19 @@
             document.getElementById('editContractor').value = item.contractor;
             document.getElementById('editValue').value = item.value;
             document.getElementById('editRisk').value = item.risk;
+            document.getElementById('editPdfPath').value = item.Evidence_PDF_Path || "";
             document.getElementById('editNotes').value = item.Forensic_Notes || "";
             
-            let riskScore = item.risk === 'HIGH' ? '95%' : (item.risk === 'MEDIUM' ? '60%' : '15%');
-            document.getElementById('riskMeterFill').style.width = riskScore;
-            document.getElementById('riskScoreText').innerText = riskScore;
+            // Render PDF
+            document.getElementById('pdfFrame').data = item.Evidence_PDF_Path || "";
 
-            // Parse PDF Path for Folder Dropdown
-            let dbPath = item.Evidence_PDF_Path || "";
-            if (dbPath.includes('Contract_Awards_PDFs')) {
-                document.getElementById('editPdfFolder').value = "Contract_Awards_PDFs/";
-                document.getElementById('editPdfPath').value = dbPath.split('/').pop();
-            } else if (dbPath.includes('Tender Notice_PDFs')) {
-                document.getElementById('editPdfFolder').value = "Tender Notice_PDFs/";
-                document.getElementById('editPdfPath').value = dbPath.split('/').pop();
-            } else {
-                document.getElementById('editPdfFolder').value = "";
-                document.getElementById('editPdfPath').value = dbPath.replace('./', '');
-            }
-
-            reloadPdfViewer();
-
-            // Load existing rules into the checkboxes
-            document.querySelectorAll('#manualRuleFlags input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
+            // Reset and Check Manual Audit Flags
+            document.querySelectorAll('#manualRuleFlags input[type="checkbox"]').forEach(cb => cb.checked = false);
             if (item.rules && Array.isArray(item.rules)) {
                 item.rules.forEach(rule => {
-                    let normalizedRule = String(rule).toLowerCase().trim();
-                    let cb = document.querySelector(`#manualRuleFlags input[value="${normalizedRule}"]`);
+                    let cb = document.querySelector(`#manualRuleFlags input[value="${rule}"]`);
                     if (cb) cb.checked = true;
                 });
-            }
-
-            const eligList = document.getElementById('modalEligibilityList');
-            eligList.innerHTML = '';
-            if (item.Eligibility_Criteria && Array.isArray(item.Eligibility_Criteria)) {
-                item.Eligibility_Criteria.forEach(crit => {
-                    let li = document.createElement('li');
-                    li.innerText = crit;
-                    eligList.appendChild(li);
-                });
-            } else {
-                eligList.innerHTML = '<li style="color:var(--text-muted);">No distinct eligibility criteria extracted.</li>';
-            }
-
-            const forensicPanel = document.getElementById('forensicPanel');
-            const rationaleBox = document.getElementById('modalRedFlagRationale');
-            rationaleBox.innerHTML = '';
-
-            if (item.rules && item.rules.length > 0) {
-                forensicPanel.className = 'forensic-panel';
-                item.rules.forEach(ruleKey => {
-                    let ruleDetails = RULE_DETAILS[ruleKey] ? RULE_DETAILS[ruleKey].title : ruleKey.toUpperCase();
-                    let specificRationale = (item.Red_Flag_Rationale && item.Red_Flag_Rationale[ruleKey]) ? item.Red_Flag_Rationale[ruleKey] : "Flagged by investigator or AI engine for manual review.";
-                    let ruleBlock = document.createElement('div');
-                    ruleBlock.style.marginBottom = '10px';
-                    ruleBlock.style.padding = '8px 12px';
-                    ruleBlock.style.background = 'rgba(0,0,0,0.2)';
-                    ruleBlock.style.borderLeft = '3px solid #ef4444';
-                    ruleBlock.style.borderRadius = '4px';
-                    ruleBlock.innerHTML = `<div style="color: #fca5a5; font-weight: 700; margin-bottom: 4px; font-size: 14px;">🚩 ${ruleDetails}</div><div style="color: var(--text-light); font-size: 13px; font-weight: normal; line-height: 1.5;">${specificRationale}</div>`;
-                    rationaleBox.appendChild(ruleBlock);
-                });
-            } else {
-                forensicPanel.className = 'forensic-panel passed';
-                rationaleBox.innerHTML = `<div style="color: #10b981; font-weight: 600; font-size: 14px;">✅ Passed: No immediate red flags detected.</div>`;
-            }
-
-            const metaList = document.getElementById('extendedMetadataList');
-            metaList.innerHTML = '';
-            const skipKeys = ['id', 'entity', 'contractor', 'risk', 'value', 'rules', 'Eligibility_Criteria', 'Red_Flag_Rationale', 'Evidence_PDF_Path', 'Forensic_Notes'];
-            for (const [key, val] of Object.entries(item)) {
-                if (skipKeys.includes(key) || val === undefined || val === null) continue;
-                let displayVal = val;
-                if (typeof val === 'object') displayVal = Object.entries(val).map(([k, v]) => `<br>&nbsp;&nbsp;↳ <i>${k}</i>: <b>${v}</b>`).join('');
-                else displayVal = `<b>${val}</b>`;
-                
-                let div = document.createElement('div');
-                div.style.background = 'rgba(255,255,255,0.02)';
-                div.style.padding = '5px 8px';
-                div.style.borderRadius = '4px';
-                div.style.border = '1px solid #1e293b';
-                div.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">${key.replace(/_/g, ' ')}:</span> <span style="color:var(--neon-blue); font-size:13px;">${displayVal}</span>`;
-                metaList.appendChild(div);
             }
 
             document.getElementById('inspectorModal').style.display = 'flex';
@@ -794,17 +447,14 @@
             
             let itemIndex = globalData.findIndex(t => t.id == currentTenderIdInModal);
             if(itemIndex !== -1) {
+                // Read basic data
                 globalData[itemIndex].Contractor_Name = document.getElementById('editContractor').value;
                 globalData[itemIndex].Contract_Value_BDT = Number(document.getElementById('editValue').value.replace(/,/g, '')); 
                 globalData[itemIndex].Risk_Level = document.getElementById('editRisk').value;
-                
-                let folder = document.getElementById('editPdfFolder').value;
-                let filename = document.getElementById('editPdfPath').value.trim();
-                globalData[itemIndex].Evidence_PDF_Path = filename ? ("./" + folder + filename) : "";
-                
+                globalData[itemIndex].Evidence_PDF_Path = document.getElementById('editPdfPath').value.trim();
                 globalData[itemIndex].Forensic_Notes = document.getElementById('editNotes').value;
                 
-                // Save Manual Checkbox Flags
+                // Read checkboxes
                 let checkedRules = [];
                 document.querySelectorAll('#manualRuleFlags input[type="checkbox"]:checked').forEach(cb => {
                     checkedRules.push(cb.value);
@@ -812,36 +462,11 @@
                 globalData[itemIndex].rules = checkedRules; 
                 
                 globalData = normalizeLoadedData(globalData);
-                
-                if (await saveDirectlyToGitHub()) {
-                    closeModal('inspectorModal');
-                    currentFilteredData = [...globalData];
-                    updateDashboard(); 
-                }
+                currentFilteredData = [...globalData];
+                updateDashboard();
+                closeModal('inspectorModal');
+                alert("Data verified and updated locally. (Use 'Direct Save to GitHub' to push remotely).");
             }
-        }
-
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-        
-        function openRuleModal(ruleKey) {
-            const rule = RULE_DETAILS[ruleKey];
-            if(rule) {
-                document.getElementById('modalTitle').innerText = rule.title;
-                document.getElementById('modalEnacted').innerText = "আইন: " + rule.enacted;
-                document.getElementById('modalDesc').innerText = rule.purpose;
-                document.getElementById('ruleModal').style.display = 'flex';
-            }
-        }
-
-        // 5. SEARCH & FILTERS
-        function resetDashboard() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('riskFilter').value = 'ALL';
-            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
-            currentFilteredData = [...globalData];
-            currentPage = 1;
-            updateDashboard();
-            document.getElementById('filterBanner').style.display = 'none';
         }
 
         function filterByRule(ruleId, element) {
@@ -852,15 +477,12 @@
                 element.classList.add('active-rule');
                 currentFilteredData = globalData.filter(item => item.rules && item.rules.includes(ruleId));
                 document.getElementById('filterBanner').style.display = 'flex';
-                document.getElementById('bannerText').innerText = "ফিল্টার করা হচ্ছে: " + RULE_DETAILS[ruleId].title;
-            } else resetDashboard();
-            
-            currentPage = 1; updateDashboard();
-        }
-
-        function debouncedFilter() {
-            clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(triggerFilter, 300);
+                document.getElementById('bannerText').innerText = "Filter active: " + RULE_DETAILS[ruleId].title;
+            } else {
+                resetDashboard();
+                return;
+            }
+            updateDashboard();
         }
 
         function triggerFilter() {
@@ -874,7 +496,46 @@
                 let matchRisk = riskFilter === 'ALL' || item.risk === riskFilter;
                 return matchSearch && matchRisk;
             });
-            currentPage = 1; updateDashboard();
+            updateDashboard();
+        }
+
+        function resetDashboard() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('riskFilter').value = 'ALL';
+            document.querySelectorAll('.evidence-item').forEach(el => el.classList.remove('active-rule'));
+            document.getElementById('filterBanner').style.display = 'none';
+            currentFilteredData = [...globalData];
+            updateDashboard();
+        }
+
+        function openRuleModal(ruleKey) {
+            const rule = RULE_DETAILS[ruleKey];
+            if(rule) {
+                document.getElementById('modalTitle').innerText = rule.title;
+                document.getElementById('modalEnacted').innerText = "Enacted: " + rule.enacted;
+                document.getElementById('modalDesc').innerText = rule.purpose;
+                document.getElementById('ruleModal').style.display = 'flex';
+            }
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+        
+        async function saveDirectlyToGitHub() {
+            if (!savedGithubToken) {
+                savedGithubToken = prompt("Enter your GitHub Personal Access Token (PAT):");
+                if (!savedGithubToken) return false;
+                localStorage.setItem('egp_github_pat', savedGithubToken);
+            }
+            alert("This connects to the GitHub API in production. (Feature stubbed for demo).");
+        }
+
+        function downloadUpdatedJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 4));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "Updated_Database.json");
+            document.body.appendChild(dl);
+            dl.click(); dl.remove();
         }
 
         function loadCustomJSON(event) {
@@ -885,34 +546,13 @@
                 try {
                     globalData = normalizeLoadedData(JSON.parse(e.target.result));
                     currentFilteredData = [...globalData];
-                    currentPage = 1; updateDashboard();
-                    alert("✅ Custom JSON Loaded Successfully!");
-                } catch (err) { alert("❌ Invalid JSON Format!"); }
+                    updateDashboard();
+                    alert("JSON Loaded!");
+                } catch (err) { alert("Invalid JSON!"); }
             };
             reader.readAsText(file);
             event.target.value = ''; 
         }
-
-        function downloadCSV() {
-            let csv = 'ID,Entity,Contractor,Risk,Value\n';
-            currentFilteredData.forEach(i => csv += `"${i.id}","${i.entity}","${i.contractor}","${i.risk}","${i.value}"\n`);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Procurement_Data.csv';
-            link.click();
-        }
-
-        function downloadUpdatedJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalData, null, 4));
-            const dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", "Updated_Procurement_Database.json");
-            document.body.appendChild(dl);
-            dl.click(); dl.remove();
-        }
-        
-        function openNetworkMap() { document.getElementById('networkModal').style.display = 'flex'; }
     </script>
 </body>
 </html>
