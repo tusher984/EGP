@@ -281,7 +281,9 @@
                     const res = await fetch(`https://raw.githubusercontent.com/${CONFIG.GITHUB_USER}/${CONFIG.GITHUB_REPO}/main/${CONFIG.FILE_PATH}?t=${Date.now()}`);
                     if (!res.ok) throw new Error(`GitHub fetch failed (${res.status})`);
                     
-                    State.data = await res.json();
+                    const json = await res.json();
+                    State.data = Array.isArray(json) ? json : (Array.isArray(json.Merged_Database) ? json.Merged_Database : []);
+                    if (!Array.isArray(State.data)) State.data = [];
                     this.applyFilters();
                 } catch (err) {
                     console.error("Fetch Error:", err);
