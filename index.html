@@ -205,7 +205,10 @@
             // Load PDF Cache
             fetch('./pdf_text_cache.json')
                 .then(res => res.json())
-                .then(cache => { pdfCache = cache; })
+                .then(cache => { 
+                    pdfCache = cache;
+                    console.log("PDF Cache loaded successfully with", Object.keys(pdfCache).length, "files.");
+                })
                 .catch(err => console.log("Cache file not found, using JSON data only."));
 
             // Load Main Database
@@ -358,20 +361,36 @@
         function switchPdfView(type) {
             if(!currentRecord) return;
             const tid = currentRecord.Tender_Proposal_ID;
-            const noticeFile = `CDA_Tender_${tid}.pdf`;
-            const awardFile = `Tender_${tid}.pdf`;
 
-            let targetPath = type === 'notice' ? `./Tender Notice_PDFs/${noticeFile}` : `./Contract_Awards_PDFs/${awardFile}`;
-            let targetFile = type === 'notice' ? noticeFile : awardFile;
+            // Generate potential file keys to handle dynamic file naming
+            let potentialKeys = [];
+            let folder = "";
+
+            if (type === 'notice') {
+                folder = "Tender Notice_PDFs";
+                potentialKeys = [`CDA_Tender_${tid}.pdf`, `Tender_${tid}.pdf`, `${tid}.pdf`];
+                document.getElementById('btnNoticePdf').className = "px-3 py-1 rounded text-xs font-bold bg-blue-600 text-white";
+                document.getElementById('btnAwardPdf').className = "px-3 py-1 rounded text-xs font-bold bg-slate-800 text-slate-400";
+            } else {
+                folder = "Contract_Awards_PDFs";
+                potentialKeys = [`Tender_${tid}.pdf`, `CDA_Tender_${tid}.pdf`, `${tid}.pdf`];
+                document.getElementById('btnAwardPdf').className = "px-3 py-1 rounded text-xs font-bold bg-blue-600 text-white";
+                document.getElementById('btnNoticePdf').className = "px-3 py-1 rounded text-xs font-bold bg-slate-800 text-slate-400";
+            }
+
+            // Find matching key in cache
+            let matchedKey = potentialKeys.find(key => pdfCache[key] !== undefined);
+            let targetFile = matchedKey || potentialKeys[0];
+            let targetPath = `./${folder}/${targetFile}`;
 
             document.getElementById('pdfIframe').src = targetPath;
 
-            // Retrieve from pre-extracted cache
-            if (pdfCache[targetFile]) {
-                document.getElementById('rawPdfText').innerText = pdfCache[targetFile];
+            // Retrieve from pre-extracted cache with fallback
+            if (matchedKey && pdfCache[matchedKey]) {
+                document.getElementById('rawPdfText').innerText = pdfCache[matchedKey];
                 document.getElementById('pdfScanStatus').innerText = "Loaded from OCR Cache";
             } else {
-                document.getElementById('rawPdfText').innerText = `No text found in cache for ${targetFile}.\nMake sure you ran the Python ocr_preprocessor.py script!`;
+                document.getElementById('rawPdfText').innerText = `No text found in cache for Tender ID ${tid}.\nFile key attempted: ${targetFile}.\nMake sure you ran the Python ocr_preprocessor.py script!`;
                 document.getElementById('pdfScanStatus').innerText = "Cache Miss";
             }
         }
