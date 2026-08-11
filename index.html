@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (মাস্টার সংস্করণ)</title>
+    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (মাস্টার ফিল্টার সংস্করণ)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -86,6 +86,7 @@
             </div>
         </header>
 
+        <!-- KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-file-invoice text-5xl"></i></div>
@@ -109,7 +110,21 @@
             </div>
         </div>
 
+        <!-- MAIN TABLE WITH RISK FILTER BUTTONS -->
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <h2 class="text-lg font-bold text-slate-200">তদন্ত প্রতিবেদন <span class="text-xs text-slate-500 ml-2 font-normal">(বিস্তারিত দেখতে রো-তে ক্লিক করুন)</span></h2>
+                
+                <!-- DYNAMIC FILTER BUTTONS -->
+                <div class="flex flex-wrap gap-2" id="filterButtons">
+                    <button onclick="filterTable('', this)" class="filter-btn ring-2 ring-white px-3 py-1.5 rounded text-[11px] font-black bg-slate-700 text-white transition">সবগুলো (<span id="countAll">0</span>)</button>
+                    <button onclick="filterTable('CRITICAL', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-red-900/30 text-red-400 border border-red-900/50 hover:bg-red-900/50 transition">CRITICAL (<span id="countCritical">0</span>)</button>
+                    <button onclick="filterTable('HIGH', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-orange-900/30 text-orange-400 border border-orange-900/50 hover:bg-orange-900/50 transition">HIGH (<span id="countHigh">0</span>)</button>
+                    <button onclick="filterTable('MEDIUM', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-yellow-900/30 text-yellow-400 border border-yellow-900/50 hover:bg-yellow-900/50 transition">MEDIUM (<span id="countMedium">0</span>)</button>
+                    <button onclick="filterTable('LOW', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-emerald-900/30 text-emerald-400 border border-emerald-900/50 hover:bg-emerald-900/50 transition">LOW / CLEAN (<span id="countLow">0</span>)</button>
+                </div>
+            </div>
+            
             <div class="overflow-x-auto">
                 <table id="mainTable" class="w-full text-sm text-left text-slate-300">
                     <thead class="bg-[#1e293b] text-slate-200">
@@ -202,7 +217,7 @@
                                     <i class="fa-solid fa-shield-check"></i> ঝুঁকিমুক্ত হিসেবে সেভ করুন
                                 </button>
                                 <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black py-3 rounded shadow-lg transition text-xs flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-triangle-exclamation"></i> দুর্নীতি বা অনিয়ম নিশ্চিত করুন
+                                    <i class="fa-solid fa-triangle-exclamation"></i> দুর্নীতি বা অনিয়ম নিশ্চিত করুন
                                 </button>
                             </div>
                         </div>
@@ -254,8 +269,8 @@
                                 <div><label>ইভেন্ট টাইপ (Event Type)</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type\s*:\s*(.*?)\s+Invitation for" class="egp-field"></div>
                                 <div><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No" data-regex="Invitation Reference No\.\s*:\s*(.*?)\s+Tender\/Proposal Status" class="egp-field"></div>
                                 <div><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status" data-regex="Tender\/Proposal Status\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*:\s*(\d+)" class="egp-field font-mono text-red-300"></div>
-                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID" data-regex="Tender\/Proposal ID\s*:\s*(\d+)" class="egp-field font-mono text-red-300"></div>
+                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
+                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID" data-regex="Tender\/Proposal ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
                                 <div><label>বাজেটের ধরন (Budget Type)</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div class="col-span-2"><label>অর্থের উৎস (Source of Funds)</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div class="col-span-2"><label>উন্নয়ন সহযোগী (Dev Partner)</label><input type="text" id="Dev_Partner" data-db="Development_Partner" class="egp-field"></div>
@@ -356,7 +371,7 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
@@ -395,6 +410,14 @@
                 let match = text.match(new RegExp(regex, 'i'));
                 return match && match[1] ? match[1].trim() : "";
             } catch(e) { return ""; }
+        }
+
+        function getDaysDiff(d1Str, d2Str) {
+            if(!d1Str || !d2Str) return null;
+            let d1 = new Date(d1Str);
+            let d2 = new Date(d2Str);
+            if(isNaN(d1) || isNaN(d2)) return null;
+            return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
         }
 
         function handleFolderUpload(event) {
@@ -451,7 +474,6 @@
                 let pubDate = extractRegex(ocrText, "Publication\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Scheduled_Tender_Proposal_Publication_Date_and_Time;
                 let closeDate = extractRegex(ocrText, "Closing\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Tender_Proposal_Closing_Date_and_Time;
                 let preStart = extractRegex(ocrText, "meeting Start\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Pre_Tender_Proposal_meeting_Start_Date_and_Time;
-                let lastSell = extractRegex(ocrText, "last selling\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Tender_Proposal_Document_last_selling_downloading_Date_and_Time;
 
                 // --- ADVANCED LOT TABLE EXTRACTION ---
                 let lotMatch = ocrText.match(/(?:Single|\d+)\s+([\s\S]*?)\s+(\d{4,})\s+(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}-[A-Za-z]{3}-\d{4})/i);
@@ -573,15 +595,27 @@
             });
         }
 
+        // ================= FILTERING SYSTEM =================
+        function filterTable(level, btn) {
+            // Update button UI
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('ring-2', 'ring-white'));
+            if(btn) btn.classList.add('ring-2', 'ring-white');
+
+            // Apply DataTables filter
+            let table = $('#mainTable').DataTable();
+            table.column(1).search(level).draw();
+        }
+
         function initDashboard() {
             runForensicEngine();
-            let high = 0, med = 0, totalVal = 0;
+            let counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, ALL: analyzedData.length };
+            let totalVal = 0;
+            
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
             analyzedData.forEach(t => {
-                if(t.riskLevel === 'CRITICAL' || t.riskLevel === 'HIGH') high++;
-                if(t.riskLevel === 'MEDIUM') med++;
+                counts[t.riskLevel]++;
                 if(t.Contract_Value_BDT) totalVal += parseFloat(t.Contract_Value_BDT) || 0;
 
                 let badgeClass = t.riskLevel === 'CRITICAL' ? 'bg-red-600' : t.riskLevel === 'HIGH' ? 'bg-orange-600' : t.riskLevel === 'MEDIUM' ? 'bg-yellow-600' : 'bg-emerald-600';
@@ -600,10 +634,18 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('kpiTotal').innerText = analyzedData.length;
-            document.getElementById('kpiHigh').innerText = high;
-            document.getElementById('kpiMed').innerText = med;
+            // Update KPI Boxes
+            document.getElementById('kpiTotal').innerText = counts.ALL;
+            document.getElementById('kpiHigh').innerText = counts.CRITICAL + counts.HIGH;
+            document.getElementById('kpiMed').innerText = counts.MEDIUM;
             document.getElementById('kpiValue').innerText = (totalVal / 10000000).toFixed(2) + " Cr";
+
+            // Update Filter Button Counts
+            document.getElementById('countAll').innerText = counts.ALL;
+            document.getElementById('countCritical').innerText = counts.CRITICAL;
+            document.getElementById('countHigh').innerText = counts.HIGH;
+            document.getElementById('countMedium').innerText = counts.MEDIUM;
+            document.getElementById('countLow').innerText = counts.LOW;
 
             if ($.fn.DataTable.isDataTable('#mainTable')) $('#mainTable').DataTable().destroy();
             $('#mainTable').DataTable({ pageLength: 10, order: [[2, 'desc']], language: { search: "খুঁজুন:", lengthMenu: "প্রতি পৃষ্ঠায় _MENU_ টি দেখান", info: "মোট _TOTAL_ টির মধ্যে _START_ থেকে _END_ পর্যন্ত দেখানো হচ্ছে", paginate: { next: "পরবর্তী", previous: "পূর্ববর্তী" } }});
@@ -640,6 +682,11 @@
                 if (val && !log[input.id] && !currentRecord[dbKey] && (regexStr || extKey)) input.classList.add('auto-filled');
                 else input.classList.remove('auto-filled');
             });
+
+            let d1 = document.getElementById('Pub_Date').value;
+            let d2 = document.getElementById('Close_Date').value;
+            let diff = getDaysDiff(d1, d2);
+            document.getElementById('daysCalc').innerText = diff ? `(${diff} দিনের সময়)` : "";
 
             document.getElementById('auditJustification').value = log.justification || "";
 
@@ -718,7 +765,7 @@
                 document.getElementById('pdfScanStatus').innerHTML = `<span class="text-emerald-400 px-2 py-0.5 rounded bg-slate-800"><i class="fa-solid fa-check"></i> ক্যাশ থেকে লোড হয়েছে</span>`;
             } else {
                 document.getElementById('pdfScanStatus').innerHTML = `<span class="text-yellow-500 px-2 py-0.5 rounded bg-slate-800">Cache Miss</span>`;
-                document.getElementById('rawPdfText').innerText = "ফাইল লোড হয়েছে। কিন্তু ক্যাশে টেক্সট নেই।";
+                document.getElementById('rawPdfText').innerText = "ফাইল লোড হয়েছে। কিন্তু ক্যাশে টেক্সট নেই, পাইথন স্ক্রিপ্ট চালান।";
             }
         }
 
@@ -741,7 +788,7 @@
             });
 
             auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigatorLogs', JSON.stringify(auditLogs));
+            localStorage.setItem('egpInvestigatorLogs_Final', JSON.stringify(auditLogs));
             alert("আপনার যাচাইকরণ সফলভাবে সেভ হয়েছে!");
             closeInspector();
         }
