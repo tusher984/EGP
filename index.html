@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (মাস্টার ফিল্টার সংস্করণ)</title>
+    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (সংস্থা ফিল্টার সংস্করণ)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -130,6 +130,7 @@
                     <thead class="bg-[#1e293b] text-slate-200">
                         <tr>
                             <th class="p-3">টেন্ডার আইডি</th>
+                            <th class="p-3 text-blue-300">সংস্থা (Organization)</th>
                             <th class="p-3">সর্বোচ্চ ঝুঁকি</th>
                             <th class="p-3">স্কোর</th>
                             <th class="p-3">ক্রয়কারী সত্তা (PE)</th>
@@ -308,8 +309,8 @@
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500"><i class="fa-solid fa-user-shield"></i> দরদাতার যোগ্যতা (Eligibility)</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>তরল সম্পদ বা Liquid Assets (BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
-                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
+                                <div class="col-span-2"><label>তরল সম্পদ বা Liquid Assets (BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
+                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
                                 <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience.*?(\d+\s*(?:\([A-Za-z]+\))?\s*years?)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience.*?value of at least\s*(Tk\.?\s*[\d\.\s]+\s*[a-zA-Z]+|Tk\.?\s*[\d,\.]+)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 <div class="col-span-2"><label>সর্বোচ্চ জেভি সদস্য (Max JV Members)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*(\d+)" class="egp-field"></div>
@@ -412,14 +413,6 @@
             } catch(e) { return ""; }
         }
 
-        function getDaysDiff(d1Str, d2Str) {
-            if(!d1Str || !d2Str) return null;
-            let d1 = new Date(d1Str);
-            let d2 = new Date(d2Str);
-            if(isNaN(d1) || isNaN(d2)) return null;
-            return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
-        }
-
         function handleFolderUpload(event) {
             const files = event.target.files;
             let jsonFile = null, cacheFile = null;
@@ -485,6 +478,16 @@
                     t.ext_LotStart = lotMatch[3]; 
                     t.ext_LotEnd = lotMatch[4]; 
                 }
+
+                // --- ORGANIZATION EXTRACTION FOR LIST ---
+                let orgMatch = t.Organization || extractRegex(t.fullOCR, "Organization\\s*:\\s*(.*?)\\s+Procuring");
+                if(!orgMatch && t.Source_File) {
+                    if(t.Source_File.toUpperCase().includes('RAJUK')) orgMatch = "RAJUK";
+                    else if(t.Source_File.toUpperCase().includes('CDA')) orgMatch = "CDA";
+                    else if(t.Source_File.toUpperCase().includes('KDA')) orgMatch = "KDA";
+                    else if(t.Source_File.toUpperCase().includes('LGED')) orgMatch = "LGED";
+                }
+                t.ext_OrgName = orgMatch ? orgMatch.substring(0, 20) : "অজানা";
 
                 // --- CORRUPTION RULES ---
 
@@ -597,13 +600,11 @@
 
         // ================= FILTERING SYSTEM =================
         function filterTable(level, btn) {
-            // Update button UI
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('ring-2', 'ring-white'));
             if(btn) btn.classList.add('ring-2', 'ring-white');
 
-            // Apply DataTables filter
             let table = $('#mainTable').DataTable();
-            table.column(1).search(level).draw();
+            table.column(2).search(level).draw(); // Index 2 is Max Risk column now
         }
 
         function initDashboard() {
@@ -624,9 +625,10 @@
                 tr.onclick = () => openInspector(t.Tender_Proposal_ID);
                 tr.innerHTML = `
                     <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID || 'N/A'}</td>
+                    <td class="p-3 text-xs font-bold text-blue-300">${t.ext_OrgName}</td>
                     <td class="p-3"><span class="px-2 py-1 rounded text-[10px] text-white uppercase font-black ${badgeClass} shadow-md">${t.riskLevel}</span></td>
                     <td class="p-3 font-bold text-slate-300">${t.riskScore}</td>
-                    <td class="p-3 text-xs text-slate-400">${(t.Procuring_Entity_Name || 'N/A').substring(0,30)}...</td>
+                    <td class="p-3 text-xs text-slate-400">${(t.Procuring_Entity_Name || 'N/A').substring(0,25)}...</td>
                     <td class="p-3 text-xs">${t.Supplier_Name || '<span class="italic text-slate-600">অনুপস্থিত</span>'}</td>
                     <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US') : '0'}</td>
                     <td class="p-3 text-xs">${auditLogs[t.Tender_Proposal_ID] ? '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> যাচাইকৃত</span>' : '<span class="text-slate-600">যাচাই হয়নি</span>'}</td>
@@ -634,13 +636,11 @@
                 tbody.appendChild(tr);
             });
 
-            // Update KPI Boxes
             document.getElementById('kpiTotal').innerText = counts.ALL;
             document.getElementById('kpiHigh').innerText = counts.CRITICAL + counts.HIGH;
             document.getElementById('kpiMed').innerText = counts.MEDIUM;
             document.getElementById('kpiValue').innerText = (totalVal / 10000000).toFixed(2) + " Cr";
 
-            // Update Filter Button Counts
             document.getElementById('countAll').innerText = counts.ALL;
             document.getElementById('countCritical').innerText = counts.CRITICAL;
             document.getElementById('countHigh').innerText = counts.HIGH;
@@ -648,7 +648,7 @@
             document.getElementById('countLow').innerText = counts.LOW;
 
             if ($.fn.DataTable.isDataTable('#mainTable')) $('#mainTable').DataTable().destroy();
-            $('#mainTable').DataTable({ pageLength: 10, order: [[2, 'desc']], language: { search: "খুঁজুন:", lengthMenu: "প্রতি পৃষ্ঠায় _MENU_ টি দেখান", info: "মোট _TOTAL_ টির মধ্যে _START_ থেকে _END_ পর্যন্ত দেখানো হচ্ছে", paginate: { next: "পরবর্তী", previous: "পূর্ববর্তী" } }});
+            $('#mainTable').DataTable({ pageLength: 10, order: [[3, 'desc']], language: { search: "খুঁজুন:", lengthMenu: "প্রতি পৃষ্ঠায় _MENU_ টি দেখান", info: "মোট _TOTAL_ টির মধ্যে _START_ থেকে _END_ পর্যন্ত দেখানো হচ্ছে", paginate: { next: "পরবর্তী", previous: "পূর্ববর্তী" } }});
         }
 
         function openInspector(tid) {
@@ -682,11 +682,6 @@
                 if (val && !log[input.id] && !currentRecord[dbKey] && (regexStr || extKey)) input.classList.add('auto-filled');
                 else input.classList.remove('auto-filled');
             });
-
-            let d1 = document.getElementById('Pub_Date').value;
-            let d2 = document.getElementById('Close_Date').value;
-            let diff = getDaysDiff(d1, d2);
-            document.getElementById('daysCalc').innerText = diff ? `(${diff} দিনের সময়)` : "";
 
             document.getElementById('auditJustification').value = log.justification || "";
 
@@ -797,7 +792,7 @@
             if (analyzedData.length === 0) { alert("এক্সপোর্ট করার জন্য কোনো ডেটা নেই।"); return; }
 
             let dynamicHeaders = Array.from(document.querySelectorAll('.egp-field')).map(i => i.id);
-            let headers = ["Tender_ID", "Max_Risk_Level", "Risk_Score", "Total_Violations", ...dynamicHeaders, "Audit_Status", "Audit_Justification", "Audit_Timestamp", "Detailed_Findings"];
+            let headers = ["Tender_ID", "Max_Risk_Level", "Risk_Score", "Total_Violations", "Organization", ...dynamicHeaders, "Audit_Status", "Audit_Justification", "Audit_Timestamp", "Detailed_Findings"];
 
             let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
 
@@ -806,7 +801,7 @@
                 const clean = (val) => `"${String(val || "").replace(/"/g, '""').replace(/\n/g, ' ')}"`;
 
                 let row = [
-                    t.Tender_Proposal_ID || "N/A", t.riskLevel, t.riskScore, t.forensicFindings.length
+                    t.Tender_Proposal_ID || "N/A", t.riskLevel, t.riskScore, t.forensicFindings.length, clean(t.ext_OrgName)
                 ];
 
                 dynamicHeaders.forEach(hid => {
