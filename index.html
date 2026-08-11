@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Absolute Complete Taxonomy)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Save & Resume Edition)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -46,72 +46,70 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #b91c1c; }
         
-        input, select, textarea { transition: all 0.3s; background-color: #020617; border: 1px solid #334155; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #e2e8f0; width: 100%; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #dc2626 !important; background-color: #0f172a; box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
-        label { display: block; font-size: 8px; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        input, select, textarea { transition: all 0.3s; background-color: #020617; border: 1px solid #334155; border-radius: 4px; padding: 4px 6px; font-size: 10px; color: #e2e8f0; width: 100%; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #ef4444 !important; background-color: #0f172a; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+        label { display: block; font-size: 9px; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        .fieldset-box { background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 8px; border: 1px solid rgba(51, 65, 85, 0.6); margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .fieldset-title { font-size: 10px; font-weight: 900; color: #f87171; margin-bottom: 8px; border-b: 1px solid rgba(51, 65, 85, 0.5); padding-bottom: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .fieldset-box { background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(51, 65, 85, 0.6); margin-bottom: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .fieldset-title { font-size: 11px; font-weight: 900; color: #f87171; margin-bottom: 10px; border-b: 1px solid rgba(51, 65, 85, 0.5); padding-bottom: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         
-        .tab-btn.active { border-bottom: 2px solid #dc2626; color: #f87171; background: #1e293b; }
+        .tab-btn.active { border-bottom: 2px solid #ef4444; color: #f87171; background: #1e293b; }
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
         .auto-filled { border-color: #3b82f6 !important; box-shadow: inset 0 0 5px rgba(59, 130, 246, 0.3); background-color: rgba(15, 23, 42, 0.8); }
-        .user-verified { border-color: #10b981 !important; box-shadow: inset 0 0 5px rgba(16, 185, 129, 0.3); background-color: rgba(15, 23, 42, 0.8); }
+        .user-verified { border-color: #10b981 !important; box-shadow: inset 0 0 5px rgba(16, 185, 129, 0.3); background-color: rgba(6, 78, 59, 0.2); }
         .highlight { background-color: rgba(234, 179, 8, 0.4); color: #fde047; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
-        /* NETRA NEWS STYLES */
-        .nn-article { font-family: 'Noto Serif Bengali', 'Merriweather', serif; color: #111827; background-color: #ffffff; line-height: 1.8; }
-        .nn-title { font-size: 2.25rem; font-weight: 900; line-height: 1.2; color: #000000; border-top: 5px solid #dc2626; padding-top: 20px; margin-bottom: 16px; }
-        .nn-meta { font-family: system-ui, sans-serif; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
-        .nn-author { color: #dc2626; font-weight: bold; }
-        .nn-body-text { font-size: 1.1rem; margin-bottom: 24px; }
-        .nn-dropcap::first-letter { font-size: 3.5rem; float: left; margin-top: 5px; margin-right: 8px; color: #dc2626; font-weight: 900; line-height: 0.8; }
-        .nn-section-title { font-size: 1.4rem; font-weight: 700; margin-top: 36px; margin-bottom: 16px; border-left: 4px solid #dc2626; padding-left: 12px; }
-        .nn-evidence-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
-        .nn-methodology { background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin-top: 40px; font-family: system-ui, sans-serif; font-size: 0.9rem; }
+        /* Report Preview Styles */
+        .story-preview-container { font-family: 'Georgia', serif; color: #000; background: #fff; }
         details summary::-webkit-details-marker { display:none; }
-
-        @media print {
-            body * { visibility: hidden; }
-            #netraStoryPreview, #netraStoryPreview * { visibility: visible; }
-            #netraStoryPreview { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 0; }
-            details div { display: block !important; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- VIEW 0: LAUNCHPAD -->
+    <!-- VIEW 0: FOLDER SELECTION LAUNCHPAD -->
     <div id="launchpadView" class="h-screen flex flex-col items-center justify-center p-6 text-center bg-[#0b1120] relative overflow-hidden">
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#ef4444 1px, transparent 1px); background-size: 40px 40px;"></div>
         <div class="absolute w-96 h-96 bg-red-600/10 rounded-full blur-3xl"></div>
         
-        <i class="fa-solid fa-newspaper text-7xl text-red-600 mb-6 relative z-10 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)]"></i>
+        <i class="fa-solid fa-newspaper text-7xl text-red-500 mb-6 relative z-10 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i>
         <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস</h1>
-        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">EGP ফোল্ডার আপলোড করুন। ১২০+ ফিল্ড এবং ১১টি ফরেনসিক রুলস দিয়ে পূর্ণাঙ্গ রিপোর্ট তৈরি করুন।</p>
+        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">আপনার কাজ অটোমেটিক সেভ হবে। পরবর্তীতে ব্যাকআপ রিস্টোর করে আবার কাজ শুরু করতে পারবেন।</p>
         
-        <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
-        <label for="folderLoader" class="cursor-pointer bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-black py-4 px-12 rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all transform hover:scale-105 text-lg flex items-center gap-3 relative z-10">
-            <i class="fa-solid fa-folder-open"></i> EGP ফোল্ডার আপলোড করুন
-        </label>
+        <div class="flex gap-4 relative z-10">
+            <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
+            <label for="folderLoader" class="cursor-pointer bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-4 px-12 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all transform hover:scale-105 text-lg flex items-center gap-3">
+                <i class="fa-solid fa-folder-open"></i> EGP ফোল্ডার আপলোড করুন
+            </label>
+        </div>
     </div>
 
     <!-- VIEW 1: MAIN DASHBOARD -->
     <div id="dashboardView" class="max-w-[1500px] mx-auto p-4 md:p-6 space-y-6 hide">
-        <header class="border-b border-slate-800 pb-4 flex justify-between items-center">
+        <header class="border-b border-slate-800 pb-4 flex flex-wrap justify-between items-center gap-4">
             <div>
                 <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>ডেটা জার্নালিজম ড্যাশবোর্ড</h1>
                 <p class="text-slate-400 text-sm mt-1">প্রথমে জালিয়াতি শনাক্ত ও ভেরিফাই করুন, তারপর স্টোরি বিল্ডারে রিপোর্ট লিখুন</p>
             </div>
-            <div class="flex gap-3">
+            <div class="flex flex-wrap gap-2">
+                <!-- Backup and Restore Buttons -->
+                <input type="file" id="progressLoader" accept=".json" class="hidden" onchange="importProgress(event)">
+                <label for="progressLoader" class="cursor-pointer bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-lg font-bold text-sm text-white transition flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-upload"></i> আগের কাজ লোড
+                </label>
+                <button onclick="exportProgress()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-lg font-bold text-sm text-white transition flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-floppy-disk"></i> কাজ সেভ করুন
+                </button>
+                
+                <div class="border-l border-slate-700 mx-1"></div>
+
                 <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg font-bold text-sm text-white transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-csv"></i> CSV ডাউনলোড (১২০+ ফিল্ড)
+                    <i class="fa-solid fa-file-csv"></i> CSV ডাউনলোড
                 </button>
                 <button onclick="openStoryBuilder()" class="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg font-black text-sm text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] transition flex items-center gap-2">
-                    <i class="fa-solid fa-pen-nib"></i> স্টোরি বিল্ডার (রিপোর্ট লিখুন)
+                    <i class="fa-solid fa-pen-nib"></i> স্টোরি বিল্ডার
                 </button>
             </div>
         </header>
@@ -133,18 +131,6 @@
             <div class="bg-slate-900 p-5 rounded-xl border border-blue-900/50 shadow-md relative overflow-hidden">
                 <h3 class="text-slate-400 text-xs font-bold uppercase text-blue-400">মোট চুক্তির মূল্য (BDT)</h3>
                 <p id="kpiValue" class="text-3xl font-black mt-2 text-blue-400">0</p>
-            </div>
-        </div>
-
-        <!-- VISUAL ANALYTICS (CHARTS) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col items-center">
-                <h3 class="text-slate-300 font-bold mb-4 uppercase text-xs w-full text-left"><i class="fa-solid fa-chart-pie mr-2 text-red-400"></i>ঝুঁকি স্তর বিভাজন (Risk Levels)</h3>
-                <div class="w-full max-w-[230px]"><canvas id="riskChart"></canvas></div>
-            </div>
-            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col">
-                <h3 class="text-slate-300 font-bold mb-4 uppercase text-xs w-full text-left"><i class="fa-solid fa-chart-bar mr-2 text-blue-400"></i>সংস্থা ভিত্তিক অনিয়মের সংখ্যা (Top Organizations)</h3>
-                <div class="w-full h-full min-h-[180px]"><canvas id="orgChart"></canvas></div>
             </div>
         </div>
 
@@ -182,7 +168,7 @@
         </div>
     </div>
 
-    <!-- VIEW 2: INSPECTOR (HUMAN VERIFICATION & FULL TAXONOMY) -->
+    <!-- VIEW 2: INSPECTOR (HUMAN VERIFICATION) -->
     <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-[#0b1120] fixed inset-0 z-50">
         <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shrink-0 shadow-md">
             <div class="flex items-center gap-4">
@@ -303,7 +289,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: PROCUREMENT & SCHEDULE (ABSOLUTE FULL TAXONOMY) -->
+                    <!-- TAB 3: PROCUREMENT & SCHEDULE -->
                     <div id="tab-proc" class="tab-content">
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-cogs"></i> ক্রয় পদ্ধতি ও সাধারণ তথ্য</h4>
@@ -326,7 +312,7 @@
                             <h4 class="fieldset-title text-orange-400"><i class="fa-solid fa-calendar-check"></i> সময়সূচী ও ডেডলাইন</h4>
                             <div class="grid grid-cols-3 gap-2">
                                 <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time" data-regex="Publication\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
-                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time" data-regex="Closing\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>জমার শেষ তারিখ <span id="daysCalc" class="text-red-400"></span></label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time" data-regex="Closing\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
                                 <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time" data-regex="Opening\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
                                 
                                 <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="last selling\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
@@ -351,7 +337,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 4: ELIGIBILITY & TECH (ABSOLUTE FULL TAXONOMY) -->
+                    <!-- TAB 4: ELIGIBILITY & TECH -->
                     <div id="tab-elig" class="tab-content">
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500"><i class="fa-solid fa-user-shield"></i> দরদাতার যোগ্যতা (Eligibility)</h4>
@@ -387,7 +373,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 5: LOTS, VALIDITY & EXECUTION (ABSOLUTE FULL TAXONOMY) -->
+                    <!-- TAB 5: LOTS, VALIDITY & EXECUTION -->
                     <div id="tab-exec" class="tab-content">
                         <div class="fieldset-box border-red-900/50 bg-red-950/10">
                             <h4 class="fieldset-title text-red-400"><i class="fa-solid fa-money-bill-transfer"></i> অর্থ ও শর্তাবলি (Financial Terms)</h4>
@@ -395,7 +381,7 @@
                                 <div><label>পারফরম্যান্স সিকিউরিটি %</label><input type="text" id="Perf_Req" data-db="Performance_Security_Requirement" data-regex="Performance Security.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
                                 <div><label>রিটেনশন মানি %</label><input type="text" id="Ret_Money" data-db="Retention_Money" data-regex="retention.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
                                 <div><label>অগ্রিম প্রদান (Advance Pay)</label><input type="text" id="Adv_Pay" data-db="Advance_Payment" data-regex="Advance Payment.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
-                                <div><label>টেন্ডার সিকিউরিটি (BDT)</label><input type="text" id="Sec_Amt" data-db="Tender_Proposal_Security_Amount" class="egp-field font-mono"></div>
+                                <div><label>টেন্ডার সিকিউরিটি (BDT)</label><input type="text" id="Sec_Amt" data-db="Tender_Proposal_Security_Amount" class="egp-field font-mono text-yellow-300"></div>
                                 <div><label>Security Valid Up To</label><input type="text" id="Sec_Valid" data-db="Tender_Proposal_Security_Valid_Up_To" class="egp-field"></div>
                                 <div><label>Tender Valid Up To</label><input type="text" id="Tender_Valid" data-db="Tender_Proposal_Valid_Up_To" class="egp-field"></div>
                                 <div><label>Security Form</label><input type="text" id="Sec_Form" data-db="Tender_Proposal_Security_Form" class="egp-field"></div>
@@ -447,7 +433,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 6: ATTACHMENTS (FULL RE-INSERTED) -->
+                    <!-- TAB 6: ATTACHMENTS -->
                     <div id="tab-attach" class="tab-content">
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-paperclip"></i> অ্যাটাচমেন্টস ও ডকুমেন্টস</h4>
@@ -474,7 +460,7 @@
         </div>
     </div>
 
-    <!-- VIEW 3: MASTER STORY BUILDER (Netra News Style) -->
+    <!-- VIEW 3: MASTER STORY BUILDER -->
     <div id="storyBuilderView" class="h-screen w-full flex flex-col hide bg-slate-100 fixed inset-0 z-[100] overflow-hidden">
         <header class="bg-white p-4 border-b border-slate-300 flex justify-between items-center shrink-0 shadow-sm z-10 relative">
             <div class="flex items-center gap-4">
@@ -503,9 +489,8 @@
                         <input type="text" id="storyAuthor" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600 outline-none" value="ডেটা জার্নালিজম ডেস্ক">
                     </div>
                     <div>
-                        <label class="text-xs font-bold text-slate-700 mb-1">প্রচ্ছদ ও অন্যান্য ছবি (Multiple Images Allowed)</label>
+                        <label class="text-xs font-bold text-slate-700 mb-1">প্রচ্ছদ ও অন্যান্য ছবি (Multiple Images)</label>
                         <input type="file" accept="image/*" multiple onchange="handleStoryImages(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
-                        <p class="text-[10px] text-slate-400 mt-1">প্রথমটি প্রচ্ছদ হবে, বাকিগুলো খবরের মাঝে গ্যালারি হিসেবে দেখাবে।</p>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-700 mb-1">ভূমিকা / মূল লেখা (Article Body)</label>
@@ -513,11 +498,11 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-700 mb-1">আমাদের পদ্ধতি (Methodology)</label>
-                        <textarea id="storyMethod" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-20 custom-scroll focus:border-red-600 outline-none leading-relaxed">এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি। স্বয়ংক্রিয় অ্যালগরিদমের মাধ্যমে অনিয়ম চিহ্নিত করার পর তা ম্যানুয়ালি যাচাই করা হয়েছে।</textarea>
+                        <textarea id="storyMethod" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-20 custom-scroll focus:border-red-600 outline-none leading-relaxed">এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি।</textarea>
                     </div>
                     
                     <div class="border-t border-slate-200 pt-4">
-                        <label class="text-xs font-bold text-slate-700 mb-2 block">ভেরিফাইড টেন্ডার নির্বাচন করুন (রিপোর্টে প্রমাণের জন্য)</label>
+                        <label class="text-xs font-bold text-slate-700 mb-2 block">ভেরিফাইড টেন্ডার নির্বাচন করুন</label>
                         <div id="verifiedTendersList" class="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-2">
                             <!-- Populated dynamically -->
                         </div>
@@ -546,7 +531,7 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final_Ultimate')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Full_System')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
@@ -584,6 +569,33 @@
             return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
         }
 
+        // ================= PROGRESS SAVING (BACKUP/RESTORE) =================
+        function exportProgress() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `egp_project_backup_${new Date().getTime()}.json`);
+            dlAnchorElem.click();
+        }
+
+        function importProgress(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const importedLogs = JSON.parse(e.target.result);
+                    auditLogs = { ...auditLogs, ...importedLogs };
+                    localStorage.setItem('egpInvestigatorLogs_Full_System', JSON.stringify(auditLogs));
+                    alert("আপনার আগের কাজ সফলভাবে লোড হয়েছে!");
+                    initDashboard();
+                } catch(err) {
+                    alert("ভুল ফাইল ফরম্যাট! দয়া করে সঠিক প্রজেক্ট ফাইল (.json) সিলেক্ট করুন।");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function handleFolderUpload(event) {
             const files = event.target.files;
             let jsonFile = null, cacheFile = null;
@@ -616,7 +628,7 @@
             reader.readAsText(jsonFile);
         }
 
-        // ================= DYNAMIC FORENSIC ENGINE (Re-calculates on Verified Logs First) =================
+        // ================= DYNAMIC FORENSIC ENGINE (ALL 11 RULES) =================
         function runForensicEngine() {
             analyzedData = rawTenderData.map(t => {
                 let tid = String(t.Tender_Proposal_ID).trim();
@@ -629,7 +641,7 @@
                 let ocrText = matchedKey ? (pdfCache[matchedKey] || "") : "";
                 let combinedText = ((t.Eligibility_of_Tenderer || "") + " " + ocrText).toLowerCase();
                 
-                // Priority: User Edit (Log) > Extractor > DB
+                // Priority: User Log > Extractor > Database
                 let received = parseInt(log.T_Rec || t.Tenders_Received) || 0;
                 let sold = parseInt(log.T_Sold || t.Tenders_Sold) || 0;
                 let responsive = parseInt(log.T_Resp || t.Responsive_Tenders) || 0;
@@ -641,9 +653,8 @@
                 let docPrice = log.Doc_Price || extractRegex(ocrText, "Price \\(In.*?BDT\\)\\s*:\\s*([\\d,]+)") || t.Tender_Proposal_Document_Price_In_BDT;
                 let advPay = log.Adv_Pay || extractRegex(ocrText, "Advance Payment.*?(\\d+\\s*%)") || t.Advance_Payment;
                 let retMoney = log.Ret_Money || extractRegex(ocrText, "retention.*?(\\d+\\s*%)") || t.Retention_Money;
-                let liqAssets = log.Liq_Assets || extractRegex(ocrText, "liquid assets.*?Tk\\.?\\s*([\\d\\.\s]+\\s*[a-zA-Z]+|[\\d,\.]+)") || t.Liquid_Assets;
+                let liqAssets = log.Liq_Assets || extractRegex(ocrText, "liquid assets.*?Tk\\.?\\s*([\\d\\.\\s]+\\s*[a-zA-Z]+|[\\d,\\.]+)") || t.Liquid_Assets;
 
-                // Organization detection
                 let orgName = log.Organization || t.Organization || extractRegex(ocrText, "Organization\\s*:\\s*(.*?)\\s+(?:Procuring|PE|Entity|Division)");
                 if (!orgName && t.Procuring_Entity_Name) {
                     let pe = t.Procuring_Entity_Name.toUpperCase();
@@ -660,7 +671,6 @@
                 }
                 t.ext_OrgName = orgName ? orgName.trim().substring(0, 30) : "অজানা";
 
-                // Lot table extraction
                 let lotMatch = ocrText.match(/(?:Single|\d+)\s+([\s\S]*?)\s+(\d{4,})\s+(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}-[A-Za-z]{3}-\d{4})/i);
                 if (lotMatch) {
                     let locationText = lotMatch[1].trim();
@@ -670,8 +680,6 @@
                     t.ext_LotStart = log.Tent_Start || lotMatch[3]; 
                     t.ext_LotEnd = log.Tent_Comp || lotMatch[4]; 
                 }
-
-                // ================= ALL 11 CORRUPTION RULES =================
 
                 // RULE 1: Single Bidder
                 if (responsive === 1 && (received > 1 || sold > 1)) { 
@@ -758,6 +766,7 @@
             });
         }
 
+        // ================= CHARTS AND DASHBOARD =================
         function renderCharts(counts, orgCounts) {
             const ctxRisk = document.getElementById('riskChart').getContext('2d');
             const ctxOrg = document.getElementById('orgChart').getContext('2d');
@@ -837,8 +846,8 @@
                     <td class="p-3 font-bold text-slate-300">${t.riskScore}</td>
                     <td class="p-3 text-xs text-slate-400">${(t.Procuring_Entity_Name || 'N/A').substring(0,25)}...</td>
                     <td class="p-3 text-xs">${log.Award_Supplier || t.Supplier_Name || '<span class="italic text-slate-600">অনুপস্থিত</span>'}</td>
-                    <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US') : '0'}</td>
-                    <td class="p-3 text-xs">${log.status ? '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> ভেরিফাইড</span>' : '<span class="text-slate-600">যাচাই হয়নি</span>'}</td>
+                    <td class="p-3 font-mono text-blue-400">${log.Contract_Value || t.Contract_Value_BDT ? parseFloat(log.Contract_Value || t.Contract_Value_BDT).toLocaleString('en-US') : '0'}</td>
+                    <td class="p-3 text-xs">${log.status ? '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> ভেরিফাইড</span>' : '<span class="text-slate-600">যাচাই হয়নি</span>'}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -906,11 +915,17 @@
                             <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk === 'Critical' ? 'bg-red-600 text-white' : f.risk==='High' ? 'bg-orange-600 text-white' : 'bg-yellow-600 text-white'} shadow">${f.risk} ঝুঁকি</span>
                         </div>
                         <div class="space-y-3 text-xs">
-                            <div class="bg-slate-950 p-3 rounded border border-red-900/30 shadow-inner">
-                                <p class="text-[9px] font-bold text-slate-500 mb-1 uppercase tracking-wider"><i class="fa-solid fa-quote-left text-red-500/70 mr-1"></i> হুবহু প্রমাণ (Evidence):</p>
-                                <p class="text-red-400 font-mono text-[11px] leading-relaxed break-words">${f.evidence}</p>
-                            </div>
                             <p class="leading-relaxed"><strong class="text-slate-400 block mb-1 uppercase text-[9px] tracking-wider"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> এটি কেন দুর্নীতির ঝুঁকি:</strong> <span class="text-slate-300">${f.explanation}</span></p>
+                            
+                            <details class="bg-slate-950 rounded border border-slate-700 mt-2 cursor-pointer outline-none">
+                                <summary class="text-[9px] font-bold text-red-400 p-2 hover:bg-slate-900 transition-colors flex items-center gap-2 outline-none">
+                                    <i class="fa-solid fa-file-pdf"></i> মূল নথির প্রমাণ দেখুন (Click to view evidence)
+                                </summary>
+                                <div class="p-3 bg-[#0b1120] text-emerald-400 font-mono text-[11px] border-t border-slate-700 leading-relaxed overflow-x-auto shadow-inner">
+                                    ${f.evidence}
+                                </div>
+                            </details>
+
                             <div class="mt-2"><p class="text-[9px] font-bold text-slate-500 uppercase mb-0.5"><i class="fa-solid fa-gavel text-emerald-500 mr-1"></i> লঙ্ঘিত আইন (Rule)</p><p class="text-emerald-400 text-[10px] font-bold leading-tight">${f.rule} <span class="font-normal text-slate-400 text-[9px]">(${f.clause})</span></p></div>
                         </div>
                     </div>
@@ -982,7 +997,7 @@
             });
 
             auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigatorLogs_Final_Ultimate', JSON.stringify(auditLogs));
+            localStorage.setItem('egpInvestigatorLogs_Full_System', JSON.stringify(auditLogs));
             alert("আপনার ভেরিফাইড ডেটা সফলভাবে সেভ হয়েছে!");
             
             initDashboard();
@@ -1028,7 +1043,7 @@
             document.body.removeChild(link);
         }
 
-        // ================= MULTIPLE IMAGE & STORY BUILDER =================
+        // ================= MASTER STORY BUILDER MODULE =================
         function openStoryBuilder() {
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('storyBuilderView').classList.remove('hide');
@@ -1081,7 +1096,7 @@
             let subhead = document.getElementById('storySubhead').value || "অনুসন্ধানে উঠে এসেছে কীভাবে নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
             let author = document.getElementById('storyAuthor').value || "ডেটা জার্নালিজম ডেস্ক";
             let intro = document.getElementById('storyIntro').value.replace(/\n/g, '<br><br>') || "অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে এবং দরপত্রে অংশগ্রহণের সুযোগ সীমিত করা হয়েছে।";
-            let method = document.getElementById('storyMethod').value.replace(/\n/g, '<br>') || "এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি।";
+            let method = document.getElementById('storyMethod').value.replace(/\n/g, '<br>') || "এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি। স্বয়ংক্রিয় অ্যালগরিদমের মাধ্যমে অনিয়ম চিহ্নিত করার পর তা ম্যানুয়ালি যাচাই করা হয়েছে।";
             
             let selectedIDs = Array.from(document.querySelectorAll('.tender-select-cb:checked')).map(cb => cb.value);
 
@@ -1106,7 +1121,7 @@
             html += `<div class="nn-body-text"><p class="nn-dropcap">${intro.charAt(0)}</p><p>${intro.substring(1)}</p></div>`;
 
             if(selectedIDs.length > 0) {
-                html += `<h2 class="nn-section-title">শনাক্তকৃত জালিয়াতি ও প্রমাণ</h2>`;
+                html += `<h2 class="nn-section-title">শনাক্তকৃত জালিয়াতির কেস স্টাডি ও প্রমাণ</h2>`;
                 
                 selectedIDs.forEach((id, index) => {
                     let record = analyzedData.find(x => x.Tender_Proposal_ID == id);
@@ -1122,7 +1137,7 @@
                             <div class="bg-slate-50 border-t-2 border-b-2 border-slate-200 py-3 my-4 font-sans text-sm flex flex-wrap gap-x-6 gap-y-2">
                                 <div><strong class="text-slate-500">টেন্ডার আইডি:</strong> <span class="font-mono font-bold">${id}</span></div>
                                 <div><strong class="text-slate-500">চুক্তিমূল্য:</strong> <span class="font-mono font-bold text-red-600">BDT ${log.Contract_Value || record.Contract_Value_BDT || '0'}</span></div>
-                                <div><strong class="text-slate-500">ঠিকাদার:</strong> <span class="font-bold">${log.Award_Supplier || record.Supplier_Name || 'অজানা'}</span></div>
+                                <div class="col-span-2"><strong class="text-slate-500">ঠিকাদার:</strong> <span class="font-bold">${log.Award_Supplier || record.Supplier_Name || 'অজানা'}</span></div>
                             </div>
 
                             <p class="text-[1.1rem] text-slate-800 mb-6 font-sans leading-relaxed border-l-4 border-red-400 pl-4 bg-red-50/30 py-3">${log.justification}</p>
@@ -1139,7 +1154,7 @@
                                     <!-- INTERACTIVE EVIDENCE TOGGLE -->
                                     <details class="group bg-white rounded border border-slate-300 mt-4 cursor-pointer outline-none shadow-sm">
                                         <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-50 transition-colors flex items-center gap-2 outline-none">
-                                            <i class="fa-solid fa-file-pdf"></i> মূল নথির প্রমাণ দেখুন (Click to view evidence)
+                                            <i class="fa-solid fa-file-pdf"></i> 📄 মূল নথির প্রমাণ দেখুন (Click to view evidence)
                                         </summary>
                                         <div class="p-5 bg-slate-900 text-emerald-400 font-mono text-[13px] border-t border-slate-300 leading-relaxed overflow-x-auto">
                                             <div class="text-slate-400 text-[10px] mb-3 uppercase tracking-widest border-b border-slate-700 pb-1">Extracted from Tender Document OCR</div>
@@ -1193,6 +1208,8 @@
                     <style>
                         body { background: #f8fafc; padding: 40px 20px; font-family: system-ui, -apple-system, sans-serif; }
                         .story-container { max-width: 800px; margin: 0 auto; background: white; padding: 60px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+                        
+                        /* Netra Style Embedded */
                         .nn-title { font-size: 2.5rem; font-weight: 900; line-height: 1.2; color: #000000; border-top: 5px solid #dc2626; padding-top: 24px; margin-bottom: 16px; font-family: 'Noto Serif Bengali', 'Merriweather', serif; }
                         .nn-meta { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end;}
                         .nn-author { color: #dc2626; font-weight: bold; }
