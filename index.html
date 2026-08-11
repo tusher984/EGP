@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Hyper-Sensitive Zero Tolerance Edition)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Auto-Fixer Edition)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,7 +29,6 @@
     <style>
         body { background-color: #0d1117; color: #f8fafc; font-family: system-ui, sans-serif; }
         
-        /* Custom DataTables Styling */
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_info { color: #64748b !important; font-size: 12px; margin-top: 15px;}
         .dataTables_wrapper .dataTables_filter { display: none; } 
         .dataTables_wrapper .dataTables_paginate { margin-top: 15px; }
@@ -45,13 +44,11 @@
         
         .hide { display: none !important; }
         
-        /* Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #475569; }
         
-        /* Forms & Inputs */
         input, select, textarea { transition: all 0.3s; background-color: #020617; border: 1px solid #334155; border-radius: 6px; padding: 6px 10px; font-size: 11px; color: #e2e8f0; width: 100%; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
         label { display: block; font-size: 9px; font-weight: 800; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -59,7 +56,6 @@
         .fieldset-box { background: rgba(30, 41, 59, 0.3); padding: 16px; border-radius: 12px; border: 1px solid rgba(51, 65, 85, 0.5); margin-bottom: 16px; }
         .fieldset-title { font-size: 11px; font-weight: 800; color: #f87171; margin-bottom: 12px; border-b: 1px solid rgba(51, 65, 85, 0.5); padding-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
         
-        /* Tabs */
         .tab-btn.active { border-bottom: 2px solid #ef4444; color: #f87171; background: rgba(30,41,59,0.5); }
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
@@ -69,7 +65,6 @@
         .user-verified { border-color: #10b981 !important; background-color: rgba(6, 78, 59, 0.2); }
         .highlight { background-color: rgba(234, 179, 8, 0.4); color: #fde047; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
-        /* Report Styles */
         .story-preview-container { font-family: 'Georgia', serif; color: #000; background: #fff; }
         details summary::-webkit-details-marker { display:none; }
     </style>
@@ -81,7 +76,7 @@
         <i class="fa-solid fa-circle-check text-2xl"></i>
         <div>
             <p class="text-sm" id="toastTitle">সফলভাবে সম্পন্ন হয়েছে!</p>
-            <p class="text-[10px] font-normal opacity-80" id="toastSub">ডেটা ও রুলস আপডেট সম্পন্ন।</p>
+            <p class="text-[10px] font-normal opacity-80" id="toastSub">১৮টি রুলস ও ডেটা আপডেট সম্পন্ন।</p>
         </div>
     </div>
 
@@ -90,8 +85,8 @@
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 40px 40px;"></div>
         
         <i class="fa-solid fa-radar text-7xl text-red-600 mb-6 relative z-10 drop-shadow-[0_0_20px_rgba(220,38,38,0.6)]"></i>
-        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Hyper-Sensitive এআই ইনভেস্টিগেটর</h1>
-        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">জিরো-টলারেন্স ফরেনসিক ইঞ্জিন দিয়ে যেকোনো লুকানো জালিয়াতি (Local Syndicate, Missing Data, Manipulation) খুঁজে বের করুন।</p>
+        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Full-Scale এআই ইনভেস্টিগেটর</h1>
+        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">যেকোনো নামের JSON ডেটাবেস এবং ফোল্ডার আপলোড করুন। অটো-স্যানিটাইজার সব এরর ফিক্স করে নেবে।</p>
         
         <div class="flex gap-4 relative z-10">
             <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
@@ -115,10 +110,10 @@
                 <div>
                     <h1 class="text-xl font-bold text-white flex items-center gap-3">
                         ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস 
-                        <span class="bg-red-900/40 text-red-400 border border-red-800 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">Zero-Tolerance Edition</span>
+                        <span class="bg-red-900/40 text-red-400 border border-red-800 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">Full-Proof AI Edition</span>
                     </h1>
                     <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
-                        হাইপার-সেনসিটিভ রুলস দিয়ে জালিয়াতি শনাক্তকরণ 
+                        ১৮টি ফরেনসিক রুলস দিয়ে জালিয়াতি শনাক্তকরণ 
                         <span class="text-emerald-400 font-bold ml-2">● <span id="headerTenderCount">0</span> টি দরপত্র লোড হয়েছে</span>
                     </p>
                 </div>
@@ -146,25 +141,21 @@
                 <p id="kpiTotal" class="text-3xl font-black text-white">0</p>
                 <i class="fa-regular fa-file-lines absolute right-4 top-1/2 -translate-y-1/2 text-5xl text-blue-500/10"></i>
             </div>
-            
             <div class="bg-[#1a151b] border border-red-900/50 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-center min-h-[110px] shadow-[inset_0_0_20px_rgba(220,38,38,0.05)]">
                 <h3 class="text-red-400 text-xs font-bold mb-1 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-red-500"></div> গুরুতর ঝুঁকি (CRITICAL)</h3>
                 <p id="kpiCrit" class="text-3xl font-black text-red-500">0</p>
                 <i class="fa-solid fa-skull-crossbones absolute right-4 top-1/2 -translate-y-1/2 text-5xl text-red-500/10"></i>
             </div>
-            
             <div class="bg-[#1a1815] border border-orange-900/50 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-center min-h-[110px] shadow-[inset_0_0_20px_rgba(249,115,22,0.05)]">
                 <h3 class="text-orange-500 text-xs font-bold mb-1 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-orange-500"></div> উচ্চ ঝুঁকি (HIGH)</h3>
                 <p id="kpiHigh" class="text-3xl font-black text-orange-500">0</p>
                 <i class="fa-solid fa-triangle-exclamation absolute right-4 top-1/2 -translate-y-1/2 text-5xl text-orange-500/10"></i>
             </div>
-            
             <div class="bg-[#131d1b] border border-emerald-900/50 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-center min-h-[110px] shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
                 <h3 class="text-emerald-400 text-xs font-bold mb-1 flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> ক্লিন / LOW</h3>
                 <p id="kpiLow" class="text-3xl font-black text-emerald-400">0</p>
                 <i class="fa-solid fa-shield-check absolute right-4 top-1/2 -translate-y-1/2 text-5xl text-emerald-500/10"></i>
             </div>
-
             <div class="bg-[#151c2c] border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-center min-h-[110px]">
                 <h3 class="text-blue-400 text-xs font-bold mb-1">মোট চুক্তি মূল্য</h3>
                 <p class="text-2xl font-black text-white flex items-baseline gap-1"><span class="text-lg text-blue-400">৳</span> <span id="kpiValue">0</span> <span class="text-xs text-slate-400 font-normal">কোটি</span></p>
@@ -181,7 +172,6 @@
                 </div>
                 <div class="w-full max-w-[200px] aspect-square relative mb-4"><canvas id="riskChart"></canvas></div>
             </div>
-            
             <div class="lg:col-span-3 bg-[#131b2f] p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col">
                 <div class="w-full flex justify-between items-center mb-6">
                     <h3 class="text-slate-300 font-bold text-xs uppercase tracking-wider">সংস্থা অনুযায়ী অনিয়মের সংখ্যা</h3>
@@ -197,13 +187,11 @@
                 <div>
                     <h2 class="text-xl font-bold text-white flex items-center gap-2">অনুসন্ধানী ডেটাবেস <span class="text-xs text-slate-500 font-normal">(তদন্তের বিস্তারিত দেখতে রো-তে ক্লিক করুন)</span></h2>
                 </div>
-                
                 <div class="flex flex-col sm:flex-row items-center gap-3">
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
                         <input type="text" id="customSearch" placeholder="আইডি, সংস্থা, বা ঠিকাদার খুঁজুন..." class="bg-[#0b1120] border border-slate-700 rounded-full pl-8 pr-4 py-2 text-xs text-slate-200 w-64 focus:border-blue-500 transition-all">
                     </div>
-                    
                     <div class="flex bg-[#0b1120] p-1 rounded-xl border border-slate-800" id="filterButtons">
                         <button onclick="filterTable('', this)" class="filter-btn active-filter bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition shadow-sm">সবগুলো</button>
                         <button onclick="filterTable('CRITICAL', this)" class="filter-btn text-red-500 hover:bg-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-bold transition">CRITICAL</button>
@@ -295,7 +283,7 @@
                     <div id="tab-findings" class="tab-content active space-y-4">
                         <div class="bg-slate-800/50 p-5 rounded-xl border border-red-500/30 mb-6 shadow-lg">
                             <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ভেরিফিকেশন ও স্টোরি নোটস</h3>
-                            <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">অন্যান্য ট্যাবে গিয়ে ১২০+ ফিল্ডের যেকোনো ডেটা আপডেট করে সেভ করলে, জালিয়াতির রুলস অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে।</p>
+                            <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">অন্যান্য ট্যাবে গিয়ে ফিল্ড আপডেট করে সেভ করলে, ১৮টি রুলস অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে।</p>
                             
                             <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের ইনভেস্টিগেটিভ নোটস:</label>
                             <textarea id="auditJustification" class="w-full bg-[#0b1120] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-blue-500 transition-all" placeholder="আপনার পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
@@ -309,7 +297,6 @@
                                 </button>
                             </div>
                         </div>
-
                         <div id="inspFlagsContainer" class="space-y-4"></div>
                     </div>
 
@@ -569,7 +556,7 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigator_Zero_Tolerance_v1')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigator_Zero_Tolerance_v2')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
@@ -616,7 +603,7 @@
             setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 3500);
         }
 
-        // ================= FILE UPLOAD & BACKUP =================
+        // ================= FILE UPLOAD & JSON SANITIZER =================
         function exportProgress() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs));
             const dlAnchorElem = document.createElement('a');
@@ -633,7 +620,7 @@
                 try {
                     const importedLogs = JSON.parse(e.target.result);
                     auditLogs = { ...auditLogs, ...importedLogs };
-                    localStorage.setItem('egpInvestigator_Zero_Tolerance_v1', JSON.stringify(auditLogs));
+                    localStorage.setItem('egpInvestigator_Zero_Tolerance_v2', JSON.stringify(auditLogs));
                     alert("আগের কাজ সফলভাবে লোড হয়েছে!");
                     if(rawTenderData.length > 0) initDashboard();
                 } catch(err) { alert("ভুল ফাইল ফরম্যাট!"); }
@@ -645,30 +632,56 @@
             const files = event.target.files;
             let jsonFile = null;
             document.getElementById('launchpadView').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-5xl text-blue-500 mb-4"></i><p class="text-slate-300">ডেটা প্রসেস করা হচ্ছে...</p>`;
+            
             for (let f of files) {
                 globalFilesMap[f.name] = f;
-                if (f.name.toLowerCase() === 'procurement_database.json') jsonFile = f;
+                // Accept any .json file, prioritize Procurement_Database.json
+                if (f.name.toLowerCase() === 'procurement_database.json' || f.name.toLowerCase().endsWith('.json')) {
+                    if(!jsonFile || f.name.toLowerCase() === 'procurement_database.json') {
+                        jsonFile = f;
+                    }
+                }
             }
+            
             if (!jsonFile) { 
-                alert("Procurement_Database.json নামের কোনো ফাইল পাওয়া যায়নি!"); 
+                alert("কোনো JSON ফাইল পাওয়া যায়নি! ফোল্ডারে .json ফাইল আছে কিনা চেক করুন।"); 
                 location.reload(); 
                 return; 
             }
             
             const reader = new FileReader();
             reader.onload = e => {
+                let rawText = e.target.result;
                 try {
-                    const data = JSON.parse(e.target.result);
-                    rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || []);
-                    document.getElementById('launchpadView').classList.add('hide');
-                    document.getElementById('dashboardView').classList.remove('hide');
-                    initDashboard(false);
-                } catch(err) {
-                    alert("JSON ফাইল রিড করতে সমস্যা হয়েছে।");
-                    location.reload();
+                    // Try parsing normally
+                    let data = JSON.parse(rawText);
+                    loadParsedData(data);
+                } catch(err1) {
+                    console.warn("Direct JSON Parse failed, attempting Auto-Fix...", err1);
+                    try {
+                        // Auto-fix trailing commas and control characters
+                        let fixedText = rawText
+                            .replace(/,\s*([\]}])/g, '$1') 
+                            .replace(/[\x00-\x1F\x7F-\x9F]/g, ""); 
+                        let data = JSON.parse(fixedText);
+                        loadParsedData(data);
+                    } catch(err2) {
+                        alert("আপনার JSON ফাইলে মারাত্মক ত্রুটি আছে যা অটোমেটিকভাবে ঠিক করা সম্ভব নয়!\n\nError: " + err2.message + "\n\nদয়া করে jsonlint.com এ ফাইলটি চেক করে এরর ফিক্স করুন।");
+                        location.reload();
+                    }
                 }
             };
             reader.readAsText(jsonFile);
+        }
+
+        function loadParsedData(data) {
+            rawTenderData = Array.isArray(data) ? data : (data.Merged_Database || data.data || []);
+            if(rawTenderData.length === 0 && typeof data === 'object' && !Array.isArray(data)) {
+                rawTenderData = Object.values(data);
+            }
+            document.getElementById('launchpadView').classList.add('hide');
+            document.getElementById('dashboardView').classList.remove('hide');
+            initDashboard(false);
         }
 
         // ================= 18 FORENSIC RULES WITH ZERO TOLERANCE =================
@@ -738,7 +751,7 @@
                         let days = getDaysDiff(pubDate, closeDate);
                         if (days !== null && days >= 0) {
                             if(isICB && days < 45) {
-                                findings.push({ flag: "আন্তর্জাতিক দরপত্রে স্বল্প সময় (JICA Violation)", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `মাত্র ${days} দিন সময় দেওয়া হয়েছে, যা বিদেশী ঠিকাদারদের জন্য অসম্ভব।`, rule_detail: "JICA Guidelines Sec 5.01: Generally, not less than 45 days shall be allowed for ICB.", rule: "JICA", clause: "Sec 5.01" }); score += 40;
+                                findings.push({ flag: "আন্তর্জাতিক দরপত্রে স্বল্প সময় (JICA)", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `মাত্র ${days} দিন সময় দেওয়া হয়েছে, যা বিদেশী ঠিকাদারদের জন্য অসম্ভব।`, rule_detail: "JICA Guidelines Sec 5.01: Generally, not less than 45 days shall be allowed for ICB.", rule: "JICA", clause: "Sec 5.01" }); score += 40;
                             } else if (!isICB && days < 14) {
                                 findings.push({ flag: "বেআইনিভাবে স্বল্প দরপত্র সময়", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `১৪ দিনের কম সময় দেওয়া প্রতিযোগিতার পরিপন্থী।`, rule_detail: "PPR 2008: জাতীয় দরপত্রে ন্যূনতম ১৪ দিন সময় দিতে হবে।", rule: "PPR 2008", clause: "Bidding Time" }); score += 40;
                             } else if (!isICB && days < 21) {
@@ -785,7 +798,8 @@
 
                     // Rule 7: Zero Retention
                     let retText = String(retMoney).toLowerCase();
-                    if (retText.includes("0%") || retText === "0" || retText.includes("none") || retText.includes("nil") || (retMatch = retText.match(/(\d{1,2})\s*%/)) && parseInt(retMatch[1]) < 5) {
+                    let retMatch = retText.match(/(\d{1,2})\s*%/);
+                    if (retText.includes("0%") || retText === "0" || retText.includes("none") || retText.includes("nil") || (retMatch && parseInt(retMatch[1]) < 5)) {
                         findings.push({ flag: "রিটেনশন মানি মওকুফ বা অস্বাভাবিক কম", risk: "Critical", evidence: `Retention: ${hi(retMoney)}`, violation_logic: `কাজের ত্রুটির জন্য ঠিকাদারের কোনো দায়বদ্ধতা নেই বা খুব কম।`, rule_detail: "e-PG3A ITT 66.1: PE shall deduct retention amount of 10%.", rule: "e-PG3A", clause: "ITT 66.1" }); score += 45;
                     }
 
@@ -851,7 +865,7 @@
 
                     // Rule 17: WB Early Market Engagement
                     if (isWB && isHighValue && earlyEng.toLowerCase() !== "yes" && !combinedText.includes("early market engagement")) {
-                        findings.push({ flag: "Early Market Engagement নেই", risk: "High", evidence: `WB Funded (>10M), Early Engagement: ${hi('Not Found')}`, violation_logic: `বিশ্বব্যাংকের নতুন নিয়ম অনুযায়ী বড় প্রোজেক্টে আর্লি মার্কেট এঙ্গেজমেন্ট বাধ্যতামূলক।`, rule_detail: "All projects with international competitive procurement contracts estimated to cost more than 10 million USD to undertake Early Market Engagement.", rule: "WB Regulations", clause: "Para 4.4" }); score += 30;
+                        findings.push({ flag: "Early Market Engagement নেই (WB)", risk: "High", evidence: `WB Funded (>10M), Early Engagement: ${hi('Not Found')}`, violation_logic: `বিশ্বব্যাংকের নতুন নিয়ম অনুযায়ী বড় প্রোজেক্টে আর্লি মার্কেট এঙ্গেজমেন্ট বাধ্যতামূলক।`, rule_detail: "All projects with international competitive procurement contracts estimated to cost more than 10 million USD to undertake Early Market Engagement.", rule: "WB Regulations", clause: "Para 4.4" }); score += 30;
                     }
 
                     // Rule 18: WB Rated Criteria Missing or Wrong Weighting
@@ -861,7 +875,7 @@
                         } else if (ratedWeight) {
                             let rWeight = parseInt(ratedWeight.replace(/[^\d]/g, ''));
                             if (isHighValue && rWeight < 50) {
-                                findings.push({ flag: "ভুল Rated Criteria Weighting", risk: "High", evidence: `High Value WB ICB, Weight: ${hi(ratedWeight)}`, violation_logic: `High Risk/Value প্রোজেক্টে ওয়েটিং ৫০% এর বেশি হতে হবে।`, rule_detail: "High/Substantial Procurement Risk and High Value between 50% to 80%.", rule: "WB Regulations", clause: "Para 5.50" }); score += 30;
+                                findings.push({ flag: "ভুল Rated Criteria Weighting (WB)", risk: "High", evidence: `High Value WB ICB, Weight: ${hi(ratedWeight)}`, violation_logic: `High Risk/Value প্রোজেক্টে ওয়েটিং ৫০% এর বেশি হতে হবে।`, rule_detail: "High/Substantial Procurement Risk and High Value between 50% to 80%.", rule: "WB Regulations", clause: "Para 5.50" }); score += 30;
                             }
                         }
                     }
@@ -1119,9 +1133,7 @@
             });
         }
 
-        function switchPdfView(type) {
-            triggerLivePDFExtract(currentTenderId); 
-        }
+        function switchPdfView(type) { triggerLivePDFExtract(currentTenderId); }
 
         function closeInspector() {
             document.getElementById('inspectorView').classList.add('hide');
@@ -1133,7 +1145,7 @@
             let logData = { timestamp: new Date().toISOString(), status: statusLabel, justification: document.getElementById('auditJustification').value };
             document.querySelectorAll('.egp-field').forEach(input => { logData[input.id] = input.value; });
             auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigator_Zero_Tolerance_v1', JSON.stringify(auditLogs));
+            localStorage.setItem('egpInvestigator_Zero_Tolerance_v2', JSON.stringify(auditLogs));
             
             runForensicEngine();
             currentRecord = analyzedData.find(x => x.Tender_Proposal_ID == currentTenderId);
