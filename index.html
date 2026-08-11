@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (মাস্টার ফিল্টার সংস্করণ)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Absolute Complete Taxonomy)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,6 +14,9 @@
     <!-- Tesseract.js for In-Browser OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -22,54 +25,77 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
+    <!-- Google Fonts for Netra News Style Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet">
+
     <style>
-        body { background-color: #0b1120; color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: #0b1120; color: #f1f5f9; font-family: system-ui, sans-serif; }
         .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, 
         .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { color: #94a3b8 !important; margin-bottom: 15px;}
         .dataTables_wrapper .dataTables_filter input, .dataTables_wrapper .dataTables_length select {
             background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important; border-radius: 6px; padding: 4px 8px;
         }
         .dataTables_wrapper .dataTables_paginate .paginate_button { color: #cbd5e1 !important; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #ef4444 !important; color: white !important; border: none !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: #dc2626 !important; color: white !important; border: none !important; }
         table.dataTable tbody tr { background-color: transparent !important; border-bottom: 1px solid #1e293b !important; transition: all 0.2s;}
         table.dataTable tbody tr:hover { background-color: #1e293b !important; cursor: pointer; transform: scale(1.002); }
         .hide { display: none !important; }
         
         .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scroll::-webkit-scrollbar-track { background: #0f172a; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 10px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #dc2626; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #b91c1c; }
         
-        input, select, textarea { transition: all 0.3s; background-color: #020617; border: 1px solid #334155; border-radius: 4px; padding: 4px 6px; font-size: 10px; color: #e2e8f0; width: 100%; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #ef4444 !important; background-color: #0f172a; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
-        label { display: block; font-size: 9px; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        input, select, textarea { transition: all 0.3s; background-color: #020617; border: 1px solid #334155; border-radius: 4px; padding: 4px 6px; font-size: 9px; color: #e2e8f0; width: 100%; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #dc2626 !important; background-color: #0f172a; box-shadow: 0 0 8px rgba(220, 38, 38, 0.4); }
+        label { display: block; font-size: 8px; font-weight: 800; color: #94a3b8; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        .fieldset-box { background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(51, 65, 85, 0.6); margin-bottom: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .fieldset-title { font-size: 11px; font-weight: 900; color: #f87171; margin-bottom: 10px; border-b: 1px solid rgba(51, 65, 85, 0.5); padding-bottom: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .fieldset-box { background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 8px; border: 1px solid rgba(51, 65, 85, 0.6); margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .fieldset-title { font-size: 10px; font-weight: 900; color: #f87171; margin-bottom: 8px; border-b: 1px solid rgba(51, 65, 85, 0.5); padding-bottom: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
         
-        .tab-btn.active { border-bottom: 2px solid #ef4444; color: #f87171; background: #1e293b; }
+        .tab-btn.active { border-bottom: 2px solid #dc2626; color: #f87171; background: #1e293b; }
         .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         
-        .auto-filled { border-color: #ef4444 !important; box-shadow: inset 0 0 5px rgba(239, 68, 68, 0.3); background-color: rgba(15, 23, 42, 0.8); }
+        .auto-filled { border-color: #3b82f6 !important; box-shadow: inset 0 0 5px rgba(59, 130, 246, 0.3); background-color: rgba(15, 23, 42, 0.8); }
+        .user-verified { border-color: #10b981 !important; box-shadow: inset 0 0 5px rgba(16, 185, 129, 0.3); background-color: rgba(15, 23, 42, 0.8); }
         .highlight { background-color: rgba(234, 179, 8, 0.4); color: #fde047; font-weight: bold; border-radius: 2px; padding: 0 2px; }
+
+        /* NETRA NEWS STYLES */
+        .nn-article { font-family: 'Noto Serif Bengali', 'Merriweather', serif; color: #111827; background-color: #ffffff; line-height: 1.8; }
+        .nn-title { font-size: 2.25rem; font-weight: 900; line-height: 1.2; color: #000000; border-top: 5px solid #dc2626; padding-top: 20px; margin-bottom: 16px; }
+        .nn-meta { font-family: system-ui, sans-serif; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
+        .nn-author { color: #dc2626; font-weight: bold; }
+        .nn-body-text { font-size: 1.1rem; margin-bottom: 24px; }
+        .nn-dropcap::first-letter { font-size: 3.5rem; float: left; margin-top: 5px; margin-right: 8px; color: #dc2626; font-weight: 900; line-height: 0.8; }
+        .nn-section-title { font-size: 1.4rem; font-weight: 700; margin-top: 36px; margin-bottom: 16px; border-left: 4px solid #dc2626; padding-left: 12px; }
+        .nn-evidence-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 20px; }
+        .nn-methodology { background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 20px; margin-top: 40px; font-family: system-ui, sans-serif; font-size: 0.9rem; }
+        details summary::-webkit-details-marker { display:none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #netraStoryPreview, #netraStoryPreview * { visibility: visible; }
+            #netraStoryPreview { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 0; }
+            details div { display: block !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- VIEW 0: FOLDER SELECTION LAUNCHPAD -->
+    <!-- VIEW 0: LAUNCHPAD -->
     <div id="launchpadView" class="h-screen flex flex-col items-center justify-center p-6 text-center bg-[#0b1120] relative overflow-hidden">
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#ef4444 1px, transparent 1px); background-size: 40px 40px;"></div>
         <div class="absolute w-96 h-96 bg-red-600/10 rounded-full blur-3xl"></div>
         
-        <i class="fa-solid fa-database text-7xl text-red-500 mb-6 relative z-10 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i>
-        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 mb-3 relative z-10 tracking-tight">ফরেনসিক ইনভেস্টিগেশন ডেটাবেস</h1>
-        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">আপনার EGP ফোল্ডারটি লোড করুন। এআই সিস্টেমটি দুর্নীতির সমস্ত প্যাটার্ন বিশ্লেষণ করবে এবং ইনভেস্টিগেশন রিপোর্টের জন্য একটি মাস্টার ডেটাবেস তৈরি করবে।</p>
+        <i class="fa-solid fa-newspaper text-7xl text-red-600 mb-6 relative z-10 drop-shadow-[0_0_15px_rgba(220,38,38,0.6)]"></i>
+        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস</h1>
+        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">EGP ফোল্ডার আপলোড করুন। ১২০+ ফিল্ড এবং ১১টি ফরেনসিক রুলস দিয়ে পূর্ণাঙ্গ রিপোর্ট তৈরি করুন।</p>
         
         <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
-        <label for="folderLoader" class="cursor-pointer bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-black py-4 px-12 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all transform hover:scale-105 text-lg flex items-center gap-3 relative z-10">
-            <i class="fa-solid fa-folder-open"></i> EGP ফোল্ডার নির্বাচন করুন
+        <label for="folderLoader" class="cursor-pointer bg-gradient-to-r from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white font-black py-4 px-12 rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all transform hover:scale-105 text-lg flex items-center gap-3 relative z-10">
+            <i class="fa-solid fa-folder-open"></i> EGP ফোল্ডার আপলোড করুন
         </label>
     </div>
 
@@ -77,12 +103,15 @@
     <div id="dashboardView" class="max-w-[1500px] mx-auto p-4 md:p-6 space-y-6 hide">
         <header class="border-b border-slate-800 pb-4 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>মাস্টার ইনভেস্টিগেশন ড্যাশবোর্ড</h1>
-                <p class="text-slate-400 text-sm mt-1">দুর্নীতি শনাক্তকরণ এবং প্রকিউরমেন্ট রুলস যাচাইকরণ সিস্টেম</p>
+                <h1 class="text-3xl font-black text-red-500 tracking-tight"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>ডেটা জার্নালিজম ড্যাশবোর্ড</h1>
+                <p class="text-slate-400 text-sm mt-1">প্রথমে জালিয়াতি শনাক্ত ও ভেরিফাই করুন, তারপর স্টোরি বিল্ডারে রিপোর্ট লিখুন</p>
             </div>
             <div class="flex gap-3">
-                <button onclick="exportToCSV()" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-bold text-sm text-white shadow-[0_0_10px_rgba(239,68,68,0.3)] transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-export"></i> ইনভেস্টিগেশন ডেটা এক্সপোর্ট (CSV)
+                <button onclick="exportToCSV()" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg font-bold text-sm text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-csv"></i> CSV ডাউনলোড (১২০+ ফিল্ড)
+                </button>
+                <button onclick="openStoryBuilder()" class="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg font-black text-sm text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] transition flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib"></i> স্টোরি বিল্ডার (রিপোর্ট লিখুন)
                 </button>
             </div>
         </header>
@@ -90,39 +119,46 @@
         <!-- KPIs -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 shadow-md relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-file-invoice text-5xl"></i></div>
-                <h3 class="text-slate-400 text-xs font-bold uppercase">মোট নিরীক্ষিত দরপত্র</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase">মোট দরপত্র</h3>
                 <p id="kpiTotal" class="text-4xl font-black mt-2 text-slate-100">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-red-900/50 shadow-md relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-triangle-exclamation text-5xl text-red-500"></i></div>
-                <h3 class="text-slate-400 text-xs font-bold uppercase text-red-400">গুরুতর / উচ্চ ঝুঁকি</h3>
+                <h3 class="text-slate-400 text-xs font-bold uppercase text-red-400">উচ্চ ঝুঁকি টেন্ডার</h3>
                 <p id="kpiHigh" class="text-4xl font-black mt-2 text-red-500">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-yellow-900/50 shadow-md relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-exclamation text-5xl text-yellow-500"></i></div>
                 <h3 class="text-slate-400 text-xs font-bold uppercase text-yellow-400">মাঝারি ঝুঁকি</h3>
                 <p id="kpiMed" class="text-4xl font-black mt-2 text-yellow-500">0</p>
             </div>
             <div class="bg-slate-900 p-5 rounded-xl border border-blue-900/50 shadow-md relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-bangladeshi-taka-sign text-5xl text-blue-500"></i></div>
                 <h3 class="text-slate-400 text-xs font-bold uppercase text-blue-400">মোট চুক্তির মূল্য (BDT)</h3>
                 <p id="kpiValue" class="text-3xl font-black mt-2 text-blue-400">0</p>
+            </div>
+        </div>
+
+        <!-- VISUAL ANALYTICS (CHARTS) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col items-center">
+                <h3 class="text-slate-300 font-bold mb-4 uppercase text-xs w-full text-left"><i class="fa-solid fa-chart-pie mr-2 text-red-400"></i>ঝুঁকি স্তর বিভাজন (Risk Levels)</h3>
+                <div class="w-full max-w-[230px]"><canvas id="riskChart"></canvas></div>
+            </div>
+            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl flex flex-col">
+                <h3 class="text-slate-300 font-bold mb-4 uppercase text-xs w-full text-left"><i class="fa-solid fa-chart-bar mr-2 text-blue-400"></i>সংস্থা ভিত্তিক অনিয়মের সংখ্যা (Top Organizations)</h3>
+                <div class="w-full h-full min-h-[180px]"><canvas id="orgChart"></canvas></div>
             </div>
         </div>
 
         <!-- MAIN TABLE WITH RISK FILTER BUTTONS -->
         <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                <h2 class="text-lg font-bold text-slate-200">তদন্ত প্রতিবেদন <span class="text-xs text-slate-500 ml-2 font-normal">(বিস্তারিত দেখতে রো-তে ক্লিক করুন)</span></h2>
+                <h2 class="text-lg font-bold text-slate-200">অনুসন্ধানী ডেটাবেস <span class="text-xs text-slate-500 ml-2 font-normal">(ভেরিফাই করতে রো-তে ক্লিক করুন)</span></h2>
                 
-                <!-- DYNAMIC FILTER BUTTONS -->
                 <div class="flex flex-wrap gap-2" id="filterButtons">
-                    <button onclick="filterTable('', this)" class="filter-btn ring-2 ring-white px-3 py-1.5 rounded text-[11px] font-black bg-slate-700 text-white transition">সবগুলো (<span id="countAll">0</span>)</button>
-                    <button onclick="filterTable('CRITICAL', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-red-900/30 text-red-400 border border-red-900/50 hover:bg-red-900/50 transition">CRITICAL (<span id="countCritical">0</span>)</button>
-                    <button onclick="filterTable('HIGH', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-orange-900/30 text-orange-400 border border-orange-900/50 hover:bg-orange-900/50 transition">HIGH (<span id="countHigh">0</span>)</button>
-                    <button onclick="filterTable('MEDIUM', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-yellow-900/30 text-yellow-400 border border-yellow-900/50 hover:bg-yellow-900/50 transition">MEDIUM (<span id="countMedium">0</span>)</button>
-                    <button onclick="filterTable('LOW', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-emerald-900/30 text-emerald-400 border border-emerald-900/50 hover:bg-emerald-900/50 transition">LOW / CLEAN (<span id="countLow">0</span>)</button>
+                    <button onclick="filterTable('', this)" class="filter-btn ring-2 ring-white px-3 py-1.5 rounded text-[11px] font-black bg-slate-700 text-white transition">সবগুলো</button>
+                    <button onclick="filterTable('CRITICAL', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-red-900/30 text-red-400 border border-red-900/50 hover:bg-red-900/50 transition">CRITICAL</button>
+                    <button onclick="filterTable('HIGH', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-orange-900/30 text-orange-400 border border-orange-900/50 hover:bg-orange-900/50 transition">HIGH</button>
+                    <button onclick="filterTable('MEDIUM', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-yellow-900/30 text-yellow-400 border border-yellow-900/50 hover:bg-yellow-900/50 transition">MEDIUM</button>
+                    <button onclick="filterTable('LOW', this)" class="filter-btn px-3 py-1.5 rounded text-[11px] font-black bg-emerald-900/30 text-emerald-400 border border-emerald-900/50 hover:bg-emerald-900/50 transition">LOW</button>
                 </div>
             </div>
             
@@ -131,11 +167,11 @@
                     <thead class="bg-[#1e293b] text-slate-200">
                         <tr>
                             <th class="p-3">টেন্ডার আইডি</th>
-                            <th class="p-3 text-blue-300">সংস্থা (Organization)</th>
-                            <th class="p-3">সর্বোচ্চ ঝুঁকি</th>
+                            <th class="p-3 text-blue-300">সংস্থা</th>
+                            <th class="p-3">ঝুঁকি স্তর</th>
                             <th class="p-3">স্কোর</th>
                             <th class="p-3">ক্রয়কারী সত্তা (PE)</th>
-                            <th class="p-3">নির্বাচিত ঠিকাদার</th>
+                            <th class="p-3">ঠিকাদার</th>
                             <th class="p-3">চুক্তি মূল্য (BDT)</th>
                             <th class="p-3">অডিট স্ট্যাটাস</th>
                         </tr>
@@ -146,7 +182,7 @@
         </div>
     </div>
 
-    <!-- VIEW 2: SPLIT-SCREEN INSPECTOR -->
+    <!-- VIEW 2: INSPECTOR (HUMAN VERIFICATION & FULL TAXONOMY) -->
     <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-[#0b1120] fixed inset-0 z-50">
         <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shrink-0 shadow-md">
             <div class="flex items-center gap-4">
@@ -166,10 +202,10 @@
             <!-- LEFT PANE: PDF & RAW OCR -->
             <div class="w-1/2 border-r border-slate-800 bg-slate-900 flex flex-col relative">
                 <div class="p-3 bg-[#1e293b] border-b border-slate-700 text-xs font-bold text-slate-400 flex justify-between items-center shadow-inner">
-                    <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>পিডিএফ ভিউয়ার (প্রমাণ):</span>
+                    <span><i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>প্রমাণপত্র (PDF Evidence):</span>
                     <div class="flex gap-1">
                         <button id="btnNoticePdf" onclick="switchPdfView('notice')" class="px-3 py-1.5 rounded text-[10px] font-bold bg-red-600 hover:bg-red-500 text-white transition shadow">টেন্ডার নোটিশ (IFT)</button>
-                        <button id="btnAwardPdf" onclick="switchPdfView('award')" class="px-3 py-1.5 rounded text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition shadow">কন্ট্রাক্ট অ্যাওয়ার্ড (NOA)</button>
+                        <button id="btnAwardPdf" onclick="switchPdfView('award')" class="px-3 py-1.5 rounded text-[10px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition shadow">কন্ট্রাক্ট অ্যাওয়ার্ড (NOA)</button>
                     </div>
                 </div>
                 <div class="flex-1 w-full h-1/2 bg-slate-300 relative border-b border-slate-700">
@@ -178,10 +214,8 @@
                 <div class="h-1/3 bg-[#0b1120] flex flex-col border-t-4 border-red-900/30">
                     <div class="p-2 bg-[#1e293b] border-b border-slate-800 flex justify-between items-center">
                         <h4 class="text-[11px] font-bold text-slate-300 flex items-center gap-2">
-                            <i class="fa-solid fa-microchip text-red-500"></i> স্বয়ংক্রিয় OCR টেক্সট
-                            <span id="pdfScanStatus" class="text-[9px] px-2 py-0.5 rounded bg-slate-800 text-yellow-400">অপেক্ষা করুন...</span>
+                            <i class="fa-solid fa-microchip text-red-500"></i> স্বয়ংক্রিয় OCR স্ক্যান টেক্সট
                         </h4>
-                        <!-- LIVE HIGHLIGHT SEARCH -->
                         <div class="flex relative">
                             <input type="text" id="ocrSearch" placeholder="টেক্সট খুঁজুন..." class="w-48 bg-slate-900 border-slate-700 text-[10px] rounded-l py-1 px-2 focus:border-red-500 text-slate-200" onkeyup="highlightOCR()">
                             <button class="bg-red-600 px-2 rounded-r text-white text-[10px]" onclick="highlightOCR()"><i class="fa-solid fa-search"></i></button>
@@ -191,48 +225,49 @@
                 </div>
             </div>
 
-            <!-- RIGHT PANE: TABBED TAXONOMY VERIFICATION -->
+            <!-- RIGHT PANE: TABBED FULL TAXONOMY VERIFICATION -->
             <div class="w-1/2 bg-slate-900 flex flex-col">
-                <!-- TABS HEADER -->
                 <div class="flex space-x-1 border-b border-slate-700 p-2 overflow-x-auto custom-scroll shrink-0 bg-[#0f172a] shadow-inner">
-                    <button class="tab-btn active px-3 py-2 text-[10px] font-black text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-findings')"><i class="fa-solid fa-magnifying-glass-chart mr-1"></i> ফরেনসিক ফাইন্ডিংস</button>
-                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-org')"><i class="fa-solid fa-building mr-1"></i> প্রতিষ্ঠান ও প্রকল্প</button>
-                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-proc')"><i class="fa-solid fa-folder-tree mr-1"></i> ক্রয় ও সময়সূচী</button>
-                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-elig')"><i class="fa-solid fa-user-check mr-1"></i> যোগ্যতা ও কারিগরি</button>
+                    <button class="tab-btn active px-3 py-2 text-[10px] font-black text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-findings')"><i class="fa-solid fa-user-check mr-1"></i> ১. ভেরিফিকেশন ও নোটস</button>
+                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-org')"><i class="fa-solid fa-building mr-1"></i> প্রতিষ্ঠান ও অফিসিয়াল</button>
+                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-proc')"><i class="fa-solid fa-folder-tree mr-1"></i> ক্রয়, তারিখ ও ফি</button>
+                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-elig')"><i class="fa-solid fa-clipboard-list mr-1"></i> যোগ্যতা ও টেকনিক্যাল</button>
                     <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-exec')"><i class="fa-solid fa-file-signature mr-1"></i> লট, চুক্তি ও পেমেন্ট</button>
+                    <button class="tab-btn px-3 py-2 text-[10px] font-bold text-slate-400 rounded transition whitespace-nowrap" onclick="switchTab('tab-attach')"><i class="fa-solid fa-paperclip mr-1"></i> অ্যাটাচমেন্টস</button>
                 </div>
 
-                <!-- TABS CONTENT -->
                 <div class="flex-1 overflow-y-auto custom-scroll p-4 pb-20">
-                    
-                    <!-- TAB 1: FINDINGS -->
+                    <!-- TAB 1: FINDINGS & HUMAN VERIFICATION -->
                     <div id="tab-findings" class="tab-content active space-y-4">
-                        <div id="inspFlagsContainer" class="space-y-4"></div>
-                        
-                        <div class="bg-slate-800/80 p-5 rounded-xl border border-red-500/30 mt-6 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                            <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2"><i class="fa-solid fa-clipboard-check"></i> তদন্তকারীর সিদ্ধান্ত (Conclusion)</h3>
-                            <label class="block text-xs text-slate-400 mb-2">PDF প্রমাণ ও স্বয়ংক্রিয় ফাইন্ডিংস-এর উপর ভিত্তি করে আপনার সিদ্ধান্ত ও যৌক্তিকতা লিখুন:</label>
-                            <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-red-500 transition-all" placeholder="এখানে আপনার পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
+                        <div class="bg-slate-800/80 p-5 rounded-xl border border-red-500/30 mb-6 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                            <h3 class="text-emerald-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ডেটা ভেরিফিকেশন ও আপডেট</h3>
+                            <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">পিডিএফ পড়ে অন্যান্য ট্যাবের ফাঁকা ফিল্ডগুলো সম্পূর্ণ করুন। আপনি ডেটা সেভ করলে, সেই ডেটার ওপর ভিত্তি করে ড্যাশবোর্ডে ১১টি জালিয়াতি রুলস ডাইনামিক্যালি রি-ক্যালকুলেট হবে।</p>
+                            
+                            <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের ইনভেস্টিগেটিভ নোটস (যা মূল স্টোরিতে যাবে):</label>
+                            <textarea id="auditJustification" class="w-full bg-slate-950 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 h-28 mb-4 custom-scroll outline-none focus:border-red-500 transition-all" placeholder="আপনার পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
                             
                             <div class="flex gap-3">
                                 <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded shadow-lg transition text-xs flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-shield-check"></i> ঝুঁকিমুক্ত হিসেবে সেভ করুন
+                                    <i class="fa-solid fa-shield-check"></i> ভেরিফাই ও সেভ (Clean)
                                 </button>
                                 <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black py-3 rounded shadow-lg transition text-xs flex justify-center items-center gap-2">
-                                    <i class="fa-solid fa-triangle-exclamation"></i> দুর্নীতি বা অনিয়ম নিশ্চিত করুন
+                                    <i class="fa-solid fa-triangle-exclamation"></i> ভেরিফাই ও সেভ (Fraud Risk)
                                 </button>
                             </div>
                         </div>
+
+                        <!-- DYNAMIC FLAGS RENDERED HERE -->
+                        <div id="inspFlagsContainer" class="space-y-4"></div>
                     </div>
 
-                    <!-- TAB 2: ORG & PROJECT -->
+                    <!-- TAB 2: ORG & PROJECT (ABSOLUTE FULL TAXONOMY) -->
                     <div id="tab-org" class="tab-content">
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-sitemap"></i> প্রাতিষ্ঠানিক তথ্য</h4>
-                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="grid grid-cols-3 gap-2">
                                 <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?\s*:\s*(.*?)\s+(?:Division|Organization)" class="egp-field"></div>
                                 <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-regex="Organization\s*:\s*(.*?)\s+Procuring" class="egp-field"></div>
+                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
                                 <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code\s*:\s*(.*?)\s+Procuring Entity District" class="egp-field"></div>
                                 <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District" data-regex="Procuring Entity District\s*:\s*(.*?)\n" class="egp-field"></div>
@@ -240,127 +275,265 @@
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-briefcase"></i> প্রকল্প তথ্য</h4>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label>প্রকল্প কোড (Project Code)</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code\s*:\s*(.*?)\s+Project Name" class="egp-field"></div>
-                                <div><label>প্রকল্পের নাম (Project Name)</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>প্যাকেজ নং (Package No)</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No" data-regex="Package No[^\n]*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category\s*:\s*([\s\S]*?)Scheduled Tender" class="egp-field"></div>
-                                <div class="col-span-2"><label>কাজের বিবরণ (Description)</label><textarea id="Proj_Desc" data-db="Brief_Description_of_Works" data-regex="Description\s*:\s*([\s\S]*?)Category\s*:" class="egp-field h-16 custom-scroll"></textarea></div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><label>প্রকল্প কোড</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code\s*:\s*(.*?)\s+Project Name" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্রকল্পের নাম</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>প্যাকেজ নং</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No" data-regex="Package No[^\n]*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্যাকেজ নাম</label><input type="text" id="Package_Name" data-db="Tender_Proposal_Package_Name" class="egp-field"></div>
+                                <div class="col-span-3"><label>কাজের বিবরণ</label><textarea id="Proj_Desc" data-db="Brief_Description_of_Works" data-regex="Description\s*:\s*([\s\S]*?)Category\s*:" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-3"><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category\s*:\s*([\s\S]*?)Scheduled Tender" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-id-badge"></i> দাপ্তরিক যোগাযোগ</h4>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="col-span-2"><label>কর্মকর্তার নাম (Official Name)</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal" data-regex="Name of Official.*?\s*:\s*(.*?)\s+Designation" class="egp-field"></div>
-                                <div><label>পদবী (Designation)</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal" data-regex="Designation of Official.*?\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div class="col-span-3"><label>ঠিকানা (Address)</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal" data-regex="Address of Official.*?\s*:\s*Address\s*:\s*(.*?)\s+City" class="egp-field"></div>
-                                <div><label>শহর (City)</label><input type="text" id="Off_City" data-db="City" data-regex="City\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>ফোন নং (Phone)</label><input type="text" id="Off_Phone" data-db="Phone_No" data-regex="Phone No\s*:\s*([\d-]+)" class="egp-field"></div>
-                                <div><label>ইমেইল (Email)</label><input type="text" id="Off_Email" data-db="Email" data-regex="e-mail\s*:\s*([\w\.-]+@[\w\.-]+)" class="egp-field"></div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="col-span-2"><label>কর্মকর্তার নাম</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal" data-regex="Name of Official.*?\s*:\s*(.*?)\s+Designation" class="egp-field"></div>
+                                <div class="col-span-2"><label>পদবী</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal" data-regex="Designation of Official.*?\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-4"><label>ঠিকানা</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal" data-regex="Address of Official.*?\s*:\s*Address\s*:\s*(.*?)\s+City" class="egp-field"></div>
+                                <div><label>শহর</label><input type="text" id="Off_City" data-db="City" data-regex="City\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>থানা</label><input type="text" id="Off_Thana" data-db="Thana" data-regex="Thana\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>জেলা</label><input type="text" id="Off_District" data-db="District" data-regex="District\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>পোস্টাল কোড</label><input type="text" id="Postal_Code" data-db="Postal_Code" class="egp-field"></div>
+                                <div><label>দেশ</label><input type="text" id="Country" data-db="Country" data-regex="Country\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>ফোন নং</label><input type="text" id="Off_Phone" data-db="Phone_No" data-regex="Phone No\s*:\s*([\d-]+)" class="egp-field"></div>
+                                <div><label>ফ্যাক্স নং</label><input type="text" id="Off_Fax" data-db="Fax_No" data-regex="Fax No\s*:\s*([\d-]+)" class="egp-field"></div>
+                                <div><label>ইমেইল</label><input type="text" id="Off_Email" data-db="Email" data-regex="e-mail\s*:\s*([\w\.-]+@[\w\.-]+)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ওয়েবসাইট</label><input type="text" id="Off_Web" data-db="Website" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 3: PROCUREMENT & SCHEDULE -->
+                    <!-- TAB 3: PROCUREMENT & SCHEDULE (ABSOLUTE FULL TAXONOMY) -->
                     <div id="tab-proc" class="tab-content">
                         <div class="fieldset-box">
-                            <h4 class="fieldset-title"><i class="fa-solid fa-cogs"></i> ক্রয় পদ্ধতি ও সাধারণ তথ্য</h4>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                                <div><label>ক্রয়ের ধরণ (Proc Nature)</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature\s*:\s*(.*?)\s+Procurement Type" class="egp-field"></div>
-                                <div><label>ক্রয় পদ্ধতি (Proc Type)</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>ইভেন্ট টাইপ (Event Type)</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type\s*:\s*(.*?)\s+Invitation for" class="egp-field"></div>
-                                <div><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No" data-regex="Invitation Reference No\.\s*:\s*(.*?)\s+Tender\/Proposal Status" class="egp-field"></div>
-                                <div><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status" data-regex="Tender\/Proposal Status\s*:\s*(.*?)\n" class="egp-field"></div>
+                            <h4 class="fieldset-title"><i class="fa-solid fa-cogs"></i> ক্রয় পদ্ধতি ও সাধারণ তথ্য</h4>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div><label>ক্রয়ের ধরণ</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature\s*:\s*(.*?)\s+Procurement Type" class="egp-field"></div>
+                                <div><label>ক্রয় পদ্ধতি</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div><label>ইভেন্ট টাইপ</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type\s*:\s*(.*?)\s+Invitation for" class="egp-field"></div>
+                                <div><label>Invitation For</label><input type="text" id="Inv_For" data-db="Invitation_for" data-regex="Invitation for\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-2"><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No" data-regex="Invitation Reference No\.\s*:\s*(.*?)\s+Tender\/Proposal Status" class="egp-field"></div>
+                                <div class="col-span-2"><label>স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status" data-regex="Tender\/Proposal Status\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
                                 <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID" data-regex="Tender\/Proposal ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
-                                <div><label>বাজেটের ধরন (Budget Type)</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div class="col-span-2"><label>অর্থের উৎস (Source of Funds)</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div class="col-span-2"><label>উন্নয়ন সহযোগী (Dev Partner)</label><input type="text" id="Dev_Partner" data-db="Development_Partner" class="egp-field"></div>
+                                <div><label>Proc Method</label><input type="text" id="Proc_Method" data-db="Procurement_Method" data-regex="Procurement Method\s*:\s*(.*?)\s+Budget Type" class="egp-field"></div>
+                                <div><label>বাজেটের ধরন</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-2"><label>অর্থের উৎস</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-2"><label>উন্নয়ন সহযোগী</label><input type="text" id="Dev_Partner" data-db="Development_Partner" class="egp-field"></div>
                             </div>
                         </div>
-                        <div class="fieldset-box relative">
-                            <h4 class="fieldset-title"><i class="fa-solid fa-calendar-check"></i> সময়সূচী ও ডেডলাইন</h4>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div><label>প্রকাশের তারিখ (Pub Date)</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time" data-regex="Publication\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
-                                <div>
-                                    <label>জমার শেষ তারিখ (Close Date) <span id="daysCalc" class="text-red-400"></span></label>
-                                    <input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time" data-regex="Closing\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field">
-                                </div>
-                                <div><label>খোলার তারিখ (Open Date)</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time" data-regex="Opening\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                        <div class="fieldset-box relative border-orange-900/50">
+                            <h4 class="fieldset-title text-orange-400"><i class="fa-solid fa-calendar-check"></i> সময়সূচী ও ডেডলাইন</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time" data-regex="Publication\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time" data-regex="Closing\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time" data-regex="Opening\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
                                 
                                 <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="last selling\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
-                                <div class="col-span-2"><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="Last Date and Time for\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>ডাউনলোড শেষ সময়</label><input type="text" id="Last_Down" data-db="Last_Downloading_Date" class="egp-field"></div>
+                                <div><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="Last Date and Time for\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
                                 
                                 <div><label>প্রি-টেন্ডার মিটিং (শুরু)</label><input type="text" id="Pre_Start" data-db="Pre_Tender_Proposal_meeting_Start_Date_and_Time" data-regex="meeting Start\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
-                                <div class="col-span-2"><label>প্রি-টেন্ডার মিটিং (শেষ)</label><input type="text" id="Pre_End" data-db="Pre_Tender_Proposal_meeting_End_Date_and_Time" data-regex="meeting End\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>প্রি-টেন্ডার মিটিং (শেষ)</label><input type="text" id="Pre_End" data-db="Pre_Tender_Proposal_meeting_End_Date_and_Time" data-regex="meeting End\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
+                                <div><label>Clarification Deadline</label><input type="text" id="Clar_Req" data-db="Clarification_Request_Deadline" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-file-invoice"></i> দলিল ও মূল্য</h4>
-                            <div class="grid grid-cols-4 gap-3">
-                                <div><label>দলিল মূল্য (Doc Price BDT)</label><input type="text" id="Doc_Price" data-db="Tender_Proposal_Document_Price_In_BDT" data-regex="Price \(In.*?BDT\)\s*:\s*([\d,]+)" class="egp-field font-mono text-yellow-300"></div>
-                                <div class="col-span-2"><label>পেমেন্টের মাধ্যম (Mode of Payment)</label><input type="text" id="Pay_Mode" data-db="Mode_of_Payment" data-regex="Mode of Payment\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>মুদ্রা (Currency)</label><input type="text" id="Currency" data-db="Currency" class="egp-field"></div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div><label>Doc Available</label><input type="text" id="Doc_Avail" data-db="Document_Available" class="egp-field"></div>
+                                <div><label>Doc Fees</label><input type="text" id="Doc_Fees" data-db="Document_Fees" class="egp-field"></div>
+                                <div><label>Doc Type</label><input type="text" id="Doc_Type" data-db="Document_Type" class="egp-field"></div>
+                                <div><label>দলিল মূল্য (BDT)</label><input type="text" id="Doc_Price" data-db="Tender_Proposal_Document_Price_In_BDT" data-regex="Price \(In.*?BDT\)\s*:\s*([\d,]+)" class="egp-field font-mono text-yellow-300"></div>
+                                <div class="col-span-2"><label>পেমেন্টের মাধ্যম</label><input type="text" id="Pay_Mode" data-db="Mode_of_Payment" data-regex="Mode of Payment\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-2"><label>মুদ্রা</label><input type="text" id="Currency" data-db="Currency" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 4: ELIGIBILITY & TECH -->
+                    <!-- TAB 4: ELIGIBILITY & TECH (ABSOLUTE FULL TAXONOMY) -->
                     <div id="tab-elig" class="tab-content">
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500"><i class="fa-solid fa-user-shield"></i> দরদাতার যোগ্যতা (Eligibility)</h4>
-                            <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>তরল সম্পদ বা Liquid Assets (BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
-                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="col-span-2"><label>তরল সম্পদ (Liquid Assets BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
+                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
+                                <div class="col-span-2"><label>Const Turnover</label><input type="text" id="Const_Turnover" data-db="Average_Annual_Construction_Turnover" class="egp-field"></div>
+                                <div class="col-span-2"><label>Credit Line</label><input type="text" id="Credit_Line" data-db="Credit_Line" class="egp-field"></div>
+                                
                                 <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience.*?(\d+\s*(?:\([A-Za-z]+\))?\s*years?)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience.*?value of at least\s*(Tk\.?\s*[\d\.\s]+\s*[a-zA-Z]+|Tk\.?\s*[\d,\.]+)" class="egp-field h-10 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>সর্বোচ্চ জেভি সদস্য (Max JV Members)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*(\d+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>সাবকন্ট্রাক্টর (Subcontractor Req)</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" class="egp-field"></div>
+                                <div class="col-span-4"><label>Experience Req (Other)</label><textarea id="Exp_Req" data-db="Experience_Requirements" class="egp-field h-10 custom-scroll"></textarea></div>
+
+                                <div class="col-span-2"><label>Equipment Req</label><input type="text" id="Equip_Req" data-db="Equipment_Requirements" class="egp-field"></div>
+                                <div class="col-span-2"><label>Personnel Req</label><input type="text" id="Pers_Req" data-db="Personnel_Requirements" class="egp-field"></div>
+                                <div><label>সর্বোচ্চ জেভি সদস্য</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*(\d+)" class="egp-field"></div>
+                                <div><label>সাবকন্ট্রাক্টর</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" class="egp-field"></div>
+                                <div class="col-span-2"><label>Manufacturer Auth</label><input type="text" id="Mfr_Auth" data-db="Manufacturer_Authorization" class="egp-field"></div>
+                                <div class="col-span-2"><label>Qualification Requirements</label><input type="text" id="Qual_Req" data-db="Qualification_Requirements" class="egp-field"></div>
                                 <div class="col-span-4"><label>হুবহু যোগ্যতার শর্ত (Raw Eligibility from PDF)</label><textarea id="Raw_Elig" data-db="Eligibility_of_Tenderer" data-regex="Eligibility of Tenderer\s*:\s*([\s\S]*?)Brief Description" class="egp-field h-20 custom-scroll"></textarea></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-microchip"></i> কারিগরি মূল্যায়ন (Technical Evaluation)</h4>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="col-span-4"><label>Brief Desc of Goods/Works</label><input type="text" id="Brief_Goods" data-db="Brief_Description_of_Goods" data-regex="Brief Description.*?\s*:\s*([\s\S]*?)Evaluation Type" class="egp-field"></div>
                                 <div class="col-span-2"><label>মূল্যায়নের ধরন (Eval Type)</label><input type="text" id="Eval_Type" data-db="Evaluation_Type" data-regex="Evaluation Type\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>টেকনিক্যাল স্কোর (Tech Score)</label><input type="text" id="Tech_Score" data-db="Technical_Score" class="egp-field"></div>
-                                <div><label>নূন্যতম টেক স্কোর (Min Tech)</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" class="egp-field"></div>
+                                <div class="col-span-2"><label>Eval Methodology</label><input type="text" id="Eval_Method" data-db="Evaluation_Methodology" class="egp-field"></div>
+                                <div><label>টেকনিক্যাল স্কোর</label><input type="text" id="Tech_Score" data-db="Technical_Score" class="egp-field"></div>
+                                <div><label>নূন্যতম টেক স্কোর</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" class="egp-field"></div>
+                                <div class="col-span-2"><label>Rated Criteria</label><input type="text" id="Rated_Crit" data-db="Rated_Criteria" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 5: LOTS, VALIDITY & EXECUTION -->
+                    <!-- TAB 5: LOTS, VALIDITY & EXECUTION (ABSOLUTE FULL TAXONOMY) -->
                     <div id="tab-exec" class="tab-content">
                         <div class="fieldset-box border-red-900/50 bg-red-950/10">
-                            <h4 class="fieldset-title text-red-400"><i class="fa-solid fa-money-bill-transfer"></i> অগ্রিম ও সিকিউরিটি (Financial Terms)</h4>
-                            <div class="grid grid-cols-4 gap-3">
-                                <div><label>পারফরম্যান্স সিকিউরিটি % (Perf Sec)</label><input type="text" id="Perf_Req" data-db="Performance_Security_Requirement" data-regex="Performance Security.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
-                                <div><label>রিটেনশন মানি % (Retention)</label><input type="text" id="Ret_Money" data-db="Retention_Money" data-regex="retention.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
-                                <div><label>অগ্রিম প্রদান (Advance Payment)</label><input type="text" id="Adv_Pay" data-db="Advance_Payment" data-regex="Advance Payment.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
+                            <h4 class="fieldset-title text-red-400"><i class="fa-solid fa-money-bill-transfer"></i> অর্থ ও শর্তাবলি (Financial Terms)</h4>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div><label>পারফরম্যান্স সিকিউরিটি %</label><input type="text" id="Perf_Req" data-db="Performance_Security_Requirement" data-regex="Performance Security.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
+                                <div><label>রিটেনশন মানি %</label><input type="text" id="Ret_Money" data-db="Retention_Money" data-regex="retention.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
+                                <div><label>অগ্রিম প্রদান (Advance Pay)</label><input type="text" id="Adv_Pay" data-db="Advance_Payment" data-regex="Advance Payment.*?(\d+\s*%)" class="egp-field text-red-300 font-bold"></div>
                                 <div><label>টেন্ডার সিকিউরিটি (BDT)</label><input type="text" id="Sec_Amt" data-db="Tender_Proposal_Security_Amount" class="egp-field font-mono"></div>
+                                <div><label>Security Valid Up To</label><input type="text" id="Sec_Valid" data-db="Tender_Proposal_Security_Valid_Up_To" class="egp-field"></div>
+                                <div><label>Tender Valid Up To</label><input type="text" id="Tender_Valid" data-db="Tender_Proposal_Valid_Up_To" class="egp-field"></div>
+                                <div><label>Security Form</label><input type="text" id="Sec_Form" data-db="Tender_Proposal_Security_Form" class="egp-field"></div>
+                                <div><label>Bid Validity</label><input type="text" id="Bid_Valid" data-db="Bid_Validity" class="egp-field"></div>
                             </div>
                         </div>
-                        <div class="fieldset-box">
-                            <h4 class="fieldset-title"><i class="fa-solid fa-table-list"></i> লট সম্পর্কিত তথ্য (Lot Information)</h4>
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div class="fieldset-box border-emerald-900/50 bg-emerald-950/10">
+                            <h4 class="fieldset-title text-emerald-400"><i class="fa-solid fa-table-list"></i> লট ও চুক্তি (Lot & Award Info)</h4>
+                            <div class="grid grid-cols-4 gap-2">
                                 <div><label>লট নং (Lot No)</label><input type="text" id="Lot_No" data-db="Lot_No" data-regex="Lot No\.\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div class="col-span-3"><label>লট এর বিবরণ (Lot Description)</label><input type="text" id="Lot_ID" data-db="Identification_of_Lot" data-regex="Identification of Lot\s*:\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-4"><label>Lot Description (Full)</label><textarea id="Lot_Desc" data-db="Lot_Description" class="egp-field h-8 custom-scroll"></textarea></div>
                                 
                                 <div class="col-span-2"><label>কাজের স্থান (Location)</label><input type="text" id="Location" data-db="Location" data-ext="ext_LotLocation" class="egp-field font-bold text-blue-300"></div>
                                 <div class="col-span-2"><label>লট সিকিউরিটি (Lot Security BDT)</label><input type="text" id="Lot_Sec" data-db="Tender_Proposal_Security_Amount_in_BDT" data-ext="ext_LotSec" class="egp-field font-mono text-yellow-300"></div>
-                                <div class="col-span-2"><label>সম্ভাব্য কাজ শুরুর তারিখ</label><input type="text" id="Tent_Start" data-db="Tentative_Start_Date" data-ext="ext_LotStart" class="egp-field font-mono text-red-300"></div>
-                                <div class="col-span-2"><label>সম্ভাব্য সমাপ্তির তারিখ</label><input type="text" id="Tent_Comp" data-db="Tentative_Completion_Date" data-ext="ext_LotEnd" class="egp-field font-mono text-red-300"></div>
-                                
-                                <div class="col-span-4 mt-2 border-t border-red-800/50 pt-2"></div>
-                                <div class="col-span-2"><label>নির্বাচিত ঠিকাদার (Awarded Supplier)</label><input type="text" id="Award_Supplier" data-db="Supplier_Name" class="egp-field text-red-300 font-bold bg-slate-900 border-red-800"></div>
-                                <div><label>চুক্তি মূল্য (Contract Value BDT)</label><input type="text" id="Contract_Value" data-db="Contract_Value_BDT" class="egp-field text-red-300 font-bold bg-slate-900 border-red-800 font-mono text-sm"></div>
+                                <div><label>কাজ শুরুর তারিখ</label><input type="text" id="Tent_Start" data-db="Tentative_Start_Date" data-ext="ext_LotStart" class="egp-field font-mono text-red-300"></div>
+                                <div><label>সমাপ্তির তারিখ</label><input type="text" id="Tent_Comp" data-db="Tentative_Completion_Date" data-ext="ext_LotEnd" class="egp-field font-mono text-red-300"></div>
+                                <div><label>Completion Period</label><input type="text" id="Comp_Period" data-db="Completion_Period" class="egp-field"></div>
+                                <div><label>Delivery Period</label><input type="text" id="Del_Period" data-db="Delivery_Period" class="egp-field"></div>
+
+                                <div class="col-span-4 mt-2 border-t border-emerald-800/50 pt-2"></div>
+                                <div class="col-span-2"><label>নির্বাচিত ঠিকাদার (Supplier)</label><input type="text" id="Award_Supplier" data-db="Supplier_Name" class="egp-field text-emerald-300 font-bold bg-slate-900 border-emerald-800"></div>
+                                <div><label>চুক্তি মূল্য (Contract BDT)</label><input type="text" id="Contract_Value" data-db="Contract_Value_BDT" class="egp-field text-emerald-300 font-bold bg-slate-900 border-emerald-800 font-mono text-sm"></div>
                                 <div><label>চুক্তি স্বাক্ষরের তারিখ</label><input type="text" id="Contract_Sign" data-db="Date_of_Contract_Signing" class="egp-field bg-slate-900"></div>
-                                <div><label>বিক্রিত দরপত্র (Sold)</label><input type="number" id="T_Sold" data-db="Tenders_Sold" class="egp-field font-mono"></div>
-                                <div class="col-span-2"><label>গৃহীত / রেস্পন্সিভ (Received/Responsive)</label><div class="flex gap-1"><input type="number" id="T_Rec" data-db="Tenders_Received" class="egp-field font-mono w-1/2" placeholder="গৃহীত"><input type="number" id="T_Resp" data-db="Responsive_Tenders" class="egp-field font-mono w-1/2" placeholder="রেস্পন্সিভ"></div></div>
+                                <div><label>বিক্রিত দরপত্র</label><input type="number" id="T_Sold" data-db="Tenders_Sold" class="egp-field font-mono"></div>
+                                <div><label>গৃহীত (Received)</label><input type="number" id="T_Rec" data-db="Tenders_Received" class="egp-field font-mono"></div>
+                                <div class="col-span-2"><label>রেস্পন্সিভ (Responsive)</label><input type="number" id="T_Resp" data-db="Responsive_Tenders" class="egp-field font-mono"></div>
+                            </div>
+                        </div>
+                        <div class="fieldset-box">
+                            <h4 class="fieldset-title"><i class="fa-solid fa-truck-fast"></i> এক্সিকিউশন ও আদার টার্মস</h4>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="col-span-2"><label>Delivery Location</label><input type="text" id="Del_Loc" data-db="Delivery_Location" class="egp-field"></div>
+                                <div class="col-span-2"><label>Delivery Schedule</label><input type="text" id="Del_Sched" data-db="Delivery_Schedule" class="egp-field"></div>
+                                <div><label>Inspection Req</label><input type="text" id="Insp_Req" data-db="Inspection_Requirements" class="egp-field"></div>
+                                <div><label>Warranty Req</label><input type="text" id="Warranty" data-db="Warranty_Requirements" class="egp-field"></div>
+                                <div><label>Manufacturer</label><input type="text" id="Mfr" data-db="Manufacturer" class="egp-field"></div>
+                                <div><label>Country of Origin</label><input type="text" id="Origin" data-db="Country_of_Origin" class="egp-field"></div>
+                                <div><label>Site Visit</label><input type="text" id="Site_Visit" data-db="Site_Visit" class="egp-field"></div>
+                                <div><label>Defects Liability</label><input type="text" id="Def_Liab" data-db="Defects_Liability_Period" class="egp-field"></div>
+                                <div><label>Completion Time</label><input type="text" id="Comp_Time" data-db="Completion_Time" class="egp-field"></div>
+                                <div><label>Performance Cert</label><input type="text" id="Perf_Cert" data-db="Performance_Certificate" class="egp-field"></div>
+                                <div class="col-span-2"><label>Payment Terms</label><input type="text" id="Pay_Terms" data-db="Payment_Terms" class="egp-field"></div>
+                                <div class="col-span-2"><label>Other Conditions</label><input type="text" id="Other_Cond" data-db="Other_Conditions" class="egp-field"></div>
+                                <div class="col-span-4"><label>Procuring Entity Reservation Statement</label><input type="text" id="PE_Res" data-db="Procuring_Entity_Reservation_Statement" class="egp-field"></div>
+                                <div class="col-span-2"><label>Special Instructions</label><textarea id="Spec_Inst" data-db="Special_Instructions" class="egp-field h-8 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>Remarks</label><textarea id="Remarks" data-db="Remarks" class="egp-field h-8 custom-scroll"></textarea></div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- TAB 6: ATTACHMENTS (FULL RE-INSERTED) -->
+                    <div id="tab-attach" class="tab-content">
+                        <div class="fieldset-box">
+                            <h4 class="fieldset-title"><i class="fa-solid fa-paperclip"></i> অ্যাটাচমেন্টস ও ডকুমেন্টস</h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="col-span-3"><label>Attachments (CSV list)</label><textarea id="Attachments" data-db="Attachments" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div><label>Tender Notice</label><input type="text" id="Tender_Notice" data-db="Tender_Notice" class="egp-field"></div>
+                                <div><label>Tender Document</label><input type="text" id="Tender_Document" data-db="Tender_Document" class="egp-field"></div>
+                                <div><label>BOQ</label><input type="text" id="BOQ" data-db="BOQ" class="egp-field"></div>
+                                <div><label>Drawings</label><input type="text" id="Drawings" data-db="Drawings" class="egp-field"></div>
+                                <div><label>Specifications</label><input type="text" id="Specifications" data-db="Specifications" class="egp-field"></div>
+                                <div><label>Addendum</label><input type="text" id="Addendum" data-db="Addendum" class="egp-field"></div>
+                                <div><label>Corrigendum</label><input type="text" id="Corrigendum" data-db="Corrigendum" class="egp-field"></div>
+                                <div><label>Clarification</label><input type="text" id="Clarification" data-db="Clarification" class="egp-field"></div>
+                                <div><label>Forms</label><input type="text" id="Forms" data-db="Forms" class="egp-field"></div>
+                                <div><label>GCC</label><input type="text" id="GCC" data-db="General_Conditions_of_Contract" class="egp-field"></div>
+                                <div><label>PCC</label><input type="text" id="PCC" data-db="Particular_Conditions_of_Contract" class="egp-field"></div>
+                                <div><label>Tech Specs</label><input type="text" id="Tech_Specs" data-db="Technical_Specifications" class="egp-field"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: MASTER STORY BUILDER (Netra News Style) -->
+    <div id="storyBuilderView" class="h-screen w-full flex flex-col hide bg-slate-100 fixed inset-0 z-[100] overflow-hidden">
+        <header class="bg-white p-4 border-b border-slate-300 flex justify-between items-center shrink-0 shadow-sm z-10 relative">
+            <div class="flex items-center gap-4">
+                <button onclick="closeStoryBuilder()" class="text-slate-600 hover:text-slate-900 font-bold transition flex items-center gap-2"><i class="fa-solid fa-arrow-left"></i> ড্যাশবোর্ডে ফিরুন</button>
+                <h2 class="text-xl font-black text-red-600 border-l-2 border-slate-300 pl-4">স্টোরি বিল্ডার (CMS)</h2>
+            </div>
+            <button onclick="downloadMasterStoryHTML()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg font-bold shadow transition flex items-center gap-2"><i class="fa-solid fa-download"></i> রিপোর্ট ডাউনলোড (HTML)</button>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden">
+            <!-- LEFT PANE: WRITER FORM -->
+            <div class="w-1/3 bg-white border-r border-slate-300 flex flex-col overflow-y-auto p-6 shadow-[10px_0_15px_-3px_rgba(0,0,0,0.05)] z-10 relative custom-scroll">
+                <h3 class="font-black text-lg text-slate-800 mb-6 border-b-2 border-red-600 inline-block pb-1">রিপোর্টের তথ্য দিন</h3>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">রিপোর্টের শিরোনাম (Headline)</label>
+                        <input type="text" id="storyHeadline" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600 outline-none font-bold" placeholder="যেমন: ই-জিপিতে মেগা দুর্নীতি...">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">উপ-শিরোনাম (Sub-headline)</label>
+                        <input type="text" id="storySubhead" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600 outline-none italic" placeholder="যেমন: কীভাবে নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো...">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">প্রতিবেদকের নাম (Author)</label>
+                        <input type="text" id="storyAuthor" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600 outline-none" value="ডেটা জার্নালিজম ডেস্ক">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">প্রচ্ছদ ও অন্যান্য ছবি (Multiple Images Allowed)</label>
+                        <input type="file" accept="image/*" multiple onchange="handleStoryImages(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                        <p class="text-[10px] text-slate-400 mt-1">প্রথমটি প্রচ্ছদ হবে, বাকিগুলো খবরের মাঝে গ্যালারি হিসেবে দেখাবে।</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">ভূমিকা / মূল লেখা (Article Body)</label>
+                        <textarea id="storyIntro" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-32 custom-scroll focus:border-red-600 outline-none leading-relaxed" placeholder="আপনার ইনভেস্টিগেশনের মূল স্টোরি এখানে লিখুন..."></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 mb-1">আমাদের পদ্ধতি (Methodology)</label>
+                        <textarea id="storyMethod" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-20 custom-scroll focus:border-red-600 outline-none leading-relaxed">এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি। স্বয়ংক্রিয় অ্যালগরিদমের মাধ্যমে অনিয়ম চিহ্নিত করার পর তা ম্যানুয়ালি যাচাই করা হয়েছে।</textarea>
+                    </div>
+                    
+                    <div class="border-t border-slate-200 pt-4">
+                        <label class="text-xs font-bold text-slate-700 mb-2 block">ভেরিফাইড টেন্ডার নির্বাচন করুন (রিপোর্টে প্রমাণের জন্য)</label>
+                        <div id="verifiedTendersList" class="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-2">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                    
+                    <button onclick="previewMasterStory()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-lg shadow transition mt-4"><i class="fa-solid fa-arrows-rotate mr-2"></i> রিপোর্ট আপডেট করুন</button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANE: LIVE PREVIEW -->
+            <div class="w-2/3 p-8 overflow-y-auto custom-scroll flex justify-center bg-[#f1f5f9]">
+                <div id="masterStoryPreviewContainer" class="nn-article w-full max-w-[800px] p-10 md:p-14 rounded-xl shadow-2xl min-h-full">
+                    <div class="text-center text-slate-400 mt-32">
+                        <i class="fa-solid fa-file-pen text-6xl mb-4 opacity-50"></i>
+                        <p class="font-sans">বাম পাশ থেকে তথ্য দিয়ে "রিপোর্ট আপডেট" বাটনে ক্লিক করুন</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -373,10 +546,11 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final_v3')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final_Ultimate')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
+        let storyImagesArray = []; 
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -390,34 +564,22 @@
             const pre = document.getElementById('rawPdfText');
             let originalText = pre.getAttribute('data-original');
             if(!originalText) return;
-            
-            if(!input) {
-                pre.innerHTML = escapeHtml(originalText);
-                return;
-            }
-            
+            if(!input) { pre.innerHTML = escapeHtml(originalText); return; }
             try {
                 const regex = new RegExp(`(${input})`, 'gi');
-                pre.innerHTML = escapeHtml(originalText).replace(regex, '<span class="highlight">$1</span>');
-            } catch(e) { }
+                pre.innerHTML = escapeHtml(originalText).replace(regex, '<span class="highlight text-black">$1</span>');
+            } catch(e) {}
         }
 
-        function escapeHtml(unsafe) {
-            return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
+        function escapeHtml(unsafe) { return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
         function extractRegex(text, regex) {
             if (!text || !regex) return "";
-            try {
-                let match = text.match(new RegExp(regex, 'i'));
-                return match && match[1] ? match[1].trim() : "";
-            } catch(e) { return ""; }
+            try { let match = text.match(new RegExp(regex, 'i')); return match && match[1] ? match[1].trim() : ""; } catch(e) { return ""; }
         }
 
         function getDaysDiff(d1Str, d2Str) {
             if(!d1Str || !d2Str) return null;
-            let d1 = new Date(d1Str);
-            let d2 = new Date(d2Str);
+            let d1 = new Date(d1Str); let d2 = new Date(d2Str);
             if(isNaN(d1) || isNaN(d2)) return null;
             return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
         }
@@ -425,7 +587,6 @@
         function handleFolderUpload(event) {
             const files = event.target.files;
             let jsonFile = null, cacheFile = null;
-
             document.getElementById('launchpadView').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-5xl text-red-500 mb-4"></i><p class="text-slate-300">ফোল্ডার স্ক্যান করা হচ্ছে...</p>`;
 
             for (let f of files) {
@@ -434,15 +595,13 @@
                 if (f.name === 'pdf_text_cache.json') cacheFile = f;
             }
 
-            if (!jsonFile) { alert("Procurement_Database.json পাওয়া যায়নি। দয়া করে সঠিক ফোল্ডার নির্বাচন করুন।"); location.reload(); return; }
+            if (!jsonFile) { alert("Procurement_Database.json পাওয়া যায়নি।"); location.reload(); return; }
 
             if (cacheFile) {
                 const cacheReader = new FileReader();
                 cacheReader.onload = ce => { pdfCache = JSON.parse(ce.target.result); loadDatabase(jsonFile); };
                 cacheReader.readAsText(cacheFile);
-            } else {
-                loadDatabase(jsonFile);
-            }
+            } else { loadDatabase(jsonFile); }
         }
 
         function loadDatabase(jsonFile) {
@@ -457,167 +616,141 @@
             reader.readAsText(jsonFile);
         }
 
-        // ================= ADVANCED CORRUPTION DETECTION ENGINE =================
+        // ================= DYNAMIC FORENSIC ENGINE (Re-calculates on Verified Logs First) =================
         function runForensicEngine() {
             analyzedData = rawTenderData.map(t => {
                 let tid = String(t.Tender_Proposal_ID).trim();
                 let findings = [];
                 let score = 0;
+                let log = auditLogs[tid] || {};
 
                 let cacheKeys = Object.keys(pdfCache);
                 let matchedKey = cacheKeys.find(k => k.includes(tid));
                 let ocrText = matchedKey ? (pdfCache[matchedKey] || "") : "";
-                
                 let combinedText = ((t.Eligibility_of_Tenderer || "") + " " + ocrText).toLowerCase();
-                let received = parseInt(t.Tenders_Received) || 0;
-                let sold = parseInt(t.Tenders_Sold) || 0;
-                let responsive = parseInt(t.Responsive_Tenders) || 0;
+                
+                // Priority: User Edit (Log) > Extractor > DB
+                let received = parseInt(log.T_Rec || t.Tenders_Received) || 0;
+                let sold = parseInt(log.T_Sold || t.Tenders_Sold) || 0;
+                let responsive = parseInt(log.T_Resp || t.Responsive_Tenders) || 0;
 
-                let pubDate = extractRegex(ocrText, "Publication\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Scheduled_Tender_Proposal_Publication_Date_and_Time;
-                let closeDate = extractRegex(ocrText, "Closing\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Tender_Proposal_Closing_Date_and_Time;
-                let preStart = extractRegex(ocrText, "meeting Start\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Pre_Tender_Proposal_meeting_Start_Date_and_Time;
+                let pubDate = log.Pub_Date || extractRegex(ocrText, "Publication\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Scheduled_Tender_Proposal_Publication_Date_and_Time;
+                let closeDate = log.Close_Date || extractRegex(ocrText, "Closing\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Tender_Proposal_Closing_Date_and_Time;
+                let preStart = log.Pre_Start || extractRegex(ocrText, "meeting Start\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Pre_Tender_Proposal_meeting_Start_Date_and_Time;
+                let signDate = log.Contract_Sign || t.Date_of_Contract_Signing;
+                let docPrice = log.Doc_Price || extractRegex(ocrText, "Price \\(In.*?BDT\\)\\s*:\\s*([\\d,]+)") || t.Tender_Proposal_Document_Price_In_BDT;
+                let advPay = log.Adv_Pay || extractRegex(ocrText, "Advance Payment.*?(\\d+\\s*%)") || t.Advance_Payment;
+                let retMoney = log.Ret_Money || extractRegex(ocrText, "retention.*?(\\d+\\s*%)") || t.Retention_Money;
+                let liqAssets = log.Liq_Assets || extractRegex(ocrText, "liquid assets.*?Tk\\.?\\s*([\\d\\.\s]+\\s*[a-zA-Z]+|[\\d,\.]+)") || t.Liquid_Assets;
 
-                // --- SMART ORGANIZATION EXTRACTION ---
-                let orgName = t.Organization || "";
-                if (!orgName) {
-                    orgName = extractRegex(ocrText, "Organization\\s*:\\s*(.*?)\\s+(?:Procuring|PE|Entity|Division)");
-                }
+                // Organization detection
+                let orgName = log.Organization || t.Organization || extractRegex(ocrText, "Organization\\s*:\\s*(.*?)\\s+(?:Procuring|PE|Entity|Division)");
                 if (!orgName && t.Procuring_Entity_Name) {
                     let pe = t.Procuring_Entity_Name.toUpperCase();
-                    if(pe.includes("RAJDHANI") || pe.includes("RAJUK")) orgName = "RAJUK";
-                    else if(pe.includes("CHITTAGONG DEV") || pe.includes("CDA")) orgName = "CDA";
-                    else if(pe.includes("KHULNA DEV") || pe.includes("KDA")) orgName = "KDA";
-                    else if(pe.includes("RAJSHAHI DEV") || pe.includes("RDA")) orgName = "RDA";
-                    else if(pe.includes("COX'S BAZAR DEV") || pe.includes("COXDA") || pe.includes("COX")) orgName = "Cox's Bazar DA";
-                    else if(pe.includes("GAZIPUR DEV") || pe.includes("GDA")) orgName = "GDA";
-                    else if(pe.includes("LOCAL GOV") || pe.includes("LGED")) orgName = "LGED";
-                    else if(pe.includes("PUBLIC WORKS") || pe.includes("PWD")) orgName = "PWD";
-                    else if(pe.includes("ROADS AND HIGHWAYS") || pe.includes("RHD")) orgName = "RHD";
-                    else if(pe.includes("WATER DEV") || pe.includes("BWDB")) orgName = "BWDB";
-                }
-                if (!orgName && t.Source_File) {
-                    let sf = t.Source_File.toUpperCase();
-                    if(sf.includes('RAJUK')) orgName = "RAJUK";
-                    else if(sf.includes('CDA')) orgName = "CDA";
-                    else if(sf.includes('KDA')) orgName = "KDA";
-                    else if(sf.includes('RDA')) orgName = "RDA";
-                    else if(sf.includes('LGED')) orgName = "LGED";
+                    if(pe.includes("RAJUK") || pe.includes("RAJDHANI")) orgName = "RAJUK";
+                    else if(pe.includes("CDA") || pe.includes("CHITTAGONG")) orgName = "CDA";
+                    else if(pe.includes("KDA") || pe.includes("KHULNA")) orgName = "KDA";
+                    else if(pe.includes("RDA") || pe.includes("RAJSHAHI")) orgName = "RDA";
+                    else if(pe.includes("COXDA") || pe.includes("COX'S")) orgName = "CoxDA";
+                    else if(pe.includes("GDA") || pe.includes("GAZIPUR")) orgName = "GDA";
+                    else if(pe.includes("LGED") || pe.includes("LOCAL GOV")) orgName = "LGED";
+                    else if(pe.includes("PWD") || pe.includes("PUBLIC WORKS")) orgName = "PWD";
+                    else if(pe.includes("RHD") || pe.includes("ROADS")) orgName = "RHD";
+                    else if(pe.includes("BWDB") || pe.includes("WATER DEV")) orgName = "BWDB";
                 }
                 t.ext_OrgName = orgName ? orgName.trim().substring(0, 30) : "অজানা";
 
-                // --- ADVANCED LOT TABLE EXTRACTION ---
+                // Lot table extraction
                 let lotMatch = ocrText.match(/(?:Single|\d+)\s+([\s\S]*?)\s+(\d{4,})\s+(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}-[A-Za-z]{3}-\d{4})/i);
                 if (lotMatch) {
                     let locationText = lotMatch[1].trim();
                     if(locationText.length > 50) locationText = locationText.substring(locationText.length - 50) + "...";
-                    t.ext_LotLocation = locationText;
-                    t.ext_LotSec = lotMatch[2]; 
-                    t.ext_LotStart = lotMatch[3]; 
-                    t.ext_LotEnd = lotMatch[4]; 
+                    t.ext_LotLocation = log.Location || locationText;
+                    t.ext_LotSec = log.Lot_Sec || lotMatch[2]; 
+                    t.ext_LotStart = log.Tent_Start || lotMatch[3]; 
+                    t.ext_LotEnd = log.Tent_Comp || lotMatch[4]; 
                 }
 
-                // --- CORRUPTION RULES ---
+                // ================= ALL 11 CORRUPTION RULES =================
 
-                // 1. Single Bidder
+                // RULE 1: Single Bidder
                 if (responsive === 1 && (received > 1 || sold > 1)) { 
-                    findings.push({ 
-                        flag: "একক রেস্পন্সিভ বিডার (প্রতিযোগিতা সীমাবদ্ধ)", risk: "High", 
-                        evidence: `বিক্রিত দরপত্র: ${sold} | জমাকৃত: ${received} | রেস্পন্সিভ: ${responsive}`, 
-                        explanation: "একাধিক অংশগ্রহণকারী থাকা সত্ত্বেও কারিগরি মূল্যায়নে মাত্র একজন বিডার উত্তীর্ণ হয়েছেন, যা নির্দেশ করে যে শর্তাবলি ইচ্ছাকৃতভাবে কঠিন করা হয়েছিল।", 
-                        verification: "অন্যান্য বিডারদের কেন বাতিল করা হয়েছে তা যাচাই করতে Bid Evaluation Report (BER) চেক করুন।",
-                        rule: "PPR 2008", clause: "Rule 98: Evaluation of Tenders"
-                    });
+                    findings.push({ flag: "একক রেস্পন্সিভ বিডার", risk: "High", evidence: `বিক্রিত দরপত্র: ${sold} | জমাকৃত: ${received} | রেস্পন্সিভ: ${responsive}`, explanation: "একাধিক অংশগ্রহণকারী থাকা সত্ত্বেও মূল্যায়নে ইচ্ছাকৃতভাবে অন্য বিডারদের বাতিল করা হতে পারে।", rule: "PPR 2008", clause: "Rule 98" });
                     score += 40; 
                 }
 
-                // 2. Pre-tender Meeting Anomaly
+                // RULE 2: Short Bidding Period
+                if (pubDate && closeDate) {
+                    let days = getDaysDiff(pubDate, closeDate);
+                    if (days !== null && days < 14) {
+                        findings.push({ flag: "স্বল্প দরপত্র সময়সীমা", risk: "Critical", evidence: `প্রকাশ: ${pubDate} | শেষ সময়: ${closeDate} (${days} দিন)`, explanation: "দরপত্র প্রস্তুতির জন্য ন্যূনতম ১৪ দিনের কম সময় দেওয়া প্রতিযোগিতার পরিপন্থী।", rule: "WB/JICA Guidelines", clause: "Section 5.01" });
+                        score += 35;
+                    }
+                }
+
+                // RULE 3: High Document Fees
+                if (docPrice) {
+                    let priceNum = parseInt(docPrice.replace(/,/g, ''));
+                    if (priceNum > 4000) {
+                        findings.push({ flag: "অতিরিক্ত দরপত্র দলিল মূল্য", risk: "Medium", evidence: `Price: ${docPrice} BDT`, explanation: "৪০০০ টাকার বেশি ফি ছোট কোম্পানিগুলোকে নিরুৎসাহিত করে।", rule: "JICA Guidelines", clause: "Section 4.01" });
+                        score += 15;
+                    }
+                }
+
+                // RULE 4: Award Delay
+                if (closeDate && signDate) {
+                    let awardDays = getDaysDiff(closeDate, signDate);
+                    if (awardDays !== null && awardDays > 120) {
+                        findings.push({ flag: "চুক্তি স্বাক্ষরে অস্বাভাবিক বিলম্ব", risk: "High", evidence: `Closing: ${closeDate} | Signing: ${signDate} (${awardDays} Days)`, explanation: "১২০ দিনের বেশি বিলম্ব জালিয়াতি বা ফান্ডের অভাব নির্দেশ করে।", rule: "PPR / Donor Rules", clause: "Award of Contract" });
+                        score += 25;
+                    }
+                }
+
+                // RULE 5: Pre-Tender Anomaly
                 if (pubDate && preStart) {
-                    let pubObj = new Date(pubDate);
-                    let preObj = new Date(preStart);
-                    if (!isNaN(pubObj) && !isNaN(preObj)) {
-                        let daysToMeeting = (preObj - pubObj) / (1000 * 60 * 60 * 24);
-                        if (daysToMeeting < 3 && daysToMeeting >= 0) {
-                            findings.push({
-                                flag: "প্রি-টেন্ডার মিটিংয়ের অস্বাভাবিক সময়সূচী", risk: "High",
-                                evidence: `প্রকাশ: ${pubDate} | মিটিং শুরু: ${preStart}`,
-                                explanation: "দরপত্র প্রকাশের ৩ দিনেরও কম সময়ের মধ্যে মিটিং ডাকা হয়েছে, যা প্রতিযোগীদের প্রশ্ন প্রস্তুত করার সুযোগ দেয় না। এটি পছন্দের ঠিকাদারকে সুবিধা দেওয়ার কৌশল হতে পারে।",
-                                verification: "প্রি-টেন্ডার মিটিংয়ের রেজুলেশন যাচাই করুন যে কোনো প্রতিযোগী অংশ নিয়েছিল কিনা।",
-                                rule: "PPR 2008", clause: "Pre-Tender Meeting Guidelines"
-                            });
-                            score += 35;
-                        }
+                    let pubObj = new Date(pubDate); let preObj = new Date(preStart);
+                    if (!isNaN(pubObj) && !isNaN(preObj) && ((preObj - pubObj) / (1000 * 60 * 60 * 24)) < 3) {
+                        findings.push({ flag: "প্রি-টেন্ডার মিটিংয়ের জালিয়াতি", risk: "High", evidence: `প্রকাশ: ${pubDate} | মিটিং: ${preStart}`, explanation: "প্রকাশের ৩ দিনের আগেই মিটিং ডাকা হয়েছে, যাতে অন্যরা প্রস্তুতি নিতে না পারে।", rule: "PPR 2008", clause: "Pre-Tender Meeting" });
+                        score += 35;
                     }
                 }
 
-                // 3. High Advance Payment
-                let advPay = extractRegex(ocrText, "Advance Payment.*?(\\d+\\s*%)") || t.Advance_Payment;
-                if (advPay) {
-                    let advNum = parseInt(advPay);
-                    if (advNum > 20) {
-                        findings.push({
-                            flag: "অস্বাভাবিক উচ্চ অগ্রিম প্রদান", risk: "Critical",
-                            evidence: `Advance Payment: ${advPay}`,
-                            explanation: "কাজ শুরুর আগেই ২০%-এর বেশি অগ্রিম টাকা দিয়ে দেওয়া ঠিকাদারকে অবৈধ আর্থিক সুবিধা দেওয়ার সমান, যা সরকারি অর্থের ঝুঁকির কারণ।",
-                            verification: "এই উচ্চ অগ্রিমের জন্য HoPE এর বিশেষ অনুমোদন আছে কিনা তা যাচাই করুন।",
-                            rule: "PPR 2008", clause: "Advance Payment Limitations"
-                        });
-                        score += 40;
-                    }
-                }
-
-                // 4. Zero Retention Money
-                let retMoney = extractRegex(ocrText, "retention.*?(\\d+\\s*%)") || t.Retention_Money;
-                if (retMoney) {
-                    let retNum = parseInt(retMoney);
-                    if (retNum === 0) {
-                        findings.push({
-                            flag: "রিটেনশন মানি মওকুফ (০%)", risk: "Critical",
-                            evidence: `Retention Money: ${retMoney}`,
-                            explanation: "রিটেনশন মানি ০% রাখা মানে হলো কাজের কোনো ত্রুটির জন্য ঠিকাদারের দায়বদ্ধতা থাকছে না, যা সরকারি কাজের গুণগত মান মারাত্মকভাবে ব্যাহত করে।",
-                            verification: "ত্রুটি দায়বদ্ধতার মেয়াদ (Defects Liability) এর শর্তাবলি চেক করুন।",
-                            rule: "PPR 2008", clause: "Security and Retention Money"
-                        });
-                        score += 45;
-                    }
-                }
-
-                // 5. Zero/Low Liquid Assets
-                let liqAssets = extractRegex(ocrText, "liquid assets.*?Tk\\.?\\s*([\\d\\.\\s]+\\s*[a-zA-Z]+|[\\d,\\.]+)") || t.Liquid_Assets;
-                if (liqAssets && (liqAssets.includes("0") || liqAssets.toLowerCase().includes("none") || liqAssets.toLowerCase().includes("nil"))) {
-                    findings.push({
-                        flag: "তরল সম্পদের শর্ত শিথিলকরণ", risk: "High",
-                        evidence: `Liquid Assets Required: ${liqAssets}`,
-                        explanation: "আর্থিকভাবে অযোগ্য কিন্তু পছন্দের ঠিকাদারকে কাজ পাইয়ে দিতে লিকুইড অ্যাসেটের পরিমাণ একদম শূন্য বা বাতিল করা হয়েছে।",
-                        verification: "চুক্তির মূল্যের সাথে লিকুইড অ্যাসেটের সামঞ্জস্য যাচাই করুন।",
-                        rule: "PPR 2008", clause: "Financial Criteria"
-                    });
-                    score += 35;
-                }
-
-                // 6. Brand-Specific Equipment
-                let brandMatch = ocrText.match(/Brand & Manufacturing Country.*?(Otis|Schindler|Mitsubishi|Hyundai|XIZI|Kone|Fuji)/i);
-                if (brandMatch) {
-                    findings.push({ 
-                        flag: "নির্দিষ্ট ব্র্যান্ডের ইকুইপমেন্টের বাধ্যবাধকতা", risk: "Critical", 
-                        evidence: `"...${brandMatch[0].trim()}..."`, 
-                        explanation: "কোনো নির্দিষ্ট ব্র্যান্ডের নাম উল্লেখ করে টেন্ডার ডাকা আন্তর্জাতিক ডোনার গাইডলাইনের সম্পূর্ণ বিরোধী।", 
-                        verification: "স্পেসিফিকেশনে 'or equivalent' (অথবা সমতুল্য) কথাটি যুক্ত করা হয়েছিল কিনা তা চেক করুন।",
-                        rule: "JICA Guidelines", clause: "Section 4.07 Use of Brand Names"
-                    });
+                // RULE 6: High Advance Payment
+                if (advPay && parseInt(advPay) > 20) {
+                    findings.push({ flag: "অস্বাভাবিক উচ্চ অগ্রিম প্রদান", risk: "Critical", evidence: `Advance Payment: ${advPay}`, explanation: "কাজ শুরুর আগেই ২০% এর বেশি অগ্রিম দেওয়া সরকারি অর্থের ঝুঁকি।", rule: "PPR 2008", clause: "Advance Payment Limitations" });
                     score += 40;
                 }
 
-                // 7. ALB Mathematical Rejection
+                // RULE 7: Zero Retention Money
+                if (retMoney && parseInt(retMoney) === 0) {
+                    findings.push({ flag: "রিটেনশন মানি মওকুফ (০%)", risk: "Critical", evidence: `Retention: ${retMoney}`, explanation: "রিটেনশন মানি ০% রাখা মানে হলো কাজের কোনো ত্রুটির জন্য ঠিকাদারের দায়বদ্ধতা নেই।", rule: "PPR 2008", clause: "Retention Money" });
+                    score += 45;
+                }
+
+                // RULE 8: Zero Liquid Assets
+                if (liqAssets && (liqAssets.includes("0") || liqAssets.toLowerCase().includes("none") || liqAssets.toLowerCase().includes("nil"))) {
+                    findings.push({ flag: "তরল সম্পদের শর্ত শিথিলকরণ", risk: "High", evidence: `Liquid Assets Required: ${liqAssets}`, explanation: "আর্থিকভাবে অযোগ্য ঠিকাদারকে সুবিধা দিতে লিকুইড অ্যাসেট শূন্য রাখা হয়েছে।", rule: "PPR 2008", clause: "Financial Criteria" });
+                    score += 35;
+                }
+
+                // RULE 9: Brand Specific
+                let brandMatch = log.Brief_Goods ? log.Brief_Goods.match(/(Otis|Schindler|Mitsubishi|Hyundai|XIZI|Kone|Fuji)/i) : ocrText.match(/Brand & Manufacturing Country.*?(Otis|Schindler|Mitsubishi|Hyundai|XIZI|Kone|Fuji)/i);
+                if (brandMatch) {
+                    findings.push({ flag: "নির্দিষ্ট ব্র্যান্ডের বাধ্যবাধকতা", risk: "Critical", evidence: `"${brandMatch[0].trim()}"`, explanation: "ব্র্যান্ড নির্দিষ্ট করা ডোনার গাইডলাইনের বিরোধী।", rule: "JICA Guidelines", clause: "Section 4.07" });
+                    score += 40;
+                }
+
+                // RULE 10: ALB Rejection
                 let albMatch = combinedText.match(/.{0,25}lower limit of acceptable prices.{0,25}/i) || combinedText.match(/.{0,25}significantly low-priced tender.{0,25}/i);
                 if (albMatch) {
-                    findings.push({ 
-                        flag: "গাণিতিক নিয়মে অস্বাভাবিক নিম্ন দর বাতিল", risk: "Critical", 
-                        evidence: `"...${albMatch[0].trim()}..."`, 
-                        explanation: "অস্বাভাবিক নিম্ন দরের ক্ষেত্রে বিডারকে ব্যাখ্যা দেওয়ার সুযোগ না দিয়ে স্বয়ংক্রিয়ভাবে গাণিতিক ফর্মুলায় বাতিল করা ডোনার গাইডলাইনের লঙ্ঘন।", 
-                        verification: "এটি ডোনার ফান্ডেড প্রজেক্ট কিনা যাচাই করুন। হলে এটি সরাসরি মিসপ্রকিউরমেন্ট।",
-                        rule: "WB / JICA Guidelines", clause: "WB ALB / JICA Sec 5.06 (5)"
-                    });
+                    findings.push({ flag: "গাণিতিক নিয়মে নিম্ন দর বাতিল", risk: "Critical", evidence: `"${albMatch[0].trim()}"`, explanation: "স্বয়ংক্রিয়ভাবে গাণিতিক ফর্মুলায় দর বাতিল করা ডোনার গাইডলাইনের লঙ্ঘন।", rule: "WB / JICA", clause: "Sec 5.06" });
                     score += 30;
+                }
+
+                // RULE 11: Missing Supplier
+                if (!log.Award_Supplier && (!t.Supplier_Name || String(t.Supplier_Name).trim() === "")) { 
+                    findings.push({ flag: "ঠিকাদারের তথ্য গোপন", risk: "Medium", evidence: "Supplier Name is Missing", explanation: "চুক্তিপ্রাপ্ত কোম্পানির নাম প্রকাশ না করা স্বচ্ছতার অভাব নির্দেশ করে।", rule: "Transparency Guidelines", clause: "Public Reporting" });
+                    score += 15; 
                 }
                 
                 let riskLevel = score >= 50 ? 'CRITICAL' : (score >= 30 ? 'HIGH' : (score > 0 ? 'MEDIUM' : 'LOW'));
@@ -625,11 +758,51 @@
             });
         }
 
-        // ================= FILTERING SYSTEM =================
+        function renderCharts(counts, orgCounts) {
+            const ctxRisk = document.getElementById('riskChart').getContext('2d');
+            const ctxOrg = document.getElementById('orgChart').getContext('2d');
+            
+            if(window.myRiskChart) window.myRiskChart.destroy();
+            if(window.myOrgChart) window.myOrgChart.destroy();
+
+            window.myRiskChart = new Chart(ctxRisk, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical Risk', 'High Risk', 'Medium Risk', 'Low / Clean'],
+                    datasets: [{
+                        data: [counts.CRITICAL, counts.HIGH, counts.MEDIUM, counts.LOW],
+                        backgroundColor: ['#dc2626', '#ea580c', '#eab308', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom', labels: {color: '#cbd5e1', font: {size: 10}} } }, cutout: '70%' }
+            });
+
+            let sortedOrgs = Object.keys(orgCounts).sort((a,b) => orgCounts[b] - orgCounts[a]).slice(0, 6);
+            let orgData = sortedOrgs.map(org => orgCounts[org]);
+
+            window.myOrgChart = new Chart(ctxOrg, {
+                type: 'bar',
+                data: {
+                    labels: sortedOrgs,
+                    datasets: [{
+                        label: 'অনিয়মের সংখ্যা',
+                        data: orgData,
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }]
+                },
+                options: { 
+                    scales: { y: { beginAtZero: true, ticks: {color: '#94a3b8', font:{size:9}} }, x: { ticks: {color: '#94a3b8', font:{size:9}} } }, 
+                    plugins: { legend: { display: false } },
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
         function filterTable(level, btn) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('ring-2', 'ring-white'));
             if(btn) btn.classList.add('ring-2', 'ring-white');
-
             let table = $('#mainTable').DataTable();
             table.column(2).search(level).draw(); 
         }
@@ -637,6 +810,7 @@
         function initDashboard() {
             runForensicEngine();
             let counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, ALL: analyzedData.length };
+            let orgCounts = {};
             let totalVal = 0;
             
             const tbody = document.getElementById('tableBody');
@@ -645,20 +819,26 @@
             analyzedData.forEach(t => {
                 counts[t.riskLevel]++;
                 if(t.Contract_Value_BDT) totalVal += parseFloat(t.Contract_Value_BDT) || 0;
+                
+                let org = t.ext_OrgName;
+                orgCounts[org] = (orgCounts[org] || 0) + 1;
 
                 let badgeClass = t.riskLevel === 'CRITICAL' ? 'bg-red-600' : t.riskLevel === 'HIGH' ? 'bg-orange-600' : t.riskLevel === 'MEDIUM' ? 'bg-yellow-600' : 'bg-emerald-600';
+                let log = auditLogs[t.Tender_Proposal_ID] || {};
                 
                 let tr = document.createElement('tr');
                 tr.onclick = () => openInspector(t.Tender_Proposal_ID);
+                if(log.status) tr.classList.add('bg-slate-800');
+
                 tr.innerHTML = `
                     <td class="p-3 font-mono font-bold text-slate-200">${t.Tender_Proposal_ID || 'N/A'}</td>
                     <td class="p-3 text-xs font-bold text-blue-300">${t.ext_OrgName}</td>
                     <td class="p-3"><span class="px-2 py-1 rounded text-[10px] text-white uppercase font-black ${badgeClass} shadow-md">${t.riskLevel}</span></td>
                     <td class="p-3 font-bold text-slate-300">${t.riskScore}</td>
                     <td class="p-3 text-xs text-slate-400">${(t.Procuring_Entity_Name || 'N/A').substring(0,25)}...</td>
-                    <td class="p-3 text-xs">${t.Supplier_Name || '<span class="italic text-slate-600">অনুপস্থিত</span>'}</td>
+                    <td class="p-3 text-xs">${log.Award_Supplier || t.Supplier_Name || '<span class="italic text-slate-600">অনুপস্থিত</span>'}</td>
                     <td class="p-3 font-mono text-blue-400">${t.Contract_Value_BDT ? parseFloat(t.Contract_Value_BDT).toLocaleString('en-US') : '0'}</td>
-                    <td class="p-3 text-xs">${auditLogs[t.Tender_Proposal_ID] ? '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> যাচাইকৃত</span>' : '<span class="text-slate-600">যাচাই হয়নি</span>'}</td>
+                    <td class="p-3 text-xs">${log.status ? '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> ভেরিফাইড</span>' : '<span class="text-slate-600">যাচাই হয়নি</span>'}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -668,14 +848,10 @@
             document.getElementById('kpiMed').innerText = counts.MEDIUM;
             document.getElementById('kpiValue').innerText = (totalVal / 10000000).toFixed(2) + " Cr";
 
-            document.getElementById('countAll').innerText = counts.ALL;
-            document.getElementById('countCritical').innerText = counts.CRITICAL;
-            document.getElementById('countHigh').innerText = counts.HIGH;
-            document.getElementById('countMedium').innerText = counts.MEDIUM;
-            document.getElementById('countLow').innerText = counts.LOW;
+            renderCharts(counts, orgCounts);
 
             if ($.fn.DataTable.isDataTable('#mainTable')) $('#mainTable').DataTable().destroy();
-            $('#mainTable').DataTable({ pageLength: 10, order: [[3, 'desc']], language: { search: "খুঁজুন:", lengthMenu: "প্রতি পৃষ্ঠায় _MENU_ টি দেখান", info: "মোট _TOTAL_ টির মধ্যে _START_ থেকে _END_ পর্যন্ত দেখানো হচ্ছে", paginate: { next: "পরবর্তী", previous: "পূর্ববর্তী" } }});
+            $('#mainTable').DataTable({ pageLength: 10, order: [[3, 'desc']], language: { search: "খুঁজুন:", lengthMenu: "প্রতি পৃষ্ঠায় _MENU_ টি দেখান", info: "_START_ - _END_ (মোট _TOTAL_)", paginate: { next: "পরবর্তী", previous: "পূর্ববর্তী" } }});
         }
 
         function openInspector(tid) {
@@ -706,14 +882,16 @@
                 let val = log[input.id] || currentRecord[dbKey] || (extKey ? currentRecord[extKey] : "") || (regexStr ? extractRegex(currentRecord.fullOCR, regexStr) : "") || "";
                 input.value = val;
                 
-                if (val && !log[input.id] && !currentRecord[dbKey] && (regexStr || extKey)) input.classList.add('auto-filled');
-                else input.classList.remove('auto-filled');
+                if (log[input.id]) {
+                    input.classList.remove('auto-filled');
+                    input.classList.add('user-verified');
+                } else if (val && !currentRecord[dbKey] && (regexStr || extKey)) {
+                    input.classList.remove('user-verified');
+                    input.classList.add('auto-filled');
+                } else {
+                    input.classList.remove('auto-filled', 'user-verified');
+                }
             });
-
-            let d1 = document.getElementById('Pub_Date').value;
-            let d2 = document.getElementById('Close_Date').value;
-            let diff = getDaysDiff(d1, d2);
-            document.getElementById('daysCalc').innerText = diff ? `(${diff} দিনের সময়)` : "";
 
             document.getElementById('auditJustification').value = log.justification || "";
 
@@ -732,19 +910,8 @@
                                 <p class="text-[9px] font-bold text-slate-500 mb-1 uppercase tracking-wider"><i class="fa-solid fa-quote-left text-red-500/70 mr-1"></i> হুবহু প্রমাণ (Evidence):</p>
                                 <p class="text-red-400 font-mono text-[11px] leading-relaxed break-words">${f.evidence}</p>
                             </div>
-                            
-                            <p class="leading-relaxed"><strong class="text-slate-400 block mb-1 uppercase text-[9px] tracking-wider"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> এটি কেন দুর্নীতির ঝুঁকি (Explanation):</strong> <span class="text-slate-300">${f.explanation}</span></p>
-                            
-                            <div class="grid grid-cols-2 gap-3 mt-2 bg-slate-900/50 p-3 rounded border border-slate-800">
-                                <div>
-                                    <p class="text-[9px] font-bold text-slate-500 uppercase mb-0.5"><i class="fa-solid fa-list-check text-yellow-500 mr-1"></i> পরবর্তী পদক্ষেপ (Action)</p>
-                                    <p class="text-blue-300 text-[10px] leading-tight">${f.verification}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[9px] font-bold text-slate-500 uppercase mb-0.5"><i class="fa-solid fa-gavel text-emerald-500 mr-1"></i> লঙ্ঘিত আইন (Rule)</p>
-                                    <p class="text-emerald-400 text-[10px] font-bold leading-tight">${f.rule} <br><span class="font-normal text-slate-400 text-[9px]">${f.clause}</span></p>
-                                </div>
-                            </div>
+                            <p class="leading-relaxed"><strong class="text-slate-400 block mb-1 uppercase text-[9px] tracking-wider"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> এটি কেন দুর্নীতির ঝুঁকি:</strong> <span class="text-slate-300">${f.explanation}</span></p>
+                            <div class="mt-2"><p class="text-[9px] font-bold text-slate-500 uppercase mb-0.5"><i class="fa-solid fa-gavel text-emerald-500 mr-1"></i> লঙ্ঘিত আইন (Rule)</p><p class="text-emerald-400 text-[10px] font-bold leading-tight">${f.rule} <span class="font-normal text-slate-400 text-[9px]">(${f.clause})</span></p></div>
                         </div>
                     </div>
                 `).join('');
@@ -815,14 +982,15 @@
             });
 
             auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigatorLogs_Final_v3', JSON.stringify(auditLogs));
-            alert("আপনার যাচাইকরণ সফলভাবে সেভ হয়েছে!");
+            localStorage.setItem('egpInvestigatorLogs_Final_Ultimate', JSON.stringify(auditLogs));
+            alert("আপনার ভেরিফাইড ডেটা সফলভাবে সেভ হয়েছে!");
+            
+            initDashboard();
             closeInspector();
         }
 
         function exportToCSV() {
             if (analyzedData.length === 0) { alert("এক্সপোর্ট করার জন্য কোনো ডেটা নেই।"); return; }
-
             let dynamicHeaders = Array.from(document.querySelectorAll('.egp-field')).map(i => i.id);
             let headers = ["Tender_ID", "Max_Risk_Level", "Risk_Score", "Total_Violations", "Organization", ...dynamicHeaders, "Audit_Status", "Audit_Justification", "Audit_Timestamp", "Detailed_Findings"];
 
@@ -845,7 +1013,7 @@
                     row.push(clean(val));
                 });
 
-                let formattedFindings = t.forensicFindings.map((f, i) => `[${i+1}] ${f.flag} | RULE: ${f.rule} | EVIDENCE: ${f.evidence} | EXPLANATION: ${f.explanation}`).join("  ***  ");
+                let formattedFindings = t.forensicFindings.map((f, i) => `[${i+1}] ${f.flag} | RULE: ${f.rule} | EVIDENCE: ${f.evidence}`).join("  ***  ");
                 row.push(clean(log.status || "Unverified"), clean(log.justification || "N/A"), clean(log.timestamp || "N/A"), clean(formattedFindings));
 
                 csvContent += row.join(",") + "\n";
@@ -858,6 +1026,207 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        // ================= MULTIPLE IMAGE & STORY BUILDER =================
+        function openStoryBuilder() {
+            document.getElementById('dashboardView').classList.add('hide');
+            document.getElementById('storyBuilderView').classList.remove('hide');
+
+            let container = document.getElementById('verifiedTendersList');
+            container.innerHTML = '';
+            let hasVerified = false;
+
+            analyzedData.forEach(t => {
+                if(auditLogs[t.Tender_Proposal_ID]) {
+                    hasVerified = true;
+                    let log = auditLogs[t.Tender_Proposal_ID];
+                    let checked = log.status.includes('Fraud Risk') ? 'checked' : '';
+                    container.innerHTML += `
+                        <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition shadow-sm mb-2">
+                            <input type="checkbox" value="${t.Tender_Proposal_ID}" class="tender-select-cb w-4 h-4 text-red-600 rounded focus:ring-red-500 border-slate-300" ${checked}>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-800">Tender ID: ${t.Tender_Proposal_ID} <span class="text-blue-500">(${t.ext_OrgName})</span></span>
+                                <span class="text-xs text-slate-500 mt-1"><span class="${log.status.includes('Fraud') ? 'text-red-500 font-bold' : 'text-emerald-500 font-bold'}">${log.status}</span> — ${t.forensicFindings.length} violations</span>
+                            </div>
+                        </label>
+                    `;
+                }
+            });
+
+            if(!hasVerified) {
+                container.innerHTML = `<div class="p-4 bg-yellow-50 border border-yellow-200 rounded text-yellow-700 text-xs font-bold text-center">আপনি এখনো কোনো টেন্ডার ভেরিফাই করেননি। আগে ড্যাশবোর্ড থেকে টেন্ডার ভেরিফাই করে সেভ করুন।</div>`;
+            }
+        }
+
+        function closeStoryBuilder() {
+            document.getElementById('storyBuilderView').classList.add('hide');
+            document.getElementById('dashboardView').classList.remove('hide');
+        }
+
+        function handleStoryImages(event) {
+            storyImagesArray = [];
+            const files = event.target.files;
+            if(files.length > 0) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = e => { storyImagesArray.push(e.target.result); };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function previewMasterStory() {
+            let headline = document.getElementById('storyHeadline').value || "ই-জিপি (e-GP) প্রকল্পে বড় ধরনের অনিয়মের অভিযোগ";
+            let subhead = document.getElementById('storySubhead').value || "অনুসন্ধানে উঠে এসেছে কীভাবে নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
+            let author = document.getElementById('storyAuthor').value || "ডেটা জার্নালিজম ডেস্ক";
+            let intro = document.getElementById('storyIntro').value.replace(/\n/g, '<br><br>') || "অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে এবং দরপত্রে অংশগ্রহণের সুযোগ সীমিত করা হয়েছে।";
+            let method = document.getElementById('storyMethod').value.replace(/\n/g, '<br>') || "এই প্রতিবেদনটি ই-জিপি পোর্টাল থেকে প্রাপ্ত ডেটা এবং পিডিএফ টেন্ডার ডকুমেন্টের অপটিক্যাল ক্যারেক্টার রিকগনিশন (OCR) বিশ্লেষণের ওপর ভিত্তি করে তৈরি।";
+            
+            let selectedIDs = Array.from(document.querySelectorAll('.tender-select-cb:checked')).map(cb => cb.value);
+
+            let html = `
+                <div class="nn-header mb-8">
+                    <h1 class="nn-title">${headline}</h1>
+                    <p class="text-xl text-slate-600 mb-6 italic" style="font-family: 'Georgia', serif;">${subhead}</p>
+                    <div class="nn-meta flex justify-between items-end">
+                        <div>
+                            <span class="nn-author">প্রতিবেদক: ${author}</span><br>
+                            <span>প্রকাশিত: ${new Date().toLocaleDateString('bn-BD')}</span>
+                        </div>
+                        <span class="bg-red-600 text-white px-3 py-1 font-bold rounded-sm tracking-widest text-[10px]">EXCLUSIVE INVESTIGATION</span>
+                    </div>
+                </div>
+            `;
+
+            if(storyImagesArray.length > 0) {
+                html += `<img src="${storyImagesArray[0]}" class="w-full h-auto mb-8 border-b-4 border-red-600 object-cover">`;
+            }
+
+            html += `<div class="nn-body-text"><p class="nn-dropcap">${intro.charAt(0)}</p><p>${intro.substring(1)}</p></div>`;
+
+            if(selectedIDs.length > 0) {
+                html += `<h2 class="nn-section-title">শনাক্তকৃত জালিয়াতি ও প্রমাণ</h2>`;
+                
+                selectedIDs.forEach((id, index) => {
+                    let record = analyzedData.find(x => x.Tender_Proposal_ID == id);
+                    let log = auditLogs[id];
+                    
+                    html += `
+                        <div class="mb-12">
+                            <h3 class="text-xl font-bold text-red-700 mb-4 font-sans flex items-center gap-2">
+                                <span class="bg-slate-800 text-white px-2 py-1 rounded text-sm">কেইস ${index + 1}</span> 
+                                ${record.ext_OrgName || 'অজানা সংস্থা'}-এর দরপত্রে অনিয়ম
+                            </h3>
+                            
+                            <div class="bg-slate-50 border-t-2 border-b-2 border-slate-200 py-3 my-4 font-sans text-sm flex flex-wrap gap-x-6 gap-y-2">
+                                <div><strong class="text-slate-500">টেন্ডার আইডি:</strong> <span class="font-mono font-bold">${id}</span></div>
+                                <div><strong class="text-slate-500">চুক্তিমূল্য:</strong> <span class="font-mono font-bold text-red-600">BDT ${log.Contract_Value || record.Contract_Value_BDT || '0'}</span></div>
+                                <div><strong class="text-slate-500">ঠিকাদার:</strong> <span class="font-bold">${log.Award_Supplier || record.Supplier_Name || 'অজানা'}</span></div>
+                            </div>
+
+                            <p class="text-[1.1rem] text-slate-800 mb-6 font-sans leading-relaxed border-l-4 border-red-400 pl-4 bg-red-50/30 py-3">${log.justification}</p>
+                    `;
+
+                    if(record.forensicFindings && record.forensicFindings.length > 0) {
+                        record.forensicFindings.forEach((f, fIdx) => {
+                            html += `
+                                <div class="nn-evidence-box relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                                    <h4 class="font-bold text-slate-800 text-lg mb-2">${f.flag} <span class="text-xs align-middle bg-red-100 text-red-800 px-2 py-0.5 rounded-full ml-2">${f.risk} RISK</span></h4>
+                                    <p class="text-[0.95rem] text-slate-600 mb-3 leading-relaxed">${f.explanation}</p>
+                                    
+                                    <!-- INTERACTIVE EVIDENCE TOGGLE -->
+                                    <details class="group bg-white rounded border border-slate-300 mt-4 cursor-pointer outline-none shadow-sm">
+                                        <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-50 transition-colors flex items-center gap-2 outline-none">
+                                            <i class="fa-solid fa-file-pdf"></i> মূল নথির প্রমাণ দেখুন (Click to view evidence)
+                                        </summary>
+                                        <div class="p-5 bg-slate-900 text-emerald-400 font-mono text-[13px] border-t border-slate-300 leading-relaxed overflow-x-auto">
+                                            <div class="text-slate-400 text-[10px] mb-3 uppercase tracking-widest border-b border-slate-700 pb-1">Extracted from Tender Document OCR</div>
+                                            ${f.evidence}
+                                            <div class="mt-4 text-red-400 text-[11px] border-t border-slate-700 pt-3"><strong>লঙ্ঘিত আইন:</strong> ${f.rule} (${f.clause})</div>
+                                        </div>
+                                    </details>
+                                </div>
+                            `;
+                        });
+                    }
+                    html += `</div>`;
+                });
+            }
+
+            if(storyImagesArray.length > 1) {
+                html += `<h2 class="nn-section-title">সংশ্লিষ্ট ডকুমেন্টস ও ছবি</h2><div class="grid grid-cols-2 gap-4 mb-8">`;
+                for(let i=1; i<storyImagesArray.length; i++) {
+                    html += `<img src="${storyImagesArray[i]}" class="w-full h-auto border border-slate-200 p-1 shadow-sm">`;
+                }
+                html += `</div>`;
+            }
+
+            html += `
+                <div class="nn-methodology">
+                    <h4 class="font-black text-red-700 text-lg mb-2 uppercase tracking-wide">আমাদের অনুসন্ধান পদ্ধতি</h4>
+                    <p class="text-slate-700 leading-relaxed">${method}</p>
+                </div>
+            `;
+
+            document.getElementById('masterStoryPreviewContainer').innerHTML = html;
+        }
+
+        function downloadMasterStoryHTML() {
+            let content = document.getElementById('masterStoryPreviewContainer').innerHTML;
+            if(!content.includes("Exclusive Investigation")) {
+                alert("প্রথমে 'রিপোর্ট আপডেট করুন' বাটনে ক্লিক করে রিপোর্ট তৈরি করুন।");
+                return;
+            }
+
+            let headline = document.getElementById('storyHeadline').value || "Investigation_Report";
+            let safeHeadline = headline.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            
+            let fullHTML = `
+                <!DOCTYPE html>
+                <html lang="bn">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${headline}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet">
+                    <style>
+                        body { background: #f8fafc; padding: 40px 20px; font-family: system-ui, -apple-system, sans-serif; }
+                        .story-container { max-width: 800px; margin: 0 auto; background: white; padding: 60px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+                        .nn-title { font-size: 2.5rem; font-weight: 900; line-height: 1.2; color: #000000; border-top: 5px solid #dc2626; padding-top: 24px; margin-bottom: 16px; font-family: 'Noto Serif Bengali', 'Merriweather', serif; }
+                        .nn-meta { text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end;}
+                        .nn-author { color: #dc2626; font-weight: bold; }
+                        .nn-body-text { font-size: 1.15rem; margin-bottom: 24px; line-height: 1.8; font-family: 'Noto Serif Bengali', 'Merriweather', serif; color: #111827;}
+                        .nn-dropcap::first-letter { font-size: 3.5rem; float: left; margin-top: 5px; margin-right: 8px; color: #dc2626; font-weight: 900; line-height: 0.8; }
+                        .nn-section-title { font-size: 1.5rem; font-weight: 700; margin-top: 40px; margin-bottom: 16px; border-left: 4px solid #dc2626; padding-left: 12px; font-family: 'Noto Serif Bengali', 'Merriweather', serif;}
+                        .nn-evidence-box { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 24px; position: relative;}
+                        .nn-methodology { background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 24px; margin-top: 48px; font-size: 0.95rem; }
+                        details { margin-top: 15px; border: 1px solid #ccc; border-radius: 4px; background: #fff;}
+                        summary { font-weight: bold; color: #dc2626; cursor: pointer; padding: 12px; font-size: 14px;}
+                        details summary::-webkit-details-marker { display:none; }
+                        details div { padding: 15px; background: #0f172a; color: #34d399; font-family: monospace; font-size: 13px; line-height: 1.6; overflow-x: auto;}
+                        img { max-width: 100%; height: auto; }
+                        .grid-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px;}
+                        @media print {
+                            body { background: white; padding: 0; }
+                            .story-container { box-shadow: none; padding: 0; max-width: 100%; }
+                            details div { display: block !important; }
+                            summary { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="story-container">
+                        ${content}
+                    </div>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([fullHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Netra_News_${safeHeadline}.html`;
+            a.click();
         }
     </script>
 </body>
