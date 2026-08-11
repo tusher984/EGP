@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (সংস্থা ফিল্টার সংস্করণ)</title>
+    <title>ই-জিপি ফরেনসিক ইনভেস্টিগেশন ডেটাবেস (মাস্টার ফিল্টার সংস্করণ)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -226,12 +226,12 @@
 
                     <!-- TAB 2: ORG & PROJECT -->
                     <div id="tab-org" class="tab-content">
-                        <div class="fieldset-box">
-                            <h4 class="fieldset-title"><i class="fa-solid fa-sitemap"></i> প্রাতিষ্ঠানিক তথ্য</h4>
+                        <div class="fieldset-box border-blue-900/50">
+                            <h4 class="fieldset-title text-blue-400"><i class="fa-solid fa-sitemap"></i> প্রাতিষ্ঠানিক তথ্য</h4>
                             <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
                                 <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?\s*:\s*(.*?)\s+(?:Division|Organization)" class="egp-field"></div>
                                 <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-regex="Organization\s*:\s*(.*?)\s+Procuring" class="egp-field"></div>
+                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
                                 <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code\s*:\s*(.*?)\s+Procuring Entity District" class="egp-field"></div>
                                 <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District" data-regex="Procuring Entity District\s*:\s*(.*?)\n" class="egp-field"></div>
@@ -270,15 +270,15 @@
                                 <div><label>ইভেন্ট টাইপ (Event Type)</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type\s*:\s*(.*?)\s+Invitation for" class="egp-field"></div>
                                 <div><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No" data-regex="Invitation Reference No\.\s*:\s*(.*?)\s+Tender\/Proposal Status" class="egp-field"></div>
                                 <div><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status" data-regex="Tender\/Proposal Status\s*:\s*(.*?)\n" class="egp-field"></div>
-                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
-                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID" data-regex="Tender\/Proposal ID\s*:\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
+                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*:\s*(\d+)" class="egp-field font-mono text-red-300"></div>
+                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID" data-regex="Tender\/Proposal ID\s*:\s*(\d+)" class="egp-field font-mono text-red-300"></div>
                                 <div><label>বাজেটের ধরন (Budget Type)</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div class="col-span-2"><label>অর্থের উৎস (Source of Funds)</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds\s*:\s*(.*?)\n" class="egp-field"></div>
                                 <div class="col-span-2"><label>উন্নয়ন সহযোগী (Dev Partner)</label><input type="text" id="Dev_Partner" data-db="Development_Partner" class="egp-field"></div>
                             </div>
                         </div>
-                        <div class="fieldset-box relative">
-                            <h4 class="fieldset-title"><i class="fa-solid fa-calendar-check"></i> সময়সূচী ও ডেডলাইন</h4>
+                        <div class="fieldset-box relative border-orange-900/50">
+                            <h4 class="fieldset-title text-orange-400"><i class="fa-solid fa-calendar-check"></i> সময়সূচী ও ডেডলাইন</h4>
                             <div class="grid grid-cols-3 gap-3">
                                 <div><label>প্রকাশের তারিখ (Pub Date)</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time" data-regex="Publication\s*(\d{2}-[A-Za-z]{3}-\d{4}\s*\d{2}:\d{2})" class="egp-field"></div>
                                 <div>
@@ -309,8 +309,8 @@
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500"><i class="fa-solid fa-user-shield"></i> দরদাতার যোগ্যতা (Eligibility)</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>তরল সম্পদ বা Liquid Assets (BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
-                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-blue-300"></div>
+                                <div class="col-span-2"><label>তরল সম্পদ বা Liquid Assets (BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="liquid assets.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
+                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার (Turnover)</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="average annual.*?turnover.*?Tk\.?\s*([\d\.\s]+\s*[a-zA-Z]+|[\d,\.]+)" class="egp-field font-mono text-red-300"></div>
                                 <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience.*?(\d+\s*(?:\([A-Za-z]+\))?\s*years?)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience.*?value of at least\s*(Tk\.?\s*[\d\.\s]+\s*[a-zA-Z]+|Tk\.?\s*[\d,\.]+)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 <div class="col-span-2"><label>সর্বোচ্চ জেভি সদস্য (Max JV Members)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*(\d+)" class="egp-field"></div>
@@ -372,7 +372,7 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigatorLogs_Final_v2')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
@@ -411,6 +411,14 @@
                 let match = text.match(new RegExp(regex, 'i'));
                 return match && match[1] ? match[1].trim() : "";
             } catch(e) { return ""; }
+        }
+
+        function getDaysDiff(d1Str, d2Str) {
+            if(!d1Str || !d2Str) return null;
+            let d1 = new Date(d1Str);
+            let d2 = new Date(d2Str);
+            if(isNaN(d1) || isNaN(d2)) return null;
+            return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
         }
 
         function handleFolderUpload(event) {
@@ -468,6 +476,35 @@
                 let closeDate = extractRegex(ocrText, "Closing\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Tender_Proposal_Closing_Date_and_Time;
                 let preStart = extractRegex(ocrText, "meeting Start\\s*(\\d{2}-[A-Za-z]{3}-\\d{4}\\s*\\d{2}:\\d{2})") || t.Pre_Tender_Proposal_meeting_Start_Date_and_Time;
 
+                // --- SMART ORGANIZATION EXTRACTION ---
+                let orgName = t.Organization || "";
+                if (!orgName) {
+                    orgName = extractRegex(ocrText, "Organization\\s*:\\s*(.*?)\\s+(?:Procuring|PE|Entity|Division)");
+                }
+                if (!orgName && t.Procuring_Entity_Name) {
+                    let pe = t.Procuring_Entity_Name.toUpperCase();
+                    if(pe.includes("RAJDHANI") || pe.includes("RAJUK")) orgName = "RAJUK";
+                    else if(pe.includes("CHITTAGONG DEV") || pe.includes("CDA")) orgName = "CDA";
+                    else if(pe.includes("KHULNA DEV") || pe.includes("KDA")) orgName = "KDA";
+                    else if(pe.includes("LOCAL GOV") || pe.includes("LGED")) orgName = "LGED";
+                    else if(pe.includes("PUBLIC WORKS") || pe.includes("PWD")) orgName = "PWD";
+                    else if(pe.includes("ROADS AND HIGHWAYS") || pe.includes("RHD")) orgName = "RHD";
+                    else if(pe.includes("WATER DEV") || pe.includes("BWDB")) orgName = "BWDB";
+                }
+                if (!orgName && t.Source_File) {
+                    let sf = t.Source_File.toUpperCase();
+                    if(sf.includes('RAJUK')) orgName = "RAJUK";
+                    else if(sf.includes('CDA')) orgName = "CDA";
+                    else if(sf.includes('KDA')) orgName = "KDA";
+                    else if(sf.includes('LGED')) orgName = "LGED";
+                }
+                if (!orgName && ocrText) {
+                    let ocrUpper = ocrText.toUpperCase();
+                    if(ocrUpper.includes('RAJDHANI UNNAYAN') || ocrUpper.includes('RAJUK')) orgName = "RAJUK";
+                    else if(ocrUpper.includes('CHITTAGONG DEVELOPMENT AUTHORITY')) orgName = "CDA";
+                }
+                t.ext_OrgName = orgName ? orgName.trim().substring(0, 30) : "অজানা";
+
                 // --- ADVANCED LOT TABLE EXTRACTION ---
                 let lotMatch = ocrText.match(/(?:Single|\d+)\s+([\s\S]*?)\s+(\d{4,})\s+(\d{2}-[A-Za-z]{3}-\d{4})\s+(\d{2}-[A-Za-z]{3}-\d{4})/i);
                 if (lotMatch) {
@@ -478,16 +515,6 @@
                     t.ext_LotStart = lotMatch[3]; 
                     t.ext_LotEnd = lotMatch[4]; 
                 }
-
-                // --- ORGANIZATION EXTRACTION FOR LIST ---
-                let orgMatch = t.Organization || extractRegex(t.fullOCR, "Organization\\s*:\\s*(.*?)\\s+Procuring");
-                if(!orgMatch && t.Source_File) {
-                    if(t.Source_File.toUpperCase().includes('RAJUK')) orgMatch = "RAJUK";
-                    else if(t.Source_File.toUpperCase().includes('CDA')) orgMatch = "CDA";
-                    else if(t.Source_File.toUpperCase().includes('KDA')) orgMatch = "KDA";
-                    else if(t.Source_File.toUpperCase().includes('LGED')) orgMatch = "LGED";
-                }
-                t.ext_OrgName = orgMatch ? orgMatch.substring(0, 20) : "অজানা";
 
                 // --- CORRUPTION RULES ---
 
@@ -575,7 +602,7 @@
                         evidence: `"...${brandMatch[0].trim()}..."`, 
                         explanation: "কোনো নির্দিষ্ট ব্র্যান্ডের নাম উল্লেখ করে টেন্ডার ডাকা আন্তর্জাতিক ডোনার গাইডলাইনের সম্পূর্ণ বিরোধী।", 
                         verification: "স্পেসিফিকেশনে 'or equivalent' (অথবা সমতুল্য) কথাটি যুক্ত করা হয়েছিল কিনা তা চেক করুন।",
-                        rule: "JICA Guidelines", clause: "Section 4.07 Use of Brand Names"
+                        rule: "JICA Guidelines", clause: "Section 4.07 Use of Brand Names[cite: 5]"
                     });
                     score += 40;
                 }
@@ -588,7 +615,7 @@
                         evidence: `"...${albMatch[0].trim()}..."`, 
                         explanation: "অস্বাভাবিক নিম্ন দরের ক্ষেত্রে বিডারকে ব্যাখ্যা দেওয়ার সুযোগ না দিয়ে স্বয়ংক্রিয়ভাবে গাণিতিক ফর্মুলায় বাতিল করা ডোনার গাইডলাইনের লঙ্ঘন।", 
                         verification: "এটি ডোনার ফান্ডেড প্রজেক্ট কিনা যাচাই করুন। হলে এটি সরাসরি মিসপ্রকিউরমেন্ট।",
-                        rule: "WB / JICA Guidelines", clause: "WB ALB / JICA Sec 5.06 (5)"
+                        rule: "WB / JICA Guidelines", clause: "WB ALB / JICA Sec 5.06 (5)[cite: 5]"
                     });
                     score += 30;
                 }
@@ -604,7 +631,7 @@
             if(btn) btn.classList.add('ring-2', 'ring-white');
 
             let table = $('#mainTable').DataTable();
-            table.column(2).search(level).draw(); // Index 2 is Max Risk column now
+            table.column(2).search(level).draw();
         }
 
         function initDashboard() {
@@ -682,6 +709,11 @@
                 if (val && !log[input.id] && !currentRecord[dbKey] && (regexStr || extKey)) input.classList.add('auto-filled');
                 else input.classList.remove('auto-filled');
             });
+
+            let d1 = document.getElementById('Pub_Date').value;
+            let d2 = document.getElementById('Close_Date').value;
+            let diff = getDaysDiff(d1, d2);
+            document.getElementById('daysCalc').innerText = diff ? `(${diff} দিনের সময়)` : "";
 
             document.getElementById('auditJustification').value = log.justification || "";
 
@@ -783,7 +815,7 @@
             });
 
             auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigatorLogs_Final', JSON.stringify(auditLogs));
+            localStorage.setItem('egpInvestigatorLogs_Final_v2', JSON.stringify(auditLogs));
             alert("আপনার যাচাইকরণ সফলভাবে সেভ হয়েছে!");
             closeInspector();
         }
