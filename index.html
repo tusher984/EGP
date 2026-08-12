@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Table Fix & Deep Parsing Edition)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Ultimate Parser + Manual Override)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -59,7 +59,6 @@
         .user-verified { border-color: #10b981 !important; background-color: rgba(6, 78, 59, 0.2); }
         .highlight { background-color: rgba(234, 179, 8, 0.4); color: #fde047; font-weight: bold; border-radius: 2px; padding: 0 2px; }
         
-        /* Manipulation Highlight Style */
         .manipulated-field { border-color: #ef4444 !important; background-color: rgba(127, 29, 29, 0.3) !important; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
 
         .loader-ring { border: 4px solid rgba(59, 130, 246, 0.1); border-left-color: #3b82f6; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
@@ -288,7 +287,7 @@
                     <div id="tab-findings" class="tab-content active space-y-4">
                         <div class="bg-slate-800/50 p-5 rounded-xl border border-red-500/30 mb-6 shadow-lg">
                             <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ভেরিফিকেশন ও স্টোরি নোটস</h3>
-                            <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">যেকোনো ফিল্ড আপডেট করে সেভ করলে রুলসগুলো অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে। <span class="text-red-400 font-bold">যে ফিল্ডগুলোতে কারসাজি হয়েছে সেগুলো লাল রঙে হাইলাইট হবে।</span></p>
+                            <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">যেকোনো ফিল্ড আপডেট করে সেভ করলে রুলসগুলো অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে। <span class="text-emerald-400 font-bold">আপনি প্রতিটি ফ্ল্যাগ ম্যানুয়ালি (OK/NOT OK) যাচাই করতে পারবেন।</span></p>
                             
                             <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের ইনভেস্টিগেটিভ নোটস:</label>
                             <textarea id="auditJustification" class="w-full bg-[#0b1120] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-blue-500 transition-all" placeholder="আপনার পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
@@ -302,6 +301,8 @@
                                 </button>
                             </div>
                         </div>
+
+                        <!-- FLAGS CONTAINER (Auto + Custom) -->
                         <div id="inspFlagsContainer" class="space-y-4"></div>
                     </div>
 
@@ -310,40 +311,40 @@
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">প্রাতিষ্ঠানিক তথ্য</h4>
                             <div class="grid grid-cols-3 gap-3">
-                                <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
-                                <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District,District" data-regex="Procuring Entity District\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?[\s\S]*?(?:\:|\-)\s*(.*?)(?=Division|Agency|Organization|Procuring|\n)" class="egp-field"></div>
+                                <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division[\s\S]*?(?:\:|\-)\s*(.*?)(?=Agency|Organization|Procuring|\n)" class="egp-field"></div>
+                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-regex="Organization[\s\S]*?(?:\:|\-)\s*(.*?)(?=Procuring Entity|\n)" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
+                                <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name[\s\S]*?(?:\:|\-)\s*(.*?)(?=Procuring Entity Code|Procuring Entity District|\n)" class="egp-field"></div>
+                                <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code[\s\S]*?(?:\:|\-)\s*(.*?)(?=Procuring Entity District|\n)" class="egp-field"></div>
+                                <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District,District" data-regex="Procuring Entity District[\s\S]*?(?:\:|\-)\s*(.*?)(?=Invitation for|\n)" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">প্রকল্প তথ্য</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>প্রকল্প কোড (Project Code)</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>প্যাকেজ নং (Package No)</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No,Package_No" data-regex="Package No[^\n]*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>প্রকল্পের নাম (Project Name)</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>প্যাকেজ নাম (Package Name)</label><input type="text" id="Package_Name" data-db="Tender_Proposal_Package_Name,Package_Name" data-regex="Package Name\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>কাজের বিবরণ (Description)</label><textarea id="Proj_Desc" data-db="Brief_Description_of_Works,Description" data-regex="Description(?:\s*of\s*Works)?\s*[\:\-]?\s*([\s\S]{1,1000}?)Category\s*:" class="egp-field h-16 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্রকল্প কোড (Project Code)</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code[\s\S]*?(?:\:|\-)\s*(.*?)(?=Project Name|Package No|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্যাকেজ নং (Package No)</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No,Package_No" data-regex="Package No[^\n]*[\s\S]*?(?:\:|\-)\s*(.*?)(?=Package Name|Project Name|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>প্রকল্পের নাম (Project Name)</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name[\s\S]*?(?:\:|\-)\s*(.*?)(?=Category|Tender\/Proposal|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>প্যাকেজ নাম (Package Name)</label><input type="text" id="Package_Name" data-db="Tender_Proposal_Package_Name,Package_Name" data-regex="Package Name[\s\S]*?(?:\:|\-)\s*(.*?)(?=Brief Description|Category|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>কাজের বিবরণ (Description)</label><textarea id="Proj_Desc" data-db="Brief_Description_of_Works,Description" data-regex="Description(?:\s*of\s*Works)?[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Evaluation Type|Category|Tender\/Proposal Document|$)" class="egp-field h-16 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category[\s\S]*?(?:\:|\-)\s*(.*?)(?=Scheduled|\n)" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">দাপ্তরিক যোগাযোগ</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>কর্মকর্তার নাম</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal,Name_of_Official" data-regex="Name of Official.*?\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>পদবী</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal,Designation" data-regex="Designation of Official.*?\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>ঠিকানা</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal,Address" data-regex="Address\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>শহর</label><input type="text" id="Off_City" data-db="City" data-regex="City\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>থানা</label><input type="text" id="Off_Thana" data-db="Thana" data-regex="Thana\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>জেলা</label><input type="text" id="Off_District" data-db="District" data-regex="District\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>পোস্টাল কোড</label><input type="text" id="Postal_Code" data-db="Postal_Code" data-regex="Postal Code\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>দেশ</label><input type="text" id="Country" data-db="Country" data-regex="Country\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>ফোন নং</label><input type="text" id="Off_Phone" data-db="Phone_No" data-regex="Phone No\s*[\:\-]?\s*([\d-]+)" class="egp-field"></div>
-                                <div><label>ফ্যাক্স নং</label><input type="text" id="Off_Fax" data-db="Fax_No" data-regex="Fax No\s*[\:\-]?\s*([\d-]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>ইমেইল</label><input type="text" id="Off_Email" data-db="Email" data-regex="e-mail\s*[\:\-]?\s*([\w\.-]+@[\w\.-]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>ওয়েবসাইট</label><input type="text" id="Off_Web" data-db="Website" data-regex="Website\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>কর্মকর্তার নাম</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal,Name_of_Official" data-regex="Name of Official[\s\S]*?(?:\:|\-)\s*(.*?)(?=Designation|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>পদবী</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal,Designation" data-regex="Designation[\s\S]*?(?:\:|\-)\s*(.*?)(?=Address|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ঠিকানা</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal,Address" data-regex="Address[\s\S]*?(?:\:|\-)\s*(.*?)(?=City|Thana|\n)" class="egp-field"></div>
+                                <div><label>শহর</label><input type="text" id="Off_City" data-db="City" data-regex="City[\s\S]*?(?:\:|\-)\s*(.*?)(?=Thana|District|\n)" class="egp-field"></div>
+                                <div><label>থানা</label><input type="text" id="Off_Thana" data-db="Thana" data-regex="Thana[\s\S]*?(?:\:|\-)\s*(.*?)(?=District|Country|\n)" class="egp-field"></div>
+                                <div><label>জেলা</label><input type="text" id="Off_District" data-db="District" data-regex="District[\s\S]*?(?:\:|\-)\s*(.*?)(?=Country|\n)" class="egp-field"></div>
+                                <div><label>পোস্টাল কোড</label><input type="text" id="Postal_Code" data-db="Postal_Code" data-regex="Postal Code[\s\S]*?(?:\:|\-)\s*(.*?)(?=Country|Phone|\n)" class="egp-field"></div>
+                                <div><label>দেশ</label><input type="text" id="Country" data-db="Country" data-regex="Country[\s\S]*?(?:\:|\-)\s*(.*?)(?=Phone No|\n)" class="egp-field"></div>
+                                <div><label>ফোন নং</label><input type="text" id="Off_Phone" data-db="Phone_No" data-regex="Phone No[\s\S]*?(?:\:|\-)\s*([\d-]+)" class="egp-field"></div>
+                                <div><label>ফ্যাক্স নং</label><input type="text" id="Off_Fax" data-db="Fax_No" data-regex="Fax No[\s\S]*?(?:\:|\-)\s*([\d-]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>ইমেইল</label><input type="text" id="Off_Email" data-db="Email" data-regex="e-mail[\s\S]*?(?:\:|\-)\s*([\w\.-]+@[\w\.-]+)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ওয়েবসাইট</label><input type="text" id="Off_Web" data-db="Website" data-regex="Website[\s\S]*?(?:\:|\-)\s*(.*?)\n" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
@@ -353,77 +354,77 @@
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">ক্রয় পদ্ধতি ও বেসিক তথ্য</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div><label>ক্রয়ের ধরণ</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>ক্রয় পদ্ধতি</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>ইভেন্ট টাইপ</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Invitation For</label><input type="text" id="Inv_For" data-db="Invitation_for,Invitation_For" data-regex="Invitation for\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No,Invitation_Reference" data-regex="Invitation Reference No\.\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status,Status" data-regex="Tender\/Proposal Status\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID\s*[\:\-]?\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
-                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID,Tender_ID" data-regex="Tender\/Proposal ID\s*[\:\-]?\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
-                                <div><label>Procurement Method</label><input type="text" id="Proc_Method" data-db="Procurement_Method" data-regex="Procurement Method\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>বাজেটের ধরন</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>অর্থের উৎস</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>উন্নয়ন সহযোগী</label><input type="text" id="Dev_Partner" data-db="Development_Partner" data-regex="Development Partner\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>আনুমানিক মূল্য (Estimated Cost)</label><input type="text" id="Est_Cost" data-db="Estimated_Cost,Contract_Value,Contract_Value_BDT" data-regex="(?:Estimated Cost|Value).*?(?:BDT|Tk\.?)[^\d]*([\d,\.]+)" class="egp-field font-mono text-yellow-300"></div>
+                                <div><label>ক্রয়ের ধরণ</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature[\s\S]*?(?:\:|\-)\s*(.*?)(?=Procurement Type|\n)" class="egp-field"></div>
+                                <div><label>ক্রয় পদ্ধতি</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type[\s\S]*?(?:\:|\-)\s*(.*?)(?=Event Type|\n)" class="egp-field"></div>
+                                <div><label>ইভেন্ট টাইপ</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type[\s\S]*?(?:\:|\-)\s*(.*?)(?=Invitation for|\n)" class="egp-field"></div>
+                                <div><label>Invitation For</label><input type="text" id="Inv_For" data-db="Invitation_for,Invitation_For" data-regex="Invitation for[\s\S]*?(?:\:|\-)\s*(.*?)(?=Invitation Reference|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No,Invitation_Reference" data-regex="Invitation Reference No\.?[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tender\/Proposal Status|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status,Status" data-regex="Tender\/Proposal Status[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tender\/Proposal ID|\n)" class="egp-field"></div>
+                                <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
+                                <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID,Tender_ID" data-regex="Tender\/Proposal ID[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
+                                <div><label>Procurement Method</label><input type="text" id="Proc_Method" data-db="Procurement_Method" data-regex="Procurement Method[\s\S]*?(?:\:|\-)\s*(.*?)(?=Budget Type|\n)" class="egp-field"></div>
+                                <div><label>বাজেটের ধরন</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type[\s\S]*?(?:\:|\-)\s*(.*?)(?=Source of Funds|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>অর্থের উৎস</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds[\s\S]*?(?:\:|\-)\s*(.*?)(?=Development Partner|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>উন্নয়ন সহযোগী</label><input type="text" id="Dev_Partner" data-db="Development_Partner" data-regex="Development Partner[\s\S]*?(?:\:|\-)\s*(.*?)\n" class="egp-field"></div>
+                                <div class="col-span-4"><label>আনুমানিক মূল্য (Estimated Cost)</label><input type="text" id="Est_Cost" data-db="Estimated_Cost,Contract_Value,Contract_Value_BDT" data-regex="(?:Estimated Cost|Contract Value|Target Amount)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d,\.]+)" class="egp-field font-mono text-yellow-300"></div>
                             </div>
                         </div>
                         <div class="fieldset-box relative border-blue-900/50">
                             <h4 class="fieldset-title text-blue-400">সময়সূচী ও ডেডলাইন</h4>
                             <div class="grid grid-cols-3 gap-3">
-                                <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date" data-regex="(?:Publication|Invited).*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing|Submission).*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="Opening.*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="last selling.*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>ডাউনলোড শেষ সময়</label><input type="text" id="Last_Down" data-db="Last_Downloading_Date" data-regex="Last Downloading Date.*?\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="Security Submission.*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>প্রি-টেন্ডার মিটিং (শুরু)</label><input type="text" id="Pre_Start" data-db="Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting" data-regex="(?:meeting Start|Pre-Tender).*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>প্রি-টেন্ডার মিটিং (শেষ)</label><input type="text" id="Pre_End" data-db="Pre_Tender_Proposal_meeting_End_Date_and_Time" data-regex="meeting End.*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
-                                <div><label>Clarification Deadline</label><input type="text" id="Clar_Req" data-db="Clarification_Request_Deadline" data-regex="Clarification Request.*?([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
+                                <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date" data-regex="(?:Publication|Invited)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing|Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="Opening[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="last selling[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>ডাউনলোড শেষ সময়</label><input type="text" id="Last_Down" data-db="Last_Downloading_Date" data-regex="Last Downloading Date[\s\S]*?(?:\:|\-)\s*(.*?)(?=Last Date|\n)" class="egp-field"></div>
+                                <div><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="Security Submission[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>প্রি-টেন্ডার মিটিং (শুরু)</label><input type="text" id="Pre_Start" data-db="Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting" data-regex="(?:meeting Start|Pre-Tender)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>প্রি-টেন্ডার মিটিং (শেষ)</label><input type="text" id="Pre_End" data-db="Pre_Tender_Proposal_meeting_End_Date_and_Time" data-regex="meeting End[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)" class="egp-field"></div>
+                                <div><label>Clarification Deadline</label><input type="text" id="Clar_Req" data-db="Clarification_Request_Deadline" data-regex="Clarification Request[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">দলিল ও মূল্য</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div><label>Doc Available</label><input type="text" id="Doc_Avail" data-db="Document_Available" data-regex="Document Available\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Doc Fees</label><input type="text" id="Doc_Fees" data-db="Document_Fees" data-regex="Document Fees\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Doc Type</label><input type="text" id="Doc_Type" data-db="Document_Type,Doc_Type" data-regex="(?:Document Type|Doc Type)\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>দলিল মূল্য (BDT)</label><input type="text" id="Doc_Price" data-db="Tender_Proposal_Document_Price_In_BDT,Document_Price,Tender_Document_Price" data-regex="(?:Document Price|Price of Tender Document|Tender Document Price)[^\d]*?(?:BDT|Tk\.?|Taka)\s*([\d,\.]+)" class="egp-field font-mono text-yellow-300"></div>
-                                <div class="col-span-2"><label>পেমেন্টের মাধ্যম</label><input type="text" id="Pay_Mode" data-db="Mode_of_Payment" data-regex="Mode of Payment\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>মুদ্রা</label><input type="text" id="Currency" data-db="Currency" data-regex="Currency\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Doc Available</label><input type="text" id="Doc_Avail" data-db="Document_Available" data-regex="Document Available[\s\S]*?(?:\:|\-)\s*(.*?)(?=Document Fees|\n)" class="egp-field"></div>
+                                <div><label>Doc Fees</label><input type="text" id="Doc_Fees" data-db="Document_Fees" data-regex="Document Fees[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tender\/Proposal Document|\n)" class="egp-field"></div>
+                                <div><label>Doc Type</label><input type="text" id="Doc_Type" data-db="Document_Type,Doc_Type" data-regex="(?:Document Type|Doc Type)[\s\S]*?(?:\:|\-)\s*(.*?)(?=Mode of Payment|\n)" class="egp-field"></div>
+                                <div><label>দলিল মূল্য (BDT)</label><input type="text" id="Doc_Price" data-db="Tender_Proposal_Document_Price_In_BDT,Document_Price,Tender_Document_Price" data-regex="(?:Document Price|Price of Tender Document|Tender Document Price)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d,\.]+)" class="egp-field font-mono text-yellow-300"></div>
+                                <div class="col-span-2"><label>পেমেন্টের মাধ্যম</label><input type="text" id="Pay_Mode" data-db="Mode_of_Payment" data-regex="Mode of Payment[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tender\/Proposal Security|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>মুদ্রা</label><input type="text" id="Currency" data-db="Currency" data-regex="Currency[\s\S]*?(?:\:|\-)\s*(.*?)\n" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 4: ELIGIBILITY & TECH -->
+                    <!-- TAB 4: ELIGIBILITY & TECH (ULTIMATE DEEP FIX) -->
                     <div id="tab-elig" class="tab-content">
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500">দরদাতার যোগ্যতা ও শর্তাবলি</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>তরল সম্পদ (Liquid Assets BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="(?:liquid asset|credit facilit|working capital)[^\d]*?(?:BDT|Tk\.?|Taka)\s*([\d\,\.]+)" class="egp-field font-mono text-red-400"></div>
-                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="(?:average annual.*?turnover|annual turnover)[^\d]*?(?:BDT|Tk\.?|Taka)\s*([\d\,\.]+)" class="egp-field font-mono text-red-400"></div>
-                                <div class="col-span-2"><label>Const Turnover</label><input type="text" id="Const_Turnover" data-db="Average_Annual_Construction_Turnover" data-regex="Construction Turnover\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Credit Line</label><input type="text" id="Credit_Line" data-db="Credit_Line" data-regex="Credit Line\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience.*?(\d+\s*(?:\([A-Za-z]+\))?\s*years?)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience.*?value of at least\s*(Tk\.?\s*[\d\.\s]+\s*[a-zA-Z]+|Tk\.?\s*[\d,\.]+)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>Experience Req (Other)</label><textarea id="Exp_Req" data-db="Experience_Requirements" data-regex="Experience Requirements\s*[\:\-]?\s*([\s\S]{1,1000}?)(?:Equipment|Personnel)" class="egp-field h-10 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>Equipment Req</label><input type="text" id="Equip_Req" data-db="Equipment_Requirements" data-regex="Equipment Requirements\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Personnel Req</label><input type="text" id="Pers_Req" data-db="Personnel_Requirements" data-regex="Personnel Requirements\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>তরল সম্পদ (Liquid Assets BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="(?:liquid asset|credit line|credit facility|working capital)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d\,\.]+\s*(?:Lakh|Million|Crore)?|none|nil|0|zero)" class="egp-field font-mono text-red-400"></div>
+                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="(?:average annual.*?turnover|annual turnover)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d\,\.]+\s*(?:Lakh|Million|Crore)?)" class="egp-field font-mono text-red-400"></div>
+                                <div class="col-span-2"><label>Const Turnover</label><input type="text" id="Const_Turnover" data-db="Average_Annual_Construction_Turnover" data-regex="Construction Turnover[\s\S]*?(?:\:|\-)\s*(.*?)(?=Credit Line|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Credit Line</label><input type="text" id="Credit_Line" data-db="Credit_Line" data-regex="Credit Line[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience[\s\S]*?(?:\:|\-)?\s*([\s\S]*?)(?=Specific Experience|Experience Requirements|Equipment|Personnel|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience[\s\S]*?(?:\:|\-)?\s*([\s\S]*?)(?=Average Annual|Experience Requirements|Equipment|Personnel|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>Experience Req (Other)</label><textarea id="Exp_Req" data-db="Experience_Requirements" data-regex="Experience Requirements[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Equipment|Personnel|Liquid Asset|$)" class="egp-field h-10 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>Equipment Req</label><input type="text" id="Equip_Req" data-db="Equipment_Requirements" data-regex="Equipment Requirements[\s\S]*?(?:\:|\-)\s*(.*?)(?=Personnel|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Personnel Req</label><input type="text" id="Pers_Req" data-db="Personnel_Requirements" data-regex="Personnel Requirements[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tenderer|$)" class="egp-field"></div>
                                 <div><label>সর্বোচ্চ জেভি সদস্য (Max JV)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*([a-zA-Z0-9]+)" class="egp-field"></div>
-                                <div><label>সাবকন্ট্রাক্টর</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" data-regex="Subcontractor\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Manufacturer Auth</label><input type="text" id="Mfr_Auth" data-db="Manufacturer_Authorization" data-regex="Manufacturer Authorization\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>Qualification Requirements</label><textarea id="Qual_Req" data-db="Qualification_Requirements" data-regex="Qualification Requirements\s*[\:\-]?\s*([\s\S]{1,1000}?)(?:Brief|Eligibility)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>Raw Eligibility from PDF</label><textarea id="Raw_Elig" data-db="Eligibility_of_Tenderer" data-regex="(?:Eligibility of Tenderer|Eligibility of Consultant)[\s\:\-]+([\s\S]{10,2500}?)(?=\bBrief Description\b|\bEvaluation Type\b|\bDocument Available\b|$)" class="egp-field h-24 custom-scroll font-mono text-[9px] text-slate-400"></textarea></div>
+                                <div><label>সাবকন্ট্রাক্টর</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" data-regex="Subcontractor[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Manufacturer Auth</label><input type="text" id="Mfr_Auth" data-db="Manufacturer_Authorization" data-regex="Manufacturer Authorization[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>Qualification Requirements</label><textarea id="Qual_Req" data-db="Qualification_Requirements" data-regex="Qualification Requirements[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Brief|Eligibility|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>Raw Eligibility from PDF</label><textarea id="Raw_Elig" data-db="Eligibility_of_Tenderer" data-regex="(?:Eligibility of Tenderer|Eligibility of Consultant)[\s\:\-]+([\s\S]{10,2000}?)(?=\bBrief Description\b|\bEvaluation Type\b|\bDocument Available\b|\bPrice of Tender\b|$)" class="egp-field h-24 custom-scroll font-mono text-[9px] text-slate-400"></textarea></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">কারিগরি মূল্যায়ন (Technical Eval)</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-4"><label>Brief Desc of Goods/Works</label><textarea id="Brief_Goods" data-db="Brief_Description_of_Goods" data-regex="Brief Description.*?\s*[\:\-]?\s*([\s\S]{1,500}?)Evaluation Type" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>মূল্যায়নের ধরন (Eval Type)</label><input type="text" id="Eval_Type" data-db="Evaluation_Type" data-regex="Evaluation Type\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Eval Methodology</label><input type="text" id="Eval_Method" data-db="Evaluation_Methodology" data-regex="Evaluation Methodology\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>টেকনিক্যাল স্কোর</label><input type="text" id="Tech_Score" data-db="Technical_Score" data-regex="Technical Score\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>নূন্যতম টেক স্কোর</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" data-regex="Minimum Technical Score\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-4"><label>Brief Desc of Goods/Works</label><textarea id="Brief_Goods" data-db="Brief_Description_of_Goods" data-regex="Brief Description[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Evaluation Type|Document Available|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>মূল্যায়নের ধরন (Eval Type)</label><input type="text" id="Eval_Type" data-db="Evaluation_Type" data-regex="Evaluation Type[\s\S]*?(?:\:|\-)\s*(.*?)(?=Evaluation Methodology|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Eval Methodology</label><input type="text" id="Eval_Method" data-db="Evaluation_Methodology" data-regex="Evaluation Methodology[\s\S]*?(?:\:|\-)\s*(.*?)(?=Technical Score|\n)" class="egp-field"></div>
+                                <div><label>টেকনিক্যাল স্কোর</label><input type="text" id="Tech_Score" data-db="Technical_Score" data-regex="Technical Score[\s\S]*?(?:\:|\-)\s*(.*?)(?=Minimum Technical Score|\n)" class="egp-field"></div>
+                                <div><label>নূন্যতম টেক স্কোর</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" data-regex="Minimum Technical Score[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
                                 <div class="col-span-2"><label>Early Market Engagement (WB)</label><input type="text" id="Early_Market_Eng" data-db="Early_Market_Engagement" data-regex="Early Market Engagement.*?(yes|no)" class="egp-field"></div>
                                 <div class="col-span-2"><label>Rated Criteria (Yes/No)</label><input type="text" id="Rated_Crit" data-db="Rated_Criteria" data-regex="Rated Criteria.*?(yes|no)" class="egp-field text-yellow-400 font-bold border-yellow-500/50"></div>
                                 <div class="col-span-2"><label>Rated Criteria Weighting %</label><input type="text" id="Rated_Crit_Weight" data-db="Rated_Criteria_Weighting" data-regex="Rated Criteria Weighting.*?(\d{1,3}\s*%)" class="egp-field font-mono text-yellow-400 border-yellow-500/50"></div>
@@ -439,54 +440,54 @@
                                 <div><label>পারফরম্যান্স সিকিউরিটি %</label><input type="text" id="Perf_Req" data-db="Performance_Security_Requirement,Performance_Security" data-regex="Performance Security.*?(\d{1,2}\s*%)" class="egp-field text-red-400 font-bold"></div>
                                 <div><label>রিটেনশন মানি %</label><input type="text" id="Ret_Money" data-db="Retention_Money" data-regex="retention.*?(0%|nil|none|not|n\/a|\d{1,2}\s*%)" class="egp-field text-red-400 font-bold"></div>
                                 <div><label>অগ্রিম প্রদান (Advance Pay)</label><input type="text" id="Adv_Pay" data-db="Advance_Payment" data-regex="(?:Advance Payment|advance).*?(\d{1,2}\s*%)" class="egp-field text-red-400 font-bold"></div>
-                                <div><label>টেন্ডার সিকিউরিটি (BDT)</label><input type="text" id="Sec_Amt" data-db="Tender_Proposal_Security_Amount,Security_Amount" data-regex="Security Amount.*?(?:BDT|Tk)[^\d]*([\d,\.]+)" class="egp-field font-mono text-yellow-400"></div>
-                                <div><label>Security Valid Up To</label><input type="text" id="Sec_Valid" data-db="Tender_Proposal_Security_Valid_Up_To,Security_Validity" data-regex="Security Valid Up To.*?\s*[\:\-]?\s*([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
-                                <div><label>Tender Valid Up To</label><input type="text" id="Tender_Valid" data-db="Tender_Proposal_Valid_Up_To,Tender_Validity" data-regex="Tender Valid Up To.*?\s*[\:\-]?\s*([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
-                                <div><label>Security Form</label><input type="text" id="Sec_Form" data-db="Tender_Proposal_Security_Form" data-regex="Security Form\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Bid Validity</label><input type="text" id="Bid_Valid" data-db="Bid_Validity" data-regex="Bid Validity\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>টেন্ডার সিকিউরিটি (BDT)</label><input type="text" id="Sec_Amt" data-db="Tender_Proposal_Security_Amount,Security_Amount" data-regex="Security Amount[\s\S]*?(?:BDT|Tk|Taka)[\s\S]*?([\d,\.]+)" class="egp-field font-mono text-yellow-400"></div>
+                                <div><label>Security Valid Up To</label><input type="text" id="Sec_Valid" data-db="Tender_Proposal_Security_Valid_Up_To,Security_Validity" data-regex="Security Valid Up To[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
+                                <div><label>Tender Valid Up To</label><input type="text" id="Tender_Valid" data-db="Tender_Proposal_Valid_Up_To,Tender_Validity" data-regex="Tender Valid Up To[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field"></div>
+                                <div><label>Security Form</label><input type="text" id="Sec_Form" data-db="Tender_Proposal_Security_Form" data-regex="Security Form[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div><label>Bid Validity</label><input type="text" id="Bid_Valid" data-db="Bid_Validity" data-regex="Bid Validity[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box border-emerald-900/50 bg-emerald-900/10">
                             <h4 class="fieldset-title text-emerald-400">লট ও চুক্তি (Award Info)</h4>
                             <div class="grid grid-cols-4 gap-3">
                                 <div><label>লট নং</label><input type="text" id="Lot_No" data-db="Lot_No" data-regex="Lot No\.\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-3"><label>লট এর বিবরণ (ID)</label><input type="text" id="Lot_ID" data-db="Identification_of_Lot" data-regex="Identification of Lot\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>Lot Description (Full)</label><textarea id="Lot_Desc" data-db="Lot_Description" data-regex="Lot Description\s*[\:\-]?\s*([\s\S]{1,1000}?)(?:Location|Security)" class="egp-field h-10 custom-scroll"></textarea></div>
+                                <div class="col-span-3"><label>লট এর বিবরণ (ID)</label><input type="text" id="Lot_ID" data-db="Identification_of_Lot" data-regex="Identification of Lot[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-4"><label>Lot Description (Full)</label><textarea id="Lot_Desc" data-db="Lot_Description" data-regex="Lot Description[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Location|Security|$)" class="egp-field h-10 custom-scroll"></textarea></div>
                                 
-                                <div class="col-span-2"><label>কাজের স্থান (Location)</label><input type="text" id="Location" data-db="Location" data-regex="Location\s*[\:\-]?\s*([^\n]+)" data-ext="ext_LotLocation" class="egp-field font-bold text-blue-400"></div>
-                                <div class="col-span-2"><label>লট সিকিউরিটি (Lot Sec BDT)</label><input type="text" id="Lot_Sec" data-db="Tender_Proposal_Security_Amount_in_BDT" data-regex="Lot Security Amount.*?(?:BDT|Tk)[^\d]*([\d,\.]+)" data-ext="ext_LotSec" class="egp-field font-mono text-yellow-400"></div>
-                                <div><label>কাজ শুরুর তারিখ</label><input type="text" id="Tent_Start" data-db="Tentative_Start_Date" data-regex="Tentative Start Date.*?([\d-]+(?:[A-Za-z]{3})?-[\d]{4})" data-ext="ext_LotStart" class="egp-field font-mono text-emerald-400"></div>
-                                <div><label>সমাপ্তির তারিখ</label><input type="text" id="Tent_Comp" data-db="Tentative_Completion_Date" data-regex="Tentative Completion Date.*?([\d-]+(?:[A-Za-z]{3})?-[\d]{4})" data-ext="ext_LotEnd" class="egp-field font-mono text-red-400"></div>
-                                <div><label>Completion Period</label><input type="text" id="Comp_Period" data-db="Completion_Period" data-regex="Completion Period\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Delivery Period</label><input type="text" id="Del_Period" data-db="Delivery_Period" data-regex="Delivery Period\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>কাজের স্থান (Location)</label><input type="text" id="Location" data-db="Location" data-regex="Location[\s\S]*?(?:\:|\-)\s*([^\n]+)" data-ext="ext_LotLocation" class="egp-field font-bold text-blue-400"></div>
+                                <div class="col-span-2"><label>লট সিকিউরিটি (Lot Sec BDT)</label><input type="text" id="Lot_Sec" data-db="Tender_Proposal_Security_Amount_in_BDT" data-regex="Lot Security Amount[\s\S]*?(?:BDT|Tk|Taka)[\s\S]*?([\d,\.]+)" data-ext="ext_LotSec" class="egp-field font-mono text-yellow-400"></div>
+                                <div><label>কাজ শুরুর তারিখ</label><input type="text" id="Tent_Start" data-db="Tentative_Start_Date" data-regex="Tentative Start Date[\s\S]*?([\d-]+(?:[A-Za-z]{3})?-[\d]{4})" data-ext="ext_LotStart" class="egp-field font-mono text-emerald-400"></div>
+                                <div><label>সমাপ্তির তারিখ</label><input type="text" id="Tent_Comp" data-db="Tentative_Completion_Date" data-regex="Tentative Completion Date[\s\S]*?([\d-]+(?:[A-Za-z]{3})?-[\d]{4})" data-ext="ext_LotEnd" class="egp-field font-mono text-red-400"></div>
+                                <div><label>Completion Period</label><input type="text" id="Comp_Period" data-db="Completion_Period" data-regex="Completion Period[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Delivery Period</label><input type="text" id="Del_Period" data-db="Delivery_Period" data-regex="Delivery Period[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
 
                                 <div class="col-span-4 mt-3 border-t border-emerald-800/50 pt-3"></div>
-                                <div class="col-span-2"><label>নির্বাচিত ঠিকাদার</label><input type="text" id="Award_Supplier" data-db="Supplier_Name" data-regex="Supplier Name\s*[\:\-]?\s*([^\n]+)" class="egp-field text-emerald-400 font-bold bg-[#0b1120] border-emerald-800/50 text-sm"></div>
-                                <div><label>চুক্তি মূল্য (BDT)</label><input type="text" id="Contract_Value" data-db="Contract_Value_BDT,Contract_Value" data-regex="Contract Value.*?(?:BDT|Tk)[^\d]*([\d,\.]+)" class="egp-field text-emerald-400 font-bold bg-[#0b1120] border-emerald-800/50 font-mono text-sm"></div>
-                                <div><label>চুক্তি স্বাক্ষরের তারিখ</label><input type="text" id="Contract_Sign" data-db="Date_of_Contract_Signing" data-regex="Date of Contract Signing.*?\s*[\:\-]?\s*([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field bg-[#0b1120]"></div>
-                                <div><label>বিক্রিত দরপত্র (Sold)</label><input type="number" id="T_Sold" data-db="Tenders_Sold,No_of_Tenders_Sold" data-regex="Tenders Sold\s*[\:\-]?\s*(\d+)" class="egp-field font-mono text-blue-300 bg-[#0b1120]"></div>
-                                <div><label>গৃহীত (Received)</label><input type="number" id="T_Rec" data-db="Tenders_Received,No_of_Tenders_Received" data-regex="Tenders Received\s*[\:\-]?\s*(\d+)" class="egp-field font-mono text-yellow-300 bg-[#0b1120]"></div>
-                                <div class="col-span-2"><label>রেস্পন্সিভ (Responsive)</label><input type="number" id="T_Resp" data-db="Responsive_Tenders,No_of_Responsive_Tenders" data-regex="Responsive Tenders\s*[\:\-]?\s*(\d+)" class="egp-field font-mono text-red-400 font-bold bg-[#0b1120] border-red-900/50"></div>
+                                <div class="col-span-2"><label>নির্বাচিত ঠিকাদার</label><input type="text" id="Award_Supplier" data-db="Supplier_Name" data-regex="Supplier Name[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field text-emerald-400 font-bold bg-[#0b1120] border-emerald-800/50 text-sm"></div>
+                                <div><label>চুক্তি মূল্য (BDT)</label><input type="text" id="Contract_Value" data-db="Contract_Value_BDT,Contract_Value" data-regex="Contract Value[\s\S]*?(?:BDT|Tk|Taka)[\s\S]*?([\d,\.]+)" class="egp-field text-emerald-400 font-bold bg-[#0b1120] border-emerald-800/50 font-mono text-sm"></div>
+                                <div><label>চুক্তি স্বাক্ষরের তারিখ</label><input type="text" id="Contract_Sign" data-db="Date_of_Contract_Signing" data-regex="Date of Contract Signing[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4})" class="egp-field bg-[#0b1120]"></div>
+                                <div><label>বিক্রিত দরপত্র (Sold)</label><input type="number" id="T_Sold" data-db="Tenders_Sold,No_of_Tenders_Sold" data-regex="Tenders Sold[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-blue-300 bg-[#0b1120]"></div>
+                                <div><label>গৃহীত (Received)</label><input type="number" id="T_Rec" data-db="Tenders_Received,No_of_Tenders_Received" data-regex="Tenders Received[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-yellow-300 bg-[#0b1120]"></div>
+                                <div class="col-span-2"><label>রেস্পন্সিভ (Responsive)</label><input type="number" id="T_Resp" data-db="Responsive_Tenders,No_of_Responsive_Tenders" data-regex="Responsive Tenders[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-red-400 font-bold bg-[#0b1120] border-red-900/50"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">অন্যান্য শর্তাবলি (Execution)</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>Delivery Location</label><input type="text" id="Del_Loc" data-db="Delivery_Location" data-regex="Delivery Location\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Delivery Schedule</label><input type="text" id="Del_Sched" data-db="Delivery_Schedule" data-regex="Delivery Schedule\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Inspection Req</label><input type="text" id="Insp_Req" data-db="Inspection_Requirements" data-regex="Inspection Requirements\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Warranty Req</label><input type="text" id="Warranty" data-db="Warranty_Requirements" data-regex="Warranty.*?\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Manufacturer</label><input type="text" id="Mfr" data-db="Manufacturer" data-regex="Manufacturer\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Country of Origin</label><input type="text" id="Origin" data-db="Country_of_Origin" data-regex="Country of Origin\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Site Visit</label><input type="text" id="Site_Visit" data-db="Site_Visit" data-regex="Site Visit\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Delivery Location</label><input type="text" id="Del_Loc" data-db="Delivery_Location" data-regex="Delivery Location[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Delivery Schedule</label><input type="text" id="Del_Sched" data-db="Delivery_Schedule" data-regex="Delivery Schedule[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Inspection Req</label><input type="text" id="Insp_Req" data-db="Inspection_Requirements" data-regex="Inspection Requirements[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Warranty Req</label><input type="text" id="Warranty" data-db="Warranty_Requirements" data-regex="Warranty[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Manufacturer</label><input type="text" id="Mfr" data-db="Manufacturer" data-regex="Manufacturer[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Country of Origin</label><input type="text" id="Origin" data-db="Country_of_Origin" data-regex="Country of Origin[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Site Visit</label><input type="text" id="Site_Visit" data-db="Site_Visit" data-regex="Site Visit[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
                                 <div><label>Defects Liability (DLP)</label><input type="text" id="Def_Liab" data-db="Defects_Liability_Period" data-regex="Defects Liability.*?(\d+\s*(?:months|days|years)|0|nil|none|n/a)" class="egp-field text-red-400"></div>
-                                <div><label>Completion Time</label><input type="text" id="Comp_Time" data-db="Completion_Time" data-regex="Completion Time\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Performance Cert</label><input type="text" id="Perf_Cert" data-db="Performance_Certificate" data-regex="Performance Certificate\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Payment Terms</label><input type="text" id="Pay_Terms" data-db="Payment_Terms" data-regex="Payment Terms\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Other Conditions</label><input type="text" id="Other_Cond" data-db="Other_Conditions" data-regex="Other Conditions\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-4"><label>PE Reservation Statement</label><input type="text" id="PE_Res" data-db="Procuring_Entity_Reservation_Statement" data-regex="Procuring Entity Reservation\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Special Instructions</label><textarea id="Spec_Inst" data-db="Special_Instructions" data-regex="Special Instructions\s*[\:\-]?\s*([\s\S]{1,1000}?)Remarks" class="egp-field h-10 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>Remarks</label><textarea id="Remarks" data-db="Remarks" data-regex="Remarks\s*[\:\-]?\s*([^\n]+)" class="egp-field h-10 custom-scroll"></textarea></div>
+                                <div><label>Completion Time</label><input type="text" id="Comp_Time" data-db="Completion_Time" data-regex="Completion Time[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Performance Cert</label><input type="text" id="Perf_Cert" data-db="Performance_Certificate" data-regex="Performance Certificate[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Payment Terms</label><input type="text" id="Pay_Terms" data-db="Payment_Terms" data-regex="Payment Terms[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Other Conditions</label><input type="text" id="Other_Cond" data-db="Other_Conditions" data-regex="Other Conditions[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-4"><label>PE Reservation Statement</label><input type="text" id="PE_Res" data-db="Procuring_Entity_Reservation_Statement" data-regex="Procuring Entity Reservation[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Special Instructions</label><textarea id="Spec_Inst" data-db="Special_Instructions" data-regex="Special Instructions[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Remarks|$)" class="egp-field h-10 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>Remarks</label><textarea id="Remarks" data-db="Remarks" data-regex="Remarks[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field h-10 custom-scroll"></textarea></div>
                             </div>
                         </div>
                     </div>
@@ -496,19 +497,19 @@
                         <div class="fieldset-box">
                             <h4 class="fieldset-title"><i class="fa-solid fa-paperclip"></i> অ্যাটাচমেন্টস ও ডকুমেন্টস</h4>
                             <div class="grid grid-cols-3 gap-3">
-                                <div class="col-span-3"><label>Attachments (CSV list)</label><textarea id="Attachments" data-db="Attachments" data-regex="Attachments\s*[\:\-]?\s*([\s\S]{1,1000}?)(?:Tender Notice|$)" class="egp-field h-16 custom-scroll"></textarea></div>
-                                <div><label>Tender Notice</label><input type="text" id="Tender_Notice" data-db="Tender_Notice" data-regex="Tender Notice\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Tender Document</label><input type="text" id="Tender_Document" data-db="Tender_Document" data-regex="Tender Document\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>BOQ</label><input type="text" id="BOQ" data-db="BOQ" data-regex="BOQ\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Drawings</label><input type="text" id="Drawings" data-db="Drawings" data-regex="Drawings\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Specifications</label><input type="text" id="Specifications" data-db="Specifications" data-regex="Specifications\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Addendum</label><input type="text" id="Addendum" data-db="Addendum" data-regex="Addendum\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Corrigendum</label><input type="text" id="Corrigendum" data-db="Corrigendum" data-regex="Corrigendum\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Clarification</label><input type="text" id="Clarification" data-db="Clarification" data-regex="Clarification\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Forms</label><input type="text" id="Forms" data-db="Forms" data-regex="Forms\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>GCC</label><input type="text" id="GCC" data-db="General_Conditions_of_Contract" data-regex="General Conditions of Contract\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>PCC</label><input type="text" id="PCC" data-db="Particular_Conditions_of_Contract" data-regex="Particular Conditions of Contract\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Tech Specs</label><input type="text" id="Tech_Specs" data-db="Technical_Specifications" data-regex="Technical Specifications\s*[\:\-]?\s*([^\n]+)" class="egp-field"></div>
+                                <div class="col-span-3"><label>Attachments (CSV list)</label><textarea id="Attachments" data-db="Attachments" data-regex="Attachments[\s\S]*?(?:\:|\-)\s*([\s\S]{1,1000}?)(?:Tender Notice|$)" class="egp-field h-16 custom-scroll"></textarea></div>
+                                <div><label>Tender Notice</label><input type="text" id="Tender_Notice" data-db="Tender_Notice" data-regex="Tender Notice[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Tender Document</label><input type="text" id="Tender_Document" data-db="Tender_Document" data-regex="Tender Document[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>BOQ</label><input type="text" id="BOQ" data-db="BOQ" data-regex="BOQ[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Drawings</label><input type="text" id="Drawings" data-db="Drawings" data-regex="Drawings[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Specifications</label><input type="text" id="Specifications" data-db="Specifications" data-regex="Specifications[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Addendum</label><input type="text" id="Addendum" data-db="Addendum" data-regex="Addendum[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Corrigendum</label><input type="text" id="Corrigendum" data-db="Corrigendum" data-regex="Corrigendum[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Clarification</label><input type="text" id="Clarification" data-db="Clarification" data-regex="Clarification[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Forms</label><input type="text" id="Forms" data-db="Forms" data-regex="Forms[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>GCC</label><input type="text" id="GCC" data-db="General_Conditions_of_Contract" data-regex="General Conditions of Contract[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>PCC</label><input type="text" id="PCC" data-db="Particular_Conditions_of_Contract" data-regex="Particular Conditions of Contract[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Tech Specs</label><input type="text" id="Tech_Specs" data-db="Technical_Specifications" data-regex="Technical Specifications[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
@@ -558,7 +559,7 @@
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigator_StableMerge_v3')) || {};
+        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigator_DeepParser_v4')) || {};
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
@@ -586,14 +587,28 @@
 
         function escapeHtml(unsafe) { return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
         
+        // --- SMART EXTRACTION ENGINE (TENDER SPECIFIC FIX) ---
         function extractRegex(text, regexStr) {
             if (!text || !regexStr) return "";
             try { 
+                // Enable multi-line matching using standard 'i' flag with [\s\S] blocks configured in regexes
                 let parsedRegex = regexStr.replace(/\\n/g, '\\s*'); 
-                let match = text.match(new RegExp(parsedRegex, 'i')); 
+                let regex = new RegExp(parsedRegex, 'i');
+                let match = text.match(regex); 
                 if (match && match[1]) {
-                    let val = match[1].trim().replace(/\s+/g, ' '); 
-                    val = val.replace(/(?:\bBrief Description\b|\bEvaluation Type\b|\bDocument Price\b|\bCategory\b|\bCapacity\b|\bTender\/Proposal\b).*$/i, '').trim();
+                    let val = match[1].replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim(); 
+                    
+                    // Stop it from grabbing random labels if lookahead failed
+                    let stopWords = ["Brief Description", "Evaluation Type", "Document Available", "Document Fees", "Price of Tender", "Tender/Proposal Document Price", "Mode of Payment", "Tender/Proposal Security", "Location", "Category", "Name of Official", "Designation", "Address of Official"];
+                    let earliestStop = val.length;
+                    for (let word of stopWords) {
+                        let idx = val.toLowerCase().indexOf(word.toLowerCase());
+                        if (idx > 0 && idx < earliestStop) {
+                            earliestStop = idx;
+                        }
+                    }
+                    val = val.substring(0, earliestStop).trim();
+                    val = val.replace(/[:\-]$/, '').trim();
                     return val;
                 }
                 return ""; 
@@ -647,7 +662,7 @@
                 try {
                     const importedLogs = JSON.parse(e.target.result);
                     auditLogs = { ...auditLogs, ...importedLogs };
-                    localStorage.setItem('egpInvestigator_StableMerge_v3', JSON.stringify(auditLogs));
+                    localStorage.setItem('egpInvestigator_DeepParser_v4', JSON.stringify(auditLogs));
                     alert("আগের কাজ সফলভাবে লোড হয়েছে!");
                     if(rawTenderData.length > 0) initDashboard();
                 } catch(err) { alert("ভুল ফাইল ফরম্যাট!"); }
@@ -714,12 +729,15 @@
                         for (let i = 1; i <= maxPages; i++) {
                             let page = await pdf.getPage(i);
                             let textContent = await page.getTextContent();
-                            fullText += textContent.items.map(item => item.str).join(" ") + "\n";
+                            let pageText = textContent.items.map(item => item.str).join(" ");
+                            fullText += pageText + "\n";
                             page.cleanup(); 
                         }
                         await pdf.destroy();
                         loadingTask.destroy();
                         typedarray = null;
+                        
+                        fullText = fullText.replace(/\s{2,}/g, ' '); // Normalize spaces for better regex matching
                         resolve(fullText.trim() ? fullText : "NO_TEXT");
                     } catch(err) { 
                         if(pdf) await pdf.destroy();
@@ -819,44 +837,26 @@
                 let sold = parseInt(log.T_Sold || getVal('Tenders_Sold,No_of_Tenders_Sold') || 0);
                 let responsive = parseInt(log.T_Resp || getVal('Responsive_Tenders,No_of_Responsive_Tenders') || 0);
 
-                let pubDate = log.Pub_Date || getVal('Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date', "(?:Publication|Invited).*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
-                let closeDate = log.Close_Date || getVal('Tender_Proposal_Closing_Date_and_Time,Closing_Date', "(?:Closing|Submission).*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
-                let preStart = log.Pre_Start || getVal('Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting', "(?:meeting Start|Pre-Tender).*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
+                let pubDate = log.Pub_Date || getVal('Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date', "(?:Publication|Invited)[\s\S]*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
+                let closeDate = log.Close_Date || getVal('Tender_Proposal_Closing_Date_and_Time,Closing_Date', "(?:Closing|Submission)[\s\S]*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
+                let preStart = log.Pre_Start || getVal('Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting', "(?:meeting Start|Pre-Tender)[\s\S]*?([\\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*\d{2}:\d{2})?)");
                 let signDate = log.Contract_Sign || getVal('Date_of_Contract_Signing,Contract_Sign_Date');
                 
                 let docPrice = log.Doc_Price || getVal('Tender_Proposal_Document_Price_In_BDT,Document_Price,Tender_Document_Price', "(?:Document Price|Price of Tender Document|Tender Document Price)[^\\d]*?(?:BDT|Tk\.?|Taka)\\s*([\\d,\\.]+)");
-                let advPay = log.Adv_Pay || getVal('Advance_Payment', "(?:Advance Payment|advance).*?(\\d{1,2}\\s*%)");
-                let retMoney = log.Ret_Money || getVal('Retention_Money', "retention.*?(0%|nil|none|not|n\/a|\\d{1,2}\\s*%)");
-                let liqAssets = log.Liq_Assets || getVal('Liquid_Assets', "(?:liquid asset|credit facilit|working capital)[^\\d]*?(?:BDT|Tk\.?|Taka)\\s*([\\d\\,\\.]+)");
+                let advPay = log.Adv_Pay || getVal('Advance_Payment', "(?:Advance Payment|advance)[\s\S]*?(\\d{1,2}\\s*%)");
+                let retMoney = log.Ret_Money || getVal('Retention_Money', "retention[\s\S]*?(0%|nil|none|not|n\/a|\\d{1,2}\\s*%)");
+                let liqAssets = log.Liq_Assets || getVal('Liquid_Assets', "(?:liquid asset|credit line|working capital)[^\\d]*?(?:BDT|Tk\.?|Taka)\\s*([\\d\\,\\.]+\\s*(?:Lakh|Million|Crore)?|none|nil|0)");
                 
-                let earlyEng = log.Early_Market_Eng || getVal('Early_Market_Engagement', "Early Market Engagement.*?(yes|no)");
-                let ratedCriteria = log.Rated_Crit || getVal('Rated_Criteria', "Rated Criteria.*?(yes|no|\\d{1,3}\\s*%)");
-                let ratedWeight = log.Rated_Crit_Weight || getVal('Rated_Criteria_Weighting', "Rated Criteria Weighting.*?(\\d{1,3}\\s*%)");
-                let estCost = log.Est_Cost || getVal('Estimated_Cost,Contract_Value_BDT,Contract_Value', "(?:Estimated Cost|Value).*?(?:BDT|Tk\.?)[^\\d]*([\\d,\\.]+)");
+                let earlyEng = log.Early_Market_Eng || getVal('Early_Market_Engagement', "Early Market Engagement[\s\S]*?(yes|no)");
+                let ratedCriteria = log.Rated_Crit || getVal('Rated_Criteria', "Rated Criteria[\s\S]*?(yes|no|\\d{1,3}\\s*%)");
+                let ratedWeight = log.Rated_Crit_Weight || getVal('Rated_Criteria_Weighting', "Rated Criteria Weighting[\s\S]*?(\\d{1,3}\\s*%)");
+                let estCost = log.Est_Cost || getVal('Estimated_Cost,Contract_Value_BDT,Contract_Value', "(?:Estimated Cost|Contract Value|Target Amount)[^\\d]*?(?:BDT|Tk\.?|Taka)\\s*([\\d,\\.]+)");
 
-                let jvMax = log.JV_Members || getVal('Maximum_JV_Members', "maximum number of members in the JVCA.*?:\s*([a-zA-Z0-9]+)");
-                let dlpText = log.Def_Liab || getVal('Defects_Liability_Period', "Defects Liability.*?(\\d+\\s*(?:months|days|years)|0|nil|none|n/a)");
-                let perfReq = log.Perf_Req || getVal('Performance_Security_Requirement,Performance_Security', "Performance Security.*?(\\d{1,2}\\s*%)");
-                let lotStart = log.Tent_Start || getVal('Tentative_Start_Date', "Tentative Start Date.*?([\\d-]+(?:[A-Za-z]{3})?-[\\d]{4})");
-                let lotEnd = log.Tent_Comp || getVal('Tentative_Completion_Date', "Tentative Completion Date.*?([\\d-]+(?:[A-Za-z]{3})?-[\\d]{4})");
-
-                // MAP ALL FIELDS INTO 't' ACCORDING TO TENDER SPECIFIC DATA
-                document.querySelectorAll('.egp-field').forEach(input => {
-                    let dbKey = input.getAttribute('data-db');
-                    let regexStr = input.getAttribute('data-regex');
-                    let val = findValInJSON(t, dbKey);
-                    
-                    if (!val && regexStr && t.fullOCR) { val = extractRegex(t.fullOCR, regexStr); }
-                    if (!val && t.fullOCR && dbKey) {
-                        let label = dbKey.replace(/_/g, ' ');
-                        let fallbackRegex = new RegExp(label + "\\s*[\\:\\-]\\s*([^\\n]+)", "i");
-                        let fMatch = t.fullOCR.match(fallbackRegex);
-                        if(fMatch && fMatch[1]) val = fMatch[1].trim();
-                    }
-
-                    if(val && String(val).replace(/,/g, '').trim() === tid) val = "";
-                    t[dbKey] = val || ""; 
-                });
+                let jvMax = log.JV_Members || getVal('Maximum_JV_Members', "maximum number of members in the JVCA[\s\S]*?:\s*([a-zA-Z0-9]+)");
+                let dlpText = log.Def_Liab || getVal('Defects_Liability_Period', "Defects Liability[\s\S]*?(\\d+\\s*(?:months|days|years)|0|nil|none|n/a)");
+                let perfReq = log.Perf_Req || getVal('Performance_Security_Requirement,Performance_Security', "Performance Security[\s\S]*?(\\d{1,2}\\s*%)");
+                let lotStart = log.Tent_Start || getVal('Tentative_Start_Date', "Tentative Start Date[\s\S]*?([\\d-]+(?:[A-Za-z]{3})?-[\\d]{4})");
+                let lotEnd = log.Tent_Comp || getVal('Tentative_Completion_Date', "Tentative Completion Date[\s\S]*?([\\d-]+(?:[A-Za-z]{3})?-[\\d]{4})");
 
                 // AGGRESSIVE ORG MAPPING
                 let peName = String(findValInJSON(t, 'Procuring_Entity_Name')).toUpperCase();
@@ -878,6 +878,24 @@
 
                 t.ext_OrgName = log.Organization || mappedOrg;
 
+                // 120 FIELDS MAPPING INTO RECORD 't'
+                document.querySelectorAll('.egp-field').forEach(input => {
+                    let dbKey = input.getAttribute('data-db');
+                    let regexStr = input.getAttribute('data-regex');
+                    let val = findValInJSON(t, dbKey);
+                    
+                    if (!val && regexStr && t.fullOCR) { val = extractRegex(t.fullOCR, regexStr); }
+                    if (!val && t.fullOCR && dbKey) {
+                        let label = dbKey.replace(/_/g, ' ');
+                        let fallbackRegex = new RegExp(label + "[\\s\\:\\-]+([^\\n]+)", "i");
+                        let fMatch = t.fullOCR.match(fallbackRegex);
+                        if(fMatch && fMatch[1]) val = fMatch[1].trim();
+                    }
+
+                    if(val && String(val).replace(/,/g, '').trim() === tid) val = "";
+                    t[dbKey] = val || ""; 
+                });
+
                 function hi(val) { return val ? `<span class="bg-yellow-300 text-black px-1 rounded shadow-sm">${val}</span>` : ''; }
 
                 let isWB = combinedText.includes("world bank") || combinedText.includes("ibrd") || combinedText.includes("ida");
@@ -887,7 +905,7 @@
                 let estCostParsed = parseInt(String(estCost).replace(/[^\d]/g, '')) || 0;
                 let isHighValue = estCostParsed >= 1000000000;
 
-                // MAIN FORENSIC RULES & TARGET FIELDS
+                // RULE ENGINE WITH TARGET FIELDS
                 if (!pubDate || !closeDate) {
                     findings.push({ flag: "গুরুত্বপূর্ণ তারিখ গোপন", risk: "High", evidence: `Pub/Close Date: ${hi('Missing')}`, violation_logic: `দরপত্র প্রকাশের বা জমার তারিখ নথিতে নেই। এটি সম্পূর্ণ বেআইনি এবং অস্বচ্ছতার প্রমাণ।`, rule_detail: "Dates must be clearly published to ensure fair competition.", rule: "Transparency", clause: "PPR 2008", targetField: 'Pub_Date' }); score += 20; 
                 }
@@ -900,7 +918,7 @@
                     let days = getDaysDiff(pubDate, closeDate);
                     if (days !== null && days >= 0) {
                         if(isICB && days < 45) {
-                            findings.push({ flag: "আন্তর্জাতিক দরপত্রে স্বল্প সময় (JICA)", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `মাত্র ${days} দিন সময় দেওয়া হয়েছে, যা বিদেশী ঠিকাদারদের জন্য অসম্ভব।`, rule_detail: "JICA Guidelines Sec 5.01: Generally, not less than 45 days shall be allowed for ICB.", rule: "JICA", clause: "Sec 5.01", targetField: 'Close_Date' }); score += 40;
+                            findings.push({ flag: "আন্তর্জাতিক দরপত্রে স্বল্প সময় (JICA Violation)", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `মাত্র ${days} দিন সময় দেওয়া হয়েছে, যা বিদেশী ঠিকাদারদের জন্য অসম্ভব।`, rule_detail: "JICA Guidelines Sec 5.01: Generally, not less than 45 days shall be allowed for ICB.", rule: "JICA", clause: "Sec 5.01", targetField: 'Close_Date' }); score += 40;
                         } else if (!isICB && days < 14) {
                             findings.push({ flag: "বেআইনিভাবে স্বল্প দরপত্র সময়", risk: "Critical", evidence: `Pub: ${pubDate} | Close: ${closeDate} (${hi(days)} days)`, violation_logic: `১৪ দিনের কম সময় দেওয়া প্রতিযোগিতার পরিপন্থী।`, rule_detail: "PPR 2008: জাতীয় দরপত্রে ন্যূনতম ১৪ দিন সময় দিতে হবে।", rule: "PPR 2008", clause: "Bidding Time", targetField: 'Close_Date' }); score += 40;
                         } else if (!isICB && days < 21) {
@@ -1021,6 +1039,54 @@
             }
         }
 
+        // ================= MANUAL FLAG UPDATE =================
+        function updateFlagStatus(index, status) {
+            let tid = currentRecord.Tender_Proposal_ID;
+            if(!auditLogs[tid]) auditLogs[tid] = {};
+            if(!auditLogs[tid].flagStatuses) auditLogs[tid].flagStatuses = {};
+            
+            if(auditLogs[tid].flagStatuses[index] === status) {
+                delete auditLogs[tid].flagStatuses[index];
+            } else {
+                auditLogs[tid].flagStatuses[index] = status;
+            }
+            
+            localStorage.setItem('egpInvestigator_DeepParser_v4', JSON.stringify(auditLogs));
+            renderInspectorUI();
+        }
+
+        function addCustomFlag() {
+            let title = document.getElementById('customFlagTitle').value.trim();
+            let risk = document.getElementById('customFlagRisk').value;
+            let evidence = document.getElementById('customFlagEvidence').value.trim();
+
+            if(!title || !evidence) return alert("অনুগ্রহ করে নাম এবং প্রমাণ দিন!");
+
+            let tid = currentRecord.Tender_Proposal_ID;
+            if(!auditLogs[tid]) auditLogs[tid] = {};
+            if(!auditLogs[tid].customFlags) auditLogs[tid].customFlags = [];
+
+            auditLogs[tid].customFlags.push({ 
+                flag: title, 
+                risk: risk, 
+                evidence: evidence, 
+                violation_logic: "ম্যানুয়ালি যুক্ত করা হয়েছে", 
+                rule_detail: "Custom Rule" 
+            });
+            
+            localStorage.setItem('egpInvestigator_DeepParser_v4', JSON.stringify(auditLogs));
+            renderInspectorUI();
+        }
+
+        function removeCustomFlag(index) {
+            let tid = currentRecord.Tender_Proposal_ID;
+            if(auditLogs[tid] && auditLogs[tid].customFlags) {
+                auditLogs[tid].customFlags.splice(index, 1);
+                localStorage.setItem('egpInvestigator_DeepParser_v4', JSON.stringify(auditLogs));
+                renderInspectorUI();
+            }
+        }
+
         // ================= DASHBOARD UI =================
         function filterByAuditStatus(status) {
             let table = $('#mainTable').DataTable();
@@ -1111,17 +1177,20 @@
             let e9 = document.getElementById('kpiVerified'); if(e9) e9.innerText = counts.VERIFIED;
             let e10 = document.getElementById('kpiPending'); if(e10) e10.innerText = counts.PENDING;
 
-            let table = $('#mainTable').DataTable({ 
-                pageLength: 10, 
-                order: [[3, 'desc']], 
-                language: { 
-                    emptyTable: "কোনো ডেটা পাওয়া যায়নি",
-                    paginate: { next: "<i class='fa-solid fa-chevron-right'></i>", previous: "<i class='fa-solid fa-chevron-left'></i>" }
-                },
-                dom: 'rt<"flex justify-between items-center mt-4"p>'
-            });
+            if(!isSilent) {
+                if ($.fn.DataTable.isDataTable('#mainTable')) $('#mainTable').DataTable().destroy();
+                let table = $('#mainTable').DataTable({ 
+                    pageLength: 10, 
+                    order: [[3, 'desc']], 
+                    language: { 
+                        emptyTable: "কোনো ডেটা পাওয়া যায়নি",
+                        paginate: { next: "<i class='fa-solid fa-chevron-right'></i>", previous: "<i class='fa-solid fa-chevron-left'></i>" }
+                    },
+                    dom: 'rt<"flex justify-between items-center mt-4"p>'
+                });
 
-            $('#customSearch').off('keyup').on('keyup', function () { table.search(this.value).draw(); });
+                $('#customSearch').off('keyup').on('keyup', function () { table.search(this.value).draw(); });
+            }
         }
 
         // ================= MULTI-PDF INSPECTOR & AUTO-FILL =================
@@ -1186,7 +1255,6 @@
             document.getElementById('riskProgressBar').className = `h-full transition-all ${currentRecord.riskLevel === 'CRITICAL' ? 'bg-red-500' : 'bg-yellow-500'}`;
             document.getElementById('riskProgressText').innerText = `স্কোর: ${currentRecord.riskScore}`;
 
-            // ALWAYS VISIBLE AUDIT STATUS BADGE IN INSPECTOR
             let isVerified = log.status ? true : false;
             let auditBadge = document.getElementById('inspAuditStatus');
             if (isVerified) {
@@ -1202,14 +1270,12 @@
                 auditBadge.innerHTML = `<i class="fa-regular fa-clock"></i> যাচাই বাকি`;
             }
 
-            // RESET HIGHLIGHTS
             document.querySelectorAll('.egp-field').forEach(el => {
                 el.classList.remove('manipulated-field');
                 let label = el.previousElementSibling;
                 if(label) label.innerHTML = label.innerHTML.replace(' <i class="fa-solid fa-triangle-exclamation text-red-500" title="কারসাজির সন্দেহ"></i>', '');
             });
 
-            // FIELD AUTO-FILL FROM RECORD
             document.querySelectorAll('.egp-field').forEach(input => {
                 let dbKey = input.getAttribute('data-db');
                 let val = log[input.id] || currentRecord[dbKey] || "";
@@ -1220,7 +1286,6 @@
                 else { input.className = 'egp-field border-red-900/50'; } 
             });
 
-            // HIGHLIGHT MANIPULATED FIELDS
             currentRecord.forensicFindings.forEach(f => {
                 let targetId = f.targetField;
                 if(targetId) {
@@ -1238,23 +1303,75 @@
             document.getElementById('auditJustification').value = log.justification || "";
 
             const flagsContainer = document.getElementById('inspFlagsContainer');
-            if (currentRecord.forensicFindings.length === 0) {
-                flagsContainer.innerHTML = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-shield-check"></i> কোনো জালিয়াতি পাওয়া যায়নি।</div>`;
+            let allFlags = currentRecord.forensicFindings || [];
+            let customFlags = log.customFlags || [];
+            let htmlStr = '';
+
+            if (allFlags.length === 0 && customFlags.length === 0) {
+                htmlStr = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-shield-check"></i> কোনো জালিয়াতি পাওয়া যায়নি।</div>`;
             } else {
-                flagsContainer.innerHTML = currentRecord.forensicFindings.map(f => `
-                    <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 mb-4 shadow-lg">
-                        <div class="flex justify-between items-start mb-3">
-                            <h4 class="text-sm font-black text-white">${f.flag}</h4>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${f.risk} RISK</span>
+                allFlags.forEach((f, index) => {
+                    let status = (log.flagStatuses && log.flagStatuses[index]) ? log.flagStatuses[index] : '';
+                    let okClass = status === 'OK' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
+                    let notOkClass = status === 'NOT_OK' ? 'bg-red-600 text-white border-red-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
+                    let cardOp = status === 'OK' ? 'opacity-40' : 'opacity-100';
+
+                    htmlStr += `
+                        <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 mb-4 shadow-lg transition-all ${cardOp}">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-black text-white">${f.flag}</h4>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${f.risk} RISK</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="updateFlagStatus(${index}, 'OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${okClass}"><i class="fa-solid fa-check"></i> OK</button>
+                                    <button onclick="updateFlagStatus(${index}, 'NOT_OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${notOkClass}"><i class="fa-solid fa-xmark"></i> NOT OK</button>
+                                </div>
+                            </div>
+                            <div class="text-xs space-y-3">
+                                <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
+                                <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
+                                <div class="border-t border-slate-700/50 pt-2 mt-2"><p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p></div>
+                            </div>
                         </div>
-                        <div class="text-xs space-y-3">
-                            <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
-                            <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
-                            <div class="border-t border-slate-700/50 pt-2 mt-2"><p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p></div>
+                    `;
+                });
+
+                customFlags.forEach((cf, index) => {
+                    htmlStr += `
+                        <div class="bg-[#131b2f] border-l-4 ${cf.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 mb-4 shadow-lg border-r border-r-blue-500/30">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-black text-blue-300">${cf.flag} <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1">CUSTOM</span></h4>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${cf.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${cf.risk} RISK</span>
+                                </div>
+                                <button onclick="removeCustomFlag(${index})" class="text-slate-500 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                            <div class="text-xs space-y-3">
+                                <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ/লজিক:</span> <span class="text-red-400 font-mono">${cf.evidence}</span></div>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                });
             }
+
+            htmlStr += `
+                <div class="mt-6 p-4 border border-dashed border-slate-600 rounded-xl bg-[#0b1120]">
+                    <h4 class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-500"></i> ম্যানুয়ালি নতুন জালিয়াতি যোগ করুন</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                        <input type="text" id="customFlagTitle" placeholder="জালিয়াতির নাম (যেমন: অতিরিক্ত টার্নওভার)" class="bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white col-span-1 md:col-span-2">
+                        <select id="customFlagRisk" class="bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white col-span-1">
+                            <option value="Critical">Critical Risk</option>
+                            <option value="High">High Risk</option>
+                            <option value="Medium">Medium Risk</option>
+                        </select>
+                        <textarea id="customFlagEvidence" placeholder="প্রমাণ বা লজিক বিস্তারিত লিখুন..." class="col-span-1 md:col-span-3 bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white h-12 custom-scroll"></textarea>
+                    </div>
+                    <button onclick="addCustomFlag()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-xs text-white font-bold transition w-full md:w-auto">যুক্ত করুন</button>
+                </div>
+            `;
+
+            flagsContainer.innerHTML = htmlStr;
         }
 
         function loadSpecificPdf(key, btn) {
@@ -1280,16 +1397,25 @@
             document.getElementById('dashboardView').classList.remove('hide');
             if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
             document.getElementById('pdfIframe').src = "";
-            initDashboard(); // Completely rebuild table on exit to ensure UI refresh
+            initDashboard(true); 
         }
 
         function saveAuditLog(statusLabel) {
-            let logData = { timestamp: new Date().toISOString(), status: statusLabel, justification: document.getElementById('auditJustification').value };
+            let tid = currentTenderId;
+            let prevLog = auditLogs[tid] || {};
+            let logData = { 
+                timestamp: new Date().toISOString(), 
+                status: statusLabel, 
+                justification: document.getElementById('auditJustification').value,
+                flagStatuses: prevLog.flagStatuses || {},
+                customFlags: prevLog.customFlags || []
+            };
+
             document.querySelectorAll('.egp-field').forEach(input => { logData[input.id] = input.value; });
-            auditLogs[currentTenderId] = logData;
-            localStorage.setItem('egpInvestigator_StableMerge_v3', JSON.stringify(auditLogs));
+            auditLogs[tid] = logData;
+            localStorage.setItem('egpInvestigator_DeepParser_v4', JSON.stringify(auditLogs));
             
-            let newRec = analyzeSingleRecord(rawTenderData.find(x => x.Tender_Proposal_ID == currentTenderId));
+            let newRec = analyzeSingleRecord(rawTenderData.find(x => x.Tender_Proposal_ID == tid));
             Object.assign(currentRecord, newRec);
             renderInspectorUI();
             showToast("ডেটা সেভ হয়েছে", "রুলস এবং অডিট স্ট্যাটাস আপডেট করা হয়েছে।");
@@ -1337,7 +1463,7 @@
 
         function previewMasterStory() {
             let head = document.getElementById('storyHeadline').value || "ই-জিপি প্রকল্পে মেগা দুর্নীতি";
-            let subhead = document.getElementById('storySubhead').value || "বিশ্বব্যাংক ও জাইকার রুলস ভেঙে কাজ দেওয়া হয়েছে।";
+            let subhead = document.getElementById('storySubhead').value || "বিশ্বব্যাংক ও জাইকার নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
             let author = document.getElementById('storyAuthor').value || "ডেটা জার্নালিজম ডেস্ক";
             let intro = document.getElementById('storyIntro').value.replace(/\n/g, '<br><br>') || "অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে।";
             let method = document.getElementById('storyMethod').value.replace(/\n/g, '<br>');
@@ -1357,7 +1483,7 @@
             
             Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
-                let log = auditLogs[cb.value];
+                let log = auditLogs[cb.value] || {};
                 html += `
                     <div class="mb-12 border-t border-slate-200 pt-8">
                         <h3 class="text-xl font-bold text-red-700 mb-4 font-sans flex items-center gap-2">
@@ -1368,26 +1494,34 @@
                             <div><strong class="text-slate-500">চুক্তিমূল্য:</strong> <span class="font-mono font-bold text-red-600">BDT ${log.Contract_Value || rec.Contract_Value_BDT || '0'}</span></div>
                             <div class="col-span-2"><strong class="text-slate-500">ঠিকাদার:</strong> <span class="font-bold">${log.Award_Supplier || rec.Supplier_Name || 'অজানা'}</span></div>
                         </div>
-                        <p class="text-[1.1rem] text-slate-800 mb-6 font-sans leading-relaxed border-l-4 border-red-400 pl-4 bg-red-50/50 py-3">${log.justification}</p>
+                        <p class="text-[1.1rem] text-slate-800 mb-6 font-sans leading-relaxed border-l-4 border-red-400 pl-4 bg-red-50/50 py-3">${log.justification || 'কোনো ম্যানুয়াল নোট দেওয়া হয়নি।'}</p>
                 `;
-                rec.forensicFindings.forEach(f => {
-                    html += `
-                        <div class="nn-evidence-box relative overflow-hidden bg-white shadow-sm border border-slate-200">
-                            <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
-                            <h4 class="font-bold text-slate-800 text-lg mb-2">${f.flag}</h4>
-                            <p class="text-[0.95rem] text-slate-800 mb-3 leading-relaxed"><strong>অনিয়মের ধরন:</strong> ${f.violation_logic}</p>
-                            <div class="bg-red-50 p-3 rounded text-sm text-red-800 border-l-4 border-red-500 mb-4"><strong>প্রকৃত আইন:</strong> ${f.rule_detail}</div>
-                            <details class="group bg-slate-50 rounded border border-slate-200 cursor-pointer outline-none">
-                                <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-100 transition-colors flex items-center gap-2 outline-none">
-                                    <i class="fa-solid fa-file-pdf"></i> 📄 নথির স্ক্যান করা প্রমাণ দেখুন
-                                </summary>
-                                <div class="p-4 bg-slate-900 text-emerald-400 font-mono text-[12px] border-t border-slate-200 leading-relaxed overflow-x-auto shadow-inner">
-                                    ${f.evidence}
-                                </div>
-                            </details>
-                        </div>
-                    `;
-                });
+                
+                let activeFindings = rec.forensicFindings.filter((f, i) => !(log.flagStatuses && log.flagStatuses[i] === 'OK'));
+                if(log.customFlags) activeFindings = activeFindings.concat(log.customFlags);
+
+                if (activeFindings.length > 0) {
+                    activeFindings.forEach(f => {
+                        html += `
+                            <div class="nn-evidence-box relative overflow-hidden bg-white shadow-sm border border-slate-200">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                                <h4 class="font-bold text-slate-800 text-lg mb-2">${f.flag}</h4>
+                                <p class="text-[0.95rem] text-slate-800 mb-3 leading-relaxed"><strong>অনিয়মের ধরন:</strong> ${f.violation_logic}</p>
+                                <div class="bg-red-50 p-3 rounded text-sm text-red-800 border-l-4 border-red-500 mb-4"><strong>প্রকৃত আইন:</strong> ${f.rule_detail}</div>
+                                <details class="group bg-slate-50 rounded border border-slate-200 cursor-pointer outline-none">
+                                    <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-100 transition-colors flex items-center gap-2 outline-none">
+                                        <i class="fa-solid fa-file-pdf"></i> 📄 নথির স্ক্যান করা প্রমাণ দেখুন
+                                    </summary>
+                                    <div class="p-4 bg-slate-900 text-emerald-400 font-mono text-[12px] border-t border-slate-200 leading-relaxed overflow-x-auto shadow-inner">
+                                        ${f.evidence}
+                                    </div>
+                                </details>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += `<p class="text-emerald-600 font-bold text-sm bg-emerald-50 p-3 rounded border border-emerald-200">এই টেন্ডারে কোনো জালিয়াতি চিহ্নিত করা হয়নি।</p>`;
+                }
                 html += `</div>`;
             });
             if(storyImagesArray.length > 1) {
