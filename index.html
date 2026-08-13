@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Official Details Auto-Fill Fix)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Auto-Save & Smart Parsing)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -82,17 +82,13 @@
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 40px 40px;"></div>
         
         <i class="fa-solid fa-radar text-7xl text-red-600 mb-6 relative z-10 drop-shadow-[0_0_20px_rgba(220,38,38,0.6)]"></i>
-        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Smart AI ইনভেস্টিগেটর</h1>
-        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">ডিপ স্ক্যানিং অ্যালগরিদম দিয়ে Eligibility, Liquid Assets, Official Details সহ সকল ডেটা ১০০% নির্ভুলভাবে তুলে আনা হবে।</p>
+        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Smart ইনভেস্টিগেটর</h1>
+        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">ডিপ স্ক্যানিং অ্যালগরিদম দিয়ে ডেটা এক্সট্রাক্ট করা হবে। আপনার করা সমস্ত কাজ ব্রাউজারে <span class="text-emerald-400 font-bold">অটো-সেভ</span> থাকবে।</p>
         
         <div class="flex gap-4 relative z-10">
             <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
-            <label for="folderLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition-all text-sm flex items-center gap-3">
-                <i class="fa-solid fa-folder-open"></i> EGP ফোল্ডার আপলোড করুন
-            </label>
-            <input type="file" id="progressLoader" accept=".json" class="hidden" onchange="importProgress(event)">
-            <label for="progressLoader" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-8 rounded-lg border border-slate-700 transition-all text-sm flex items-center gap-2">
-                <i class="fa-solid fa-upload"></i> আগের কাজ লোড
+            <label for="folderLoader" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-10 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all text-base flex items-center gap-3">
+                <i class="fa-solid fa-folder-open text-xl"></i> EGP ফোল্ডার আপলোড করে শুরু করুন
             </label>
         </div>
     </div>
@@ -119,7 +115,7 @@
                 <div>
                     <h1 class="text-xl font-bold text-white flex items-center gap-3">
                         ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস 
-                        <span class="bg-red-900/40 text-red-400 border border-red-800 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">Audit Status Edition</span>
+                        <span class="bg-red-900/40 text-red-400 border border-red-800 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black"><i class="fa-solid fa-cloud-arrow-down"></i> Auto-Save Active</span>
                     </h1>
                     <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
                         ১৮টি ফরেনসিক রুলস দিয়ে জালিয়াতি শনাক্তকরণ 
@@ -127,18 +123,24 @@
                     </p>
                 </div>
             </div>
-            <div class="flex flex-wrap gap-3">
-                <button onclick="exportProgress()" class="bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 px-4 py-2 rounded-lg font-bold text-xs text-indigo-400 transition flex items-center gap-2">
-                    <i class="fa-regular fa-floppy-disk"></i> কাজ সেভ করুন
+            <div class="flex flex-wrap gap-2">
+                <!-- NEW IMPORT BUTTON MOVED TO DASHBOARD -->
+                <input type="file" id="progressLoader" accept=".json" class="hidden" onchange="importProgress(event)">
+                <label for="progressLoader" class="cursor-pointer bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-slate-300 border border-slate-700 transition flex items-center gap-2 text-xs font-bold" title="অন্য ডিভাইস থেকে কাজের ব্যাকআপ ফাইল লোড করুন">
+                    <i class="fa-solid fa-upload"></i> ব্যাকআপ লোড
+                </label>
+
+                <button onclick="exportProgress()" class="bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 px-4 py-2 rounded-lg font-bold text-xs text-indigo-400 transition flex items-center gap-2" title="অন্য পিসিতে নেওয়ার জন্য ব্যাকআপ ডাউনলোড করুন">
+                    <i class="fa-regular fa-floppy-disk"></i> ব্যাকআপ সেভ (JSON)
                 </button>
                 <button onclick="exportToCSV()" class="bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/30 px-4 py-2 rounded-lg font-bold text-xs text-emerald-400 transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-csv"></i> CSV ডাউনলোড
+                    <i class="fa-solid fa-file-csv"></i> CSV এক্সপোর্ট
                 </button>
-                <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-slate-400 border border-slate-700 transition">
+                <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-slate-400 border border-slate-700 transition" title="রিলোড">
                     <i class="fa-solid fa-rotate-right"></i>
                 </button>
-                <button onclick="openStoryBuilder()" class="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg font-black text-xs text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] transition flex items-center gap-2">
-                    <i class="fa-solid fa-newspaper"></i> মাস্টার রিপোর্ট তৈরি
+                <button onclick="openStoryBuilder()" class="bg-red-600 hover:bg-red-500 px-5 py-2 rounded-lg font-black text-xs text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] transition flex items-center gap-2 ml-2">
+                    <i class="fa-solid fa-newspaper"></i> রিপোর্ট তৈরি করুন
                 </button>
             </div>
         </header>
@@ -289,8 +291,8 @@
                             <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ভেরিফিকেশন ও স্টোরি নোটস</h3>
                             <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">যেকোনো ফিল্ড আপডেট করে সেভ করলে রুলসগুলো অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে। <span class="text-emerald-400 font-bold">আপনি প্রতিটি ফ্ল্যাগ ম্যানুয়ালি (OK/NOT OK) যাচাই করতে পারবেন এবং তার কারণ নোট হিসেবে লিখে রাখতে পারবেন।</span></p>
                             
-                            <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের ইনভেস্টিগেটিভ নোটস:</label>
-                            <textarea id="auditJustification" class="w-full bg-[#0b1120] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-blue-500 transition-all" placeholder="আপনার পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
+                            <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের সামগ্রিক ইনভেস্টিগেটিভ নোটস:</label>
+                            <textarea id="auditJustification" class="w-full bg-[#0b1120] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-blue-500 transition-all" placeholder="আপনার সামগ্রিক পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
                             
                             <div class="flex gap-3">
                                 <button onclick="saveAuditLog('Verified - Clean')" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg shadow-lg transition text-xs flex justify-center items-center gap-2 cursor-pointer border border-slate-500">
@@ -311,40 +313,40 @@
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">প্রাতিষ্ঠানিক তথ্য</h4>
                             <div class="grid grid-cols-3 gap-3">
-                                <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Division|Agency|Organization|Procuring|\n)" class="egp-field"></div>
-                                <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Agency|Organization|Procuring|\n)" class="egp-field"></div>
-                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-regex="Organization[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity|\n)" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
-                                <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity Code|Procuring Entity District|\n)" class="egp-field"></div>
-                                <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity District|\n)" class="egp-field"></div>
-                                <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District,District" data-regex="Procuring Entity District[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Invitation for|Project Code|\n)" class="egp-field"></div>
+                                <div><label>মন্ত্রণালয় (Ministry)</label><input type="text" id="Ministry" data-db="Ministry" data-regex="Ministry(?:\/Division)?[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Division|Agency|Organization|Procuring|\n)" class="egp-field"></div>
+                                <div><label>বিভাগ (Division)</label><input type="text" id="Division" data-db="Division" data-regex="Division[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Agency|Organization|Procuring|\n)" class="egp-field"></div>
+                                <div><label>অধিদপ্তর (Organization)</label><input type="text" id="Organization" data-db="Organization" data-regex="Organization[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity|\n)" data-ext="ext_OrgName" class="egp-field font-bold text-blue-300"></div>
+                                <div><label>ক্রয়কারী সত্তা (PE Name)</label><input type="text" id="PE_Name" data-db="Procuring_Entity_Name" data-regex="Procuring Entity Name[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity Code|Procuring Entity District|\n)" class="egp-field"></div>
+                                <div><label>পিই কোড (PE Code)</label><input type="text" id="PE_Code" data-db="Procuring_Entity_Code" data-regex="Procuring Entity Code[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Procuring Entity District|\n)" class="egp-field"></div>
+                                <div><label>পিই জেলা (PE District)</label><input type="text" id="PE_District" data-db="Procuring_Entity_District,District" data-regex="Procuring Entity District[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Invitation for|Project Code|\n)" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">প্রকল্প তথ্য</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>প্রকল্প কোড (Project Code)</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Project Name|Package No|\n)" class="egp-field"></div>
-                                <div class="col-span-2"><label>প্যাকেজ নং (Package No)</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No,Package_No" data-regex="Package No[^\n]*[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Package Name|Project Name|\n)" class="egp-field"></div>
-                                <div class="col-span-4"><label>প্রকল্পের নাম (Project Name)</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Category|Tender\/Proposal|\n)" class="egp-field"></div>
-                                <div class="col-span-4"><label>প্যাকেজ নাম (Package Name)</label><input type="text" id="Package_Name" data-db="Tender_Proposal_Package_Name,Package_Name" data-regex="Package Name[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Brief Description|Category|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্রকল্প কোড (Project Code)</label><input type="text" id="Project_Code" data-db="Project_Code" data-regex="Project Code[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Project Name|Package No|\n)" class="egp-field"></div>
+                                <div class="col-span-2"><label>প্যাকেজ নং (Package No)</label><input type="text" id="Package_No" data-db="Tender_Proposal_Package_No,Package_No" data-regex="Package No[^\n]*[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Package Name|Project Name|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>প্রকল্পের নাম (Project Name)</label><input type="text" id="Project_Name" data-db="Project_Name" data-regex="Project Name[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Category|Tender\/Proposal|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>প্যাকেজ নাম (Package Name)</label><input type="text" id="Package_Name" data-db="Tender_Proposal_Package_Name,Package_Name" data-regex="Package Name[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Brief Description|Category|\n)" class="egp-field"></div>
                                 <div class="col-span-4"><label>কাজের বিবরণ (Description)</label><textarea id="Proj_Desc" data-db="Brief_Description_of_Works,Description" data-regex="Description(?:\s*of\s*Works)?[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Evaluation Type|Category|Tender\/Proposal Document|$)" class="egp-field h-16 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category[\s\S]*?(?:\:|\-)\s*(.*?)(?=Scheduled|\n)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ক্যাটাগরি (Category)</label><input type="text" id="Category" data-db="Category" data-regex="Category[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Scheduled|\n)" class="egp-field"></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">দাপ্তরিক যোগাযোগ</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>কর্মকর্তার নাম</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal,Name_of_Official" data-regex="Name of Official[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Designation|Address|City|Phone)" class="egp-field"></div>
-                                <div class="col-span-2"><label>পদবী</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal,Designation" data-regex="Designation[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Address|City|Thana|District|Phone)" class="egp-field"></div>
-                                <div class="col-span-4"><label>ঠিকানা</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal,Address" data-regex="Address[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=City|Thana|District|Country|Phone)" class="egp-field"></div>
-                                <div><label>শহর</label><input type="text" id="Off_City" data-db="City" data-regex="City[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Thana|District|Postal Code|Country|Phone)" class="egp-field"></div>
-                                <div><label>থানা</label><input type="text" id="Off_Thana" data-db="Thana" data-regex="Thana[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=District|Postal|Country|Phone)" class="egp-field"></div>
-                                <div><label>জেলা</label><input type="text" id="Off_District" data-db="District" data-regex="District[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Postal|Country|Phone)" class="egp-field"></div>
-                                <div><label>পোস্টাল কোড</label><input type="text" id="Postal_Code" data-db="Postal_Code" data-regex="Postal Code[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Country|Phone|Fax)" class="egp-field"></div>
-                                <div><label>দেশ</label><input type="text" id="Country" data-db="Country" data-regex="Country[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Phone|Fax|e-mail)" class="egp-field"></div>
-                                <div><label>ফোন নং</label><input type="text" id="Off_Phone" data-db="Phone_No" data-regex="Phone No[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Fax|e-mail|Website)" class="egp-field"></div>
-                                <div><label>ফ্যাক্স নং</label><input type="text" id="Off_Fax" data-db="Fax_No" data-regex="Fax No[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=e-mail|Website|$)" class="egp-field"></div>
-                                <div class="col-span-2"><label>ইমেইল</label><input type="text" id="Off_Email" data-db="Email" data-regex="e-mail[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Website|The procuring entity|$)" class="egp-field"></div>
-                                <div class="col-span-4"><label>ওয়েবসাইট</label><input type="text" id="Off_Web" data-db="Website" data-regex="Website[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=The procuring entity|This is an online|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>কর্মকর্তার নাম</label><input type="text" id="Off_Name" data-db="Name_of_Official_Inviting_Tender_Proposal,Name_of_Official" data-regex="Name of Official[\s\S]{0,100}?(?:\:|\-)\s*([\s\S]*?)(?=Designation|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>পদবী</label><input type="text" id="Off_Desig" data-db="Designation_of_Official_Inviting_Tender_Proposal,Designation" data-regex="Designation[\s\S]{0,100}?(?:\:|\-)\s*([\s\S]*?)(?=Address|City|Thana|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ঠিকানা</label><input type="text" id="Off_Address" data-db="Address_of_Official_Inviting_Tender_Proposal,Address" data-regex="Address[\s\S]{0,100}?(?:\:|\-)\s*([\s\S]*?)(?=City|Thana|District|Country|Phone No|$)" class="egp-field"></div>
+                                <div><label>শহর</label><input type="text" id="Off_City" data-db="City" data-regex="City[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Thana|District|Postal Code|Country|$)" class="egp-field"></div>
+                                <div><label>থানা</label><input type="text" id="Off_Thana" data-db="Thana" data-regex="Thana[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=District|Postal Code|Country|Phone No|$)" class="egp-field"></div>
+                                <div><label>জেলা</label><input type="text" id="Off_District" data-db="District" data-regex="District[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Postal Code|Country|Phone No|$)" class="egp-field"></div>
+                                <div><label>পোস্টাল কোড</label><input type="text" id="Postal_Code" data-db="Postal_Code" data-regex="Postal Code[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Country|Phone No|Fax No|$)" class="egp-field"></div>
+                                <div><label>দেশ</label><input type="text" id="Country" data-db="Country" data-regex="Country[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Phone No|Fax No|e-mail|$)" class="egp-field"></div>
+                                <div><label>ফোন নং</label><input type="text" id="Off_Phone" data-db="Phone_No,Phone" data-regex="Phone No[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Fax No|e-mail|Website|$)" class="egp-field"></div>
+                                <div><label>ফ্যাক্স নং</label><input type="text" id="Off_Fax" data-db="Fax_No,Fax" data-regex="Fax No[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=e-mail|Website|Procurement|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>ইমেইল</label><input type="text" id="Off_Email" data-db="Email,e_mail" data-regex="e-mail[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Website|Procurement|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>ওয়েবসাইট</label><input type="text" id="Off_Web" data-db="Website" data-regex="Website[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Procurement|Tender|Event|$)" class="egp-field"></div>
                             </div>
                         </div>
                     </div>
@@ -354,18 +356,18 @@
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">ক্রয় পদ্ধতি ও বেসিক তথ্য</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div><label>ক্রয়ের ধরণ</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>ক্রয় পদ্ধতি</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>ইভেন্ট টাইপ</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>Invitation For</label><input type="text" id="Inv_For" data-db="Invitation_for,Invitation_For" data-regex="Invitation for[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No,Invitation_Reference" data-regex="Invitation Reference No\.?[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status,Status" data-regex="Tender\/Proposal Status[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>ক্রয়ের ধরণ</label><input type="text" id="Proc_Nature" data-db="Procurement_Nature" data-regex="Procurement Nature[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Procurement Type|$)" class="egp-field"></div>
+                                <div><label>ক্রয় পদ্ধতি</label><input type="text" id="Proc_Type" data-db="Procurement_Type" data-regex="Procurement Type[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Event Type|$)" class="egp-field"></div>
+                                <div><label>ইভেন্ট টাইপ</label><input type="text" id="Event_Type" data-db="Event_Type" data-regex="Event Type[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Invitation for|$)" class="egp-field"></div>
+                                <div><label>Invitation For</label><input type="text" id="Inv_For" data-db="Invitation_for,Invitation_For" data-regex="Invitation for[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Invitation Reference|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>ইনভাইটেশন রেফারেন্স</label><input type="text" id="Inv_Ref" data-db="Invitation_Reference_No,Invitation_Reference" data-regex="Invitation Reference No\.?[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Tender\/Proposal Status|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>টেন্ডার স্ট্যাটাস</label><input type="text" id="Status" data-db="Tender_Proposal_Status,Status" data-regex="Tender\/Proposal Status[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Tender\/Proposal ID|$)" class="egp-field"></div>
                                 <div><label>App ID</label><input type="text" id="App_ID" data-db="App_ID" data-regex="App ID[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
                                 <div><label>Tender ID</label><input type="text" id="Tender_ID" data-db="Tender_Proposal_ID,Tender_ID" data-regex="Tender\/Proposal ID[\s\S]*?(?:\:|\-)\s*(\d+)" class="egp-field font-mono text-blue-300"></div>
-                                <div><label>Procurement Method</label><input type="text" id="Proc_Method" data-db="Procurement_Method" data-regex="Procurement Method[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div><label>বাজেটের ধরন</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>অর্থের উৎস</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
-                                <div class="col-span-2"><label>উন্নয়ন সহযোগী</label><input type="text" id="Dev_Partner" data-db="Development_Partner" data-regex="Development Partner[\s\S]*?(?:\:|\-)\s*([^\n]+)" class="egp-field"></div>
+                                <div><label>Procurement Method</label><input type="text" id="Proc_Method" data-db="Procurement_Method" data-regex="Procurement Method[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Budget Type|$)" class="egp-field"></div>
+                                <div><label>বাজেটের ধরন</label><input type="text" id="Budget_Type" data-db="Budget_Type" data-regex="Budget Type[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Source of Funds|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>অর্থের উৎস</label><input type="text" id="Source_Funds" data-db="Source_of_Funds" data-regex="Source of Funds[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Development Partner|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>উন্নয়ন সহযোগী</label><input type="text" id="Dev_Partner" data-db="Development_Partner" data-regex="Development Partner[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=\n|$)" class="egp-field"></div>
                                 <div class="col-span-4"><label>আনুমানিক মূল্য (Estimated Cost)</label><input type="text" id="Est_Cost" data-db="Estimated_Cost,Contract_Value,Contract_Value_BDT" data-regex="(?:Estimated Cost|Contract Value|Target Amount)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d,\.]+)" class="egp-field font-mono text-yellow-300"></div>
                             </div>
                         </div>
@@ -401,32 +403,32 @@
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500">দরদাতার যোগ্যতা ও শর্তাবলি</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-2"><label>তরল সম্পদ (Liquid Assets BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="(?:liquid asset|credit line|credit facility|working capital)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d\,\.]+\s*(?:Lakh|Million|Crore)?|none|nil|0|zero)" class="egp-field font-mono text-red-400"></div>
-                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="(?:average annual.*?turnover|annual turnover)[\s\S]*?(?:BDT|Tk\.?|Taka)[\s\S]*?([\d\,\.]+\s*(?:Lakh|Million|Crore)?)" class="egp-field font-mono text-red-400"></div>
-                                <div class="col-span-2"><label>Const Turnover</label><input type="text" id="Const_Turnover" data-db="Average_Annual_Construction_Turnover" data-regex="Construction Turnover[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Credit Line|$)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Credit Line</label><input type="text" id="Credit_Line" data-db="Credit_Line" data-regex="Credit Line[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=\n|$)" class="egp-field"></div>
-                                <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="general experience[\s\S]*?(?:\:|\-)?\s*([\s\S]*?)(?=Specific Experience|Experience Requirements|Equipment|Personnel|$)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="specific experience[\s\S]*?(?:\:|\-)?\s*([\s\S]*?)(?=Average Annual|Experience Requirements|Equipment|Personnel|$)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>Experience Req (Other)</label><textarea id="Exp_Req" data-db="Experience_Requirements" data-regex="Experience Requirements[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Equipment|Personnel|Liquid Asset|$)" class="egp-field h-10 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>Equipment Req</label><input type="text" id="Equip_Req" data-db="Equipment_Requirements" data-regex="Equipment Requirements[\s\S]*?(?:\:|\-)\s*(.*?)(?=Personnel|$)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Personnel Req</label><input type="text" id="Pers_Req" data-db="Personnel_Requirements" data-regex="Personnel Requirements[\s\S]*?(?:\:|\-)\s*(.*?)(?=Tenderer|$)" class="egp-field"></div>
-                                <div><label>সর্বোচ্চ জেভি সদস্য (Max JV)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="maximum number of members in the JVCA.*?:\s*([a-zA-Z0-9]+)" class="egp-field"></div>
-                                <div><label>সাবকন্ট্রাক্টর</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" data-regex="Subcontractor[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=\n|$)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Manufacturer Auth</label><input type="text" id="Mfr_Auth" data-db="Manufacturer_Authorization" data-regex="Manufacturer Authorization[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=\n|$)" class="egp-field"></div>
-                                <div class="col-span-4"><label>Qualification Requirements</label><textarea id="Qual_Req" data-db="Qualification_Requirements" data-regex="Qualification Requirements[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Brief|Eligibility|$)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-4"><label>Raw Eligibility from PDF</label><textarea id="Raw_Elig" data-db="Eligibility_of_Tenderer" data-regex="(?:Eligibility of Tenderer|Eligibility of Consultant)[\s\:\-]+([\s\S]{10,2500}?)(?=\bBrief Description\b|\bEvaluation Type\b|\bDocument Available\b|\bPrice of Tender\b|$)" class="egp-field h-24 custom-scroll font-mono text-[9px] text-slate-400"></textarea></div>
+                                <div class="col-span-2"><label>তরল সম্পদ (Liquid Assets BDT)</label><input type="text" id="Liq_Assets" data-db="Liquid_Assets" data-regex="(?:liquid asset|তরল সম্পদ|credit facility|working capital)[\s\S]{0,100}?(?:BDT|Tk\.?|Taka|টাকা)[\s\S]{0,30}?([\d\,\.]+\s*(?:Lakh|Million|Crore|লাখ|কোটি)?|none|nil|0|zero|নাই)" class="egp-field font-mono text-red-400"></div>
+                                <div class="col-span-2"><label>গড় বার্ষিক টার্নওভার</label><input type="text" id="Turnover" data-db="Average_Annual_Turnover" data-regex="(?:average annual.*?turnover|annual turnover|গড় বার্ষিক টার্নওভার)[\s\S]{0,100}?(?:BDT|Tk\.?|Taka|টাকা)[\s\S]{0,30}?([\d\,\.]+\s*(?:Lakh|Million|Crore|লাখ|কোটি)?)" class="egp-field font-mono text-red-400"></div>
+                                <div class="col-span-2"><label>Const Turnover</label><input type="text" id="Const_Turnover" data-db="Average_Annual_Construction_Turnover" data-regex="(?:Construction Turnover|নির্মাণ কাজের টার্নওভার)[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Credit Line|Liquid Asset|তরল সম্পদ|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Credit Line</label><input type="text" id="Credit_Line" data-db="Credit_Line" data-regex="(?:Credit Line|ক্রেডিট লাইন)[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>সাধারণ অভিজ্ঞতা (General Exp)</label><textarea id="Gen_Exp" data-db="General_Experience" data-regex="(?:general experience|সাধারণ অভিজ্ঞতা)[\s\S]{0,50}?(?:\:|\-)?\s*([\s\S]*?)(?=Specific Experience|Experience Requirements|Equipment|Personnel|নির্দিষ্ট অভিজ্ঞতা|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>নির্দিষ্ট অভিজ্ঞতা (Specific Exp)</label><textarea id="Spec_Exp" data-db="Specific_Experience" data-regex="(?:specific experience|নির্দিষ্ট অভিজ্ঞতা)[\s\S]{0,50}?(?:\:|\-)?\s*([\s\S]*?)(?=Average Annual|Experience Requirements|Equipment|Personnel|গড় বার্ষিক|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>Experience Req (Other)</label><textarea id="Exp_Req" data-db="Experience_Requirements" data-regex="(?:Experience Requirements|অভিজ্ঞতার শর্তাবলি)[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Equipment|Personnel|Liquid Asset|তরল সম্পদ|$)" class="egp-field h-10 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>Equipment Req</label><input type="text" id="Equip_Req" data-db="Equipment_Requirements" data-regex="(?:Equipment Requirements|যন্ত্রপাতির শর্তাবলি)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Personnel|জনবল|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Personnel Req</label><input type="text" id="Pers_Req" data-db="Personnel_Requirements" data-regex="(?:Personnel Requirements|জনবলের শর্তাবলি)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Tenderer|দরদাতা|$)" class="egp-field"></div>
+                                <div><label>সর্বোচ্চ জেভি সদস্য (Max JV)</label><input type="text" id="JV_Members" data-db="Maximum_JV_Members" data-regex="(?:maximum number of members in the JVCA|JVCA এর সর্বোচ্চ সদস্য সংখ্যা).*?:\s*([a-zA-Z0-9]+)" class="egp-field"></div>
+                                <div><label>সাবকন্ট্রাক্টর</label><input type="text" id="Sub_Req" data-db="Subcontractor_Requirements" data-regex="(?:Subcontractor|সাবকন্ট্রাক্টর)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Manufacturer Auth</label><input type="text" id="Mfr_Auth" data-db="Manufacturer_Authorization" data-regex="(?:Manufacturer Authorization|প্রস্তুতকারকের অনুমোদন)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-4"><label>Qualification Requirements</label><textarea id="Qual_Req" data-db="Qualification_Requirements" data-regex="(?:Qualification Requirements|যোগ্যতার শর্তাবলি)[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Brief|Eligibility|সংক্ষিপ্ত|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-4"><label>Raw Eligibility from PDF</label><textarea id="Raw_Elig" data-db="Eligibility_of_Tenderer" data-regex="(?:Eligibility of Tenderer|Eligibility of Consultant|দরদাতার যোগ্যতা)[\s\:\-]+([\s\S]{10,2500}?)(?=\bBrief Description\b|\bEvaluation Type\b|\bDocument Available\b|\bPrice of Tender\b|কাজের সংক্ষিপ্ত বিবরণ|মূল্যায়নের ধরন|$)" class="egp-field h-24 custom-scroll font-mono text-[9px] text-slate-400"></textarea></div>
                             </div>
                         </div>
                         <div class="fieldset-box">
                             <h4 class="fieldset-title">কারিগরি মূল্যায়ন (Technical Eval)</h4>
                             <div class="grid grid-cols-4 gap-3">
-                                <div class="col-span-4"><label>Brief Desc of Goods/Works</label><textarea id="Brief_Goods" data-db="Brief_Description_of_Goods" data-regex="Brief Description[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Evaluation Type|Document Available|$)" class="egp-field h-12 custom-scroll"></textarea></div>
-                                <div class="col-span-2"><label>মূল্যায়নের ধরন (Eval Type)</label><input type="text" id="Eval_Type" data-db="Evaluation_Type" data-regex="Evaluation Type[\s\S]*?(?:\:|\-)\s*(.*?)(?=Evaluation Methodology|\n)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Eval Methodology</label><input type="text" id="Eval_Method" data-db="Evaluation_Methodology" data-regex="Evaluation Methodology[\s\S]*?(?:\:|\-)\s*(.*?)(?=Technical Score|\n)" class="egp-field"></div>
-                                <div><label>টেকনিক্যাল স্কোর</label><input type="text" id="Tech_Score" data-db="Technical_Score" data-regex="Technical Score[\s\S]*?(?:\:|\-)\s*(.*?)(?=Minimum Technical Score|\n)" class="egp-field"></div>
-                                <div><label>নূন্যতম টেক স্কোর</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" data-regex="Minimum Technical Score[\s\S]*?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Early Market Engagement (WB)</label><input type="text" id="Early_Market_Eng" data-db="Early_Market_Engagement" data-regex="Early Market Engagement.*?(yes|no)" class="egp-field"></div>
-                                <div class="col-span-2"><label>Rated Criteria (Yes/No)</label><input type="text" id="Rated_Crit" data-db="Rated_Criteria" data-regex="Rated Criteria.*?(yes|no)" class="egp-field text-yellow-400 font-bold border-yellow-500/50"></div>
+                                <div class="col-span-4"><label>Brief Desc of Goods/Works</label><textarea id="Brief_Goods" data-db="Brief_Description_of_Goods" data-regex="(?:Brief Description|কাজের সংক্ষিপ্ত বিবরণ)[\s\S]{0,50}?(?:\:|\-)\s*([\s\S]*?)(?=Evaluation Type|Document Available|মূল্যায়নের ধরন|$)" class="egp-field h-12 custom-scroll"></textarea></div>
+                                <div class="col-span-2"><label>মূল্যায়নের ধরন (Eval Type)</label><input type="text" id="Eval_Type" data-db="Evaluation_Type" data-regex="(?:Evaluation Type|মূল্যায়নের ধরন)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Evaluation Methodology|মূল্যায়ন পদ্ধতি|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Eval Methodology</label><input type="text" id="Eval_Method" data-db="Evaluation_Methodology" data-regex="(?:Evaluation Methodology|মূল্যায়ন পদ্ধতি)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Technical Score|টেকনিক্যাল স্কোর|$)" class="egp-field"></div>
+                                <div><label>টেকনিক্যাল স্কোর</label><input type="text" id="Tech_Score" data-db="Technical_Score" data-regex="(?:Technical Score|টেকনিক্যাল স্কোর)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=Minimum|নূন্যতম|$)" class="egp-field"></div>
+                                <div><label>নূন্যতম টেক স্কোর</label><input type="text" id="Min_Tech" data-db="Minimum_Technical_Score" data-regex="(?:Minimum Technical Score|নূন্যতম টেকনিক্যাল স্কোর)[\s\S]{0,50}?(?:\:|\-)\s*(.*?)(?=\n|$)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Early Market Engagement (WB)</label><input type="text" id="Early_Market_Eng" data-db="Early_Market_Engagement" data-regex="Early Market Engagement.*?(yes|no|হাঁ|না)" class="egp-field"></div>
+                                <div class="col-span-2"><label>Rated Criteria (Yes/No)</label><input type="text" id="Rated_Crit" data-db="Rated_Criteria" data-regex="Rated Criteria.*?(yes|no|হাঁ|না)" class="egp-field text-yellow-400 font-bold border-yellow-500/50"></div>
                                 <div class="col-span-2"><label>Rated Criteria Weighting %</label><input type="text" id="Rated_Crit_Weight" data-db="Rated_Criteria_Weighting" data-regex="Rated Criteria Weighting.*?(\d{1,3}\s*%)" class="egp-field font-mono text-yellow-400 border-yellow-500/50"></div>
                             </div>
                         </div>
@@ -555,15 +557,28 @@
     </div>
 
     <script>
+        // Use a consistent auto-save key
+        const AUTO_SAVE_KEY = 'egpInvestigator_AutoSave_DB';
+        
         let globalFilesMap = {}; 
         let rawTenderData = [];
         let analyzedData = [];
         let pdfCache = {};
-        let auditLogs = JSON.parse(localStorage.getItem('egpInvestigator_DeepParser_v6')) || {};
+        
+        // Auto-load previously saved data from LocalStorage
+        let auditLogs = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY)) || {};
+        
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
         let storyImagesArray = []; 
+
+        // Greet user if auto-save data exists
+        window.onload = () => {
+            if(Object.keys(auditLogs).length > 0) {
+                showToast("অটো-সেভ সিস্টেম", `আপনার আগের ${Object.keys(auditLogs).length} টি কাজের রেকর্ড মেমোরিতে সেভ আছে!`);
+            }
+        };
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active', 'bg-slate-800', 'text-white'));
@@ -587,7 +602,7 @@
 
         function escapeHtml(unsafe) { return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
         
-        // --- SMART EXTRACTION ENGINE (TENDER SPECIFIC FIX) ---
+        // --- SMART EXTRACTION ENGINE ---
         function extractRegex(text, regexStr) {
             if (!text || !regexStr) return "";
             try { 
@@ -597,7 +612,7 @@
                 if (match && match[1]) {
                     let val = match[1].replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim(); 
                     
-                    let stopWords = ["Brief Description", "Evaluation Type", "Document Available", "Document Fees", "Price of Tender", "Tender/Proposal Document", "Mode of Payment", "Tender/Proposal Security", "Location", "Category", "Name of Official", "Designation", "Address of Official", "Performance Security", "Average Annual", "Experience Requirements", "Maximum number", "Subcontractor", "City", "Thana", "District", "Country", "Phone No", "Fax No", "e-mail", "Website"];
+                    let stopWords = ["Brief Description", "Evaluation Type", "Document Available", "Document Fees", "Price of Tender", "Tender/Proposal Document", "Mode of Payment", "Tender/Proposal Security", "Location", "Category", "Name of Official", "Designation", "Address of Official", "Performance Security", "Average Annual", "Experience Requirements", "Maximum number", "Subcontractor", "City", "Thana", "District", "Country", "Phone No", "Fax No", "e-mail", "Website", "Procurement Nature", "Event Type", "Invitation Reference", "Tender/Proposal Status", "দরদাতার যোগ্যতা", "তরল সম্পদ", "গড় বার্ষিক", "কাজের সংক্ষিপ্ত", "মূল্যায়নের ধরন", "দলিল বিক্রির", "টেন্ডার সিকিউরিটি", "কর্মকর্তার নাম", "পদবী", "ঠিকানা"];
                     let earliestStop = val.length;
                     for (let word of stopWords) {
                         let idx = val.toLowerCase().indexOf(word.toLowerCase());
@@ -644,14 +659,19 @@
             setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 3500);
         }
 
+        // Use Blob for reliable JSON export
         function exportProgress() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs));
+            const dataStr = JSON.stringify(auditLogs, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
             const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `egp_backup_${new Date().getTime()}.json`);
+            dlAnchorElem.href = url;
+            dlAnchorElem.download = `egp_backup_${new Date().getTime()}.json`;
             dlAnchorElem.click();
+            URL.revokeObjectURL(url);
         }
 
+        // Import Backup
         function importProgress(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -660,10 +680,17 @@
                 try {
                     const importedLogs = JSON.parse(e.target.result);
                     auditLogs = { ...auditLogs, ...importedLogs };
-                    localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
-                    alert("আগের কাজ সফলভাবে লোড হয়েছে!");
-                    if(rawTenderData.length > 0) initDashboard();
-                } catch(err) { alert("ভুল ফাইল ফরম্যাট!"); }
+                    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
+                    alert("আগের ব্যাকআপ সফলভাবে রিস্টোর হয়েছে!");
+                    // Re-render everything with the new imported data
+                    if(rawTenderData.length > 0) {
+                        document.getElementById('loadingView').classList.remove('hide');
+                        document.getElementById('dashboardView').classList.add('hide');
+                        processForensicEngineAsync();
+                    }
+                } catch(err) { 
+                    alert("ফাইলটি সঠিক JSON ফরম্যাটে নেই! Error: " + err.message); 
+                }
             };
             reader.readAsText(file);
         }
@@ -796,7 +823,13 @@
                     combinedText += pdfCache[key] + "\n\n";
                 }
                 
-                t.fullOCR = combinedText; 
+                // --- PRE-PROCESSING PDF TEXT TO FIX BROKEN LINES ---
+                let cleanOCR = combinedText
+                    .replace(/:\s*\n/g, ': ') 
+                    .replace(/\n\s*:/g, ' :') 
+                    .replace(/\s{2,}/g, ' ');
+                
+                t.fullOCR = cleanOCR; 
                 let processedRecord = analyzeSingleRecord(t);
                 analyzedData.push(processedRecord);
 
@@ -909,7 +942,7 @@
                 }
 
                 if ((responsive === 1 && (received > 1 || sold >= 2)) || (received === 1 && sold >= 1)) { 
-                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে হবে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
+                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে ঘটতে হবে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
                 }
 
                 if (pubDate && closeDate) {
@@ -1050,7 +1083,7 @@
                 auditLogs[tid].flagStatuses[index] = status;
             }
             
-            localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
             renderInspectorUI();
         }
 
@@ -1060,7 +1093,7 @@
             if(!auditLogs[tid].flagNotes) auditLogs[tid].flagNotes = {};
             
             auditLogs[tid].flagNotes[index] = note;
-            localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
         }
 
         function addCustomFlag() {
@@ -1082,7 +1115,7 @@
                 rule_detail: "Custom Rule" 
             });
             
-            localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
             renderInspectorUI();
         }
 
@@ -1090,7 +1123,7 @@
             let tid = currentRecord.Tender_Proposal_ID;
             if(auditLogs[tid] && auditLogs[tid].customFlags) {
                 auditLogs[tid].customFlags.splice(index, 1);
-                localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
+                localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
                 renderInspectorUI();
             }
         }
@@ -1432,7 +1465,7 @@
 
             document.querySelectorAll('.egp-field').forEach(input => { logData[input.id] = input.value; });
             auditLogs[tid] = logData;
-            localStorage.setItem('egpInvestigator_DeepParser_v6', JSON.stringify(auditLogs));
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
             
             let newRec = analyzeSingleRecord(rawTenderData.find(x => x.Tender_Proposal_ID == tid));
             Object.assign(currentRecord, newRec);
@@ -1459,7 +1492,7 @@
             link.click();
         }
 
-        // ================= STORY BUILDER =================
+        // ================= STORY BUILDER (EXCLUDES OK FLAGS) =================
         function openStoryBuilder() {
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('storyBuilderView').classList.remove('hide');
