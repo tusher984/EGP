@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Auto-Save & Smart Parsing)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Ultimate Extraction & Manual Audit)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -130,7 +130,7 @@
                     <i class="fa-solid fa-upload"></i> ব্যাকআপ লোড
                 </label>
 
-                <button onclick="exportProgress()" class="bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 px-4 py-2 rounded-lg font-bold text-xs text-indigo-400 transition flex items-center gap-2" title="অন্য পিসিতে নেওয়ার জন্য ব্যাকআপ ডাউনলোড করুন">
+                <button onclick="exportProgress()" class="bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 px-4 py-2 rounded-lg font-bold text-xs text-indigo-400 transition flex items-center gap-2" title="অন্য পিসিতে নেওয়ার জন্য ব্যাকআপ ডাউনলোড করুন">
                     <i class="fa-regular fa-floppy-disk"></i> ব্যাকআপ সেভ (JSON)
                 </button>
                 <button onclick="exportToCSV()" class="bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/30 px-4 py-2 rounded-lg font-bold text-xs text-emerald-400 transition flex items-center gap-2">
@@ -762,7 +762,7 @@
                         loadingTask.destroy();
                         typedarray = null;
                         
-                        fullText = fullText.replace(/\s{2,}/g, ' '); // Normalize spaces
+                        fullText = fullText.replace(/\s{2,}/g, ' '); // Normalize spaces for better regex matching
                         resolve(fullText.trim() ? fullText : "NO_TEXT");
                     } catch(err) { 
                         if(pdf) await pdf.destroy();
@@ -942,7 +942,7 @@
                 }
 
                 if ((responsive === 1 && (received > 1 || sold >= 2)) || (received === 1 && sold >= 1)) { 
-                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে ঘটতে হবে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
+                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে হবে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
                 }
 
                 if (pubDate && closeDate) {
@@ -1375,6 +1375,9 @@
                             <div class="text-xs space-y-3">
                                 <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
                                 <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
+                                <div class="border-t border-slate-700/50 pt-2 mt-2">
+                                    <p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p>
+                                </div>
                                 <div class="border-t border-slate-700/50 pt-3 mt-3">
                                     <input type="text" placeholder="এই ফ্ল্যাগটির জন্য স্পেসিফিক নোট বা কারণ লিখুন..." 
                                            value="${escapeHtml(fNote)}" 
@@ -1492,7 +1495,7 @@
             link.click();
         }
 
-        // ================= STORY BUILDER (EXCLUDES OK FLAGS) =================
+        // ================= STORY BUILDER =================
         function openStoryBuilder() {
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('storyBuilderView').classList.remove('hide');
@@ -1562,7 +1565,7 @@
                             <h4 class="font-bold text-slate-800 text-lg mb-2">${f.flag}</h4>
                             <p class="text-[0.95rem] text-slate-800 mb-3 leading-relaxed"><strong>অনিয়মের ধরন:</strong> ${f.violation_logic}</p>
                             ${noteHtml}
-                            <div class="bg-red-50 p-3 rounded text-sm text-red-800 border-l-4 border-red-500 mb-4"><strong>প্রকৃত আইন:</strong> ${f.rule_detail}</div>
+                            <div class="bg-red-50 p-3 rounded text-sm text-red-800 border-l-4 border-red-500 mb-4"><strong>প্রকৃত আইন (${f.rule}):</strong> ${f.rule_detail}</div>
                             <details class="group bg-slate-50 rounded border border-slate-200 cursor-pointer outline-none">
                                 <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-100 transition-colors flex items-center gap-2 outline-none">
                                     <i class="fa-solid fa-file-pdf"></i> 📄 নথির স্ক্যান করা প্রমাণ দেখুন
