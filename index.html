@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Interactive Public Report Edition)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Final Clean Report)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -377,9 +377,9 @@
                             <h4 class="fieldset-title text-blue-400">সময়সূচী ও ডেডলাইন</h4>
                             <div class="grid grid-cols-3 gap-3">
                                 <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date" data-regex="(?:Scheduled Tender\/Proposal Publication|Publication|Invited)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing Date and Time|Closing|Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="(?:Opening Date and Time|Opening)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="(?:last selling\/downloading|last selling)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing Date and Time|Closing|Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="(?:Opening Date and Time|Opening)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="(?:last selling\/downloading|last selling)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
                                 <div><label>ডাউনলোড শেষ সময়</label><input type="text" id="Last_Down" data-db="Last_Downloading_Date" data-regex="Last Downloading Date[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Last Date|$)" class="egp-field"></div>
                                 <div><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="(?:Security Submission|Last Date and Time for Tender\/Proposal Security Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
                                 <div><label>প্রি-টেন্ডার মিটিং (শুরু)</label><input type="text" id="Pre_Start" data-db="Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting" data-regex="(?:meeting Start|Pre - Tender\/Proposal meeting Start)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
@@ -976,7 +976,7 @@
                 }
 
                 if ((responsive === 1 && (received > 1 || sold >= 2)) || (received === 1 && sold >= 1)) { 
-                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে হবে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
+                    findings.push({ flag: "সীমিত প্রতিযোগিতা (একক বিডার)", risk: "Critical", evidence: `Sold: ${sold} | Rcvd: ${received} | Responsive: ${hi(responsive)}`, violation_logic: `প্রতিযোগীদের মূল্যায়ন পর্যায়ে বাদ দিয়ে একজনকে সুবিধা দেওয়ার সম্ভাবনা বা টেন্ডার ডকুমেন্ট এমনভাবে করা হয়েছে যাতে একজনই জমা দিতে পারে।`, rule_detail: "PPR 2008 Rule 98: দরপত্র মূল্যায়নে অবাধ প্রতিযোগিতা নিশ্চিত করতে অভিনব শর্ত দেয়া হয়েছে।", rule: "PPR 2008", clause: "Rule 98", targetField: 'T_Resp' }); score += 40; 
                 }
 
                 if (pubDate && closeDate) {
@@ -1071,7 +1071,7 @@
                 }
 
                 if (dlpText && (dlpText.toLowerCase().includes("0") || dlpText.toLowerCase().includes("nil") || dlpText.toLowerCase().includes("none") || dlpText.toLowerCase().includes("n/a"))) {
-                    findings.push({ flag: "ত্রুটি দায়বদ্ধতার মেয়াদ (DLP) মওকুফ", risk: "Critical", evidence: `DLP: ${hi(dlpText)}`, violation_logic: `কাজের পর ত্রুটি দেখা দিলে ঠিকাদার দায়ী হবে না।`, rule_detail: "A warranty shall be required from the Supplier for a minimum period of 3 months/1 year.", rule: "e-PG3A", clause: "GCA 32.3", targetField: 'Def_Liab' }); score += 40;
+                    findings.push({ flag: "ত্রুটি দায়বদ্ধতার মেয়াদ (DLP) মওকুফ", risk: "Critical", evidence: `DLP: ${hi(dlpText)}`, violation_logic: `কাজের পর ত্রুটি দেখা দিলে ঠিকাদার দায়ী হবে নিচে।`, rule_detail: "A warranty shall be required from the Supplier for a minimum period of 3 months/1 year.", rule: "e-PG3A", clause: "GCA 32.3", targetField: 'Def_Liab' }); score += 40;
                 }
 
                 if (perfReq) {
@@ -1604,7 +1604,7 @@
         }
 
         // --- STORY PREVIEW (MINI DASHBOARD STYLE & PRO EVIDENCE) ---
-        function previewMasterStory() {
+        function generateReportHTML(isExport) {
             let head = document.getElementById('storyHeadline').value || "ই-জিপি প্রকল্পে মেগা দুর্নীতি";
             let subhead = document.getElementById('storySubhead').value || "বিশ্বব্যাংক ও জাইকার নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
             let author = document.getElementById('storyAuthor').value || "ডেটা জার্নালিজম ডেস্ক";
@@ -1614,8 +1614,7 @@
             
             let combinedTextForNLP = "";
             let riskCounts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
-            let originalPDFs = new Set();
-            let agencyValues = {}; // For the new chart
+            let agencyValues = {}; 
 
             let html = `
                 <div class="mb-8 border-b-4 border-red-600 pb-6 text-center md:text-left">
@@ -1629,7 +1628,7 @@
                 </div>
             `;
             
-            if(storyImagesArray.length > 0) html += `<div class="mb-8 rounded-xl overflow-hidden shadow-lg"><img src="${storyImagesArray[0]}" class="w-full h-auto object-cover"></div>`;
+            if(storyImagesArray.length > 0 && !isExport) html += `<div class="mb-8 rounded-xl overflow-hidden shadow-lg"><img src="${storyImagesArray[0]}" class="w-full h-auto object-cover"></div>`;
             
             html += `<div class="nn-body-text text-lg text-gray-800 leading-relaxed mb-10"><p><span class="text-5xl font-black text-red-600 float-left mr-3 mt-1">${intro.charAt(0)}</span>${intro.substring(1)}</p></div>`;
 
@@ -1646,17 +1645,16 @@
                 let orgNameRaw = rec.ext_OrgName || 'অজানা সংস্থা';
                 let valParsed = parseFloat(String(log.Contract_Value || rec.Contract_Value_BDT || "0").replace(/,/g, '')) || 0;
                 agencyValues[orgNameRaw] = (agencyValues[orgNameRaw] || 0) + valParsed;
-
-                let fileKeys = Object.keys(globalFilesMap).filter(k => k.includes(cb.value) && k.toLowerCase().endsWith('.pdf'));
-                fileKeys.forEach(fk => originalPDFs.add(fk));
             });
 
             let topWords = getWordFrequency(combinedTextForNLP);
-            let wordLabels = topWords.map(w => w[0]);
-            let wordData = topWords.map(w => w[1]);
-            
-            let agencyLabels = Object.keys(agencyValues);
-            let agencyData = Object.values(agencyValues);
+            window.reportChartData = { 
+                wordLabels: topWords.map(w => w[0]), 
+                wordData: topWords.map(w => w[1]), 
+                riskCounts: riskCounts,
+                agencyLabels: Object.keys(agencyValues),
+                agencyData: Object.values(agencyValues)
+            };
             
             html += `
                 <div class="mb-12 bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-inner print:bg-white print:border-gray-300">
@@ -1680,23 +1678,48 @@
             
             html += `<h2 class="text-2xl font-black text-gray-900 mb-6 border-l-4 border-red-600 pl-4">বিস্তারিত তথ্য ও প্রমাণ</h2>`;
 
-            // THE REDESIGNED MINI-DASHBOARD CASE STUDY LOOP
+            // INDEX
+            html += `<div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 mb-10 print:hidden">
+                        <p class="text-xs text-slate-500 mb-4">বিস্তারিত তথ্য ও প্রমাণ দেখতে যেকোনো কেইসের ওপর ক্লিক করুন:</p>
+                        <ul class="space-y-3">`;
+            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
+                let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
+                let orgName = (rec.ext_OrgName || 'অজানা সংস্থা').substring(0, 60) + '...';
+                let badgeStyle = rec.riskLevel === 'CRITICAL' ? 'bg-red-100 text-red-600' : 
+                                 rec.riskLevel === 'HIGH' ? 'bg-orange-100 text-orange-600' : 
+                                 rec.riskLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-600' : 
+                                 'bg-emerald-100 text-emerald-600';
+                
+                html += `
+                    <li class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-2 last:border-0 last:pb-0 gap-2">
+                        <a href="#case-${cb.value}" ${isExport ? `onclick="document.getElementById('case-${cb.value}').setAttribute('open', 'true')"` : ''} class="text-blue-600 hover:text-blue-800 font-bold transition flex items-center gap-2 text-sm">
+                            <span class="bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap">কেইস ${index + 1}</span> 
+                            ${orgName} <span class="text-slate-400 font-normal font-mono text-xs">(ID: ${cb.value})</span>
+                        </a>
+                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded whitespace-nowrap self-start sm:self-auto ${badgeStyle}">${rec.riskLevel} RISK</span>
+                    </li>
+                `;
+            });
+            html += `</ul></div>`;
+
+            // LOOP
             Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
                 let log = auditLogs[cb.value] || {};
 
                 let orgName = rec.ext_OrgName || 'অজানা সংস্থা';
-                if(orgName.length > 100) orgName = orgName.substring(0, 100) + '...';
+                let peName = findValInJSON(rec, 'Procuring_Entity_Name');
+                if(peName && peName.trim() !== "") {
+                    orgName += ` Procuring Entity Name : ${peName}`;
+                }
+                
                 let cVal = log.Contract_Value || rec.Contract_Value_BDT || '0';
-                if(String(cVal).length > 50) cVal = String(cVal).substring(0, 50) + '...';
                 let sName = log.Award_Supplier || rec.Supplier_Name || 'অজানা';
-                if(sName.length > 100) sName = sName.substring(0, 100) + '...';
 
-                // Setup Colors exactly like the dashboard
-                let badgeClass = rec.riskLevel === 'CRITICAL' ? 'bg-red-900/40 text-red-400 border border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 
-                                 rec.riskLevel === 'HIGH' ? 'bg-orange-900/40 text-orange-400 border border-orange-500/50 shadow-[0_0_10px_rgba(249,115,22,0.2)]' : 
-                                 rec.riskLevel === 'MEDIUM' ? 'bg-yellow-900/40 text-yellow-500 border border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]' : 
-                                 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/50 shadow-[0_0_10px_rgba(16,185,129,0.2)]';
+                let badgeClass = rec.riskLevel === 'CRITICAL' ? 'bg-red-900/40 text-red-400 border border-red-500/50' : 
+                                 rec.riskLevel === 'HIGH' ? 'bg-orange-900/40 text-orange-400 border border-orange-500/50' : 
+                                 rec.riskLevel === 'MEDIUM' ? 'bg-yellow-900/40 text-yellow-500 border border-yellow-500/50' : 
+                                 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/50';
                                  
                 let riskColorText = rec.riskLevel === 'CRITICAL' ? 'text-red-500' : 
                                     rec.riskLevel === 'HIGH' ? 'text-orange-500' : 
@@ -1704,120 +1727,103 @@
                                     'text-emerald-400';
 
                 html += `
-                    <div class="mb-10 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] print:border-gray-300">
-                        
-                        <!-- MINI DASHBOARD HEADER -->
-                        <div class="bg-[#131b2f] p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 print:bg-slate-800">
+                    <details id="case-${cb.value}" class="group mb-8 bg-white border border-gray-200 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] overflow-hidden print:border-gray-300 print:mb-12 scroll-mt-6">
+                        <summary class="bg-[#131b2f] p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer list-none hover:bg-slate-800 transition-colors outline-none [&::-webkit-details-marker]:hidden print:bg-slate-800">
                             <div class="flex items-center gap-4 w-full md:w-auto">
-                                <div class="w-12 h-12 shrink-0 bg-red-900/30 border border-red-500/30 rounded-full flex items-center justify-center text-red-500 text-xl shadow-[0_0_10px_rgba(239,68,68,0.2)] print:border-none">
+                                <div class="w-12 h-12 shrink-0 bg-red-900/30 border border-red-500/30 rounded-full flex items-center justify-center text-red-500 text-xl print:border-none">
                                     <i class="fa-solid fa-crosshairs"></i>
                                 </div>
                                 <div class="overflow-hidden">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase shadow-sm whitespace-nowrap">কেইস ${index + 1}</span>
-                                        <span class="text-[11px] text-slate-400 font-mono tracking-wider font-bold">ID: ${cb.value}</span>
+                                        <span class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">কেইস ${index + 1}</span>
+                                        <span class="text-[11px] text-slate-400 font-mono font-bold tracking-wider">ID: ${cb.value}</span>
                                     </div>
-                                    <h3 class="text-lg md:text-xl font-bold text-white leading-tight truncate" title="${orgName}">${orgName}</h3>
+                                    <h3 class="text-lg font-bold text-white leading-tight truncate w-[250px] md:w-[350px] lg:w-[450px]" title="${orgName}">${orgName}</h3>
                                 </div>
                             </div>
                             
-                            <div class="bg-[#0b1120] border border-slate-700 p-3 rounded-xl flex items-center gap-5 min-w-[220px] shadow-inner print:border-slate-500 w-full md:w-auto">
-                                <div>
-                                    <p class="text-[9px] text-slate-500 font-black uppercase mb-1 tracking-widest">এআই স্কোর</p>
-                                    <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase ${badgeClass}">${rec.riskLevel}</span>
+                            <div class="flex items-center justify-between w-full md:w-auto gap-4">
+                                <div class="bg-[#0b1120] border border-slate-700 p-2.5 rounded-xl flex items-center gap-4 shadow-inner min-w-[180px] print:border-slate-500">
+                                    <div>
+                                        <p class="text-[9px] text-slate-500 font-black uppercase mb-1 tracking-widest">এআই স্কোর</p>
+                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase ${badgeClass}">${rec.riskLevel}</span>
+                                    </div>
+                                    <div class="flex-1 text-right border-l border-slate-700 pl-4">
+                                        <span class="text-3xl font-black ${riskColorText}">${rec.riskScore}</span>
+                                    </div>
                                 </div>
-                                <div class="flex-1 text-right border-l border-slate-700 pl-4">
-                                    <span class="text-4xl font-black ${riskColorText}">${rec.riskScore}</span>
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 group-open:rotate-180 transition-transform duration-300 print:hidden">
+                                    <i class="fa-solid fa-chevron-down"></i>
                                 </div>
                             </div>
-                        </div>
+                        </summary>
                         
-                        <!-- KPI CARDS SECTION -->
-                        <div class="p-6 bg-white">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center gap-4 shadow-sm">
-                                    <div class="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                        <div class="p-5 md:p-6 bg-[#0d1117] border-t border-slate-800">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                                <div class="border border-slate-800 bg-[#131b2f] rounded-xl p-4 flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-emerald-900/30 text-emerald-500 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
                                         <i class="fa-solid fa-money-bill-wave"></i>
                                     </div>
                                     <div class="overflow-hidden">
-                                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-wide mb-1">চুক্তিমূল্য (Contract Value)</h4>
-                                        <p class="text-xl font-black text-slate-800 font-mono truncate">৳ ${cVal}</p>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">চুক্তিমূল্য (Contract Value)</p>
+                                        <p class="text-lg font-black text-white font-mono truncate">৳ ${cVal}</p>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-center gap-4 shadow-sm">
-                                    <div class="w-12 h-12 rounded-full bg-blue-100 border border-blue-200 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                                <div class="border border-slate-800 bg-[#131b2f] rounded-xl p-4 flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 border border-blue-500/30 flex items-center justify-center text-xl shrink-0">
                                         <i class="fa-solid fa-helmet-safety"></i>
                                     </div>
                                     <div class="overflow-hidden">
-                                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-wide mb-1">ঠিকাদার (Contractor)</h4>
-                                        <p class="text-sm font-bold text-slate-800 truncate" title="${sName}">${sName}</p>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">ঠিকাদার (Contractor)</p>
+                                        <p class="text-base font-bold text-white leading-tight truncate" title="${sName}">${sName}</p>
                                     </div>
                                 </div>
                             </div>
                             
                             ${log.justification ? `
-                            <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-5 relative overflow-hidden shadow-sm">
+                            <div class="mb-6 bg-red-900/20 border border-red-500/30 rounded-lg p-4 relative overflow-hidden">
                                 <div class="absolute left-0 top-0 w-1.5 h-full bg-red-500"></div>
-                                <span class="font-black text-red-700 block text-xs uppercase mb-2 flex items-center gap-2 tracking-wide">
-                                    <i class="fa-solid fa-user-pen"></i> সাংবাদিকের পর্যবেক্ষণ
-                                </span> 
-                                <p class="text-[15px] text-gray-800 italic leading-relaxed">"${escapeHtml(log.justification)}"</p>
+                                <p class="text-xs font-black text-red-400 uppercase mb-2 flex items-center gap-2"><i class="fa-solid fa-user-pen"></i> সাংবাদিকের পর্যবেক্ষণ</p>
+                                <p class="text-sm text-slate-300 italic leading-relaxed">"${escapeHtml(log.justification)}"</p>
                             </div>` : ''}
-                            
-                            <div class="flex justify-center md:justify-start">
-                                <button onclick="document.getElementById('evidence-${cb.value}').classList.toggle('hidden')" class="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold py-3 px-6 rounded-xl transition shadow-lg hover:shadow-xl flex items-center justify-center gap-2 border border-slate-700 outline-none">
-                                    <i class="fa-solid fa-folder-open text-blue-400 text-lg"></i> বিস্তারিত অনিয়ম ও প্রমাণ দেখুন
-                                </button>
-                            </div>
-                        </div>
                 `;
                 
                 let activeFindings = rec.forensicFindings.filter((f, i) => !(log.flagStatuses && log.flagStatuses[i] === 'OK'));
                 if(log.customFlags) activeFindings = activeFindings.concat(log.customFlags);
 
-                html += `<div id="evidence-${cb.value}" class="hidden bg-slate-50 border-t border-gray-200 p-6">`;
-
                 if (activeFindings.length > 0) {
-                    html += `<h4 class="font-black text-gray-800 mb-5 text-sm uppercase flex items-center gap-2 border-b border-slate-200 pb-3"><i class="fa-solid fa-list-check text-red-600"></i> বিস্তারিত অনিয়ম ও প্রমাণ</h4><div class="space-y-6">`;
+                    html += `<h4 class="font-black text-white mb-5 text-sm uppercase flex items-center gap-2 border-b border-slate-800 pb-3"><i class="fa-solid fa-list-check text-red-500"></i> বিস্তারিত অনিয়ম ও প্রমাণ</h4><div class="space-y-4">`;
                     
                     rec.forensicFindings.forEach((f, i) => {
                         if (log.flagStatuses && log.flagStatuses[i] === 'OK') return;
-                        
                         let fNote = log.flagNotes && log.flagNotes[i] ? log.flagNotes[i] : '';
                         
-                        // NEW REDESIGNED PROMAN / EVIDENCE SECTION
+                        // DARK MODE EVIDENCE CARD
                         html += `
-                            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                                <div class="bg-red-50/50 border-b border-red-100 p-4">
-                                    <h5 class="font-bold text-lg text-red-700 flex items-center gap-2">
-                                        <i class="fa-solid fa-triangle-exclamation text-red-500"></i> ${f.flag}
-                                    </h5>
-                                </div>
-                                <div class="p-5">
-                                    <div class="flex flex-col md:flex-row gap-6 mb-5">
-                                        <div class="flex-1 relative pl-4 border-l-4 border-emerald-400">
-                                            <p class="text-[10px] text-emerald-600 uppercase font-black mb-1 tracking-wider"><i class="fa-solid fa-book"></i> সরকারি নিয়ম</p>
-                                            <p class="text-sm text-slate-700 leading-relaxed">${f.rule_detail}</p>
-                                        </div>
-                                        <div class="flex-1 relative pl-4 border-l-4 border-red-400">
-                                            <p class="text-[10px] text-red-600 uppercase font-black mb-1 tracking-wider"><i class="fa-solid fa-bolt"></i> বাস্তবে যা করা হয়েছে</p>
-                                            <p class="text-sm text-slate-700 leading-relaxed">${f.violation_logic}</p>
-                                        </div>
+                            <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 shadow-lg">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-sm font-black text-white">${f.flag}</h4>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${f.risk} RISK</span>
                                     </div>
-                                    
-                                    ${fNote ? `<div class="mb-4 bg-yellow-50/50 p-3 text-sm text-yellow-900 border border-yellow-200 rounded-lg">
-                                        <i class="fa-solid fa-pen-nib text-yellow-600 mr-1"></i> <strong>ইনভেস্টিগেটরের নোট:</strong> ${escapeHtml(fNote)}
-                                    </div>` : ''}
-                                    
-                                    <details class="group border border-slate-200 rounded-lg overflow-hidden outline-none mt-2">
-                                        <summary class="bg-slate-50 font-bold text-slate-600 text-xs p-3 hover:bg-slate-100 transition-colors flex items-center gap-2 cursor-pointer select-none">
-                                            <i class="fa-regular fa-file-pdf text-red-500"></i> মূল নথির স্ক্যান করা অংশ (Raw Evidence)
-                                        </summary>
-                                        <div class="p-4 bg-[#0d1117] text-emerald-400 font-mono text-[12px] leading-relaxed overflow-x-auto shadow-inner">
-                                            >_ ${f.evidence}
+                                </div>
+                                <div class="text-xs space-y-3">
+                                    <div class="bg-[#0b1120] p-3 rounded border border-slate-800">
+                                        <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> 
+                                        <span class="text-red-400 font-mono">${f.evidence}</span>
+                                    </div>
+                                    <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
+                                    <div class="border-t border-slate-700/50 pt-2 mt-2">
+                                        <p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p>
+                                    </div>
+                                    ${fNote ? `
+                                    <div class="border-t border-slate-700/50 pt-3 mt-3">
+                                        <div class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300">
+                                            <strong class="text-blue-400"><i class="fa-solid fa-pen-nib"></i> ইনভেস্টিগেটরের নোট:</strong> ${escapeHtml(fNote)}
                                         </div>
-                                    </details>
+                                    </div>` : ''}
                                 </div>
                             </div>
                         `;
@@ -1826,16 +1832,17 @@
                     if (log.customFlags) {
                         log.customFlags.forEach(cf => {
                             html += `
-                                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                                    <div class="bg-blue-50/50 border-b border-blue-100 p-4">
-                                        <h5 class="font-bold text-lg text-blue-700 flex items-center gap-2">
-                                            <i class="fa-solid fa-circle-info text-blue-500"></i> ${cf.flag} (বিশেষ পর্যবেক্ষণ)
-                                        </h5>
+                                <div class="bg-[#131b2f] border-l-4 ${cf.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 shadow-lg border-r border-r-blue-500/30">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="text-sm font-black text-blue-300">${cf.flag} <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1">CUSTOM</span></h4>
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${cf.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${cf.risk} RISK</span>
+                                        </div>
                                     </div>
-                                    <div class="p-5">
-                                        <div class="relative pl-4 border-l-4 border-blue-400 mb-4">
-                                            <p class="text-[10px] text-blue-600 uppercase font-black mb-1 tracking-wider"><i class="fa-solid fa-magnifying-glass"></i> বিস্তারিত লজিক ও প্রমাণ</p>
-                                            <p class="text-sm text-slate-700 leading-relaxed">${cf.evidence}</p>
+                                    <div class="text-xs space-y-3">
+                                        <div class="bg-[#0b1120] p-3 rounded border border-slate-800">
+                                            <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ/লজিক:</span> 
+                                            <span class="text-red-400 font-mono">${cf.evidence}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1845,27 +1852,47 @@
                     html += `</div>`;
                 } else {
                     html += `
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 text-center">
+                        <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6 text-center">
                             <i class="fa-solid fa-shield-check text-4xl text-emerald-400 mb-3"></i>
-                            <p class="text-emerald-700 font-bold text-lg">এই টেন্ডারে কোনো জালিয়াতি বা নিয়ম লঙ্ঘন পাওয়া যায়নি।</p>
+                            <p class="text-emerald-400 font-bold text-lg">এই টেন্ডারে কোনো জালিয়াতি বা নিয়ম লঙ্ঘন পাওয়া যায়নি।</p>
                         </div>
                     `;
                 }
-                html += `</div></div>`; // Close evidence div and main card div
+                
+                // NEW: PDF VIEWER INSIDE THE CASE
+                let fileKeys = Object.keys(globalFilesMap).filter(k => k.includes(cb.value) && k.toLowerCase().endsWith('.pdf'));
+                if (fileKeys.length > 0) {
+                    html += `
+                        <div class="mt-8 pt-6 border-t border-slate-800 print:hidden">
+                            <h4 class="font-black text-white mb-4 text-sm flex items-center gap-2"><i class="fa-solid fa-folder-open text-blue-500"></i> মূল নথিপত্র ও প্রমাণ (PDF Viewer)</h4>
+                            <p class="text-xs text-slate-400 mb-3">বিস্তারিত যাচাই করতে নিচের ফাইলগুলোতে ক্লিক করুন:</p>
+                            <div class="flex flex-col gap-2 mb-4">
+                    `;
+                    fileKeys.forEach((pdfPath, pIdx) => {
+                        let targetSrc = isExport ? pdfPath.replace(/\\/g, '/') : URL.createObjectURL(globalFilesMap[pdfPath]);
+                        let escapedSrc = targetSrc.replace(/'/g, "\\'");
+                        html += `
+                            <button type="button" onclick="document.getElementById('iframe-${cb.value}').src='${escapedSrc}'" class="flex items-center gap-3 w-full text-left bg-white border border-slate-200 hover:border-red-400 hover:shadow-sm transition p-3 rounded-lg group outline-none">
+                                <i class="fa-solid fa-file-pdf text-red-500 text-xl group-hover:scale-110 transition-transform"></i>
+                                <span class="text-sm font-medium text-slate-700 truncate">${pdfPath}</span>
+                            </button>
+                        `;
+                    });
+                    
+                    let initialSrc = isExport ? fileKeys[0].replace(/\\/g, '/') : URL.createObjectURL(globalFilesMap[fileKeys[0]]);
+                    let escapedInitialSrc = initialSrc.replace(/'/g, "\\'");
+                    
+                    html += `
+                            </div>
+                            <div class="bg-[#0b1120] rounded-xl p-2 shadow-inner h-[500px] md:h-[700px] border border-slate-700">
+                                <iframe id="iframe-${cb.value}" class="w-full h-full rounded-lg bg-white border-0" src="${escapedInitialSrc}"></iframe>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `</div></details>`; 
             });
-
-            if(originalPDFs.size > 0) {
-                html += `
-                    <div class="mb-10 p-6 bg-gray-50 border border-gray-200 rounded-xl">
-                        <h2 class="text-lg font-bold text-gray-800 mb-3"><i class="fa-solid fa-file-pdf text-red-500"></i> মূল নথিপত্র (Original Source Documents)</h2>
-                        <p class="text-xs text-gray-500 mb-3">প্রতিবেদনটি তৈরির স্বার্থে নিচের সরকারি ই-জিপি নথিপত্রগুলো বিশ্লেষণ করা হয়েছে:</p>
-                        <div class="h-32 overflow-y-auto custom-scroll pr-2 space-y-1">
-                `;
-                Array.from(originalPDFs).forEach(pdf => {
-                    html += `<div class="text-sm text-gray-700 bg-white px-3 py-2 rounded border border-gray-200 shadow-sm"><i class="fa-regular fa-file-lines text-gray-400 mr-2"></i> ${pdf}</div>`;
-                });
-                html += `</div></div>`;
-            }
 
             if(newsLinksRaw && newsLinksRaw.trim() !== "") {
                 html += `
@@ -1885,24 +1912,24 @@
             // METHODOLOGY (COLLAPSIBLE / HIDDEN BY DEFAULT)
             html += `
                 <details class="group bg-slate-900 text-slate-300 rounded-xl shadow-lg mt-8 border-t-4 border-blue-500 overflow-hidden outline-none cursor-pointer print:bg-white print:border-gray-300 print:text-gray-800">
-                    <summary class="font-black text-white text-lg p-6 flex items-center justify-between outline-none select-none print:text-gray-900 hover:bg-slate-800 transition">
+                    <summary class="font-black text-white text-lg p-6 flex items-center justify-between outline-none select-none print:text-gray-900 hover:bg-slate-800 transition list-none [&::-webkit-details-marker]:hidden">
                         <span class="flex items-center gap-2"><i class="fa-solid fa-microchip text-blue-400 print:text-gray-800"></i> আমরা কীভাবে এই অনুসন্ধানটি করেছি? (Methodology)</span>
-                        <i class="fa-solid fa-chevron-down transition-transform duration-300 group-open:rotate-180"></i>
+                        <i class="fa-solid fa-chevron-down transition-transform duration-300 group-open:rotate-180 print:hidden"></i>
                     </summary>
                     <div class="p-6 pt-0 border-t border-slate-700 mt-2">
                         <p class="text-sm leading-relaxed opacity-90 mb-6 mt-4">${method}</p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-gray-50 print:border-gray-200">
+                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
                                 <i class="fa-solid fa-file-pdf text-red-400 text-2xl mb-3"></i>
                                 <h5 class="text-white font-bold text-sm mb-2 print:text-gray-900">১. পিডিএফ স্ক্যানিং</h5>
                                 <p class="text-xs text-slate-400 leading-relaxed print:text-gray-600">ই-জিপি পোর্টাল থেকে মূল টেন্ডার ডকুমেন্টস সংগ্রহ করে আমাদের কাস্টম এআই ইঞ্জিন দিয়ে স্ক্যান করা হয়েছে।</p>
                             </div>
-                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-gray-50 print:border-gray-200">
+                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
                                 <i class="fa-solid fa-scale-balanced text-emerald-400 text-2xl mb-3"></i>
                                 <h5 class="text-white font-bold text-sm mb-2 print:text-gray-900">২. সরকারি আইনের সাথে তুলনা</h5>
                                 <p class="text-xs text-slate-400 leading-relaxed print:text-gray-600">PPA-2008, e-PG3A এবং দাতা সংস্থার আইনের সাথে পিডিএফ-এর শর্তগুলো মিলিয়ে জালিয়াতি শনাক্ত করা হয়েছে।</p>
                             </div>
-                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-gray-50 print:border-gray-200">
+                            <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
                                 <i class="fa-solid fa-chart-line text-blue-400 text-2xl mb-3"></i>
                                 <h5 class="text-white font-bold text-sm mb-2 print:text-gray-900">৩. রিস্ক স্কোরিং</h5>
                                 <p class="text-xs text-slate-400 leading-relaxed print:text-gray-600">প্রতিটি অনিয়মের জন্য স্কোর নির্ধারণ করে মোট ১০০-এর স্কেলে টেন্ডারের দুর্নীতির মাত্রা বা Risk Level বের করা হয়েছে।</p>
@@ -1912,53 +1939,17 @@
                 </details>
             `;
             
-            document.getElementById('masterStoryPreviewContainer').innerHTML = html;
-            setTimeout(() => { renderCharts(wordLabels, wordData, riskCounts, agencyLabels, agencyData); }, 500);
-            window.reportChartData = { 
-                wordLabels: wordLabels, 
-                wordData: wordData, 
-                riskCounts: riskCounts,
-                agencyLabels: agencyLabels,
-                agencyData: agencyData
-            };
+            return html;
         }
 
-        function renderCharts(wLabels, wData, riskData, aLabels, aData) {
-            if(window.wChartInstance) window.wChartInstance.destroy();
-            if(window.rChartInstance) window.rChartInstance.destroy();
-            if(window.vChartInstance) window.vChartInstance.destroy();
-
-            const ctxWord = document.getElementById('wordChart');
-            const ctxRisk = document.getElementById('riskChart');
-            const ctxValue = document.getElementById('valueChart');
-
-            if(ctxWord && wLabels && wData) {
-                window.wChartInstance = new Chart(ctxWord, {
-                    type: 'bar',
-                    data: { labels: wLabels, datasets: [{ label: 'Most Used Words', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.7)', borderRadius: 4 }] },
-                    options: { responsive: true, plugins: { legend: { display: false } } }
-                });
-            }
-
-            if(ctxRisk && riskData) {
-                window.rChartInstance = new Chart(ctxRisk, {
-                    type: 'doughnut',
-                    data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [riskData.Critical, riskData.High, riskData.Medium, riskData.Low], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'], borderWidth: 0 }] },
-                    options: { responsive: true, cutout: '70%' }
-                });
-            }
-
-            if(ctxValue && aLabels && aData) {
-                window.vChartInstance = new Chart(ctxValue, {
-                    type: 'bar',
-                    data: { labels: aLabels, datasets: [{ label: 'চুক্তিমূল্য (BDT)', data: aData, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderRadius: 4 }] },
-                    options: { responsive: true, plugins: { legend: { display: false } } }
-                });
-            }
+        function previewMasterStory() {
+            document.getElementById('masterStoryPreviewContainer').innerHTML = generateReportHTML(false);
+            let cd = window.reportChartData;
+            setTimeout(() => { renderCharts(cd.wordLabels, cd.wordData, cd.riskCounts, cd.agencyLabels, cd.agencyData); }, 500);
         }
 
         function downloadMasterStoryHTML() {
-            let containerHtml = document.getElementById('masterStoryPreviewContainer').innerHTML;
+            let containerHtml = generateReportHTML(true);
             let cd = window.reportChartData || { wordLabels:[], wordData:[], riskCounts:{ Critical:0, High:0, Medium:0, Low:0 }, agencyLabels:[], agencyData:[] };
             
             let chartInjectionScript = `
@@ -1996,22 +1987,11 @@
                                 options: { responsive: true, plugins: { legend: { display: false } } }
                             });
                         }
-                        
-                        // Toggle Logic for evidence boxes in downloaded file
-                        document.querySelectorAll('button').forEach(btn => {
-                            btn.addEventListener('click', function() {
-                                let onclickStr = this.getAttribute('onclick');
-                                if(onclickStr && onclickStr.includes("classList.toggle('hidden')")) {
-                                    let targetId = onclickStr.match(/'(.*?)'/)[1];
-                                    document.getElementById(targetId).classList.toggle('hidden');
-                                }
-                            });
-                        });
                     };
                 <\/script>
             `;
 
-            const fullHtml = `<html><head><meta charset="utf-8"><title>Investigation Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f1f5f9; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:850px; margin:0 auto; background:white; padding:50px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.05);} h1,h2,h3,h4,h5,p,span,div{color:#1f2937; font-family:'Noto Serif Bengali',serif;} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } canvas{max-height:250px;} .hidden{display:none;} @media print{body{background:white; padding:0;} * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .story-container{box-shadow:none; padding:0;} details div, .hidden{display:block!important;} summary, button{display:none;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
+            const fullHtml = `<html><head><meta charset="utf-8"><title>Investigation Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f1f5f9; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:850px; margin:0 auto; background:white; padding:50px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.05);} h1,h2,h3,h4,h5,p,span,div{color:#1f2937; font-family:'Noto Serif Bengali',serif;} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } canvas{max-height:250px;} .hidden{display:none;} @media print{body{background:white; padding:0;} * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .story-container{box-shadow:none; padding:0;} details[open] div{display:block!important;} details summary i {display:none;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
             
             const blob = new Blob([fullHtml], { type: 'text/html' });
             const a = document.createElement('a'); 
