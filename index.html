@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Ultimate Edition with Visualizations)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Auto-Draft Edition)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -85,8 +85,8 @@
         <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 40px 40px;"></div>
         
         <i class="fa-solid fa-radar text-7xl text-red-600 mb-6 relative z-10 drop-shadow-[0_0_20px_rgba(220,38,38,0.6)]"></i>
-        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Smart AI ইনভেস্টিগেটর</h1>
-        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">ডিপ স্ক্যানিং অ্যালগরিদম দিয়ে Eligibility, Tech Eval, Liquid Assets সহ সকল ডেটা ১০০% নির্ভুলভাবে তুলে আনা হবে।</p>
+        <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 mb-3 relative z-10 tracking-tight">Smart Investigator</h1>
+        <p class="text-slate-400 max-w-xl mb-8 relative z-10 text-sm">স্ক্যানিং অ্যালগরিদম দিয়ে ডেটা এক্সট্রাক্ট করা হবে। আপনার করা সমস্ত কাজ ব্রাউজারে <span class="text-emerald-400 font-bold">অটো-সেভ</span> থাকবে।</p>
         
         <div class="flex gap-4 relative z-10">
             <input type="file" id="folderLoader" webkitdirectory directory multiple class="hidden" onchange="handleFolderUpload(event)">
@@ -127,7 +127,6 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-2">
-                <!-- IMPORT BUTTON MOVED TO DASHBOARD -->
                 <input type="file" id="progressLoader" accept=".json" class="hidden" onchange="importProgress(event)">
                 <label for="progressLoader" class="cursor-pointer bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-slate-300 border border-slate-700 transition flex items-center gap-2 text-xs font-bold" title="অন্য ডিভাইস থেকে কাজের ব্যাকআপ ফাইল লোড করুন">
                     <i class="fa-solid fa-upload"></i> ব্যাকআপ লোড
@@ -307,7 +306,7 @@
                             </div>
                         </div>
 
-                        <!-- FLAGS CONTAINER (Auto + Custom) -->
+                        <!-- FLAGS CONTAINER -->
                         <div id="inspFlagsContainer" class="space-y-4"></div>
                     </div>
 
@@ -401,7 +400,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 4: ELIGIBILITY & TECH (ULTIMATE DEEP FIX) -->
+                    <!-- TAB 4: ELIGIBILITY & TECH -->
                     <div id="tab-elig" class="tab-content">
                         <div class="fieldset-box border-yellow-900/50">
                             <h4 class="fieldset-title text-yellow-500">দরদাতার যোগ্যতা ও শর্তাবলি</h4>
@@ -542,7 +541,14 @@
                     <div><label class="text-xs font-bold text-slate-700 mb-1">উপ-শিরোনাম</label><input type="text" id="storySubhead" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600 italic" value="অনুসন্ধানে উঠে এসেছে কীভাবে বিশ্বব্যাংক ও জাইকার নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো"></div>
                     <div><label class="text-xs font-bold text-slate-700 mb-1">প্রতিবেদক</label><input type="text" id="storyAuthor" class="w-full bg-slate-50 border border-slate-300 rounded p-2 text-sm text-black focus:border-red-600" value="ডেটা জার্নালিজম ডেস্ক"></div>
                     <div><label class="text-xs font-bold text-slate-700 mb-1">ছবি (Multiple Images)</label><input type="file" accept="image/*" multiple onchange="handleStoryImages(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-1 file:px-2 file:rounded file:bg-red-50 file:text-red-700 cursor-pointer"></div>
-                    <div><label class="text-xs font-bold text-slate-700 mb-1">মূল লেখা</label><textarea id="storyIntro" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-24 custom-scroll focus:border-red-600 leading-relaxed">অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) এবং আন্তর্জাতিক গাইডলাইন লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে।</textarea></div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-bold text-slate-700">মূল লেখা (খবরের ভূমিকা)</label>
+                            <button onclick="autoGenerateStory()" class="text-[10px] bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-2 rounded transition cursor-pointer shadow-sm border border-blue-200"><i class="fa-solid fa-wand-magic-sparkles"></i> অটো ড্রাফট তৈরি</button>
+                        </div>
+                        <textarea id="storyIntro" class="w-full bg-slate-50 border border-slate-300 rounded p-3 text-sm text-black h-24 custom-scroll focus:border-red-600 leading-relaxed">অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) এবং আন্তর্জাতিক গাইডলাইন লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে।</textarea>
+                    </div>
                     
                     <div>
                         <label class="text-xs font-bold text-slate-700 mb-1">সংবাদ/তথ্য লিংক (News & External Links)</label>
@@ -784,7 +790,7 @@
                         loadingTask.destroy();
                         typedarray = null;
                         
-                        fullText = fullText.replace(/\s{2,}/g, ' '); // Normalize spaces for better regex matching
+                        fullText = fullText.replace(/\s{2,}/g, ' '); // Normalize spaces
                         resolve(fullText.trim() ? fullText : "NO_TEXT");
                     } catch(err) { 
                         if(pdf) await pdf.destroy();
@@ -1397,6 +1403,9 @@
                             <div class="text-xs space-y-3">
                                 <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
                                 <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
+                                <div class="border-t border-slate-700/50 pt-2 mt-2">
+                                    <p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p>
+                                </div>
                                 <div class="border-t border-slate-700/50 pt-3 mt-3">
                                     <input type="text" placeholder="এই ফ্ল্যাগটির জন্য স্পেসিফিক নোট বা কারণ লিখুন..." 
                                            value="${escapeHtml(fNote)}" 
@@ -1514,7 +1523,7 @@
             link.click();
         }
 
-        // ================= STORY BUILDER WITH CHARTS & PDFs =================
+        // ================= STORY BUILDER (AUTO-DRAFT + CHARTS) =================
         function openStoryBuilder() {
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('storyBuilderView').classList.remove('hide');
@@ -1535,6 +1544,53 @@
             });
         }
 
+        // --- NEW: AUTO-GENERATE DRAFT STORY ---
+        function autoGenerateStory() {
+            let totalRiskyTenders = 0;
+            let totalValue = 0;
+            let agencies = new Set();
+            let violations = {};
+
+            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach(cb => {
+                let tid = cb.value;
+                let rec = analyzedData.find(x => x.Tender_Proposal_ID == tid);
+                let log = auditLogs[tid] || {};
+                
+                let activeFindings = rec.forensicFindings.filter((f, i) => !(log.flagStatuses && log.flagStatuses[i] === 'OK'));
+                if (log.customFlags) activeFindings = activeFindings.concat(log.customFlags);
+
+                if (activeFindings.length > 0) {
+                    totalRiskyTenders++;
+                    let val = parseFloat(String(log.Contract_Value || rec.Contract_Value_BDT || "0").replace(/,/g, '')) || 0;
+                    totalValue += val;
+                    if(rec.ext_OrgName) agencies.add(rec.ext_OrgName);
+                    
+                    activeFindings.forEach(f => {
+                        violations[f.flag] = (violations[f.flag] || 0) + 1;
+                    });
+                }
+            });
+
+            if (totalRiskyTenders === 0) {
+                alert("ড্রাফট তৈরি করার মতো কোনো ঝুঁকিপূর্ণ/জালিয়াতি যুক্ত টেন্ডার পাওয়া যায়নি!");
+                return;
+            }
+
+            // Get top 2 violations
+            let sortedViolations = Object.keys(violations).sort((a, b) => violations[b] - violations[a]);
+            let topViolsText = sortedViolations.slice(0, 2).join(" এবং ");
+
+            let valStr = totalValue > 0 ? `প্রায় ${totalValue.toLocaleString('bn-BD')} টাকার` : `বিপুল অঙ্কের`;
+            let agencyStr = Array.from(agencies).slice(0, 3).join(", ");
+            if (agencies.size > 3) agencyStr += " সহ আরও কয়েকটি সংস্থার";
+            else agencyStr += " এর";
+
+            let draft = `দেশের সরকারি ক্রয় ব্যবস্থায় (e-GP) ভয়ংকর অনিয়ম ও দুর্নীতির প্রমাণ পাওয়া গেছে। আমাদের সাম্প্রতিক ডেটা অনুসন্ধানে ${totalRiskyTenders} টি দরপত্রে ${valStr} কাজে এই জালিয়াতি ধরা পড়েছে।\n\nবিশেষ করে, ${agencyStr} দরপত্রগুলোতে "${topViolsText}" এর মতো গুরুতর অনিয়ম করা হয়েছে। সরকারি ক্রয় আইন (PPA 2008) এবং আন্তর্জাতিক দাতা সংস্থার (World Bank/JICA) গাইডলাইনকে বৃদ্ধাঙ্গুলি দেখিয়ে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতেই এমন অভিনব জালিয়াতির আশ্রয় নেওয়া হয়েছে বলে বিশেষজ্ঞরা মনে করছেন।\n\nনিচে প্রতিটি টেন্ডারের বিশ্লেষণ, সরকারি নিয়ম এবং বাস্তবে কী জালিয়াতি হয়েছে, তার বিস্তারিত প্রমাণ তুলে ধরা হলো:`;
+
+            document.getElementById('storyIntro').value = draft;
+            showToast("অটো ড্রাফট সম্পন্ন", "প্রাপ্ত ডেটার ওপর ভিত্তি করে খবরের ভূমিকা লেখা হয়েছে।");
+        }
+
         function previewMasterStory() {
             let head = document.getElementById('storyHeadline').value || "ই-জিপি প্রকল্পে মেগা দুর্নীতি";
             let subhead = document.getElementById('storySubhead').value || "বিশ্বব্যাংক ও জাইকার নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
@@ -1548,155 +1604,177 @@
             let originalPDFs = new Set();
 
             let html = `
-                <div class="mb-8 border-b-4 border-red-600 pb-6">
-                    <span class="bg-red-600 text-white text-[10px] font-black px-2 py-1 uppercase tracking-widest rounded-sm">EXCLUSIVE</span>
-                    <h1 class="nn-title">${head}</h1>
-                    <p class="text-xl text-slate-600 mb-4 italic" style="font-family: 'Georgia', serif;">${subhead}</p>
-                    <div class="nn-meta">
-                        <span class="nn-author">প্রতিবেদক: ${author}</span> | <span>প্রকাশিত: ${new Date().toLocaleDateString('bn-BD')}</span>
+                <div class="mb-8 border-b-4 border-red-600 pb-6 text-center md:text-left">
+                    <span class="inline-block bg-red-600 text-white text-[10px] font-black px-3 py-1 mb-3 uppercase tracking-widest rounded-sm">অনুসন্ধানী প্রতিবেদন</span>
+                    <h1 class="nn-title text-3xl md:text-4xl font-black text-slate-900 leading-tight mb-4">${head}</h1>
+                    <p class="text-lg md:text-xl text-slate-600 mb-6 italic border-l-4 border-slate-300 pl-4">${subhead}</p>
+                    <div class="nn-meta text-xs font-bold text-slate-500 uppercase tracking-wide flex flex-col md:flex-row justify-between md:items-center">
+                        <span class="text-red-600 mb-2 md:mb-0"><i class="fa-solid fa-pen-nib"></i> প্রতিবেদক: ${author}</span>
+                        <span><i class="fa-regular fa-calendar"></i> প্রকাশিত: ${new Date().toLocaleDateString('bn-BD')}</span>
                     </div>
                 </div>
             `;
             
-            if(storyImagesArray.length > 0) html += `<img src="${storyImagesArray[0]}" class="w-full h-auto mb-8 rounded shadow-md">`;
-            html += `<div class="nn-body-text"><p class="nn-dropcap">${intro.charAt(0)}</p><p>${intro.substring(1)}</p></div>`;
+            if(storyImagesArray.length > 0) html += `<div class="mb-8 rounded-xl overflow-hidden shadow-lg"><img src="${storyImagesArray[0]}" class="w-full h-auto object-cover"></div>`;
             
-            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
+            html += `<div class="nn-body-text text-lg text-slate-800 leading-relaxed mb-10"><p><span class="text-5xl font-black text-red-600 float-left mr-3 mt-1">${intro.charAt(0)}</span>${intro.substring(1)}</p></div>`;
+
+            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach(cb => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
-                let log = auditLogs[cb.value] || {};
-                
-                // Collect Data for Visualizations
                 combinedTextForNLP += (rec.fullOCR || "") + " ";
                 if(rec.riskLevel === 'CRITICAL') riskCounts.Critical++;
                 else if(rec.riskLevel === 'HIGH') riskCounts.High++;
                 else if(rec.riskLevel === 'MEDIUM') riskCounts.Medium++;
                 else riskCounts.Low++;
-
-                // Track Original PDFs
+                
                 let fileKeys = Object.keys(globalFilesMap).filter(k => k.includes(cb.value) && k.toLowerCase().endsWith('.pdf'));
                 fileKeys.forEach(fk => originalPDFs.add(fk));
+            });
 
-                html += `
-                    <div class="mb-12 border-t border-slate-200 pt-8">
-                        <h3 class="text-xl font-bold text-red-700 mb-4 font-sans flex items-center gap-2">
-                            <span class="bg-slate-800 text-white px-2 py-1 rounded text-sm">কেইস ${index + 1}</span> ${rec.ext_OrgName || 'অজানা সংস্থা'}-এর দরপত্রে অনিয়ম
-                        </h3>
-                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg text-sm mb-5 grid grid-cols-2 gap-4 font-sans shadow-sm">
-                            <div><strong class="text-slate-500">টেন্ডার আইডি:</strong> <span class="font-mono font-bold">${cb.value}</span></div>
-                            <div><strong class="text-slate-500">চুক্তিমূল্য:</strong> <span class="font-mono font-bold text-red-600">BDT ${log.Contract_Value || rec.Contract_Value_BDT || '0'}</span></div>
-                            <div class="col-span-2"><strong class="text-slate-500">ঠিকাদার:</strong> <span class="font-bold">${log.Award_Supplier || rec.Supplier_Name || 'অজানা'}</span></div>
+            let topWords = getWordFrequency(combinedTextForNLP);
+            let wordLabels = topWords.map(w => w[0]);
+            let wordData = topWords.map(w => w[1]);
+            
+            html += `
+                <div class="mb-12 bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-inner">
+                    <h2 class="text-2xl font-black text-slate-800 mb-6 text-center border-b border-slate-300 pb-3">এক নজরে আমাদের অনুসন্ধান</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-center font-bold text-slate-600 mb-2 text-sm uppercase">টেন্ডার নথিতে সর্বাধিক ব্যবহৃত শব্দ</h4>
+                            <canvas id="wordChart"></canvas>
                         </div>
-                        <p class="text-[1.1rem] text-slate-800 mb-6 font-sans leading-relaxed border-l-4 border-red-400 pl-4 bg-red-50/50 py-3">${log.justification || 'কোনো ম্যানুয়াল নোট দেওয়া হয়নি।'}</p>
+                        <div>
+                            <h4 class="text-center font-bold text-slate-600 mb-2 text-sm uppercase">দুর্নীতির ঝুঁকির মাত্রা</h4>
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            html += `<h2 class="text-2xl font-black text-slate-900 mb-6 border-l-4 border-red-600 pl-4">বিস্তারিত তথ্য ও প্রমাণ</h2>`;
+
+            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
+                let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
+                let log = auditLogs[cb.value] || {};
+                
+                html += `
+                    <div class="mb-10 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-md">
+                        <div class="bg-slate-800 text-white p-4">
+                            <h3 class="text-lg font-bold flex items-center gap-2">
+                                <span class="bg-red-600 text-white px-2 py-1 rounded text-xs">কেইস ${index + 1}</span> 
+                                ${rec.ext_OrgName || 'অজানা সংস্থা'}-এর দরপত্র
+                            </h3>
+                            <p class="text-xs text-slate-300 mt-2 opacity-90"><i class="fa-solid fa-hashtag"></i> টেন্ডার আইডি: ${cb.value} | <i class="fa-solid fa-money-bill-wave"></i> চুক্তিমূল্য: ৳ ${Number(log.Contract_Value || rec.Contract_Value_BDT || 0).toLocaleString('bn-BD')}</p>
+                        </div>
+                        
+                        <div class="p-5">
+                            ${log.justification ? `<p class="text-base text-slate-700 mb-6 italic border-l-4 border-red-400 pl-4 bg-red-50 py-3 rounded-r-lg">"${log.justification}"</p>` : ''}
                 `;
                 
                 let activeFindings = rec.forensicFindings.filter((f, i) => !(log.flagStatuses && log.flagStatuses[i] === 'OK'));
                 if(log.customFlags) activeFindings = activeFindings.concat(log.customFlags);
 
                 if (activeFindings.length > 0) {
+                    html += `<h4 class="font-bold text-slate-800 mb-4 text-sm uppercase text-red-600 border-b pb-2">আমাদের অনুসন্ধানে যা ধরা পড়েছে:</h4><div class="space-y-6">`;
+                    
+                    // Render Active Auto Findings
                     rec.forensicFindings.forEach((f, i) => {
                         if (log.flagStatuses && log.flagStatuses[i] === 'OK') return;
-                        
                         let fNote = log.flagNotes && log.flagNotes[i] ? log.flagNotes[i] : '';
-                        let noteHtml = fNote ? `<div class="bg-blue-50 p-3 rounded text-sm text-blue-800 border-l-4 border-blue-500 mb-4"><strong>ইনভেস্টিগেটরের নোট:</strong> ${fNote}</div>` : '';
-
+                        
                         html += `
-                            <div class="nn-evidence-box relative overflow-hidden bg-white shadow-sm border border-slate-200">
-                                <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
-                                <h4 class="font-bold text-slate-800 text-lg mb-2">${f.flag}</h4>
-                                <p class="text-[0.95rem] text-slate-800 mb-3 leading-relaxed"><strong>অনিয়মের ধরন:</strong> ${f.violation_logic}</p>
-                                ${noteHtml}
-                                <div class="bg-red-50 p-3 rounded text-sm text-red-800 border-l-4 border-red-500 mb-4"><strong>প্রকৃত আইন:</strong> ${f.rule_detail}</div>
-                                <details class="group bg-slate-50 rounded border border-slate-200 cursor-pointer outline-none">
-                                    <summary class="font-bold text-red-600 text-sm p-3 hover:bg-slate-100 transition-colors flex items-center gap-2 outline-none">
-                                        <i class="fa-solid fa-file-pdf"></i> 📄 নথির স্ক্যান করা প্রমাণ দেখুন
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 relative">
+                                <h5 class="font-bold text-lg text-slate-900 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-exclamation text-red-500"></i> ${f.flag}
+                                </h5>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                                    <div class="bg-white p-3 rounded border border-emerald-100 shadow-sm">
+                                        <p class="text-[10px] text-emerald-600 uppercase font-black mb-1"><i class="fa-solid fa-book"></i> সরকারি নিয়ম কী বলে?</p>
+                                        <p class="text-sm text-slate-700">${f.rule_detail}</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded border border-red-100 shadow-sm">
+                                        <p class="text-[10px] text-red-600 uppercase font-black mb-1"><i class="fa-solid fa-bolt"></i> বাস্তবে কী করা হয়েছে?</p>
+                                        <p class="text-sm text-slate-700">${f.violation_logic}</p>
+                                    </div>
+                                </div>
+                                
+                                ${fNote ? `<div class="mt-3 bg-blue-50 p-3 rounded text-sm text-blue-800 border border-blue-200"><strong class="text-blue-900">সাংবাদিকের নোট:</strong> ${fNote}</div>` : ''}
+                                
+                                <details class="mt-3 group cursor-pointer outline-none">
+                                    <summary class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 select-none">
+                                        <i class="fa-solid fa-magnifying-glass"></i> মূল নথির প্রমাণ দেখুন (Technical Evidence)
                                     </summary>
-                                    <div class="p-4 bg-slate-900 text-emerald-400 font-mono text-[12px] border-t border-slate-200 leading-relaxed overflow-x-auto shadow-inner">
-                                        ${f.evidence}
+                                    <div class="mt-2 p-3 bg-slate-900 text-emerald-400 font-mono text-[11px] rounded shadow-inner overflow-x-auto">
+                                        >_ ${f.evidence}
                                     </div>
                                 </details>
                             </div>
                         `;
                     });
 
+                    // Render Custom Findings
                     if (log.customFlags) {
-                        log.customFlags.forEach(cf => {
+                        log.customFlags.forEach((cf) => {
                             html += `
-                                <div class="nn-evidence-box relative overflow-hidden bg-white shadow-sm border border-slate-200">
-                                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
-                                    <h4 class="font-bold text-slate-800 text-lg mb-2">${cf.flag} (Custom)</h4>
-                                    <div class="bg-blue-50 p-3 rounded text-sm text-blue-800 border-l-4 border-blue-500 mb-4"><strong>লজিক/প্রমাণ:</strong> ${cf.evidence}</div>
+                                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 relative">
+                                    <h5 class="font-bold text-lg text-blue-900 mb-3 flex items-center gap-2">
+                                        <i class="fa-solid fa-circle-exclamation text-blue-600"></i> ${cf.flag} (বিশেষ পর্যবেক্ষণ)
+                                    </h5>
+                                    
+                                    <div class="bg-white p-3 rounded border border-blue-100 shadow-sm mb-3">
+                                        <p class="text-[10px] text-blue-600 uppercase font-black mb-1"><i class="fa-solid fa-bolt"></i> বিস্তারিত লজিক</p>
+                                        <p class="text-sm text-slate-700">${cf.evidence}</p>
+                                    </div>
                                 </div>
                             `;
                         });
                     }
+
+                    html += `</div>`;
                 } else {
-                    html += `<p class="text-emerald-600 font-bold text-sm bg-emerald-50 p-3 rounded border border-emerald-200">এই টেন্ডারে কোনো জালিয়াতি চিহ্নিত করা হয়নি।</p>`;
+                    html += `<p class="text-emerald-600 font-bold text-sm bg-emerald-50 p-3 rounded border border-emerald-200 text-center"><i class="fa-solid fa-check-circle"></i> এই টেন্ডারে কোনো জালিয়াতি চিহ্নিত করা হয়নি।</p>`;
                 }
-                html += `</div>`;
+                html += `</div></div>`;
             });
 
-            // AI Data Visualizations
-            let topWords = getWordFrequency(combinedTextForNLP);
-            let wordLabels = topWords.map(w => w[0]);
-            let wordData = topWords.map(w => w[1]);
-            
-            html += `
-                <div class="mb-12 border-t border-slate-200 pt-8">
-                    <h2 class="nn-section-title">ডেটা ভিজ্যুয়ালাইজেশন (AI Analysis)</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                            <h4 class="text-center font-bold text-slate-700 mb-2">ফ্রিকোয়েন্সি অ্যানালাইসিস</h4>
-                            <canvas id="wordChart"></canvas>
-                        </div>
-                        <div class="bg-white p-4 border border-slate-200 rounded-lg shadow-sm">
-                            <h4 class="text-center font-bold text-slate-700 mb-2">ঝুঁকি বন্টন (Risk Distribution)</h4>
-                            <canvas id="riskChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Original PDFs Listing
             if(originalPDFs.size > 0) {
                 html += `
-                    <div class="mb-12 border-t border-slate-200 pt-8">
-                        <h2 class="nn-section-title">মূল ডকুমেন্টস (Original PDFs)</h2>
-                        <ul class="list-disc pl-5 text-slate-700 space-y-2 mt-4 text-sm">
+                    <div class="mb-10 p-6 bg-slate-50 border border-slate-200 rounded-xl">
+                        <h2 class="text-lg font-bold text-slate-800 mb-3"><i class="fa-solid fa-file-pdf text-red-500"></i> মূল নথিপত্র (Original Source Documents)</h2>
+                        <p class="text-xs text-slate-500 mb-3">প্রতিবেদনটি তৈরির স্বার্থে নিচের সরকারি ই-জিপি নথিপত্রগুলো বিশ্লেষণ করা হয়েছে:</p>
+                        <div class="h-32 overflow-y-auto custom-scroll pr-2 space-y-1">
                 `;
                 Array.from(originalPDFs).forEach(pdf => {
-                    html += `<li><i class="fa-solid fa-file-pdf text-red-500 mr-1"></i> ${pdf} (Reference File)</li>`;
+                    html += `<div class="text-sm text-slate-700 bg-white px-3 py-2 rounded border border-slate-200 shadow-sm"><i class="fa-regular fa-file-lines text-slate-400 mr-2"></i> ${pdf}</div>`;
                 });
-                html += `</ul></div>`;
+                html += `</div></div>`;
             }
 
-            // News Links
             if(newsLinksRaw && newsLinksRaw.trim() !== "") {
                 html += `
-                    <div class="mb-12 border-t border-slate-200 pt-8">
-                        <h2 class="nn-section-title">সংশ্লিষ্ট সংবাদ ও তথ্য (External Sources)</h2>
-                        <ul class="list-disc pl-5 text-blue-600 space-y-2 mt-4 text-sm">
+                    <div class="mb-10 p-6 bg-blue-50 border border-blue-100 rounded-xl">
+                        <h2 class="text-lg font-bold text-blue-900 mb-3"><i class="fa-solid fa-link"></i> সংশ্লিষ্ট সংবাদ ও তথ্যসূত্র</h2>
+                        <ul class="list-disc pl-5 text-blue-700 space-y-2 text-sm font-medium">
                 `;
                 let links = newsLinksRaw.split('\n');
                 links.forEach(link => {
                     if(link.trim() !== "") {
-                        html += `<li><a href="${link.trim()}" target="_blank" class="underline hover:text-blue-800">${link.trim()}</a></li>`;
+                        html += `<li><a href="${link.trim()}" target="_blank" class="hover:text-blue-900 underline decoration-blue-300 hover:decoration-blue-900 transition">${link.trim()}</a></li>`;
                     }
                 });
                 html += `</ul></div>`;
             }
 
-            if(storyImagesArray.length > 1) {
-                html += `<h2 class="nn-section-title">অতিরিক্ত ডকুমেন্টস (Images)</h2><div class="grid grid-cols-2 gap-4 mb-8">`;
-                for(let i=1; i<storyImagesArray.length; i++) html += `<img src="${storyImagesArray[i]}" class="w-full h-auto border border-slate-200 p-1 shadow-sm">`;
-                html += `</div>`;
-            }
-
-            html += `<div class="nn-methodology"><h4 class="font-black text-red-700 text-lg mb-2 uppercase">আমাদের অনুসন্ধান পদ্ধতি</h4><p class="text-slate-700 leading-relaxed">${method}</p></div>`;
+            html += `
+                <div class="bg-slate-900 text-slate-300 p-6 rounded-xl shadow-lg mt-8">
+                    <h4 class="font-black text-white text-lg mb-3 flex items-center gap-2"><i class="fa-solid fa-microchip text-blue-400"></i> আমরা কীভাবে এই অনুসন্ধানটি করেছি?</h4>
+                    <p class="text-sm leading-relaxed opacity-90">${method}</p>
+                </div>
+            `;
             
             document.getElementById('masterStoryPreviewContainer').innerHTML = html;
-
             setTimeout(() => { renderCharts(wordLabels, wordData, riskCounts); }, 500);
-
             window.reportChartData = { wordLabels: wordLabels, wordData: wordData, riskCounts: riskCounts };
         }
 
@@ -1710,7 +1788,7 @@
             if(ctxWord && wLabels && wData) {
                 window.wChartInstance = new Chart(ctxWord, {
                     type: 'bar',
-                    data: { labels: wLabels, datasets: [{ label: 'Word Frequency', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgba(59, 130, 246, 1)', borderWidth: 1 }] },
+                    data: { labels: wLabels, datasets: [{ label: 'Most Used Words', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.7)', borderRadius: 4 }] },
                     options: { responsive: true, plugins: { legend: { display: false } } }
                 });
             }
@@ -1718,8 +1796,8 @@
             if(ctxRisk && riskData) {
                 window.rChartInstance = new Chart(ctxRisk, {
                     type: 'doughnut',
-                    data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [riskData.Critical, riskData.High, riskData.Medium, riskData.Low], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'] }] },
-                    options: { responsive: true }
+                    data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [riskData.Critical, riskData.High, riskData.Medium, riskData.Low], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'], borderWidth: 0 }] },
+                    options: { responsive: true, cutout: '70%' }
                 });
             }
         }
@@ -1742,7 +1820,7 @@
                         if(ctxWord) {
                             new Chart(ctxWord, {
                                 type: 'bar',
-                                data: { labels: wLabels, datasets: [{ label: 'Word Frequency', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.6)' }] },
+                                data: { labels: wLabels, datasets: [{ label: 'Most Used Words', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.7)' }] },
                                 options: { responsive: true, plugins: { legend: { display: false } } }
                             });
                         }
@@ -1757,12 +1835,12 @@
                 <\/script>
             `;
 
-            const fullHtml = `<html><head><title>Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f8fafc; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:900px; margin:0 auto; background:white; padding:60px; border-radius:8px; box-shadow:0 10px 40px rgba(0,0,0,0.08);} .nn-title{font-size:2.5rem; font-weight:900; line-height:1.2; font-family:'Noto Serif Bengali',serif;} .nn-meta{text-transform:uppercase; font-size:0.75rem; color:#64748b; margin-bottom:24px; padding-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;} .nn-author{color:#dc2626; font-weight:bold;} .nn-body-text{font-size:1.15rem; margin-bottom:24px; line-height:1.8; font-family:'Noto Serif Bengali',serif;} .nn-dropcap::first-letter{font-size:3.5rem; float:left; margin-top:5px; margin-right:8px; color:#dc2626; font-weight:900;} .nn-section-title{font-size:1.5rem; font-weight:700; margin-top:40px; margin-bottom:16px; border-left:4px solid #dc2626; padding-left:12px;} .nn-evidence-box{padding:20px; margin-bottom:24px;} .nn-methodology{background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:24px; margin-top:48px; font-size:0.95rem;} details{margin-top:15px;} summary{font-weight:bold; color:#dc2626; cursor:pointer;} details div{padding:15px; background:#0f172a; color:#34d399; font-family:monospace; font-size:13px; overflow-x:auto;} img{max-width:100%; height:auto;} canvas{max-height:300px;} @media print{body{background:white; padding:0;} .story-container{box-shadow:none; padding:0;} details div{display:block!important;} summary{display:none;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
+            const fullHtml = `<html><head><meta charset="utf-8"><title>Investigation Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f1f5f9; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:850px; margin:0 auto; background:white; padding:50px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.05);} h1,h2,h3,h4,h5,p{font-family:'Noto Serif Bengali',serif;} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } canvas{max-height:250px;} @media print{body{background:white; padding:0;} .story-container{box-shadow:none; padding:0;} details div{display:block!important;} summary{display:none;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
             
             const blob = new Blob([fullHtml], { type: 'text/html' });
             const a = document.createElement('a'); 
             a.href = URL.createObjectURL(blob); 
-            a.download = `Investigation_Report_Final.html`; 
+            a.download = `Investigation_Report_Public_${new Date().getTime()}.html`; 
             a.click();
             URL.revokeObjectURL(a.href);
         }
