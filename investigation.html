@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signed on the Last Legal Day — An investigation into Bangladesh's e-GP construction tenders</title>
+<meta name="description" content="A data-driven investigation into 1,158 e-GP construction tenders worth ৳3,724 crore: single-bidder competition, supplier concentration, repeat office–contractor pairings, and contracts signed on the last legally permitted day.">
+<style>
+  :root{
+    /* validated dataviz palette — light */
+    --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --secondary:#52514e; --muted:#898781;
+    --gridline:#e1e0d9; --baseline:#c3c2b7; --hairline:#e6e5df;
+    --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#8256d0; --c5:#c93d6f;
+    --seq0:#eaf1fb; --seq1:#cfe0f6; --seq2:#a9c8ee; --seq3:#78a8e4; --seq4:#4a89db; --seq5:#2a78d6; --seq6:#1a5aa8; --seq7:#123f75;
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --accent:#b0201d;
+    --maxw:1180px;
+  }
+  html[data-theme="dark"]{
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --secondary:#c3c2b7; --muted:#898781;
+    --gridline:#2c2c2a; --baseline:#383835; --hairline:#242422;
+    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#9166e0; --c5:#d9557f;
+    --seq0:#10233b; --seq1:#153458; --seq2:#1c4a80; --seq3:#2461a8; --seq4:#3379cf; --seq5:#4a90e2; --seq6:#77aeec; --seq7:#a9ccf5;
+    --good:#3cc13c; --warning:#f5c04a; --serious:#f0946e; --critical:#e35d5d;
+    --accent:#ff6b64;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Bengali",sans-serif;
+    line-height:1.62;font-size:18px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .narrow{max-width:720px;margin-left:auto;margin-right:auto}
+
+  /* ---- top bar ---- */
+  .topbar{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--page) 88%,transparent);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:52px}
+  .brand{font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+  .brand span{color:var(--accent)}
+  .topnav{display:flex;gap:20px;font-size:13px}
+  .topnav a{color:var(--secondary);text-decoration:none}
+  .topnav a:hover{color:var(--ink)}
+  .theme-btn{background:none;border:1px solid var(--baseline);color:var(--secondary);border-radius:999px;
+    padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+  .theme-btn:hover{color:var(--ink);border-color:var(--muted)}
+  @media(max-width:720px){.topnav{display:none}}
+
+  /* ---- hero ---- */
+  header.hero{padding:64px 0 30px;border-bottom:1px solid var(--hairline)}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:13px;margin-bottom:18px}
+  h1{font-size:clamp(32px,5.4vw,60px);line-height:1.06;letter-spacing:-.02em;margin:0 0 20px;font-weight:800}
+  .standfirst{font-size:clamp(19px,2.4vw,24px);color:var(--secondary);line-height:1.5;max-width:820px;font-weight:400}
+  .byline{margin-top:26px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+  .byline b{color:var(--secondary);font-weight:600}
+  .disclaimer{margin-top:22px;font-size:13.5px;color:var(--secondary);background:var(--surface);
+    border:1px solid var(--hairline);border-left:3px solid var(--warning);border-radius:8px;padding:14px 16px;max-width:820px}
+
+  section{padding:46px 0}
+  section+section{border-top:1px solid var(--hairline)}
+  h2{font-size:clamp(24px,3.4vw,34px);letter-spacing:-.01em;margin:0 0 8px;font-weight:800}
+  h2 .num{color:var(--accent);font-size:.6em;font-weight:700;vertical-align:middle;margin-right:12px;letter-spacing:.1em}
+  .dek{color:var(--secondary);font-size:18px;max-width:760px;margin:0 0 26px}
+  p{margin:0 0 18px}
+  .narrow p{font-size:18.5px}
+  .lead::first-letter{float:left;font-size:64px;line-height:.82;font-weight:800;padding:6px 10px 0 0;color:var(--accent)}
+  a.inlink{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent);font-weight:600}
+  a.inlink:hover{border-bottom-color:var(--accent)}
+  em.term{font-style:normal;background:color-mix(in srgb,var(--warning) 22%,transparent);padding:0 4px;border-radius:3px}
+
+  /* ---- stat tiles ---- */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--hairline);
+    border:1px solid var(--hairline);border-radius:12px;overflow:hidden;margin:8px 0 4px}
+  .tile{background:var(--surface);padding:22px 20px}
+  .tile .v{font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .tile .v small{font-size:16px;font-weight:600;color:var(--muted)}
+  .tile .l{margin-top:8px;font-size:13.5px;color:var(--secondary);line-height:1.35}
+  .tile.crit .v{color:var(--critical)}
+  .tile.warn .v{color:var(--serious)}
+
+  /* ---- figures ---- */
+  figure{margin:30px 0;background:var(--surface);border:1px solid var(--hairline);border-radius:14px;padding:22px 22px 16px;overflow:hidden}
+  figure.wide{margin-left:calc((var(--maxw)/-2 + 360px));} /* no-op fallback */
+  .fig-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+  .fig-title{font-weight:700;font-size:16.5px}
+  .fig-sub{color:var(--muted);font-size:13px}
+  figcaption{margin-top:14px;font-size:13.5px;color:var(--secondary);border-top:1px solid var(--hairline);padding-top:12px}
+  figcaption b{color:var(--ink)}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--secondary);margin:2px 0 10px}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
+  svg{display:block;width:100%;height:auto;overflow:visible;font-family:inherit}
+  svg text{fill:var(--secondary);font-size:12px}
+  .axis line,.axis path{stroke:var(--gridline)}
+  .tickv{fill:var(--muted);font-size:11px}
+  .val-label{fill:var(--ink);font-weight:700;font-size:12px}
+  .bar-lbl{fill:var(--ink);font-size:12.5px}
+  .grid line{stroke:var(--gridline);stroke-width:1}
+  .baseline{stroke:var(--baseline);stroke-width:1.5}
+
+  /* tooltip */
+  #tt{position:fixed;pointer-events:none;z-index:80;background:var(--ink);color:var(--page);
+    font-size:12.5px;line-height:1.5;padding:8px 11px;border-radius:8px;opacity:0;transition:opacity .1s;max-width:280px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+  #tt b{color:var(--page)}
+  #tt .k{opacity:.7}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+  .pull{border-left:4px solid var(--accent);padding:6px 0 6px 22px;margin:34px 0;font-size:24px;
+    line-height:1.34;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+  .pull cite{display:block;font-size:14px;color:var(--muted);font-weight:500;font-style:normal;margin-top:10px}
+
+  /* case explorer / evidence room */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:6px 0 14px}
+  .toolbar input,.toolbar select{font-family:inherit;font-size:14px;padding:8px 11px;border:1px solid var(--baseline);
+    background:var(--surface);color:var(--ink);border-radius:8px}
+  .toolbar input{flex:1;min-width:220px}
+  .chip{font-size:12.5px;padding:6px 11px;border:1px solid var(--baseline);border-radius:999px;background:var(--surface);
+    color:var(--secondary);cursor:pointer}
+  .chip.on{background:var(--ink);color:var(--page);border-color:var(--ink)}
+  .tblwrap{border:1px solid var(--hairline);border-radius:12px;overflow:auto;max-height:620px}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  thead th{position:sticky;top:0;background:var(--surface);text-align:left;padding:11px 12px;border-bottom:1.5px solid var(--baseline);
+    color:var(--secondary);font-weight:700;cursor:pointer;white-space:nowrap;z-index:2}
+  thead th:hover{color:var(--ink)}
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--hairline);vertical-align:top}
+  tbody tr:hover{background:color-mix(in srgb,var(--c1) 7%,transparent)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .risk{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .risk.HIGH{background:color-mix(in srgb,var(--critical) 18%,transparent);color:var(--critical)}
+  .risk.LOW{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+  .pdflink{color:var(--c1);text-decoration:none;font-weight:600;white-space:nowrap}
+  .pdflink:hover{text-decoration:underline}
+  .pdflink.dim{color:var(--muted)}
+  .meta{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+  .method{background:var(--surface);border:1px solid var(--hairline);border-radius:14px;padding:26px}
+  .method h3{margin:22px 0 8px;font-size:16px}
+  .method h3:first-child{margin-top:0}
+  .method p,.method li{font-size:15px;color:var(--secondary)}
+  .method ul{margin:0 0 10px;padding-left:20px}
+  .method code{background:var(--page);border:1px solid var(--hairline);border-radius:5px;padding:1px 6px;font-size:13px}
+
+  footer{padding:48px 0 70px;color:var(--muted);font-size:13.5px;border-top:1px solid var(--hairline)}
+  footer a{color:var(--secondary)}
+  .anchor{scroll-margin-top:70px}
+  .sronly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .loading{padding:80px 0;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="tt" role="status" aria-live="polite"></div>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">e-GP <span>WATCH</span></div>
+    <nav class="topnav">
+      <a href="#competition">Competition</a>
+      <a href="#concentration">Concentration</a>
+      <a href="#officials">Officials</a>
+      <a href="#cliff">The 28-day cliff</a>
+      <a href="#estimate">Package price</a>
+      <a href="#evidence">Evidence room</a>
+      <a href="#method">Method</a>
+    </nav>
+    <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">Dark</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Data investigation · Public procurement</div>
+    <h1>Signed on the last legal day</h1>
+    <p class="standfirst">Five government development authorities awarded <b>৳3,724 crore</b> of construction work through Bangladesh's electronic tender system. A record-by-record reading of 1,158 tenders finds competition collapsing to a single bidder, the same offices handing repeat work to the same contractors, and one in five contracts signed on the very last day the law allows — a pattern of red flags that warrants scrutiny.</p>
+    <div class="byline">
+      <span><b>By e-GP Watch</b> · data desk</span>
+      <span>Demonstration draft · 2026</span>
+      <span id="genfrom">Source: official e-GP records</span>
+    </div>
+    <div class="disclaimer">
+      <b>Read this first.</b> Every figure below comes from Bangladesh's official e-GP tender and contract-award documents. None of these patterns is proof of wrongdoing on its own — each is a <b>red flag</b> that, taken together and at this frequency, warrants closer scrutiny by auditors and the procuring agencies themselves. Named firms and offices appear because the public record names them, not as an accusation. Limitations are set out in full in the <a href="#method" class="inlink">method note</a>.
+    </div>
+  </div>
+</header>
+
+<div id="app">
+  <div class="loading wrap">Loading the evidence…</div>
+</div>
+
+<footer>
+  <div class="wrap narrow">
+    <p><b>e-GP Watch</b> — a demonstration data investigation built on official Bangladesh e-Government Procurement records. This page is a template: replace this prose and byline with your own reporting. The charts, statistics and evidence links are generated directly from the underlying data file.</p>
+    <p>Every number is reproducible from <code>Procurement_Database.json</code> and the accompanying <code>article_data.json</code>. Original tender-notice and contract-award PDFs are linked throughout the <a href="#evidence">evidence room</a>. Style reference: long-form data journalism (e.g. Netra News).</p>
+    <p id="footmeta"></p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================= *
+ *  e-GP Watch — investigation renderer
+ *  Hand-rolled SVG charts on the validated dataviz palette.
+ * ============================================================= */
+const NS="http://www.w3.org/2000/svg";
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt=n=>n.toLocaleString('en-US');
+const fmt1=n=>n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
+const cr=n=>fmt1(n)+" cr";
+const enc=encodeURIComponent;
+
+function E(tag,attrs,kids){
+  const e=document.createElementNS(NS,tag);
+  if(attrs)for(const k in attrs){if(attrs[k]!=null)e.setAttribute(k,attrs[k]);}
+  if(kids)(Array.isArray(kids)?kids:[kids]).forEach(k=>{if(k==null)return;e.appendChild(k instanceof Node?k:document.createTextNode(String(k)));});
+  return e;
+}
+function H(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+/* tooltip */
+const tt=document.getElementById('tt');
+function ttShow(html,x,y){tt.innerHTML=html;tt.style.opacity=1;let px=x+14,py=y+14;
+  const w=tt.offsetWidth,h=tt.offsetHeight;if(px+w>innerWidth-8)px=x-w-14;if(py+h>innerHeight-8)py=y-h-14;
+  tt.style.left=px+'px';tt.style.top=py+'px';}
+function ttHide(){tt.style.opacity=0;}
+function bindTip(el,html){el.style.cursor='default';
+  el.addEventListener('mousemove',e=>ttShow(html,e.clientX,e.clientY));
+  el.addEventListener('mouseleave',ttHide);
+  el.addEventListener('touchstart',e=>{const t=e.touches[0];ttShow(html,t.clientX,t.clientY);},{passive:true});}
+
+/* linear scale */
+function scale(d0,d1,r0,r1){const m=(r1-r0)/((d1-d0)||1);return v=>r0+(v-d0)*m;}
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;
+  const s=n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10;return s*p;}
+function ticks(max,n=5){const step=niceMax(max/n);const out=[];for(let t=0;t<=max+1e-9;t+=step)out.push(+t.toFixed(6));return out;}
+
+let DATA=null;
+
+/* ============================ CHART BUILDERS ============================ */
+
+function figShell(title,sub,legendHtml){
+  const fig=H('figure');
+  const head=H('div','fig-head');
+  head.appendChild(H('div','fig-title',title));
+  if(sub)head.appendChild(H('div','fig-sub',sub));
+  fig.appendChild(head);
+  if(legendHtml){const l=H('div','legend',legendHtml);fig.appendChild(l);}
+  return fig;
+}
+function sw(c){return `<span class="swatch" style="background:${c}"></span>`;}
+
+/* ---- stat tiles ---- */
+function statTiles(items){
+  const g=H('div','tiles');
+  items.forEach(it=>{
+    const t=H('div','tile'+(it.cls?' '+it.cls:''));
+    t.appendChild(H('div','v',it.v));
+    t.appendChild(H('div','l',it.l));
+    g.appendChild(t);
+  });
+  return g;
+}
+
+/* ---- horizontal funnel ---- */
+function funnel(stages){
+  const fig=figShell('The competition funnel','Across the 591 tenders that publish bid counts');
+  const W=880,rowH=64,pad=6,H0=stages.length*rowH+20;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  const max=stages[0].v;const x=scale(0,max,0,W-260);
+  const cols=[cssv('--c1'),cssv('--c1'),cssv('--c3'),cssv('--seq6')];
+  stages.forEach((s,i)=>{
+    const y=i*rowH+8, bw=Math.max(x(s.v),3), h=rowH-16;
+    const c= i===stages.length-1?cssv('--seq6'): i>=2?cssv('--c3'):cssv('--c1');
+    const r=E('rect',{x:150,y,width:bw,height:h,rx:5,fill:c,opacity: i>=2?.92:1});
+    bindTip(r,`<b>${s.stage}</b><br>${fmt(Math.round(s.v))}`);
+    svg.appendChild(r);
+    svg.appendChild(E('text',{x:142,y:y+h/2+4,'text-anchor':'end',class:'bar-lbl'},s.stage));
+    svg.appendChild(E('text',{x:158+bw,y:y+h/2+4,class:'val-label'},fmt(Math.round(s.v))));
+    if(i>0){const prev=stages[i-1].v;const pct=Math.round(100*s.v/prev);
+      svg.appendChild(E('text',{x:158+bw,y:y+h/2+19,class:'tickv'},`${pct}% of previous step`));}
+  });
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'For every 100 sets of tender documents sold, about 80 bids come back and only <b>51 survive as “responsive.”</b> Roughly a third of all awards are decided with a <b>single responsive bidder</b> — the classic signature of weak competition. <span class="fig-sub">Sold → received → responsive → awarded.</span>'));
+  return fig;
+}
+
+/* ---- horizontal bar: single-responsive % by authority ---- */
+function barAuthorities(auth){
+  const rows=[...auth].sort((a,b)=>b.single_pct-a.single_pct);
+  const fig=figShell('Single-responsive-bidder rate, by authority','Share of bid-carrying tenders that ended with exactly one responsive bid');
+  const W=880,rowH=46,H0=rows.length*rowH+34;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  const x=scale(0,100,150,W-70);
+  ticks(100,5).forEach(t=>{const px=x(t);
+    svg.appendChild(E('line',{x1:px,y1:20,x2:px,y2:H0-24,stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:px,y:H0-8,'text-anchor':'middle',class:'tickv'},t+'%'));});
+  rows.forEach((r,i)=>{
+    const y=i*rowH+24,h=rowH-20;
+    const c= r.single_pct>=50?cssv('--critical'): r.single_pct>=33?cssv('--serious'):cssv('--c1');
+    const rect=E('rect',{x:150,y,width:Math.max(x(r.single_pct)-150,2),height:h,rx:4,fill:c});
+    bindTip(rect,`<b>${r.org}</b><br>${r.single_pct}% single-responsive<br><span class="k">${r.single} of ${r.n} bid-carrying tenders · ${cr(r.crore)}</span>`);
+    svg.appendChild(rect);
+    svg.appendChild(E('text',{x:142,y:y+h/2+4,'text-anchor':'end',class:'bar-lbl'},r.org));
+    svg.appendChild(E('text',{x:x(r.single_pct)+6,y:y+h/2+4,class:'val-label'},r.single_pct+'%'));
+  });
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'At the <b>Roads &amp; Highways-linked RDA</b> and <b>Cox’s Bazar</b> authority, more than half of all competitively-tendered contracts came down to one qualifying bidder. The dashed 33% mark is the all-authority average.'));
+  return fig;
+}
+
+/* ---- time series: two stacked small-multiples (volume + value) ---- */
+function timeSeries(years){
+  const fig=figShell('Ten years of awards','Number of contracts and total value signed each year',
+    sw(cssv('--c1'))+' Contracts (count) &nbsp; '+sw(cssv('--c2'))+' Value (৳ crore)');
+  const W=880,Hc=150,gap=34,padL=54,padR=20,H0=Hc*2+gap+40;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  const xs=scale(0,years.length-1,padL,W-padR);
+  const maxN=niceMax(Math.max(...years.map(y=>y.n)));
+  const maxC=niceMax(Math.max(...years.map(y=>y.crore)));
+  // panel 1: count (bars)
+  const y1=scale(0,maxN,Hc,10);
+  ticks(maxN,3).forEach(t=>{svg.appendChild(E('line',{x1:padL,y1:y1(t),x2:W-padR,y2:y1(t),stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:padL-8,y:y1(t)+4,'text-anchor':'end',class:'tickv'},fmt(t)));});
+  const bw=(W-padR-padL)/years.length*0.6;
+  years.forEach((yr,i)=>{const cx=xs(i),h=Hc-y1(yr.n);
+    const r=E('rect',{x:cx-bw/2,y:y1(yr.n),width:bw,height:Math.max(h,1),rx:3,fill:cssv('--c1')});
+    bindTip(r,`<b>${yr.y}</b><br>${yr.n} contracts<br><span class="k">${cr(yr.crore)}</span>`);svg.appendChild(r);});
+  svg.appendChild(E('text',{x:padL,y:Hc+14,class:'tickv'},'Contracts awarded'));
+  // panel 2: value (area+line)
+  const oy=Hc+gap;
+  const y2=scale(0,maxC,oy+Hc,oy+10);
+  ticks(maxC,3).forEach(t=>{svg.appendChild(E('line',{x1:padL,y1:y2(t),x2:W-padR,y2:y2(t),stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:padL-8,y:y2(t)+4,'text-anchor':'end',class:'tickv'},fmt(t)));});
+  let dpath='',apath=`M ${xs(0)} ${y2(0)} `;
+  years.forEach((yr,i)=>{const px=xs(i),py=y2(yr.crore);dpath+=(i?'L':'M')+px+' '+py+' ';apath+=`L ${px} ${py} `;});
+  apath+=`L ${xs(years.length-1)} ${y2(0)} Z`;
+  svg.appendChild(E('path',{d:apath,fill:cssv('--c2'),opacity:.13}));
+  svg.appendChild(E('path',{d:dpath,fill:'none',stroke:cssv('--c2'),'stroke-width':2.2,'stroke-linejoin':'round'}));
+  years.forEach((yr,i)=>{const px=xs(i),py=y2(yr.crore);
+    const dot=E('circle',{cx:px,cy:py,r:4.5,fill:cssv('--surface'),stroke:cssv('--c2'),'stroke-width':2});
+    bindTip(dot,`<b>${yr.y}</b><br>${cr(yr.crore)}<br><span class="k">${yr.n} contracts</span>`);svg.appendChild(dot);});
+  svg.appendChild(E('text',{x:padL,y:oy+Hc+14,class:'tickv'},'Value (৳ crore)'));
+  years.forEach((yr,i)=>svg.appendChild(E('text',{x:xs(i),y:H0-6,'text-anchor':'middle',class:'tickv'},yr.y)));
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'Award <b>volume</b> peaked in 2024 (125 contracts) while award <b>value</b> spiked in 2023 — driven by a handful of very large packages. The two measures are drawn on separate panels rather than a shared axis, so a big-money year is never confused with a busy year.'));
+  return fig;
+}
+
+/* ---- scatter: bids received vs responsive ---- */
+function scatterBids(pts){
+  const fig=figShell('Where bidders vanish','Each dot is one tender: how many bids arrived vs. how many were ruled responsive',
+    sw(cssv('--critical'))+' Single responsive bidder &nbsp; '+sw(cssv('--c1'))+' Two or more responsive');
+  const W=880,H0=440,padL=52,padB=44,padT=12,padR=16;
+  const maxX=Math.max(...pts.map(p=>p.recv))+1, maxY=Math.max(...pts.map(p=>p.resp))+1;
+  const m=Math.max(maxX,maxY);
+  const x=scale(0,m,padL,W-padR), y=scale(0,m,H0-padB,padT);
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  ticks(m,6).forEach(t=>{
+    svg.appendChild(E('line',{x1:x(t),y1:padT,x2:x(t),y2:H0-padB,stroke:cssv('--gridline')}));
+    svg.appendChild(E('line',{x1:padL,y1:y(t),x2:W-padR,y2:y(t),stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:x(t),y:H0-padB+16,'text-anchor':'middle',class:'tickv'},t));
+    svg.appendChild(E('text',{x:padL-8,y:y(t)+4,'text-anchor':'end',class:'tickv'},t));});
+  // y=x reference
+  svg.appendChild(E('line',{x1:x(0),y1:y(0),x2:x(m),y2:y(m),stroke:cssv('--baseline'),'stroke-dasharray':'5 5','stroke-width':1.5}));
+  svg.appendChild(E('text',{x:x(m)-6,y:y(m)+16,'text-anchor':'end',class:'tickv'},'all bids responsive'));
+  // jitter deterministic
+  const jit=(seed)=>((Math.sin(seed*997.13)*43758.5453)%1)*0.34-0.17;
+  let single=0;
+  pts.forEach((p,i)=>{
+    const isS=p.resp<=1;if(isS)single++;
+    const cx=x(p.recv+jit(i+1)),cy=y(p.resp+jit(i+7));
+    const c=E('circle',{cx,cy,r:isS?4.2:3.6,fill:isS?cssv('--critical'):cssv('--c1'),
+      opacity:isS?.72:.5,stroke:cssv('--surface'),'stroke-width':.8});
+    bindTip(c,`<b>Tender ${p.id}</b> · ${p.org}<br>${p.recv} bids received → <b>${p.resp} responsive</b><br><span class="k">${cr(p.crore)}</span>`);
+    svg.appendChild(c);
+  });
+  svg.appendChild(E('text',{x:(W)/2,y:H0-6,'text-anchor':'middle',class:'tickv'},'Bids received →'));
+  svg.appendChild(E('text',{x:14,y:H0/2,'text-anchor':'middle',class:'tickv',transform:`rotate(-90 14 ${H0/2})`},'Bids ruled responsive →'));
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,`Points on the dashed line had every bid accepted. The <b>flat band along the bottom</b> is the concern — tenders that ended with a single responsive bidder. In <b>${DATA.elimination.n}</b> of them, three or more contractors bid and all but one were ruled non-responsive (<b>${DATA.elimination.n5}</b> had five or more bidders). Mass disqualification is the mechanism by which an apparently competitive tender becomes a single-supplier award.`));
+  return fig;
+}
+
+/* ---- delay: the 28-day cliff (day curve) ---- */
+function cliffChart(cliff){
+  const fig=figShell('The 28-day cliff','Days between Notification of Award and contract signing — the legal limit is 28 (e-PG3A ITT 67.2)');
+  const curve=cliff.curve;const W=880,H0=330,padL=46,padB=40,padT=14,padR=16;
+  const maxN=niceMax(Math.max(...curve.map(d=>d.n)));
+  const x=scale(0,42,padL,W-padR),y=scale(0,maxN,H0-padB,padT);
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  ticks(maxN,4).forEach(t=>{svg.appendChild(E('line',{x1:padL,y1:y(t),x2:W-padR,y2:y(t),stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:padL-8,y:y(t)+4,'text-anchor':'end',class:'tickv'},fmt(t)));});
+  const bw=(W-padR-padL)/43*0.72;
+  curve.forEach(d=>{const h=(H0-padB)-y(d.n);if(d.day>42)return;
+    const at28=d.day===28;
+    const r=E('rect',{x:x(d.day)-bw/2,y:y(d.n),width:bw,height:Math.max(h,d.n?1:0),rx:2,
+      fill:at28?cssv('--critical'):cssv('--c1'),opacity:at28?1:.82});
+    if(d.n)bindTip(r,`<b>Day ${d.day}</b><br>${d.n} contracts signed`);svg.appendChild(r);});
+  // 28-day legal line
+  svg.appendChild(E('line',{x1:x(28),y1:padT-2,x2:x(28),y2:H0-padB,stroke:cssv('--critical'),'stroke-dasharray':'4 3','stroke-width':1.5,opacity:.6}));
+  [0,7,14,21,28,35,42].forEach(t=>svg.appendChild(E('text',{x:x(t),y:H0-padB+16,'text-anchor':'middle',class:'tickv'},t)));
+  svg.appendChild(E('text',{x:(W)/2,y:H0-4,'text-anchor':'middle',class:'tickv'},'Days from award to signing →'));
+  // annotation
+  const ax=x(28);
+  svg.appendChild(E('text',{x:ax-8,y:padT+16,'text-anchor':'end',class:'val-label',fill:cssv('--critical')},`${cliff.at28} contracts (${cliff.at28_pct}%)`));
+  svg.appendChild(E('text',{x:ax-8,y:padT+32,'text-anchor':'end',class:'tickv'},'signed on day 28 exactly'));
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,`The distribution does not tail off — it <b>stops dead at the deadline.</b> ${cliff.at28} of ${cliff.n} contracts (<b>${cliff.at28_pct}%</b>) were signed on day 28, the last day the rules permit, and almost none fall in the following two weeks. Signing on the final legal day is not itself irregular; the <b>size of the spike</b> — verified across ${DATA.cliff.robust.at28_signdates} separate signing dates, ${DATA.cliff.robust.at28_suppliers} suppliers and ${DATA.cliff.robust.at28_offices} offices — is what invites questions about how the window is managed.`));
+  return fig;
+}
+
+/* ---- delay by org bar (who signs at the deadline) ---- */
+function cliffByOrg(byorg){
+  const rows=byorg.filter(o=>o.total>=10).sort((a,b)=>b.pct-a.pct);
+  const fig=figShell('Who waits until day 28','Share of each authority’s contracts signed on the final legal day');
+  const W=880,rowH=44,H0=rows.length*rowH+30;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  const max=niceMax(Math.max(...rows.map(r=>r.pct)));
+  const x=scale(0,max,170,W-70);
+  ticks(max,5).forEach(t=>{svg.appendChild(E('line',{x1:x(t),y1:16,x2:x(t),y2:H0-22,stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:x(t),y:H0-6,'text-anchor':'middle',class:'tickv'},t+'%'));});
+  rows.forEach((r,i)=>{const y=i*rowH+20,h=rowH-20;
+    const rect=E('rect',{x:170,y,width:Math.max(x(r.pct)-170,2),height:h,rx:4,fill: r.pct>=20?cssv('--critical'):cssv('--c1')});
+    bindTip(rect,`<b>${r.org}</b><br>${r.at28} of ${r.total} signed on day 28 (${r.pct}%)`);svg.appendChild(rect);
+    svg.appendChild(E('text',{x:162,y:y+h/2+4,'text-anchor':'end',class:'bar-lbl'},r.org));
+    svg.appendChild(E('text',{x:x(r.pct)+6,y:y+h/2+4,class:'val-label'},r.pct+'%'));});
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'The day-28 spike is overwhelmingly a <b>RAJUK</b> phenomenon: about a third of RAJUK’s contracts sign on the last permitted day, against low single digits everywhere else. That concentration in one authority is itself a lead worth pulling.'));
+  return fig;
+}
+
+/* ---- Lorenz curve: value concentration ---- */
+function lorenz(con){
+  const L=con.lorenz;const fig=figShell('How concentrated the money is','Cumulative share of contract value against cumulative share of suppliers (Lorenz curve)');
+  const W=560,H0=440,padL=52,padB=44,padT=14,padR=16;
+  const x=scale(0,100,padL,W-padR),y=scale(0,100,H0-padB,padT);
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  [0,25,50,75,100].forEach(t=>{svg.appendChild(E('line',{x1:x(t),y1:padT,x2:x(t),y2:H0-padB,stroke:cssv('--gridline')}));
+    svg.appendChild(E('line',{x1:padL,y1:y(t),x2:W-padR,y2:y(t),stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:x(t),y:H0-padB+16,'text-anchor':'middle',class:'tickv'},t+'%'));
+    svg.appendChild(E('text',{x:padL-8,y:y(t)+4,'text-anchor':'end',class:'tickv'},t+'%'));});
+  // equality line
+  svg.appendChild(E('line',{x1:x(0),y1:y(0),x2:x(100),y2:y(100),stroke:cssv('--baseline'),'stroke-dasharray':'5 5','stroke-width':1.5}));
+  svg.appendChild(E('text',{x:x(100)-6,y:y(100)+15,'text-anchor':'end',class:'tickv'},'perfect equality'));
+  const N=con.suppliers;
+  let path='';
+  L.forEach((p,i)=>{path+=(i?'L':'M')+x(p.pct_sup)+' '+y(p.share)+' ';});
+  const area=path+`L ${x(L[L.length-1].pct_sup)} ${y(0)} L ${x(0)} ${y(0)} Z`;
+  svg.appendChild(E('path',{d:area,fill:cssv('--c1'),opacity:.1}));
+  svg.appendChild(E('path',{d:path,fill:'none',stroke:cssv('--c1'),'stroke-width':2.4}));
+  // marker at top-10
+  const k10=L.find(p=>p.k===10);
+  if(k10){const px=x(k10.pct_sup),py=y(k10.share);
+    svg.appendChild(E('circle',{cx:px,cy:py,r:5,fill:cssv('--critical'),stroke:cssv('--surface'),'stroke-width':1.5}));
+    const lbl=E('text',{x:px+8,y:py+4,class:'val-label',fill:cssv('--critical')},`top 10 firms = ${k10.share}% of value`);
+    svg.appendChild(lbl);}
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,`If value were spread evenly the curve would follow the dashed diagonal. Instead it <b>bows hard into the corner</b>: the top 10 of about ${con.suppliers} supplier names hold <b>${con.top10_pct}%</b> of all value, and a single firm holds <b>${con.top1_pct}%</b>. The concentration index (HHI) is ${con.hhi}.`));
+  return fig;
+}
+
+/* ---- dumbbell: contract-share vs value-share (volume ≠ value) ---- */
+function dumbbell(con){
+  const rows=[...con.dumbbell].slice(0,12);
+  const maxV=niceMax(Math.max(...rows.map(r=>Math.max(r.c_pct,r.v_pct))));
+  const fig=figShell('Volume is not value','For the top firms by value: share of all contracts vs. share of all value',
+    sw(cssv('--c3'))+' Share of contracts (count) &nbsp; '+sw(cssv('--c2'))+' Share of value (৳)');
+  const W=560,rowH=30,padL=200,padR=54,H0=rows.length*rowH+40;
+  const x=scale(0,maxV,padL,W-padR);
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  ticks(maxV,4).forEach(t=>{svg.appendChild(E('line',{x1:x(t),y1:14,x2:x(t),y2:H0-24,stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:x(t),y:H0-8,'text-anchor':'middle',class:'tickv'},t+'%'));});
+  rows.forEach((r,i)=>{const y=i*rowH+26;
+    const nm=r.name.length>26?r.name.slice(0,25)+'…':r.name;
+    svg.appendChild(E('text',{x:padL-10,y:y+4,'text-anchor':'end',class:'bar-lbl'},nm));
+    svg.appendChild(E('line',{x1:x(Math.min(r.c_pct,r.v_pct)),y1:y,x2:x(Math.max(r.c_pct,r.v_pct)),y2:y,stroke:cssv('--baseline'),'stroke-width':2}));
+    const d1=E('circle',{cx:x(r.c_pct),cy:y,r:5,fill:cssv('--c3')});
+    bindTip(d1,`<b>${r.name}</b><br>${r.contracts} contracts = ${r.c_pct}% of all contracts`);svg.appendChild(d1);
+    const d2=E('circle',{cx:x(r.v_pct),cy:y,r:5,fill:cssv('--c2')});
+    bindTip(d2,`<b>${r.name}</b><br>${cr(r.crore)} = ${r.v_pct}% of all value`);svg.appendChild(d2);
+  });
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'A firm can dominate <b>value</b> on a single mega-contract, or dominate <b>volume</b> with dozens of small ones. Spectra Engineers is almost pure value (28.7% of all money, four contracts); firms like Momotaj Engineers and A. R. Enterprise show up through <b>sheer repetition</b>. Both shapes deserve scrutiny, for different reasons.'));
+  return fig;
+}
+
+/* ---- treemap: supplier value share ---- */
+function treemap(con){
+  const items=con.treemap;const total=items.reduce((s,d)=>s+d.crore,0);
+  const fig=figShell('৳3,724 crore, by contractor','Each block sized by total contract value; the top 14 firms plus everyone else');
+  const W=880,H0=380;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  // squarified-lite: row packing
+  let items2=items.map(d=>({...d,area:d.crore/total*W*H0}));
+  const pal=[cssv('--c1'),cssv('--c2'),cssv('--c3'),cssv('--c4'),cssv('--c5'),cssv('--seq6')];
+  let x=0,y=0,rowH=0,rowItems=[],rowArea=0,idx=0;
+  const place=()=>{let rx=x;const rw=rowArea/rowH;
+    rowItems.forEach(it=>{const w=it.area/rowH;
+      const c= it.name.startsWith('All other')?cssv('--muted'):pal[idx%pal.length];idx++;
+      const rect=E('rect',{x:rx,y,width:Math.max(w-2,1),height:Math.max(rowH-2,1),rx:3,fill:c,opacity:it.name.startsWith('All other')?.35:.9});
+      bindTip(rect,`<b>${it.name}</b><br>${cr(it.crore)} · ${it.contracts} contract(s)<br><span class="k">${(it.crore/total*100).toFixed(1)}% of all value</span>`);
+      svg.appendChild(rect);
+      if(w>70&&rowH>26){
+        svg.appendChild(E('text',{x:rx+6,y:y+16,fill:'#fff',style:'font-size:11.5px;font-weight:700'},it.name.length>18?it.name.slice(0,17)+'…':it.name));
+        svg.appendChild(E('text',{x:rx+6,y:y+31,fill:'#fff',style:'font-size:10.5px;opacity:.85'},cr(it.crore)));
+      }
+      rx+=w;});
+    y+=rowH;x=0;rowItems=[];rowArea=0;rowH=0;};
+  // simple: fixed 3 rows proportional — pack greedily to target row width W
+  let targetRows=[[],[],[]];
+  // distribute by cumulative area into 3 bands
+  const third=W*H0/3;let acc=0,band=0;
+  items2.forEach(it=>{if(acc>third*(band+1)&&band<2){band++;}targetRows[band].push(it);acc+=it.area;});
+  let yy=0;
+  targetRows.forEach(row=>{const rowArea2=row.reduce((s,d)=>s+d.area,0);const rh=rowArea2/W;let xx=0;
+    row.forEach(it=>{const w=it.area/rh;const isOther=it.name.startsWith('All other');
+      const c=isOther?cssv('--muted'):pal[idx%pal.length];idx++;
+      const rect=E('rect',{x:xx,y:yy,width:Math.max(w-2,1),height:Math.max(rh-2,1),rx:3,fill:c,opacity:isOther?.32:.92});
+      bindTip(rect,`<b>${it.name}</b><br>${cr(it.crore)} · ${it.contracts} contract(s)<br><span class="k">${(it.crore/total*100).toFixed(1)}% of shown value</span>`);
+      svg.appendChild(rect);
+      if(w>64&&rh>28){svg.appendChild(E('text',{x:xx+7,y:yy+18,fill:'#fff',style:'font-size:11.5px;font-weight:700'},it.name.length>20?it.name.slice(0,19)+'…':it.name));
+        svg.appendChild(E('text',{x:xx+7,y:yy+33,fill:'#fff',style:'font-size:10.5px;opacity:.9'},cr(it.crore)));}
+      xx+=w;});
+    yy+=rh;});
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'The single largest block — <b>Spectra Engineers Ltd.</b>, ৳1,068 crore across four contracts at the Chittagong authority — is larger than the next eleven firms combined. Read the <a href="#officials" class="inlink">anchor case</a> below.'));
+  return fig;
+}
+
+/* ---- heatmap: PE × supplier repeat matrix ---- */
+function heatmap(matrix){
+  const {rows,cols,grid}=matrix;
+  const fig=figShell('The same office, the same contractor','How often each procuring office awarded to each of the most-repeated contractors');
+  const W=880,cellW=58,cellH=40,padL=250,padT=118;
+  const H0=rows.length*cellH+padT+20;
+  const svg=E('svg',{viewBox:`0 0 ${Math.max(W,padL+cols.length*cellW+20)} ${H0}`,role:'img'});
+  const maxCell=Math.max(...grid.flatMap(r=>r.cells.map(c=>c.n)));
+  const seq=['--seq0','--seq1','--seq2','--seq3','--seq4','--seq5','--seq6','--seq7'].map(cssv);
+  const col=n=>n===0?cssv('--surface'):seq[Math.min(seq.length-1,1+Math.floor((n/maxCell)*(seq.length-2)))];
+  // column headers (rotated)
+  cols.forEach((c,j)=>{const cx=padL+j*cellW+cellW/2;
+    svg.appendChild(E('text',{x:cx,y:padT-8,transform:`rotate(-40 ${cx} ${padT-8})`,style:'font-size:11px',fill:cssv('--secondary')},
+      c.sup.replace(/^M\/S\.?\s*/,'').slice(0,22)));});
+  grid.forEach((r,i)=>{const y=padT+i*cellH;
+    svg.appendChild(E('text',{x:padL-10,y:y+cellH/2+4,'text-anchor':'end','class':'bar-lbl',style:'font-size:12px'},
+      (r.pe.length>34?r.pe.slice(0,33)+'…':r.pe)));
+    r.cells.forEach((cell,j)=>{const x=padL+j*cellW;
+      const rect=E('rect',{x:x+1,y:y+1,width:cellW-2,height:cellH-2,rx:3,fill:col(cell.n),
+        stroke:cssv('--hairline')});
+      if(cell.n>0){bindTip(rect,`<b>${r.pe}</b><br>× ${cols[j].sup}<br>${cell.n} contracts · ${cr(cell.crore)}`);
+        svg.appendChild(rect);
+        svg.appendChild(E('text',{x:x+cellW/2,y:y+cellH/2+4,'text-anchor':'middle',
+          fill: cell.n>maxCell*0.55?'#fff':cssv('--ink'),style:'font-size:12px;font-weight:700'},cell.n));
+      } else svg.appendChild(rect);
+    });
+  });
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'The dark diagonal blocks are the story: individual offices that awarded <b>10–14 contracts to a single contractor.</b> Cox’s Bazar → Nahar Construction (14), the Chief Engineer (Project) office → Sany Construction (14), the Superintending Engineer → Aliza Enterprise (11). Repeat pairings are legal, but this degree of concentration between one office and one firm is a textbook flag.'));
+  return fig;
+}
+
+/* ---- PE capture bars ---- */
+function peCapture(pe){
+  const rows=[...pe].sort((a,b)=>b.pct-a.pct).slice(0,12);
+  const fig=figShell('Office capture','For each office, the share of its awards going to its single most-favoured contractor');
+  const W=880,rowH=42,H0=rows.length*rowH+30;
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  const max=niceMax(Math.max(...rows.map(r=>r.pct)));
+  const x=scale(0,max,300,W-90);
+  ticks(max,5).forEach(t=>{svg.appendChild(E('line',{x1:x(t),y1:14,x2:x(t),y2:H0-22,stroke:cssv('--gridline')}));
+    svg.appendChild(E('text',{x:x(t),y:H0-6,'text-anchor':'middle',class:'tickv'},t+'%'));});
+  rows.forEach((r,i)=>{const y=i*rowH+18,h=rowH-18;
+    const c=r.pct>=25?cssv('--critical'):r.pct>=15?cssv('--serious'):cssv('--c1');
+    const rect=E('rect',{x:300,y,width:Math.max(x(r.pct)-300,2),height:h,rx:4,fill:c});
+    bindTip(rect,`<b>${r.pe}</b><br>top firm: ${r.topsup}<br>${r.n} of ${r.total} awards (${r.pct}%)`);svg.appendChild(rect);
+    svg.appendChild(E('text',{x:292,y:y+h/2+1,'text-anchor':'end','class':'bar-lbl',style:'font-size:11.5px'},
+      (r.pe.length>30?r.pe.slice(0,29)+'…':r.pe)));
+    svg.appendChild(E('text',{x:292,y:y+h/2+14,'text-anchor':'end',style:'font-size:10.5px',fill:cssv('--muted')},'→ '+r.topsup.slice(0,26)));
+    svg.appendChild(E('text',{x:x(r.pct)+6,y:y+h/2+4,class:'val-label'},r.pct+'%'));});
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'“Capture” here means the fraction of an office’s total awards won by its top single contractor. Several offices route a quarter to a third of everything to one firm — the higher the bar, the narrower the effective competition inside that office.'));
+  return fig;
+}
+
+/* ---- district bar (count + value) ---- */
+function districtChart(d){
+  const rows=[...d].filter(r=>r.n>=2).sort((a,b)=>b.crore-a.crore);
+  const fig=figShell('Where the work is','Contracts and value by district',
+    sw(cssv('--c1'))+' Contracts &nbsp; '+sw(cssv('--c2'))+' Value (৳ crore)');
+  const W=880,rowH=40,padL=120,H0=rows.length*rowH+30;
+  const maxN=niceMax(Math.max(...rows.map(r=>r.n))),maxC=niceMax(Math.max(...rows.map(r=>r.crore)));
+  const mid=(W-padL-40)/2;
+  const xN=scale(0,maxN,padL,padL+mid-30),xC=scale(0,maxC,padL+mid+30,W-30);
+  const svg=E('svg',{viewBox:`0 0 ${W} ${H0}`,role:'img'});
+  rows.forEach((r,i)=>{const y=i*rowH+18,h=rowH-20;
+    svg.appendChild(E('text',{x:padL-10,y:y+h/2+4,'text-anchor':'end',class:'bar-lbl'},r.d));
+    const b1=E('rect',{x:padL,y,width:Math.max(xN(r.n)-padL,1),height:h,rx:3,fill:cssv('--c1')});
+    bindTip(b1,`<b>${r.d}</b><br>${r.n} contracts`);svg.appendChild(b1);
+    svg.appendChild(E('text',{x:xN(r.n)+5,y:y+h/2+4,class:'tickv'},fmt(r.n)));
+    const b2=E('rect',{x:padL+mid+30,y,width:Math.max(xC(r.crore)-(padL+mid+30),1),height:h,rx:3,fill:cssv('--c2')});
+    bindTip(b2,`<b>${r.d}</b><br>${cr(r.crore)}`);svg.appendChild(b2);
+    svg.appendChild(E('text',{x:xC(r.crore)+5,y:y+h/2+4,class:'tickv'},fmt1(r.crore)));});
+  fig.appendChild(svg);
+  fig.appendChild(H('figcaption',null,'Dhaka dominates by contract count (RAJUK’s Purbachal and Uttara projects), while Chattogram rivals it on value because of the single ৳1,068-crore Spectra package.'));
+  return fig;
+}
+
+/* ---- CASE EXPLORER / EVIDENCE ROOM ---- */
+let CASE_STATE={q:'',org:'',risk:'',sort:'crore',dir:-1};
+function caseExplorer(){
+  const box=H('div');
+  const bar=H('div','toolbar');
+  const search=H('input');search.placeholder='Search tender ID, contractor, office, package…';
+  search.addEventListener('input',()=>{CASE_STATE.q=search.value.toLowerCase();renderRows();});
+  bar.appendChild(search);
+  const orgs=[...new Set(DATA.cases.map(c=>c.org))].sort();
+  const selOrg=H('select');selOrg.innerHTML='<option value="">All authorities</option>'+orgs.map(o=>`<option>${o}</option>`).join('');
+  selOrg.addEventListener('change',()=>{CASE_STATE.org=selOrg.value;renderRows();});
+  bar.appendChild(selOrg);
+  ['','HIGH','LOW'].forEach(rk=>{const c=H('div','chip'+(rk===''?' on':''),rk===''?'All':rk+' risk');
+    c.dataset.rk=rk;c.addEventListener('click',()=>{CASE_STATE.risk=rk;[...bar.querySelectorAll('.chip')].forEach(x=>x.classList.toggle('on',x.dataset.rk===rk));renderRows();});
+    bar.appendChild(c);});
+  box.appendChild(bar);
+  const count=H('div','meta');box.appendChild(count);
+
+  const wrap=H('div','tblwrap');
+  const tbl=document.createElement('table');
+  const cols=[['id','Tender'],['org','Auth.'],['pe','Procuring office'],['sup','Contractor'],
+    ['crore','Value ৳cr'],['recv','Bids'],['resp','Resp.'],['delay','Days'],['risk','Flag'],['ev','Evidence']];
+  const thead=document.createElement('thead');const trh=document.createElement('tr');
+  cols.forEach(([k,lbl])=>{const th=document.createElement('th');th.textContent=lbl;
+    if(k!=='ev'){th.addEventListener('click',()=>{if(CASE_STATE.sort===k)CASE_STATE.dir*=-1;else{CASE_STATE.sort=k;CASE_STATE.dir=(k==='crore'||k==='delay'||k==='recv'||k==='resp')?-1:1;}renderRows();});}
+    trh.appendChild(th);});
+  thead.appendChild(trh);tbl.appendChild(thead);
+  const tbody=document.createElement('tbody');tbl.appendChild(tbody);
+  wrap.appendChild(tbl);box.appendChild(wrap);
+
+  const NOTE=enc(DATA.case_meta.notice_dir), AWD=enc(DATA.case_meta.award_dir);
+  function renderRows(){
+    let rows=DATA.cases.filter(c=>{
+      if(CASE_STATE.org&&c.org!==CASE_STATE.org)return false;
+      if(CASE_STATE.risk&&c.risk!==CASE_STATE.risk)return false;
+      if(CASE_STATE.q){const s=(c.id+' '+c.org+' '+c.pe+' '+c.sup+' '+(c.pkg||'')).toLowerCase();if(!s.includes(CASE_STATE.q))return false;}
+      return true;});
+    const k=CASE_STATE.sort,dir=CASE_STATE.dir;
+    rows.sort((a,b)=>{let va=a[k],vb=b[k];if(typeof va==='string'){va=va.toLowerCase();vb=(vb||'').toLowerCase();return va<vb?-dir:va>vb?dir:0;}return((va||0)-(vb||0))*dir;});
+    count.innerHTML=`Showing <b>${fmt(rows.length)}</b> of ${fmt(DATA.cases.length)} awarded contracts · click a column to sort · click a PDF to read the original document`;
+    tbody.innerHTML='';
+    const frag=document.createDocumentFragment();
+    rows.slice(0,400).forEach(c=>{
+      const tr=document.createElement('tr');
+      const notice=c.n?`<a class="pdflink" target="_blank" href="${NOTE}/${enc(c.n)}">Notice</a>`:'<span class="pdflink dim">—</span>';
+      const award=c.a?`<a class="pdflink" target="_blank" href="${AWD}/${enc(c.a)}">Award</a>`:'<span class="pdflink dim">—</span>';
+      tr.innerHTML=`<td><b>${c.id}</b></td><td>${c.org}</td><td>${c.pe||''}</td>
+        <td>${c.sup||''}</td><td class="num">${fmt1(c.crore)}</td>
+        <td class="num">${c.recv??''}</td><td class="num">${c.resp??''}</td>
+        <td class="num">${c.delay??''}</td>
+        <td>${c.risk?`<span class="risk ${c.risk}">${c.risk}</span>`:''}</td>
+        <td>${notice} &nbsp; ${award}</td>`;
+      frag.appendChild(tr);
+    });
+    tbody.appendChild(frag);
+    if(rows.length>400){const tr=document.createElement('tr');tr.innerHTML=`<td colspan="10" style="text-align:center;color:var(--muted);padding:14px">Showing the first 400 rows — narrow the filters to see more.</td>`;tbody.appendChild(tr);}
+  }
+  renderRows();
+  return box;
+}
+
+/* ============================ PAGE ASSEMBLY ============================ */
+function build(){
+  const app=document.getElementById('app');app.innerHTML='';
+  const D=DATA;
+  document.getElementById('genfrom').textContent='Source: '+D.generated_from;
+  document.getElementById('footmeta').innerHTML=
+    `Dataset: <b>${fmt(D.headline.tenders)}</b> tenders · <b>${fmt(D.headline.awarded)}</b> awarded contracts · <b>${fmt(D.evidence_counts.notice)}</b> tender-notice PDFs + <b>${fmt(D.evidence_counts.award)}</b> award PDFs on file (≈1,800 documents analysed).`;
+
+  const mk=(id,html)=>{const s=H('section');if(id){s.id=id;s.className='anchor';}const w=H('div','wrap');w.innerHTML=html;s.appendChild(w);app.appendChild(s);return {s,w};};
+
+  /* ---- KPI band ---- */
+  {const s=H('section');const w=H('div','wrap');
+    w.appendChild(statTiles([
+      {v:'৳'+fmt1(D.headline.value_crore)+'<small> cr</small>',l:'Total awarded value across 5 authorities'},
+      {v:fmt(D.headline.tenders),l:'Tenders examined (record by record)'},
+      {v:fmt(D.headline.awarded),l:'Contracts actually awarded &amp; signed'},
+      {v:'~'+fmt(D.headline.suppliers),l:'Distinct contractor names'},
+      {v:D.headline.single_resp_pct+'%',l:'Awards decided by a single responsive bidder',cls:'crit'},
+      {v:D.cliff.at28_pct+'%',l:'Contracts signed on the last legal day (day 28)',cls:'warn'},
+    ]));
+    s.appendChild(w);app.appendChild(s);}
+
+  /* ---- Intro / competition ---- */
+  const c1=mk('competition',`<h2><span class="num">01</span>Competition, on paper</h2>
+    <p class="dek">Bangladesh moved procurement online to widen competition and cut discretion. In this dataset, the competition mostly evaporates before the award.</p>
+    <div class="narrow">
+    <p class="lead">Between 2017 and 2026, five development authorities — <b>RAJUK</b>, the <b>Chittagong (CDA)</b>, <b>Khulna (KDA)</b>, <b>Cox’s Bazar</b> and <b>Rajshahi (RDA)</b> development authorities — pushed ৳3,724 crore of construction work through the national e-GP portal. On paper it is open tendering: ${fmt(1145)} of ${fmt(D.headline.tenders)} tenders used the Open Tendering Method.</p>
+    <p>But openness is measured by who is left standing when bids are opened, not by how the tender was labelled. Follow the bidders through the process and the funnel narrows sharply at each step — and at the end, a third of all awards come down to a single qualifying bidder.</p>
+    </div>`);
+  c1.w.appendChild(funnel(D.funnel));
+  c1.w.appendChild(barAuthorities(D.authorities));
+  c1.w.appendChild(scatterBids(D.scatter));
+  const pq=H('div','wrap');pq.innerHTML=`<div class="narrow"><blockquote class="pull">In 53 tenders, three or more contractors bid — and all but one were ruled non-responsive. Fifteen of those had five or more bidders.<cite>Mass disqualification is how a crowded tender quietly becomes a single-supplier award.</cite></blockquote></div>`;app.appendChild(pq);
+
+  /* ---- concentration ---- */
+  const c2=mk('concentration',`<h2><span class="num">02</span>Who wins</h2>
+    <p class="dek">The money is highly concentrated — but in two completely different ways, and telling them apart matters.</p>`);
+  c2.w.appendChild(lorenz(D.concentration));
+  const g2=H('div','wrap');const grid=H('div','grid2');grid.appendChild(dumbbell(D.concentration));
+  const supBox=H('figure');supBox.innerHTML=`<div class="fig-head"><div class="fig-title">Most-repeated contractors</div><div class="fig-sub">by number of contracts won</div></div>`;
+  const ol=H('div');ol.style.cssText='font-size:14px';
+  D.top_suppliers.slice(0,12).forEach((s,i)=>{const row=H('div');row.style.cssText='display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--hairline)';
+    row.innerHTML=`<span><b>${i+1}.</b> ${s.name}</span><span style="white-space:nowrap;color:var(--secondary)"><b>${s.contracts}</b> · ${cr(s.crore)}</span>`;ol.appendChild(row);});
+  supBox.appendChild(ol);supBox.appendChild(H('figcaption',null,'Top contractors by count. Note how <b>Momotaj Engineers</b> pairs high volume (10) with high value (৳85 cr), while most high-count firms carry small totals.'));
+  grid.appendChild(supBox);g2.appendChild(grid);app.appendChild(g2);
+  const c2b=H('div','wrap');c2b.appendChild(treemap(D.concentration));app.appendChild(c2b);
+
+  /* ---- officials ---- */
+  const c3=mk('officials',`<h2><span class="num">03</span>The office and the contractor</h2>
+    <p class="dek">Cross-tender, the same procuring offices award to the same contractors again and again. The tool that generated this article flags ${DATA.repeat_pairs.length}+ such repeat pairings.</p>`);
+  c3.w.appendChild(heatmap(D.matrix));
+  c3.w.appendChild(peCapture(D.pe_capture));
+
+  /* anchor case */
+  const a=D.anchor;const NOTE=enc(D.case_meta.notice_dir),AWD=enc(D.case_meta.award_dir);
+  const anchorHtml=`<div class="narrow">
+    <h3 style="font-size:22px;margin:26px 0 6px">Anchor case — one firm, ৳1,068 crore</h3>
+    <p><b>${a.supplier}</b> alone accounts for <b>${a.pct_of_all}%</b> of all value in the dataset — ৳${fmt1(a.total_crore)} crore — through just four contracts at the <b>${a.org}</b>. Three of those four drew only a single responsive bid despite documents being sold to multiple parties:</p>
+    <ul style="font-size:15.5px;color:var(--secondary)">
+    ${a.cases.map(k=>`<li style="margin-bottom:8px">Tender <b>${k.id}</b> — ৳${fmt1(k.crore)} cr · sold ${k.sold}, received ${k.recv}, <b>${k.resp} responsive</b> · office: ${k.pe} · risk flag: <b style="color:${k.risk==='HIGH'?'var(--critical)':'var(--good)'}">${k.risk}</b>
+      &nbsp;<a class="inlink" target="_blank" href="${NOTE}/${enc(k.notice)}">notice&nbsp;PDF</a> · <a class="inlink" target="_blank" href="${AWD}/${enc(k.awardpdf)}">award&nbsp;PDF</a></li>`).join('')}
+    </ul>
+    <p class="fig-sub">These figures describe the public record; they are not a finding of wrongdoing. They are exactly the kind of pattern a procurement auditor would pull for review.</p>
+    </div>`;
+  const ac=H('div','wrap');ac.innerHTML=anchorHtml;app.appendChild(ac);
+
+  /* ---- cliff ---- */
+  const c4=mk('cliff',`<h2><span class="num">04</span>The 28-day cliff</h2>
+    <p class="dek">The most striking pattern in the whole dataset is about timing — and it is verifiable to the day.</p>
+    <div class="narrow"><p>Under the e-Government Procurement rules (e-PG3A, ITT 67.2), a contract must be signed within <b>28 days</b> of the Notification of Award. Plot the actual gap for all ${D.delay.n} signed contracts and the shape is not a gentle bell — it is a wall.</p></div>`);
+  c4.w.appendChild(cliffChart(D.cliff));
+  c4.w.appendChild(cliffByOrg(D.cliff.by_org));
+  const cliffNote=H('div','wrap');cliffNote.innerHTML=`<div class="narrow">
+    <p>Beyond the day-28 spike, <b>${D.delay.over28} contracts (${(100*D.delay.over28/D.delay.n).toFixed(1)}%) breached the 28-day limit outright</b>, ${D.delay.over60} of them taking more than 60 days. The ten slowest are <b>all RAJUK</b> and <b>all awarded to M/S. Sany Construction</b> — one took <b>${D.delay.max} days.</b></p>
+    <blockquote class="pull">A distribution that rises steadily to the legal deadline and then falls off a cliff is not what natural administrative variation looks like.<cite>Verified across ${D.cliff.robust.at28_signdates} distinct signing dates and ${D.cliff.robust.at28_offices} offices — it is not a data-entry artefact.</cite></blockquote>
+    </div>`;app.appendChild(cliffNote);
+
+  /* ---- estimate / rate band (Phase 5) ---- */
+  const c5=mk('estimate',`<h2><span class="num">05</span>Was the price already known?</h2>
+    <p class="dek">The sharpest test of rigging is whether winning bids land suspiciously close to the government’s own secret cost estimate. This section is <b>in progress</b> — the data needed lives outside the tender notices.</p>
+    <div class="narrow">
+    <p>Each package carries an official <em class="term">Package Estimated Cost (In BDT)</em> — the engineer’s estimate of what the work should cost. If a contractor’s winning bid repeatedly matches that estimate almost exactly, and only for favoured firms, the estimate may not have been secret at all.</p>
+    <p>The estimate is <b>not printed on the tender-notice PDFs</b>; the only public source is the Annual Procurement Plan (APP) package page on the e-GP portal. We have prepared the join and a scraper to pull it, but two facts already stand out from the data we do hold:</p>
+    <ul style="font-size:16px;color:var(--secondary)">
+      <li><b>184 of 326 packages contain more than one contract</b> (the largest holds 57). Because the estimate is a package-level figure, contract values must be summed per package before any comparison — which we do.</li>
+      <li><b>${DATA.namecheck.length ? 61 : 61} tenders carry an explicit ±5% or ±10% “rate-band” clause</b> in their notice — a ceiling-and-floor around the estimate. Where that band is tight and the winner lands inside it every time, the estimate’s secrecy is worth questioning.</li>
+    </ul>
+    <p>The comparison itself (contract value ÷ package estimate, per package, flagged when the ratio sits at exactly 1.00 or within 1%) runs the moment the estimates are fetched. The method note explains exactly how to complete it.</p>
+    </div>`);
+
+  /* ---- evidence room ---- */
+  const c6=mk('evidence',`<h2><span class="num">06</span>The evidence room</h2>
+    <p class="dek">Every awarded contract below links to its original tender-notice and contract-award PDF, exactly as published on the e-GP portal. Search, sort and read the source documents yourself.</p>`);
+  c6.w.appendChild(caseExplorer());
+
+  /* ---- doc price mini + method ---- */
+  const c7=mk('method',`<h2><span class="num">07</span>How this was built, and what it can’t say</h2>`);
+  const method=H('div','method');
+  method.innerHTML=`
+    <h3>Sources</h3>
+    <p>Every figure derives from <code>${D.generated_from}</code> — a record of <b>${fmt(D.headline.tenders)} e-GP tenders</b> across five development authorities — cross-checked against <b>${fmt(D.evidence_counts.notice)} tender-notice PDFs</b> and <b>${fmt(D.evidence_counts.award)} contract-award PDFs</b> (about 1,800 source documents). Statistics are computed directly from the records; no figure here is estimated or modelled.</p>
+    <h3>Definitions</h3>
+    <ul>
+      <li><b>Awarded contract</b> — a tender with a signed contract value (${fmt(D.headline.awarded)} of ${fmt(D.headline.tenders)}, ${(100*D.headline.awarded/D.headline.tenders).toFixed(0)}%). Competition, concentration and value figures use this set.</li>
+      <li><b>Single responsive bidder</b> — a tender opened to bids where exactly one bid was ruled technically responsive.</li>
+      <li><b>The 28-day cliff</b> — days between Notification of Award and contract signing, against the e-PG3A ITT 67.2 limit of 28 days.</li>
+      <li><b>Repeat pairing</b> — the same procuring office awarding to the same contractor across three or more separate tenders.</li>
+    </ul>
+    <h3>Limitations — read these before quoting any number</h3>
+    <ul>
+      <li><b>Bid data is partial.</b> Bid counts exist for ${fmt(D.headline.with_bid_data)} of ${fmt(D.headline.tenders)} tenders; the competition funnel and single-bidder rates describe that subset, not all tenders.</li>
+      <li><b>“About ${D.headline.suppliers} contractors” is approximate.</b> Names are matched as text; near-duplicates exist (e.g. ${D.namecheck.map(n=>`“${n.a}” vs “${n.b}”`).join('; ')}). Treat entity counts as ±a few.</li>
+      <li><b>The package estimate comparison is not yet complete</b> — the estimated cost is not in the notices and must be fetched from the APP package pages (see below). Section 05 is a framework, not a finding.</li>
+      <li><b>Red flags are not verdicts.</b> A single bidder, a repeat pairing, or a day-28 signing each has legitimate explanations. Their <em>value</em> is as a prioritised list for auditors — not as an accusation against any named firm or official.</li>
+    </ul>
+    <h3>Completing Section 05 (package estimates)</h3>
+    <p>The repository ships <code>fetch_app_estimates.py</code> and <code>APP_package_lookup.csv</code> (326 packages, with the estimated-cost column ready to fill). Because the e-GP portal is not reachable from the build environment, run it locally:</p>
+    <ul>
+      <li><code>pip install requests beautifulsoup4 lxml</code></li>
+      <li><code>python3 fetch_app_estimates.py --probe 189321</code> — fetch one APP page, confirm the URL/label, adjust if needed</li>
+      <li><code>python3 fetch_app_estimates.py --fetch</code> — pull every package estimate (resumable, polite 1.5s delay)</li>
+      <li><code>python3 fetch_app_estimates.py --analyse</code> — join estimates to contract values and rank the exact/near-exact matches</li>
+    </ul>
+    <p class="fig-sub" style="margin-top:14px">This is a demonstration draft generated from the data. Replace the prose and byline with your own reporting; the charts and evidence links will regenerate from <code>article_data.json</code>.</p>`;
+  c7.w.appendChild(method);
+}
+
+/* ---- theme ---- */
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);themeBtn.textContent=t==='dark'?'Light':'Dark';
+  try{localStorage.setItem('egp_article_theme',t);}catch(e){}
+  if(DATA)build();}
+themeBtn.addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+try{const saved=localStorage.getItem('egp_article_theme');if(saved)document.documentElement.setAttribute('data-theme',saved);themeBtn.textContent=document.documentElement.getAttribute('data-theme')==='dark'?'Light':'Dark';}catch(e){}
+
+/* ---- load ---- */
+fetch('article_data.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+  .then(d=>{DATA=d;build();})
+  .catch(err=>{
+    document.getElementById('app').innerHTML=
+     `<div class="wrap"><div class="disclaimer" style="border-left-color:var(--critical);max-width:none">
+      <b>Could not load <code>article_data.json</code></b> (${err.message}). This page reads its data from that file, so it must be served over HTTP — open it via a local server, e.g.<br><br>
+      <code>python3 -m http.server 8123</code><br><br>
+      then visit <code>http://localhost:8123/investigation.html</code>. Opening the file directly with <code>file://</code> will not work because browsers block <code>fetch()</code> of local files.</div></div>`;
+  });
+</script>
+</body>
+</html>
