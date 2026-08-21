@@ -140,6 +140,9 @@
                 <button onclick="exportToCSV()" class="bg-emerald-600/20 hover:bg-emerald-600/40 border border-emerald-500/30 px-4 py-2 rounded-lg font-bold text-xs text-emerald-400 transition flex items-center gap-2">
                     <i class="fa-solid fa-file-csv"></i> CSV এক্সপোর্ট
                 </button>
+                <button onclick="openPatterns()" class="bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/30 px-4 py-2 rounded-lg font-bold text-xs text-purple-300 transition flex items-center gap-2" title="ঠিকাদার ও সংস্থার পুনরাবৃত্ত প্যাটার্ন ও যোগসাজশ বিশ্লেষণ">
+                    <i class="fa-solid fa-diagram-project"></i> প্যাটার্ন বিশ্লেষণ
+                </button>
                 <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-slate-400 border border-slate-700 transition" title="রিলোড">
                     <i class="fa-solid fa-rotate-right"></i>
                 </button>
@@ -234,6 +237,139 @@
     </div>
 
     <!-- VIEW 2: SPLIT-SCREEN INSPECTOR -->
+    <!-- ================= CROSS-TENDER PATTERN ANALYSIS VIEW ================= -->
+    <div id="patternsView" class="max-w-[1600px] mx-auto p-4 md:p-6 space-y-6 hide">
+        <header class="flex flex-wrap justify-between items-center bg-[#131b2f] p-4 rounded-2xl border border-slate-800 shadow-lg gap-3">
+            <div class="flex items-center gap-4">
+                <button onclick="closePatterns()" class="w-10 h-10 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full flex items-center justify-center text-slate-300 transition" title="ড্যাশবোর্ডে ফিরুন">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="w-10 h-10 bg-purple-900/30 border border-purple-500/30 rounded-full flex items-center justify-center text-purple-400 text-xl">
+                    <i class="fa-solid fa-diagram-project"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">পুনরাবৃত্ত প্যাটার্ন ও যোগসাজশ বিশ্লেষণ</h1>
+                    <p class="text-[11px] text-slate-400 mt-1">একাধিক টেন্ডারে একই ঠিকাদার ও সংস্থার পুনরাবৃত্ত সম্পর্ক শনাক্তকরণ</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="patSearch" onkeyup="filterPatterns(this.value)" placeholder="ঠিকাদার বা সংস্থা খুঁজুন..." class="bg-[#0b1120] border border-slate-700 rounded-full pl-8 pr-4 py-2 text-xs text-slate-200 w-56 focus:border-purple-500 transition-all outline-none">
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-amber-900/10 border border-amber-600/30 rounded-xl px-4 py-2 text-[11px] text-amber-300/90 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info"></i>
+            এই সূচকগুলো <b>যাচাইযোগ্য সন্দেহজনক প্যাটার্ন</b> — কোনো অভিযোগ নয়। প্রতিটি জুটি ও প্রতিষ্ঠানকে আলাদাভাবে যাচাই করুন। উচ্চ মান নিজে থেকে অনিয়ম প্রমাণ করে না।
+        </div>
+
+        <!-- ENTITY-LEVEL KPIs -->
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+            <div class="bg-[#151c2c] border border-slate-800 p-4 rounded-2xl flex flex-col justify-center min-h-[86px]">
+                <h3 class="text-slate-400 text-[10px] font-bold mb-1">মোট ঠিকাদার</h3>
+                <p id="patKpiSuppliers" class="text-2xl font-black text-white">0</p>
+            </div>
+            <div class="bg-[#151c2c] border border-slate-800 p-4 rounded-2xl flex flex-col justify-center">
+                <h3 class="text-slate-400 text-[10px] font-bold mb-1">মোট ক্রয়কারী সংস্থা</h3>
+                <p id="patKpiEntities" class="text-2xl font-black text-white">0</p>
+            </div>
+            <div class="bg-[#1a151b] border border-red-900/50 p-4 rounded-2xl flex flex-col justify-center">
+                <h3 class="text-red-400 text-[10px] font-bold mb-1">পুনরাবৃত্ত জুটি (২+)</h3>
+                <p id="patKpiPairs" class="text-2xl font-black text-red-500">0</p>
+            </div>
+            <div class="bg-[#1a1815] border border-orange-900/50 p-4 rounded-2xl flex flex-col justify-center">
+                <h3 class="text-orange-500 text-[10px] font-bold mb-1">বারবার জয়ী ঠিকাদার (৩+)</h3>
+                <p id="patKpiRepeatSup" class="text-2xl font-black text-orange-500">0</p>
+            </div>
+            <div class="bg-[#1a1815] border border-yellow-900/50 p-4 rounded-2xl flex flex-col justify-center">
+                <h3 class="text-yellow-500 text-[10px] font-bold mb-1">শীর্ষ ১০ ঠিকাদারের মূল্য-অংশ</h3>
+                <p id="patKpiTop10" class="text-2xl font-black text-yellow-500">0%</p>
+            </div>
+            <div class="bg-[#1a151b] border border-red-900/50 p-4 rounded-2xl flex flex-col justify-center">
+                <h3 class="text-red-400 text-[10px] font-bold mb-1">সম্ভাব্য "ক্যাপচারড" সংস্থা</h3>
+                <p id="patKpiCaptured" class="text-2xl font-black text-red-500">0</p>
+            </div>
+        </div>
+
+        <!-- REPEAT PE ↔ SUPPLIER PAIRS -->
+        <div class="bg-[#101728] border border-slate-800 rounded-2xl p-5">
+            <div class="flex items-center justify-between mb-1">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-link text-red-400 text-sm"></i> পুনরাবৃত্ত ঠিকাদার–সংস্থা জুটি</h2>
+                <span class="text-[10px] text-slate-500">একই ঠিকাদার একই সংস্থার অধীনে একাধিকবার — সর্বোচ্চ পুনরাবৃত্তি উপরে</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mb-3">একই দুই পক্ষ বারবার একসাথে আসা প্রতিযোগিতাহীনতা বা যোগসাজশের সবচেয়ে শক্তিশালী সংকেত।</p>
+            <div class="overflow-x-auto custom-scroll max-h-[420px] overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="text-slate-400 border-b border-slate-700 sticky top-0 bg-[#101728]">
+                        <tr>
+                            <th class="p-2 font-bold">ক্রয়কারী সংস্থা</th>
+                            <th class="p-2 font-bold">ঠিকাদার</th>
+                            <th class="p-2 font-bold text-center">একসাথে টেন্ডার</th>
+                            <th class="p-2 font-bold text-right">মোট মূল্য (কোটি ৳)</th>
+                            <th class="p-2 font-bold text-center">ক্রিটিক্যাল ফ্ল্যাগ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblPairs"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- CONTRACTOR LEADERBOARD -->
+            <div class="bg-[#101728] border border-slate-800 rounded-2xl p-5">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1"><i class="fa-solid fa-helmet-safety text-orange-400 text-sm"></i> ঠিকাদার লিডারবোর্ড</h2>
+                <p class="text-[11px] text-slate-400 mb-3">মোট মূল্য অনুসারে ঠিকাদার — একক-সংস্থা নির্ভরতা ও ফ্ল্যাগসহ।</p>
+                <div class="overflow-x-auto custom-scroll max-h-[440px] overflow-y-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-slate-400 border-b border-slate-700 sticky top-0 bg-[#101728]">
+                            <tr>
+                                <th class="p-2 font-bold">ঠিকাদার</th>
+                                <th class="p-2 font-bold text-center">টেন্ডার</th>
+                                <th class="p-2 font-bold text-center">সংস্থা</th>
+                                <th class="p-2 font-bold text-right">মূল্য (কোটি)</th>
+                                <th class="p-2 font-bold text-center">একক বিডার</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblSuppliers"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PROCURING ENTITY LEADERBOARD -->
+            <div class="bg-[#101728] border border-slate-800 rounded-2xl p-5">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1"><i class="fa-solid fa-building-columns text-blue-400 text-sm"></i> ক্রয়কারী সংস্থা লিডারবোর্ড</h2>
+                <p class="text-[11px] text-slate-400 mb-3">সংস্থার ব্যয় এক ঠিকাদারে কতটা কেন্দ্রীভূত (ক্যাপচার) তা নির্দেশক।</p>
+                <div class="overflow-x-auto custom-scroll max-h-[440px] overflow-y-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-slate-400 border-b border-slate-700 sticky top-0 bg-[#101728]">
+                            <tr>
+                                <th class="p-2 font-bold">সংস্থা</th>
+                                <th class="p-2 font-bold text-center">টেন্ডার</th>
+                                <th class="p-2 font-bold text-center">ঠিকাদার</th>
+                                <th class="p-2 font-bold text-right">মূল্য (কোটি)</th>
+                                <th class="p-2 font-bold text-right">শীর্ষ অংশ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblEntities"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRILL-DOWN MODAL -->
+    <div id="patternDrillModal" class="fixed inset-0 z-[60] hide bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this)closePatternDrill()">
+        <div class="bg-[#101728] border border-slate-700 rounded-2xl w-full max-w-3xl max-h-[80vh] flex flex-col shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-slate-700">
+                <h3 id="patternDrillTitle" class="text-sm font-bold text-white">---</h3>
+                <button onclick="closePatternDrill()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="patternDrillBody" class="p-4 overflow-y-auto custom-scroll space-y-2"></div>
+        </div>
+    </div>
+
     <div id="inspectorView" class="h-screen w-full flex flex-col hide bg-[#0b1120] fixed inset-0 z-50">
         <header class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center shrink-0 shadow-md">
             <div class="flex items-center gap-4">
@@ -1467,13 +1603,16 @@
         }
 
         // ================= MULTI-PDF INSPECTOR =================
-        function openInspector(tid) {
+        function openInspector(tid, fromView) {
+            inspectorReturnView = fromView || 'dashboardView';
             currentTenderId = tid;
             currentRecord = analyzedData.find(x => x.Tender_Proposal_ID == tid);
             if(!currentRecord) return;
 
             flagPendingOnly = false; // start each investigation showing all flags
             document.getElementById('dashboardView').classList.add('hide');
+            var _pv = document.getElementById('patternsView'); if(_pv) _pv.classList.add('hide');
+            closePatternDrill();
             document.getElementById('inspectorView').classList.remove('hide');
             switchTab('tab-findings');
             renderInspectorUI();
@@ -1683,10 +1822,15 @@
 
         function closeInspector() {
             document.getElementById('inspectorView').classList.add('hide');
-            document.getElementById('dashboardView').classList.remove('hide');
             if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
             document.getElementById('pdfIframe').src = "";
-            initDashboard(true); 
+            if (inspectorReturnView === 'patternsView') {
+                document.getElementById('patternsView').classList.remove('hide');
+                renderPatterns();
+            } else {
+                document.getElementById('dashboardView').classList.remove('hide');
+                initDashboard(true);
+            }
         }
 
         function saveAuditLog(statusLabel) {
@@ -2278,6 +2422,218 @@
             if(targetBtn) {
                 targetBtn.classList.add('bg-white', 'border-l-4', 'border-red-500', 'shadow-sm');
             }
+        }
+
+        // ================= CROSS-TENDER PATTERN ANALYSIS =================
+        // Aggregates the per-tender analyzedData into contractor / procuring-entity
+        // profiles and surfaces *repeated* PE<->supplier pairings across tenders.
+        // All figures are red flags warranting scrutiny, never accusations.
+        var inspectorReturnView = 'dashboardView';
+        var patIndex = null;
+        var patPairsArr = [], patSuppliersArr = [], patEntitiesArr = [], patRecById = {};
+
+        function patCr(v){ return (v/1e7).toLocaleString('en-US',{maximumFractionDigits:2}); }
+        function patNorm(s){
+            return String(s||'').toUpperCase().replace(/&/g,' AND ')
+                .replace(/[^A-Z0-9ঀ-৿ ]/g,' ')
+                .replace(/\b(LIMITED|LTD|PVT|PRIVATE)\b/g,' ')
+                .replace(/\s+/g,' ').trim();
+        }
+        function patSupplierName(t){
+            var log = auditLogs[t.Tender_Proposal_ID] || {};
+            var s = log.Award_Supplier || t.Supplier_Name || findValInJSON(t,'Supplier_Name') || '';
+            s = String(s).trim().replace(/\s+/g,' ');
+            return s.length>70 ? s.substring(0,70) : s;
+        }
+        function patValueOf(t){
+            var log = auditLogs[t.Tender_Proposal_ID] || {};
+            var v = log.Contract_Value || t.Contract_Value_BDT || findValInJSON(t,'Estimated_Cost,Contract_Value_BDT,Contract_Value') || '0';
+            return parseFloat(String(v).replace(/,/g,'')) || 0;
+        }
+        function patPEOf(t){
+            var pe = t.ext_OrgName || findValInJSON(t,'Procuring_Entity_Name') || 'Other';
+            pe = String(pe).trim().substring(0,40);
+            return pe || 'Other';
+        }
+        function patFlagsOf(t){
+            var f = t.forensicFindings || [];
+            var crit = 0, single = false;
+            f.forEach(function(x){
+                if(x.risk === 'Critical') crit++;
+                if(x.clause === 'Rule 98' || /একক বিডার/.test(x.flag||'')) single = true;
+            });
+            return { total:f.length, crit:crit, single:single };
+        }
+
+        function buildEntityIndex(){
+            var suppliers = new Map(), entities = new Map(), pairs = new Map();
+            var totalValue = 0;
+            patRecById = {};
+            (analyzedData||[]).forEach(function(t){
+                var tid = t.Tender_Proposal_ID;
+                patRecById[tid] = t;
+                var val = patValueOf(t), fl = patFlagsOf(t);
+                var pe = patPEOf(t), supRaw = patSupplierName(t), supKey = patNorm(supRaw);
+                totalValue += val;
+
+                if(!entities.has(pe)) entities.set(pe, {name:pe, tenders:[], value:0, crit:0, supMap:new Map()});
+                var E = entities.get(pe);
+                E.tenders.push(tid); E.value += val; E.crit += fl.crit;
+
+                if(supKey){
+                    if(!suppliers.has(supKey)) suppliers.set(supKey, {key:supKey, display:supRaw, tenders:[], value:0, crit:0, single:0, pes:new Set(), nameCounts:{}});
+                    var S = suppliers.get(supKey);
+                    S.tenders.push(tid); S.value += val; S.crit += fl.crit; if(fl.single) S.single++;
+                    S.pes.add(pe); S.nameCounts[supRaw] = (S.nameCounts[supRaw]||0) + 1;
+                    E.supMap.set(supKey, (E.supMap.get(supKey)||0) + val);
+
+                    var pk = pe + ' ||| ' + supKey;
+                    if(!pairs.has(pk)) pairs.set(pk, {pe:pe, supplier:supRaw, supKey:supKey, tenders:[], value:0, crit:0});
+                    var P = pairs.get(pk);
+                    P.tenders.push(tid); P.value += val; P.crit += fl.crit;
+                }
+            });
+            // Canonical display name = most frequent raw spelling
+            suppliers.forEach(function(S){
+                var best = '', bestN = -1;
+                for(var k in S.nameCounts){ if(S.nameCounts[k] > bestN){ bestN = S.nameCounts[k]; best = k; } }
+                S.display = best || S.key;
+            });
+            // Per-entity top-supplier concentration share
+            entities.forEach(function(E){
+                var top = 0; E.supMap.forEach(function(v){ if(v > top) top = v; });
+                E.topShare = E.value > 0 ? (top / E.value) : 0;
+                E.nSuppliers = E.supMap.size;
+            });
+            return { suppliers:suppliers, entities:entities, pairs:pairs, totalValue:totalValue };
+        }
+
+        function openPatterns(){
+            if(!analyzedData || analyzedData.length === 0){ alert('আগে ডেটাবেস লোড করুন।'); return; }
+            document.getElementById('dashboardView').classList.add('hide');
+            document.getElementById('patternsView').classList.remove('hide');
+            renderPatterns();
+        }
+        function closePatterns(){
+            document.getElementById('patternsView').classList.add('hide');
+            document.getElementById('dashboardView').classList.remove('hide');
+        }
+
+        function patRiskBadge(level){
+            var m = { CRITICAL:'bg-red-900/30 text-red-400 border-red-500/40', HIGH:'bg-orange-900/30 text-orange-400 border-orange-500/40', MEDIUM:'bg-yellow-900/30 text-yellow-400 border-yellow-500/40', LOW:'bg-emerald-900/30 text-emerald-400 border-emerald-500/40' };
+            return '<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase border '+(m[level]||m.LOW)+'">'+(level||'LOW')+'</span>';
+        }
+
+        function renderPatterns(){
+            patIndex = buildEntityIndex();
+            var suppliers = Array.from(patIndex.suppliers.values());
+            var entities  = Array.from(patIndex.entities.values());
+            var pairs     = Array.from(patIndex.pairs.values());
+
+            // ---- KPIs ----
+            var repeatPairs = pairs.filter(function(p){ return p.tenders.length >= 2; });
+            var repeatSup   = suppliers.filter(function(s){ return s.tenders.length >= 3; });
+            var capturedEnt = entities.filter(function(e){ return e.topShare > 0.5 && e.tenders.length >= 3; });
+            var supTotal = suppliers.reduce(function(a,s){ return a + s.value; }, 0);
+            var top10 = suppliers.slice().sort(function(a,b){ return b.value - a.value; }).slice(0,10).reduce(function(a,s){ return a + s.value; }, 0);
+            document.getElementById('patKpiSuppliers').innerText = suppliers.length.toLocaleString('en-US');
+            document.getElementById('patKpiEntities').innerText  = entities.length.toLocaleString('en-US');
+            document.getElementById('patKpiPairs').innerText      = repeatPairs.length.toLocaleString('en-US');
+            document.getElementById('patKpiRepeatSup').innerText  = repeatSup.length.toLocaleString('en-US');
+            document.getElementById('patKpiTop10').innerText      = (supTotal > 0 ? Math.round(top10/supTotal*100) : 0) + '%';
+            document.getElementById('patKpiCaptured').innerText   = capturedEnt.length.toLocaleString('en-US');
+
+            // ---- Repeat pairs table ----
+            patPairsArr = repeatPairs.sort(function(a,b){ return (b.tenders.length - a.tenders.length) || (b.value - a.value); }).slice(0, 250);
+            var maxPair = patPairsArr.length ? patPairsArr[0].tenders.length : 1;
+            var pairsHtml = '';
+            if(patPairsArr.length === 0){
+                pairsHtml = '<tr><td colspan="5" class="p-4 text-center text-slate-500 text-xs">কোনো ঠিকাদার একই সংস্থার অধীনে একাধিকবার পাওয়া যায়নি।</td></tr>';
+            } else {
+                patPairsArr.forEach(function(p, i){
+                    var n = p.tenders.length;
+                    pairsHtml += '<tr class="border-b border-slate-800/60 hover:bg-slate-800/40 cursor-pointer" data-search="'+escapeHtml((p.pe+' '+p.supplier).toLowerCase())+'" onclick="showPatternDrill(\'pair\','+i+')">'
+                        + '<td class="p-2 text-blue-400 font-bold">'+escapeHtml(p.pe)+'</td>'
+                        + '<td class="p-2 text-slate-200">'+escapeHtml(p.supplier)+'</td>'
+                        + '<td class="p-2 text-center"><span class="font-black text-white">'+n+'</span><div class="h-1 rounded mt-1 mx-auto" style="width:'+Math.max(8,Math.round(n/maxPair*100))+'%;background:#eb6834"></div></td>'
+                        + '<td class="p-2 text-right font-mono text-emerald-400">'+patCr(p.value)+'</td>'
+                        + '<td class="p-2 text-center '+(p.crit>0?'text-red-400 font-black':'text-slate-500')+'">'+p.crit+'</td>'
+                        + '</tr>';
+                });
+            }
+            document.getElementById('tblPairs').innerHTML = pairsHtml;
+
+            // ---- Contractor leaderboard ----
+            patSuppliersArr = suppliers.sort(function(a,b){ return b.value - a.value; }).slice(0, 200);
+            var supHtml = '';
+            patSuppliersArr.forEach(function(s, i){
+                var captured = s.pes.size === 1 && s.tenders.length >= 2;
+                supHtml += '<tr class="border-b border-slate-800/60 hover:bg-slate-800/40 cursor-pointer" data-search="'+escapeHtml(s.display.toLowerCase())+'" onclick="showPatternDrill(\'supplier\','+i+')">'
+                    + '<td class="p-2 text-slate-200">'+escapeHtml(s.display)+(captured?' <span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-black bg-red-900/40 text-red-400 border border-red-500/40" title="সব টেন্ডার একই সংস্থা থেকে">একই সংস্থা</span>':'')+'</td>'
+                    + '<td class="p-2 text-center font-bold text-white">'+s.tenders.length+'</td>'
+                    + '<td class="p-2 text-center text-slate-300">'+s.pes.size+'</td>'
+                    + '<td class="p-2 text-right font-mono text-emerald-400">'+patCr(s.value)+'</td>'
+                    + '<td class="p-2 text-center '+(s.single>0?'text-red-400 font-black':'text-slate-500')+'">'+s.single+'</td>'
+                    + '</tr>';
+            });
+            document.getElementById('tblSuppliers').innerHTML = supHtml;
+
+            // ---- Procuring entity leaderboard ----
+            patEntitiesArr = entities.sort(function(a,b){ return b.value - a.value; });
+            var entHtml = '';
+            patEntitiesArr.forEach(function(e, i){
+                var pct = Math.round(e.topShare*100);
+                var hot = e.topShare > 0.5 && e.tenders.length >= 3;
+                entHtml += '<tr class="border-b border-slate-800/60 hover:bg-slate-800/40 cursor-pointer" data-search="'+escapeHtml(e.name.toLowerCase())+'" onclick="showPatternDrill(\'entity\','+i+')">'
+                    + '<td class="p-2 text-blue-400 font-bold">'+escapeHtml(e.name)+'</td>'
+                    + '<td class="p-2 text-center font-bold text-white">'+e.tenders.length+'</td>'
+                    + '<td class="p-2 text-center text-slate-300">'+e.nSuppliers+'</td>'
+                    + '<td class="p-2 text-right font-mono text-emerald-400">'+patCr(e.value)+'</td>'
+                    + '<td class="p-2 text-right '+(hot?'text-red-400 font-black':'text-slate-400')+'">'+pct+'%</td>'
+                    + '</tr>';
+            });
+            document.getElementById('tblEntities').innerHTML = entHtml;
+
+            var sb = document.getElementById('patSearch'); if(sb && sb.value) filterPatterns(sb.value);
+        }
+
+        function filterPatterns(q){
+            q = (q||'').toLowerCase().trim();
+            ['tblPairs','tblSuppliers','tblEntities'].forEach(function(id){
+                var rows = document.querySelectorAll('#'+id+' tr[data-search]');
+                rows.forEach(function(r){
+                    var hit = !q || (r.getAttribute('data-search')||'').indexOf(q) !== -1;
+                    r.style.display = hit ? '' : 'none';
+                });
+            });
+        }
+
+        function showPatternDrill(type, idx){
+            var title = '', tids = [], counterparty = '';
+            if(type === 'pair'){ var p = patPairsArr[idx]; if(!p) return; title = p.pe + '  ×  ' + p.supplier + '  —  ' + p.tenders.length + ' টেন্ডার'; tids = p.tenders; }
+            else if(type === 'supplier'){ var s = patSuppliersArr[idx]; if(!s) return; title = s.display + '  —  ' + s.tenders.length + ' টেন্ডার, ' + s.pes.size + ' সংস্থা'; tids = s.tenders; counterparty = 'pe'; }
+            else if(type === 'entity'){ var e = patEntitiesArr[idx]; if(!e) return; title = e.name + '  —  ' + e.tenders.length + ' টেন্ডার, ' + e.nSuppliers + ' ঠিকাদার'; tids = e.tenders; counterparty = 'sup'; }
+            document.getElementById('patternDrillTitle').innerText = title;
+
+            var body = '';
+            tids.forEach(function(tid){
+                var t = patRecById[tid]; if(!t) return;
+                var extra = '';
+                if(counterparty === 'pe') extra = escapeHtml(patPEOf(t));
+                else if(counterparty === 'sup') extra = escapeHtml(patSupplierName(t) || '—');
+                body += '<div class="flex items-center justify-between gap-3 bg-[#0b1120] border border-slate-800 rounded-lg px-3 py-2">'
+                    + '<div class="min-w-0"><div class="flex items-center gap-2">'+patRiskBadge(t.riskLevel)+'<span class="font-bold text-slate-200 text-xs"># '+tid+'</span></div>'
+                    + (extra?'<div class="text-[10px] text-slate-400 mt-0.5 truncate">'+extra+'</div>':'')
+                    + '</div>'
+                    + '<div class="flex items-center gap-3 shrink-0"><span class="font-mono text-emerald-400 text-xs">৳ '+patCr(patValueOf(t))+' কোটি</span>'
+                    + '<button onclick="openInspector(\''+tid+'\',\'patternsView\')" class="bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded transition"><i class="fa-solid fa-magnifying-glass-chart mr-1"></i> তদন্ত</button></div>'
+                    + '</div>';
+            });
+            document.getElementById('patternDrillBody').innerHTML = body || '<p class="text-slate-500 text-xs text-center p-4">কোনো টেন্ডার নেই।</p>';
+            document.getElementById('patternDrillModal').classList.remove('hide');
+        }
+        function closePatternDrill(){
+            var m = document.getElementById('patternDrillModal'); if(m) m.classList.add('hide');
         }
     </script>
 </body>
