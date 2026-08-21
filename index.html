@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Final Clean Report)</title>
+    <title>ই-জিপি ইনভেস্টিগেটিভ ডেটাবেস (Ultimate Tabbed Report)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,6 +61,8 @@
         .auto-filled { border-color: #3b82f6 !important; background-color: rgba(15, 23, 42, 0.9); }
         .user-verified { border-color: #10b981 !important; background-color: rgba(6, 78, 59, 0.2); }
         .highlight { background-color: rgba(234, 179, 8, 0.4); color: #fde047; font-weight: bold; border-radius: 2px; padding: 0 2px; }
+        .evidence-focus { background-color: rgba(245, 158, 11, 0.9) !important; color: #000 !important; outline: 2px solid #f59e0b; border-radius: 2px; animation: evidencePulse 1.6s ease; }
+        @keyframes evidencePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } 30% { box-shadow: 0 0 0 6px rgba(245,158,11,0.5); } }
         
         .manipulated-field { border-color: #ef4444 !important; background-color: rgba(127, 29, 29, 0.3) !important; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
 
@@ -292,6 +294,21 @@
                         <div class="bg-slate-800/50 p-5 rounded-xl border border-red-500/30 mb-6 shadow-lg">
                             <h3 class="text-red-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2"><i class="fa-solid fa-pen-to-square"></i> ভেরিফিকেশন ও স্টোরি নোটস</h3>
                             <p class="text-[10px] text-slate-400 mb-4 leading-relaxed">যেকোনো ফিল্ড আপডেট করে সেভ করলে রুলসগুলো অটোমেটিক রি-ক্যালকুলেট হয়ে রেড ফ্ল্যাগগুলো আপডেট হবে। <span class="text-emerald-400 font-bold">আপনি প্রতিটি ফ্ল্যাগ ম্যানুয়ালি (OK/NOT OK) যাচাই করতে পারবেন এবং তার কারণ নোট হিসেবে লিখে রাখতে পারবেন।</span></p>
+
+                            <!-- VERIFICATION PROGRESS PANEL -->
+                            <div class="bg-[#0b1120] rounded-lg p-3 mb-4 border border-slate-700/60">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[11px] font-bold text-slate-300"><i class="fa-solid fa-list-check text-blue-400 mr-1"></i> ফ্ল্যাগ যাচাই অগ্রগতি</span>
+                                    <span id="verifyProgressText" class="text-[11px] font-mono text-slate-400">0/0</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                                    <div id="verifyProgressBar" class="h-full bg-blue-500 w-0 transition-all duration-500"></div>
+                                </div>
+                                <div class="flex justify-between items-center gap-3 mt-3">
+                                    <div id="verifySuggestion" class="text-[10px] font-bold leading-tight"></div>
+                                    <button id="flagFilterBtn" onclick="toggleFlagFilter()" class="shrink-0 text-[10px] font-bold px-3 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 transition cursor-pointer"><i class="fa-solid fa-filter mr-1"></i> শুধু বাকি আছে</button>
+                                </div>
+                            </div>
                             
                             <label class="block text-xs text-slate-300 mb-2 font-bold">সাংবাদিকের সামগ্রিক ইনভেস্টিগেটিভ নোটস:</label>
                             <textarea id="auditJustification" class="w-full bg-[#0b1120] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 h-24 mb-4 custom-scroll outline-none focus:border-blue-500 transition-all" placeholder="আপনার সামগ্রিক পর্যবেক্ষণ বিস্তারিত লিখুন..."></textarea>
@@ -377,9 +394,9 @@
                             <h4 class="fieldset-title text-blue-400">সময়সূচী ও ডেডলাইন</h4>
                             <div class="grid grid-cols-3 gap-3">
                                 <div><label>প্রকাশের তারিখ</label><input type="text" id="Pub_Date" data-db="Scheduled_Tender_Proposal_Publication_Date_and_Time,Publication_Date" data-regex="(?:Scheduled Tender\/Proposal Publication|Publication|Invited)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing Date and Time|Closing|Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="(?:Opening Date and Time|Opening)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
-                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="(?:last selling\/downloading|last selling)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>জমার শেষ তারিখ</label><input type="text" id="Close_Date" data-db="Tender_Proposal_Closing_Date_and_Time,Closing_Date" data-regex="(?:Closing Date and Time|Closing|Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>খোলার তারিখ</label><input type="text" id="Open_Date" data-db="Tender_Proposal_Opening_Date_and_Time,Opening_Date" data-regex="(?:Opening Date and Time|Opening)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
+                                <div><label>দলিল বিক্রির শেষ সময়</label><input type="text" id="Last_Sell" data-db="Tender_Proposal_Document_last_selling_downloading_Date_and_Time" data-regex="(?:last selling\/downloading|last selling)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
                                 <div><label>ডাউনলোড শেষ সময়</label><input type="text" id="Last_Down" data-db="Last_Downloading_Date" data-regex="Last Downloading Date[\s\S]*?(?:\:|\-)\s*([\s\S]*?)(?=Last Date|$)" class="egp-field"></div>
                                 <div><label>সিকিউরিটি জমার শেষ সময়</label><input type="text" id="Sec_Sub_Date" data-db="Last_Date_and_Time_for_Tender_Proposal_Security_Submission" data-regex="(?:Security Submission|Last Date and Time for Tender\/Proposal Security Submission)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
                                 <div><label>প্রি-টেন্ডার মিটিং (শুরু)</label><input type="text" id="Pre_Start" data-db="Pre_Tender_Proposal_meeting_Start_Date_and_Time,Pre_Tender_Meeting" data-regex="(?:meeting Start|Pre - Tender\/Proposal meeting Start)[\s\S]*?([\d]{2}-[A-Za-z]{3}-[\d]{4}(?:\s*[\d]{2}:[\d]{2})?)" class="egp-field"></div>
@@ -564,7 +581,7 @@
                 </div>
             </div>
             <div class="w-2/3 p-8 overflow-y-auto custom-scroll flex justify-center bg-[#f1f5f9]">
-                <div id="masterStoryPreviewContainer" class="nn-article w-full max-w-[800px] p-10 rounded-xl shadow-2xl min-h-full bg-white">
+                <div id="masterStoryPreviewContainer" class="nn-article w-full max-w-[1200px] p-10 rounded-xl shadow-2xl min-h-full bg-white">
                     <div class="text-center text-slate-400 mt-32"><i class="fa-solid fa-file-pen text-6xl mb-4 opacity-50"></i><p>রিপোর্ট আপডেট বাটনে ক্লিক করুন</p></div>
                 </div>
             </div>
@@ -586,7 +603,8 @@
         let currentTenderId = null;
         let currentRecord = null;
         let currentBlobUrl = null;
-        let storyImagesArray = []; 
+        let storyImagesArray = [];
+        let flagPendingOnly = false; // Inspector: show only not-yet-verified flags
 
         // Greet user if auto-save data exists
         window.onload = () => {
@@ -610,7 +628,8 @@
             if(!originalText) return;
             if(!input) { pre.innerHTML = escapeHtml(originalText); return; }
             try {
-                const regex = new RegExp(`(${input})`, 'gi');
+                const safe = input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`(${safe})`, 'gi');
                 pre.innerHTML = escapeHtml(originalText).replace(regex, '<span class="highlight text-black">$1</span>');
             } catch(e) {}
         }
@@ -1155,11 +1174,188 @@
 
         function removeCustomFlag(index) {
             let tid = currentRecord.Tender_Proposal_ID;
-            if(auditLogs[tid] && auditLogs[tid].customFlags) {
-                auditLogs[tid].customFlags.splice(index, 1);
+            let log = auditLogs[tid];
+            if(log && log.customFlags) {
+                log.customFlags.splice(index, 1);
+                log.customFlagStatuses = reindexAfterRemoval(log.customFlagStatuses, index);
+                log.customFlagNotes = reindexAfterRemoval(log.customFlagNotes, index);
                 localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
                 renderInspectorUI();
             }
+        }
+
+        // Keep index-keyed maps aligned after a custom flag is spliced out.
+        function reindexAfterRemoval(map, removed) {
+            if(!map) return {};
+            let out = {};
+            Object.keys(map).forEach(k => {
+                let i = parseInt(k, 10);
+                if(i < removed) out[i] = map[k];
+                else if(i > removed) out[i - 1] = map[k];
+            });
+            return out;
+        }
+
+        // Custom flags can now be verified (OK/NOT OK) and noted, just like auto flags.
+        function updateCustomFlagStatus(index, status) {
+            let tid = currentRecord.Tender_Proposal_ID;
+            if(!auditLogs[tid]) auditLogs[tid] = {};
+            if(!auditLogs[tid].customFlagStatuses) auditLogs[tid].customFlagStatuses = {};
+            if(auditLogs[tid].customFlagStatuses[index] === status) {
+                delete auditLogs[tid].customFlagStatuses[index];
+            } else {
+                auditLogs[tid].customFlagStatuses[index] = status;
+            }
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
+            renderInspectorUI();
+        }
+
+        function updateCustomFlagNote(index, note) {
+            let tid = currentRecord.Tender_Proposal_ID;
+            if(!auditLogs[tid]) auditLogs[tid] = {};
+            if(!auditLogs[tid].customFlagNotes) auditLogs[tid].customFlagNotes = {};
+            auditLogs[tid].customFlagNotes[index] = note;
+            localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(auditLogs));
+        }
+
+        // ================= EVIDENCE LOCATOR =================
+        // Pull the most "searchable" phrase out of a flag's evidence HTML so the
+        // investigator can jump straight to it inside the scanned document text.
+        function extractSearchTerm(evidenceHtml) {
+            if(!evidenceHtml) return null;
+            const tmp = document.createElement('div');
+            tmp.innerHTML = evidenceHtml;
+
+            // hi() wraps the actual extracted value in a yellow <span>; prefer those.
+            let candidates = Array.from(tmp.querySelectorAll('span')).map(s => s.textContent);
+            if(candidates.length === 0) candidates = [tmp.textContent];
+
+            const junk = ['missing', 'not found', 'not applied', 'n/a', 'blank', '0', 'found', 'mentioned but percentage missing'];
+            candidates = candidates
+                .map(c => (c || '').replace(/^["“'\s]+|["”'\s]+$/g, ''))
+                .filter(c => c.length >= 3 && !junk.includes(c.toLowerCase()));
+            if(candidates.length === 0) return null;
+
+            // A candidate with letters is real document text; pure numbers/dates rarely match.
+            let alpha = candidates.filter(c => /[a-zA-Zঀ-৿]/.test(c));
+            let pool = alpha.length ? alpha : candidates;
+            pool.sort((a, b) => b.length - a.length);
+            let term = pool[0];
+            return term.length > 60 ? term.substring(0, 60) : term;
+        }
+
+        function escapeAttr(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        // Search + highlight the term in the OCR pane and scroll the first hit into view.
+        function locateEvidence(term) {
+            if(!term) return;
+            const searchBox = document.getElementById('ocrSearch');
+            searchBox.value = term;
+            highlightOCR();
+            const pre = document.getElementById('rawPdfText');
+            const firstHit = pre.querySelector('.highlight');
+            if(firstHit) {
+                firstHit.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                firstHit.classList.add('evidence-focus');
+                setTimeout(() => firstHit.classList.remove('evidence-focus'), 1600);
+            } else {
+                showToast("নথিতে সরাসরি মেলেনি", `"${term}" টেক্সটটি স্ক্যান করা নথিতে হুবহু পাওয়া যায়নি।`);
+            }
+        }
+
+        // ================= VERIFICATION PROGRESS =================
+        function getVerificationProgress(tid) {
+            let log = auditLogs[tid] || {};
+            let autoFlags = (currentRecord && currentRecord.forensicFindings) ? currentRecord.forensicFindings : [];
+            let customFlags = log.customFlags || [];
+            let total = autoFlags.length + customFlags.length;
+            let reviewed = 0, notOk = 0;
+            autoFlags.forEach((f, i) => {
+                let s = log.flagStatuses && log.flagStatuses[i];
+                if(s) { reviewed++; if(s === 'NOT_OK') notOk++; }
+            });
+            customFlags.forEach((cf, i) => {
+                let s = log.customFlagStatuses && log.customFlagStatuses[i];
+                if(s) { reviewed++; if(s === 'NOT_OK') notOk++; }
+            });
+            return { total, reviewed, notOk, pending: total - reviewed };
+        }
+
+        function toggleFlagFilter() {
+            flagPendingOnly = !flagPendingOnly;
+            renderInspectorUI();
+        }
+
+        // Builds one red-flag card. Shared by auto flags and custom flags (opts.custom).
+        function renderFlagCard(f, index, opts) {
+            opts = opts || {};
+            let isCustom = !!opts.custom;
+            let tid = currentRecord.Tender_Proposal_ID;
+            let log = auditLogs[tid] || {};
+            let statuses = isCustom ? (log.customFlagStatuses || {}) : (log.flagStatuses || {});
+            let notes = isCustom ? (log.customFlagNotes || {}) : (log.flagNotes || {});
+            let status = statuses[index] || '';
+            let fNote = notes[index] || '';
+            let statusFn = isCustom ? 'updateCustomFlagStatus' : 'updateFlagStatus';
+            let noteFn = isCustom ? 'updateCustomFlagNote' : 'updateFlagNote';
+
+            let okClass = status === 'OK' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
+            let notOkClass = status === 'NOT_OK' ? 'bg-red-600 text-white border-red-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
+            let cardOp = status === 'OK' ? 'opacity-50' : 'opacity-100';
+            let reviewedRing = status ? (status === 'NOT_OK' ? 'ring-1 ring-red-500/40' : 'ring-1 ring-emerald-500/40') : '';
+
+            let statusPill = status
+                ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ${status === 'NOT_OK' ? 'bg-red-900/40 text-red-400' : 'bg-emerald-900/40 text-emerald-400'}">${status === 'NOT_OK' ? 'নিশ্চিত জালিয়াতি' : 'যাচাই: ঠিক আছে'}</span>`
+                : `<span class="text-[9px] font-bold px-2 py-0.5 rounded bg-indigo-900/40 text-indigo-300">যাচাই বাকি</span>`;
+
+            let searchTerm = extractSearchTerm(f.evidence);
+            let locateBtn = searchTerm
+                ? `<button onclick="locateEvidence('${escapeAttr(searchTerm)}')" class="px-3 py-1 rounded text-[10px] font-bold border bg-slate-800/50 text-blue-300 border-slate-700 hover:bg-blue-600 hover:text-white transition" title="নথিতে এই প্রমাণ খুঁজুন"><i class="fa-solid fa-magnifying-glass-location"></i> নথিতে দেখুন</button>`
+                : '';
+
+            let customBadge = isCustom ? ` <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1">CUSTOM</span>` : '';
+            let removeBtn = isCustom ? `<button onclick="removeCustomFlag(${index})" class="text-slate-500 hover:text-red-500 transition ml-1" title="মুছুন"><i class="fa-solid fa-trash"></i></button>` : '';
+
+            let ruleBlock = isCustom ? '' : `
+                        <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic || ''}</span></p>
+                        <div class="border-t border-slate-700/50 pt-2 mt-2">
+                            <p><strong class="text-emerald-500">রুলস (${f.rule || 'Custom'}):</strong> <span class="text-slate-400">${f.rule_detail || ''}</span></p>
+                        </div>`;
+
+            return `
+                <div class="flag-card bg-[#131b2f] border-l-4 ${f.risk === 'Critical' ? 'border-red-500' : 'border-orange-500'} ${isCustom ? 'border-r border-r-blue-500/30' : ''} rounded-xl p-5 mb-4 shadow-lg transition-all ${cardOp} ${reviewedRing}">
+                    <div class="flex justify-between items-start mb-3 gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="text-sm font-black ${isCustom ? 'text-blue-300' : 'text-white'}">${f.flag}${customBadge}</h4>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk === 'Critical' ? 'bg-red-600' : 'bg-orange-500'} text-white">${f.risk} RISK</span>
+                            ${statusPill}
+                        </div>
+                        <div class="flex gap-2 items-center shrink-0">
+                            ${locateBtn}
+                            <button onclick="${statusFn}(${index}, 'OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${okClass}"><i class="fa-solid fa-check"></i> OK</button>
+                            <button onclick="${statusFn}(${index}, 'NOT_OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${notOkClass}"><i class="fa-solid fa-xmark"></i> NOT OK</button>
+                            ${removeBtn}
+                        </div>
+                    </div>
+                    <div class="text-xs space-y-3">
+                        <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
+                        ${ruleBlock}
+                        <div class="border-t border-slate-700/50 pt-3 mt-3">
+                            <input type="text" placeholder="এই ফ্ল্যাগটির জন্য স্পেসিফিক নোট বা কারণ লিখুন..."
+                                   value="${escapeHtml(fNote)}"
+                                   onchange="${noteFn}(${index}, this.value)"
+                                   class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300 focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                </div>`;
         }
 
         // ================= DASHBOARD UI =================
@@ -1276,6 +1472,7 @@
             currentRecord = analyzedData.find(x => x.Tender_Proposal_ID == tid);
             if(!currentRecord) return;
 
+            flagPendingOnly = false; // start each investigation showing all flags
             document.getElementById('dashboardView').classList.add('hide');
             document.getElementById('inspectorView').classList.remove('hide');
             switchTab('tab-findings');
@@ -1385,6 +1582,40 @@
 
             document.getElementById('auditJustification').value = log.justification || "";
 
+            // --- VERIFICATION PROGRESS PANEL ---
+            let prog = getVerificationProgress(tid);
+            let pct = prog.total ? Math.round((prog.reviewed / prog.total) * 100) : 100;
+            let progBar = document.getElementById('verifyProgressBar');
+            let progText = document.getElementById('verifyProgressText');
+            let suggEl = document.getElementById('verifySuggestion');
+            let filterBtn = document.getElementById('flagFilterBtn');
+
+            progBar.style.width = pct + '%';
+            progBar.className = 'h-full transition-all duration-500 ' + ((prog.total === 0 || prog.pending === 0) ? (prog.notOk > 0 ? 'bg-red-500' : 'bg-emerald-500') : 'bg-blue-500');
+            progText.innerText = `${prog.reviewed}/${prog.total} যাচাই সম্পন্ন`;
+
+            if (prog.total === 0) {
+                suggEl.className = 'text-[10px] font-bold leading-tight text-emerald-400';
+                suggEl.innerHTML = `<i class="fa-solid fa-shield-check"></i> কোনো ফ্ল্যাগ নেই — ক্লিন সেভ করা নিরাপদ।`;
+            } else if (prog.notOk > 0) {
+                suggEl.className = 'text-[10px] font-bold leading-tight text-red-400';
+                suggEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> সাজেশন: জালিয়াতি (${prog.notOk}টি NOT OK চিহ্নিত)।`;
+            } else if (prog.pending === 0) {
+                suggEl.className = 'text-[10px] font-bold leading-tight text-emerald-400';
+                suggEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> সাজেশন: ক্লিন (সব ফ্ল্যাগ যাচাই হয়েছে, সমস্যা নেই)।`;
+            } else {
+                suggEl.className = 'text-[10px] font-bold leading-tight text-amber-400';
+                suggEl.innerHTML = `<i class="fa-regular fa-clock"></i> ${prog.pending}টি ফ্ল্যাগ এখনো যাচাই বাকি আছে।`;
+            }
+
+            if (flagPendingOnly) {
+                filterBtn.className = 'shrink-0 text-[10px] font-bold px-3 py-1 rounded border border-blue-500 bg-blue-600 text-white transition cursor-pointer';
+                filterBtn.innerHTML = `<i class="fa-solid fa-filter mr-1"></i> সব দেখান`;
+            } else {
+                filterBtn.className = 'shrink-0 text-[10px] font-bold px-3 py-1 rounded border border-slate-600 text-slate-300 hover:bg-slate-700 transition cursor-pointer';
+                filterBtn.innerHTML = `<i class="fa-solid fa-filter mr-1"></i> শুধু বাকি আছে`;
+            }
+
             // --- MANUAL OVERRIDE AND CUSTOM FLAGS RENDER ---
             const flagsContainer = document.getElementById('inspFlagsContainer');
             let allFlags = currentRecord.forensicFindings || [];
@@ -1394,60 +1625,22 @@
             if (allFlags.length === 0 && customFlags.length === 0) {
                 htmlStr = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-shield-check"></i> কোনো জালিয়াতি পাওয়া যায়নি।</div>`;
             } else {
-                // Auto Flags
+                let shown = 0;
+                let autoStatuses = log.flagStatuses || {};
                 allFlags.forEach((f, index) => {
-                    let status = (log.flagStatuses && log.flagStatuses[index]) ? log.flagStatuses[index] : '';
-                    let fNote = (log.flagNotes && log.flagNotes[index]) ? log.flagNotes[index] : '';
-                    let okClass = status === 'OK' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
-                    let notOkClass = status === 'NOT_OK' ? 'bg-red-600 text-white border-red-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
-                    let cardOp = status === 'OK' ? 'opacity-40' : 'opacity-100';
-
-                    htmlStr += `
-                        <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 mb-4 shadow-lg transition-all ${cardOp}">
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="text-sm font-black text-white">${f.flag}</h4>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${f.risk} RISK</span>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="updateFlagStatus(${index}, 'OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${okClass}"><i class="fa-solid fa-check"></i> OK</button>
-                                    <button onclick="updateFlagStatus(${index}, 'NOT_OK')" class="px-3 py-1 rounded text-[10px] font-bold border transition ${notOkClass}"><i class="fa-solid fa-xmark"></i> NOT OK</button>
-                                </div>
-                            </div>
-                            <div class="text-xs space-y-3">
-                                <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
-                                <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
-                                <div class="border-t border-slate-700/50 pt-2 mt-2">
-                                    <p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p>
-                                </div>
-                                <div class="border-t border-slate-700/50 pt-3 mt-3">
-                                    <input type="text" placeholder="এই ফ্ল্যাগটির জন্য স্পেসিফিক নোট বা কারণ লিখুন..." 
-                                           value="${escapeHtml(fNote)}" 
-                                           onchange="updateFlagNote(${index}, this.value)"
-                                           class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300 focus:border-blue-500 outline-none">
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    if (flagPendingOnly && autoStatuses[index]) return; // hide already-reviewed
+                    htmlStr += renderFlagCard(f, index, { custom: false });
+                    shown++;
                 });
-
-                // Custom Flags
+                let customStatuses = log.customFlagStatuses || {};
                 customFlags.forEach((cf, index) => {
-                    htmlStr += `
-                        <div class="bg-[#131b2f] border-l-4 ${cf.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 mb-4 shadow-lg border-r border-r-blue-500/30">
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="text-sm font-black text-blue-300">${cf.flag} <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1">CUSTOM</span></h4>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${cf.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${cf.risk} RISK</span>
-                                </div>
-                                <button onclick="removeCustomFlag(${index})" class="text-slate-500 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                            <div class="text-xs space-y-3">
-                                <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ/লজিক:</span> <span class="text-red-400 font-mono">${cf.evidence}</span></div>
-                            </div>
-                        </div>
-                    `;
+                    if (flagPendingOnly && customStatuses[index]) return; // hide already-reviewed
+                    htmlStr += renderFlagCard(cf, index, { custom: true });
+                    shown++;
                 });
+                if (shown === 0) {
+                    htmlStr = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-clipboard-check"></i> সব ফ্ল্যাগ যাচাই সম্পন্ন হয়েছে। বাকি কিছু নেই।</div>`;
+                }
             }
 
             // Custom Flag Form
@@ -1498,14 +1691,24 @@
 
         function saveAuditLog(statusLabel) {
             let tid = currentTenderId;
+
+            // Warn if flags are still unreviewed before committing a verdict.
+            let prog = getVerificationProgress(tid);
+            if (prog.pending > 0) {
+                let verdict = statusLabel.includes('Clean') ? 'ক্লিন' : 'জালিয়াতি';
+                if (!confirm(`⚠ ${prog.pending}টি ফ্ল্যাগ এখনো যাচাই (OK/NOT OK) করা হয়নি।\n\nতবুও "${verdict}" হিসেবে সেভ করবেন?`)) return;
+            }
+
             let prevLog = auditLogs[tid] || {};
-            let logData = { 
-                timestamp: new Date().toISOString(), 
-                status: statusLabel, 
+            let logData = {
+                timestamp: new Date().toISOString(),
+                status: statusLabel,
                 justification: document.getElementById('auditJustification').value,
                 flagStatuses: prevLog.flagStatuses || {},
                 flagNotes: prevLog.flagNotes || {},
-                customFlags: prevLog.customFlags || []
+                customFlags: prevLog.customFlags || [],
+                customFlagStatuses: prevLog.customFlagStatuses || {},
+                customFlagNotes: prevLog.customFlagNotes || {}
             };
 
             document.querySelectorAll('.egp-field').forEach(input => { logData[input.id] = input.value; });
@@ -1603,18 +1806,18 @@
             showToast("অটো ড্রাফট সম্পন্ন", "প্রাপ্ত ডেটার ওপর ভিত্তি করে খবরের ভূমিকা লেখা হয়েছে।");
         }
 
-        // --- STORY PREVIEW (MINI DASHBOARD STYLE & PRO EVIDENCE) ---
+        // --- STORY PREVIEW (SIDEBAR / TABBED LAYOUT) ---
         function generateReportHTML(isExport) {
             let head = document.getElementById('storyHeadline').value || "ই-জিপি প্রকল্পে মেগা দুর্নীতি";
             let subhead = document.getElementById('storySubhead').value || "বিশ্বব্যাংক ও জাইকার নিয়ম ভেঙে পছন্দের ঠিকাদারকে কাজ দেওয়া হলো";
             let author = document.getElementById('storyAuthor').value || "ডেটা জার্নালিজম ডেস্ক";
             let intro = document.getElementById('storyIntro').value.replace(/\n/g, '<br><br>') || "অনুসন্ধানে দেখা যায়, সরকারি ক্রয় নীতি (PPA 2008) লঙ্ঘন করে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতে বিভিন্ন শর্ত শিথিল করা হয়েছে।";
             let method = document.getElementById('storyMethod').value.replace(/\n/g, '<br>');
-            let newsLinksRaw = document.getElementById('storyNewsLinks') ? document.getElementById('storyNewsLinks').value : "";
             
             let combinedTextForNLP = "";
             let riskCounts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
             let agencyValues = {}; 
+            let checkedCbs = Array.from(document.querySelectorAll('.tender-select-cb:checked'));
 
             let html = `
                 <div class="mb-8 border-b-4 border-red-600 pb-6 text-center md:text-left">
@@ -1632,7 +1835,7 @@
             
             html += `<div class="nn-body-text text-lg text-gray-800 leading-relaxed mb-10"><p><span class="text-5xl font-black text-red-600 float-left mr-3 mt-1">${intro.charAt(0)}</span>${intro.substring(1)}</p></div>`;
 
-            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach(cb => {
+            checkedCbs.forEach(cb => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
                 let log = auditLogs[cb.value] || {};
                 
@@ -1660,17 +1863,22 @@
                 <div class="mb-12 bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-inner print:bg-white print:border-gray-300">
                     <h2 class="text-2xl font-black text-gray-800 mb-6 text-center border-b border-gray-300 pb-3">এক নজরে আমাদের অনুসন্ধান</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="text-center font-bold text-gray-600 mb-2 text-sm uppercase">টেন্ডার নথিতে সর্বাধিক ব্যবহৃত শব্দ</h4>
-                            <canvas id="wordChart"></canvas>
+                        <div class="w-full h-64 flex items-center justify-center">
+                            <div class="w-full h-full relative">
+                                <h4 class="text-center font-bold text-gray-600 mb-2 text-sm uppercase">টেন্ডার নথিতে সর্বাধিক ব্যবহৃত শব্দ</h4>
+                                <canvas id="wordChart"></canvas>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="text-center font-bold text-gray-600 mb-2 text-sm uppercase">দুর্নীতির ঝুঁকির মাত্রা</h4>
-                            <canvas id="riskChart"></canvas>
+                        <div class="w-full h-64 flex items-center justify-center">
+                            <div class="w-full h-full relative flex items-center justify-center">
+                                <canvas id="riskChart"></canvas>
+                            </div>
                         </div>
-                        <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm md:col-span-2">
+                        <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm md:col-span-2 w-full h-72">
                             <h4 class="text-center font-bold text-gray-600 mb-2 text-sm uppercase">সংস্থা অনুযায়ী চুক্তিমূল্য (Contract Value by Agency)</h4>
-                            <canvas id="valueChart"></canvas>
+                            <div class="w-full h-full relative pb-6">
+                                <canvas id="valueChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1678,32 +1886,52 @@
             
             html += `<h2 class="text-2xl font-black text-gray-900 mb-6 border-l-4 border-red-600 pl-4">বিস্তারিত তথ্য ও প্রমাণ</h2>`;
 
-            // INDEX
-            html += `<div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 mb-10 print:hidden">
-                        <p class="text-xs text-slate-500 mb-4">বিস্তারিত তথ্য ও প্রমাণ দেখতে যেকোনো কেইসের ওপর ক্লিক করুন:</p>
-                        <ul class="space-y-3">`;
-            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
+            // THE NEW TABBED/SIDEBAR LAYOUT CONTAINER
+            html += `<div class="flex flex-col md:flex-row border border-slate-200 rounded-2xl shadow-xl overflow-hidden mb-12 bg-white print:border-gray-300">`;
+
+            // LEFT SIDEBAR (CASE INDEX)
+            html += `
+                <div class="w-full md:w-1/3 xl:w-1/4 bg-slate-50 border-r border-slate-200 flex flex-col max-h-[800px] print:hidden">
+                    <div class="p-4 bg-slate-100 border-b border-slate-200 font-black text-slate-700 uppercase tracking-wider text-xs shadow-inner z-10 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ul"></i> দুর্নীতির কেইসসমূহ
+                    </div>
+                    <div class="overflow-y-auto custom-scroll flex-1 p-2 space-y-2">
+            `;
+            checkedCbs.forEach((cb, index) => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
-                let orgName = (rec.ext_OrgName || 'অজানা সংস্থা').substring(0, 60) + '...';
+                let orgName = (rec.ext_OrgName || 'অজানা সংস্থা').substring(0, 45) + '...';
                 let badgeStyle = rec.riskLevel === 'CRITICAL' ? 'bg-red-100 text-red-600' : 
                                  rec.riskLevel === 'HIGH' ? 'bg-orange-100 text-orange-600' : 
                                  rec.riskLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-600' : 
                                  'bg-emerald-100 text-emerald-600';
                 
                 html += `
-                    <li class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-2 last:border-0 last:pb-0 gap-2">
-                        <a href="#case-${cb.value}" ${isExport ? `onclick="document.getElementById('case-${cb.value}').setAttribute('open', 'true')"` : ''} class="text-blue-600 hover:text-blue-800 font-bold transition flex items-center gap-2 text-sm">
-                            <span class="bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap">কেইস ${index + 1}</span> 
-                            ${orgName} <span class="text-slate-400 font-normal font-mono text-xs">(ID: ${cb.value})</span>
-                        </a>
-                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded whitespace-nowrap self-start sm:self-auto ${badgeStyle}">${rec.riskLevel} RISK</span>
-                    </li>
+                    <button type="button" onclick="switchReportTab('${cb.value}')" id="btn-${cb.value}" class="report-tab-btn w-full text-left p-3 rounded-lg border border-transparent hover:bg-white hover:border-slate-200 hover:shadow-sm transition cursor-pointer outline-none group flex flex-col gap-2">
+                        <div class="flex justify-between items-center w-full">
+                            <span class="bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase shadow-sm">কেইস ${index + 1}</span>
+                            <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded ${badgeStyle}">${rec.riskLevel} RISK</span>
+                        </div>
+                        <p class="text-xs font-bold text-slate-700 leading-tight group-hover:text-blue-600 transition-colors">${orgName}</p>
+                        <p class="text-[10px] text-slate-400 font-mono">ID: ${cb.value}</p>
+                    </button>
                 `;
             });
-            html += `</ul></div>`;
+            html += `</div></div>`; // End Sidebar
 
-            // LOOP
-            Array.from(document.querySelectorAll('.tender-select-cb:checked')).forEach((cb, index) => {
+            // RIGHT CONTENT AREA
+            html += `<div class="w-full md:w-2/3 xl:w-3/4 bg-[#0d1117] relative flex-col max-h-[800px] overflow-y-auto custom-scroll print:w-full print:max-h-none print:overflow-visible">`;
+            
+            // Default Empty Message (Only visible on web)
+            html += `
+                <div id="default-case-message" class="flex flex-col items-center justify-center h-full text-slate-500 py-32 px-10 text-center print:hidden">
+                    <i class="fa-solid fa-hand-pointer text-6xl mb-6 opacity-30 text-blue-500"></i>
+                    <h3 class="text-xl font-bold text-slate-400 mb-2">কোনো কেইস নির্বাচন করা হয়নি</h3>
+                    <p class="text-sm">বিস্তারিত প্রমাণ, লজিক এবং অরিজিনাল পিডিএফ ডকুমেন্টস দেখতে বাম পাশের তালিকা থেকে যেকোনো একটি কেইসের ওপর ক্লিক করুন।</p>
+                </div>
+            `;
+
+            // Generate content for EACH case (Hidden by default via CSS)
+            checkedCbs.forEach((cb, index) => {
                 let rec = analyzedData.find(x => x.Tender_Proposal_ID == cb.value);
                 let log = auditLogs[cb.value] || {};
 
@@ -1727,101 +1955,145 @@
                                     'text-emerald-400';
 
                 html += `
-                    <details id="case-${cb.value}" class="group mb-8 bg-white border border-gray-200 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] overflow-hidden print:border-gray-300 print:mb-12 scroll-mt-6">
-                        <summary class="bg-[#131b2f] p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer list-none hover:bg-slate-800 transition-colors outline-none [&::-webkit-details-marker]:hidden print:bg-slate-800">
-                            <div class="flex items-center gap-4 w-full md:w-auto">
-                                <div class="w-12 h-12 shrink-0 bg-red-900/30 border border-red-500/30 rounded-full flex items-center justify-center text-red-500 text-xl print:border-none">
+                    <div id="content-${cb.value}" class="report-tab-content hidden flex-col w-full min-h-full print:!flex print:mb-12 print:border print:border-gray-300 print:bg-white print:rounded-lg">
+                        
+                        <!-- HEADER -->
+                        <div class="bg-[#131b2f] p-5 border-b border-slate-800 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sticky top-0 z-20 shadow-md print:bg-slate-100 print:border-gray-300">
+                            <div class="flex items-center gap-3 overflow-hidden w-full xl:w-auto">
+                                <div class="w-10 h-10 shrink-0 bg-red-900/30 border border-red-500/30 rounded-full flex items-center justify-center text-red-500 text-lg print:border-none">
                                     <i class="fa-solid fa-crosshairs"></i>
                                 </div>
                                 <div class="overflow-hidden">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shadow-sm">কেইস ${index + 1}</span>
-                                        <span class="text-[11px] text-slate-400 font-mono font-bold tracking-wider">ID: ${cb.value}</span>
+                                        <span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase shadow-sm">কেইস ${index + 1}</span>
+                                        <span class="text-[10px] text-slate-400 font-mono font-bold print:text-slate-600">ID: ${cb.value}</span>
                                     </div>
-                                    <h3 class="text-lg font-bold text-white leading-tight truncate w-[250px] md:w-[350px] lg:w-[450px]" title="${orgName}">${orgName}</h3>
+                                    <h3 class="text-sm md:text-base font-bold text-white leading-tight truncate print:text-slate-900" title="${orgName}">${orgName}</h3>
                                 </div>
                             </div>
                             
-                            <div class="flex items-center justify-between w-full md:w-auto gap-4">
-                                <div class="bg-[#0b1120] border border-slate-700 p-2.5 rounded-xl flex items-center gap-4 shadow-inner min-w-[180px] print:border-slate-500">
-                                    <div>
-                                        <p class="text-[9px] text-slate-500 font-black uppercase mb-1 tracking-widest">এআই স্কোর</p>
-                                        <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase ${badgeClass}">${rec.riskLevel}</span>
-                                    </div>
-                                    <div class="flex-1 text-right border-l border-slate-700 pl-4">
-                                        <span class="text-3xl font-black ${riskColorText}">${rec.riskScore}</span>
-                                    </div>
+                            <div class="bg-[#0b1120] border border-slate-700 p-2 rounded-lg flex items-center gap-3 shrink-0 shadow-inner print:border-slate-300 print:bg-white">
+                                <div>
+                                    <p class="text-[8px] text-slate-500 font-black uppercase mb-0.5 print:text-slate-600">এআই স্কোর</p>
+                                    <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase ${badgeClass}">${rec.riskLevel}</span>
                                 </div>
-                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 group-open:rotate-180 transition-transform duration-300 print:hidden">
-                                    <i class="fa-solid fa-chevron-down"></i>
+                                <div class="border-l border-slate-700 pl-3 print:border-slate-300">
+                                    <span class="text-2xl font-black ${riskColorText}">${rec.riskScore}</span>
                                 </div>
                             </div>
-                        </summary>
+                        </div>
+
+                        <!-- SPLIT VIEW AREA -->
+                        <div class="flex flex-col xl:flex-row w-full flex-1 relative bg-[#0b1120] print:bg-white">
+                            
+                            <!-- LEFT PANE: PDF Viewer -->
+                            <div class="w-full xl:w-1/2 border-r border-slate-800 flex flex-col bg-[#0b1120] print:hidden">
+                                <div class="p-2 bg-[#131b2f] border-b border-slate-800 flex gap-2 overflow-x-auto custom-scroll shadow-inner">
+                `;
+
+                // Add PDF buttons
+                let fileKeys = Object.keys(globalFilesMap).filter(k => k.includes(cb.value) && k.toLowerCase().endsWith('.pdf'));
+                let firstPdfSrc = '';
+                
+                if (fileKeys.length > 0) {
+                    fileKeys.forEach((pdfPath, pIdx) => {
+                        let targetSrc = isExport ? pdfPath.replace(/\\/g, '/') : URL.createObjectURL(globalFilesMap[pdfPath]);
+                        let escapedSrc = targetSrc.replace(/'/g, "\\'");
+                        if (pIdx === 0) firstPdfSrc = escapedSrc;
                         
-                        <div class="p-5 md:p-6 bg-[#0d1117] border-t border-slate-800">
+                        let label = `ফাইল ${pIdx + 1}`;
+                        if(pdfPath.toLowerCase().includes('notice') || pdfPath.toLowerCase().includes('ift')) label = 'নোটিশ (IFT)';
+                        if(pdfPath.toLowerCase().includes('award') || pdfPath.toLowerCase().includes('noa')) label = 'অ্যাওয়ার্ড (NOA)';
+                        if(pdfPath.toLowerCase().includes('contract') || pdfPath.toLowerCase().includes('pcc') || pdfPath.toLowerCase().includes('gcc')) label = 'চুক্তি/শর্ত';
+                        
+                        let icon = 'fa-file-pdf';
+                        if(label.includes('নোটিশ')) icon = 'fa-file-contract';
+                        else if (label.includes('অ্যাওয়ার্ড')) icon = 'fa-award';
+
+                        html += `
+                            <button type="button" onclick="document.getElementById('iframe-report-${cb.value}').src='${escapedSrc}'" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-[9px] font-bold transition whitespace-nowrap outline-none border border-slate-700 cursor-pointer shadow-sm">
+                                <i class="fa-solid ${icon}"></i> ${label}
+                            </button>
+                        `;
+                    });
+                } else {
+                    html += `<span class="text-xs text-slate-500 p-1">PDF Found: 0</span>`;
+                }
+
+                html += `
+                                </div>
+                                <div class="flex-1 min-h-[400px] xl:min-h-full relative p-1 bg-[#0d1117]">
+                                    <iframe id="iframe-report-${cb.value}" src="${firstPdfSrc}" class="w-full h-full min-h-[600px] border-0 rounded bg-white shadow-inner"></iframe>
+                                </div>
+                            </div>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
-                                <div class="border border-slate-800 bg-[#131b2f] rounded-xl p-4 flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full bg-emerald-900/30 text-emerald-500 border border-emerald-500/30 flex items-center justify-center text-xl shrink-0">
-                                        <i class="fa-solid fa-money-bill-wave"></i>
+                            <!-- RIGHT PANE: FINDINGS & DETAILS -->
+                            <div class="w-full xl:w-1/2 flex flex-col bg-[#0d1117] print:w-full print:bg-white">
+                                <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 border-b border-slate-800 bg-[#131b2f] print:bg-slate-50 print:border-gray-200">
+                                    <div class="border border-slate-800 bg-[#0d1117] rounded-xl p-3 flex items-center gap-3 print:bg-white print:border-gray-300">
+                                        <div class="w-10 h-10 rounded-full bg-emerald-900/30 text-emerald-500 border border-emerald-500/30 flex items-center justify-center text-lg shrink-0 print:bg-emerald-100 print:border-emerald-200">
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="overflow-hidden w-full">
+                                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-0.5 print:text-slate-600">চুক্তিমূল্য (Value)</p>
+                                            <p class="text-sm font-black text-white font-mono truncate print:text-slate-900">৳ ${cVal}</p>
+                                        </div>
                                     </div>
-                                    <div class="overflow-hidden">
-                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">চুক্তিমূল্য (Contract Value)</p>
-                                        <p class="text-lg font-black text-white font-mono truncate">৳ ${cVal}</p>
+                                    
+                                    <div class="border border-slate-800 bg-[#0d1117] rounded-xl p-3 flex items-center gap-3 print:bg-white print:border-gray-300">
+                                        <div class="w-10 h-10 rounded-full bg-blue-900/30 text-blue-500 border border-blue-500/30 flex items-center justify-center text-lg shrink-0 print:bg-blue-100 print:border-blue-200">
+                                            <i class="fa-solid fa-helmet-safety"></i>
+                                        </div>
+                                        <div class="overflow-hidden w-full">
+                                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-wider mb-0.5 print:text-slate-600">ঠিকাদার (Contractor)</p>
+                                            <p class="text-xs font-bold text-white leading-tight truncate print:text-slate-900" title="${sName}">${sName}</p>
+                                        </div>
                                     </div>
                                 </div>
                                 
-                                <div class="border border-slate-800 bg-[#131b2f] rounded-xl p-4 flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full bg-blue-900/30 text-blue-500 border border-blue-500/30 flex items-center justify-center text-xl shrink-0">
-                                        <i class="fa-solid fa-helmet-safety"></i>
-                                    </div>
-                                    <div class="overflow-hidden">
-                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1">ঠিকাদার (Contractor)</p>
-                                        <p class="text-base font-bold text-white leading-tight truncate" title="${sName}">${sName}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            ${log.justification ? `
-                            <div class="mb-6 bg-red-900/20 border border-red-500/30 rounded-lg p-4 relative overflow-hidden">
-                                <div class="absolute left-0 top-0 w-1.5 h-full bg-red-500"></div>
-                                <p class="text-xs font-black text-red-400 uppercase mb-2 flex items-center gap-2"><i class="fa-solid fa-user-pen"></i> সাংবাদিকের পর্যবেক্ষণ</p>
-                                <p class="text-sm text-slate-300 italic leading-relaxed">"${escapeHtml(log.justification)}"</p>
-                            </div>` : ''}
+                                <div class="p-5 flex-1 space-y-4 bg-[#0d1117] print:bg-white">
                 `;
                 
+                if (log.justification) {
+                    html += `
+                        <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-4 relative overflow-hidden mb-2 shadow-inner print:bg-red-50 print:border-red-200">
+                            <div class="absolute left-0 top-0 w-1.5 h-full bg-red-500"></div>
+                            <p class="text-[10px] font-black text-red-400 uppercase mb-1 flex items-center gap-2 print:text-red-700"><i class="fa-solid fa-user-pen"></i> সাংবাদিকের পর্যবেক্ষণ</p>
+                            <p class="text-sm text-slate-300 italic leading-relaxed print:text-slate-800">"${escapeHtml(log.justification)}"</p>
+                        </div>
+                    `;
+                }
+
                 let activeFindings = rec.forensicFindings.filter((f, i) => !(log.flagStatuses && log.flagStatuses[i] === 'OK'));
                 if(log.customFlags) activeFindings = activeFindings.concat(log.customFlags);
 
                 if (activeFindings.length > 0) {
-                    html += `<h4 class="font-black text-white mb-5 text-sm uppercase flex items-center gap-2 border-b border-slate-800 pb-3"><i class="fa-solid fa-list-check text-red-500"></i> বিস্তারিত অনিয়ম ও প্রমাণ</h4><div class="space-y-4">`;
+                    html += `<h4 class="font-black text-white mb-4 text-xs uppercase flex items-center gap-2 border-b border-slate-800 pb-2 print:text-slate-900 print:border-gray-200"><i class="fa-solid fa-list-check text-red-500"></i> বিস্তারিত প্রমাণ ও লজিক</h4><div class="space-y-4">`;
                     
                     rec.forensicFindings.forEach((f, i) => {
                         if (log.flagStatuses && log.flagStatuses[i] === 'OK') return;
                         let fNote = log.flagNotes && log.flagNotes[i] ? log.flagNotes[i] : '';
                         
-                        // DARK MODE EVIDENCE CARD
                         html += `
-                            <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 shadow-lg">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="text-sm font-black text-white">${f.flag}</h4>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${f.risk} RISK</span>
-                                    </div>
+                            <div class="bg-[#131b2f] border-l-4 ${f.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-4 shadow-lg border border-slate-800 print:bg-white print:border-gray-200 print:shadow-sm">
+                                <div class="flex items-center gap-2 mb-3 border-b border-slate-800/50 pb-2 print:border-gray-200">
+                                    <h4 class="text-sm font-black text-white print:text-gray-900">${f.flag}</h4>
+                                    <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase ${f.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white ml-auto">${f.risk} RISK</span>
                                 </div>
+                                
                                 <div class="text-xs space-y-3">
-                                    <div class="bg-[#0b1120] p-3 rounded border border-slate-800">
-                                        <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> 
-                                        <span class="text-red-400 font-mono">${f.evidence}</span>
+                                    <div class="bg-[#0b1120] p-3 rounded border border-slate-800 shadow-inner print:bg-slate-50 print:border-gray-200">
+                                        <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px] print:text-slate-600">প্রমাণ (Evidence):</span> 
+                                        <span class="text-red-400 font-mono break-words whitespace-normal leading-relaxed print:text-red-600">${f.evidence}</span>
                                     </div>
-                                    <p class="leading-relaxed"><strong class="text-red-400">লজিক:</strong> <span class="text-slate-300">${f.violation_logic}</span></p>
-                                    <div class="border-t border-slate-700/50 pt-2 mt-2">
-                                        <p><strong class="text-emerald-500">রুলস (${f.rule}):</strong> <span class="text-slate-400">${f.rule_detail}</span></p>
+                                    <p class="leading-relaxed"><strong class="text-red-500 print:text-red-600">লজিক:</strong> <span class="text-slate-300 print:text-slate-800">${f.violation_logic}</span></p>
+                                    <div class="border-t border-slate-800 pt-2 print:border-gray-200">
+                                        <p class="leading-relaxed"><strong class="text-emerald-500 print:text-emerald-600">রুলস (${f.rule}):</strong> <span class="text-slate-400 print:text-slate-600">${f.rule_detail}</span></p>
                                     </div>
                                     ${fNote ? `
-                                    <div class="border-t border-slate-700/50 pt-3 mt-3">
-                                        <div class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300">
-                                            <strong class="text-blue-400"><i class="fa-solid fa-pen-nib"></i> ইনভেস্টিগেটরের নোট:</strong> ${escapeHtml(fNote)}
+                                    <div class="border-t border-slate-800 pt-2 mt-2 print:border-gray-200">
+                                        <div class="w-full bg-[#0b1120] border border-slate-700 rounded px-3 py-2 text-[11px] text-slate-300 shadow-inner print:bg-yellow-50 print:border-yellow-200 print:text-yellow-900">
+                                            <strong class="text-blue-400 print:text-yellow-700"><i class="fa-solid fa-pen-nib"></i> নোট:</strong> ${escapeHtml(fNote)}
                                         </div>
                                     </div>` : ''}
                                 </div>
@@ -1832,17 +2104,15 @@
                     if (log.customFlags) {
                         log.customFlags.forEach(cf => {
                             html += `
-                                <div class="bg-[#131b2f] border-l-4 ${cf.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-5 shadow-lg border-r border-r-blue-500/30">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <div class="flex items-center gap-2">
-                                            <h4 class="text-sm font-black text-blue-300">${cf.flag} <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1">CUSTOM</span></h4>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${cf.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white">${cf.risk} RISK</span>
-                                        </div>
+                                <div class="bg-[#131b2f] border-l-4 ${cf.risk==='Critical'?'border-red-500':'border-orange-500'} rounded-xl p-4 shadow-lg border border-slate-800 border-r-blue-500/30 print:bg-white print:border-gray-200 print:border-r-0 print:shadow-sm">
+                                    <div class="flex items-center gap-2 mb-3 border-b border-slate-800/50 pb-2 print:border-gray-200">
+                                        <h4 class="text-sm font-black text-blue-300 print:text-blue-700">${cf.flag} <span class="bg-blue-900/50 text-blue-400 text-[9px] px-1 rounded ml-1 print:bg-blue-100 print:text-blue-600">CUSTOM</span></h4>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${cf.risk==='Critical'?'bg-red-600':'bg-orange-500'} text-white ml-auto">${cf.risk} RISK</span>
                                     </div>
                                     <div class="text-xs space-y-3">
-                                        <div class="bg-[#0b1120] p-3 rounded border border-slate-800">
-                                            <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ/লজিক:</span> 
-                                            <span class="text-red-400 font-mono">${cf.evidence}</span>
+                                        <div class="bg-[#0b1120] p-3 rounded border border-slate-800 shadow-inner print:bg-slate-50 print:border-gray-200">
+                                            <span class="text-slate-500 block mb-1 uppercase font-bold text-[9px] print:text-slate-600">প্রমাণ/লজিক:</span> 
+                                            <span class="text-red-400 font-mono break-words whitespace-normal leading-relaxed print:text-red-600">${cf.evidence}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1852,71 +2122,24 @@
                     html += `</div>`;
                 } else {
                     html += `
-                        <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6 text-center">
-                            <i class="fa-solid fa-shield-check text-4xl text-emerald-400 mb-3"></i>
-                            <p class="text-emerald-400 font-bold text-lg">এই টেন্ডারে কোনো জালিয়াতি বা নিয়ম লঙ্ঘন পাওয়া যায়নি।</p>
+                        <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6 text-center print:bg-emerald-50 print:border-emerald-200">
+                            <i class="fa-solid fa-shield-check text-4xl text-emerald-400 mb-3 print:text-emerald-500"></i>
+                            <p class="text-emerald-400 font-bold text-sm print:text-emerald-700">এই টেন্ডারে কোনো জালিয়াতি বা নিয়ম লঙ্ঘন পাওয়া যায়নি।</p>
                         </div>
                     `;
                 }
-                
-                // NEW: PDF VIEWER INSIDE THE CASE
-                let fileKeys = Object.keys(globalFilesMap).filter(k => k.includes(cb.value) && k.toLowerCase().endsWith('.pdf'));
-                if (fileKeys.length > 0) {
-                    html += `
-                        <div class="mt-8 pt-6 border-t border-slate-800 print:hidden">
-                            <h4 class="font-black text-white mb-4 text-sm flex items-center gap-2"><i class="fa-solid fa-folder-open text-blue-500"></i> মূল নথিপত্র ও প্রমাণ (PDF Viewer)</h4>
-                            <p class="text-xs text-slate-400 mb-3">বিস্তারিত যাচাই করতে নিচের ফাইলগুলোতে ক্লিক করুন:</p>
-                            <div class="flex flex-col gap-2 mb-4">
-                    `;
-                    fileKeys.forEach((pdfPath, pIdx) => {
-                        let targetSrc = isExport ? pdfPath.replace(/\\/g, '/') : URL.createObjectURL(globalFilesMap[pdfPath]);
-                        let escapedSrc = targetSrc.replace(/'/g, "\\'");
-                        html += `
-                            <button type="button" onclick="document.getElementById('iframe-${cb.value}').src='${escapedSrc}'" class="flex items-center gap-3 w-full text-left bg-white border border-slate-200 hover:border-red-400 hover:shadow-sm transition p-3 rounded-lg group outline-none">
-                                <i class="fa-solid fa-file-pdf text-red-500 text-xl group-hover:scale-110 transition-transform"></i>
-                                <span class="text-sm font-medium text-slate-700 truncate">${pdfPath}</span>
-                            </button>
-                        `;
-                    });
-                    
-                    let initialSrc = isExport ? fileKeys[0].replace(/\\/g, '/') : URL.createObjectURL(globalFilesMap[fileKeys[0]]);
-                    let escapedInitialSrc = initialSrc.replace(/'/g, "\\'");
-                    
-                    html += `
-                            </div>
-                            <div class="bg-[#0b1120] rounded-xl p-2 shadow-inner h-[500px] md:h-[700px] border border-slate-700">
-                                <iframe id="iframe-${cb.value}" class="w-full h-full rounded-lg bg-white border-0" src="${escapedInitialSrc}"></iframe>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                html += `</div></details>`; 
+                html += `</div></div></div>`; // Close Split View & Content Div
             });
+            html += `</div></div>`; // Close right pane & Main Container
 
-            if(newsLinksRaw && newsLinksRaw.trim() !== "") {
-                html += `
-                    <div class="mb-10 p-6 bg-blue-50 border border-blue-100 rounded-xl">
-                        <h2 class="text-lg font-bold text-blue-900 mb-3"><i class="fa-solid fa-link"></i> সংশ্লিষ্ট সংবাদ ও তথ্যসূত্র</h2>
-                        <ul class="list-disc pl-5 text-blue-700 space-y-2 text-sm font-medium">
-                `;
-                let links = newsLinksRaw.split('\n');
-                links.forEach(link => {
-                    if(link.trim() !== "") {
-                        html += `<li><a href="${link.trim()}" target="_blank" class="hover:text-blue-900 underline decoration-blue-300 hover:decoration-blue-900 transition">${link.trim()}</a></li>`;
-                    }
-                });
-                html += `</ul></div>`;
-            }
-
-            // METHODOLOGY (COLLAPSIBLE / HIDDEN BY DEFAULT)
+            // METHODOLOGY
             html += `
-                <details class="group bg-slate-900 text-slate-300 rounded-xl shadow-lg mt-8 border-t-4 border-blue-500 overflow-hidden outline-none cursor-pointer print:bg-white print:border-gray-300 print:text-gray-800">
-                    <summary class="font-black text-white text-lg p-6 flex items-center justify-between outline-none select-none print:text-gray-900 hover:bg-slate-800 transition list-none [&::-webkit-details-marker]:hidden">
+                <details class="group bg-slate-900 text-slate-300 rounded-xl shadow-lg mt-8 border-t-4 border-blue-500 overflow-hidden outline-none cursor-pointer print:bg-white print:border-gray-300 print:text-gray-800 print:shadow-none">
+                    <summary class="font-black text-white text-lg p-6 flex items-center justify-between outline-none select-none print:text-gray-900 hover:bg-slate-800 transition list-none [&::-webkit-details-marker]:hidden print:hover:bg-white">
                         <span class="flex items-center gap-2"><i class="fa-solid fa-microchip text-blue-400 print:text-gray-800"></i> আমরা কীভাবে এই অনুসন্ধানটি করেছি? (Methodology)</span>
                         <i class="fa-solid fa-chevron-down transition-transform duration-300 group-open:rotate-180 print:hidden"></i>
                     </summary>
-                    <div class="p-6 pt-0 border-t border-slate-700 mt-2">
+                    <div class="p-6 pt-0 border-t border-slate-700 mt-2 print:border-gray-300">
                         <p class="text-sm leading-relaxed opacity-90 mb-6 mt-4">${method}</p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                             <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
@@ -1966,39 +2189,95 @@
                         const ctxRisk = document.getElementById('riskChart');
                         const ctxValue = document.getElementById('valueChart');
 
+                        // Disable aspect ratio to make charts responsive to parent container
+                        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
                         if(ctxWord) {
                             new Chart(ctxWord, {
                                 type: 'bar',
-                                data: { labels: wLabels, datasets: [{ label: 'Most Used Words', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.7)' }] },
-                                options: { responsive: true, plugins: { legend: { display: false } } }
+                                data: { labels: wLabels, datasets: [{ label: 'Most Used Words', data: wData, backgroundColor: 'rgba(59, 130, 246, 0.7)', borderRadius: 4 }] },
+                                options: chartOptions
                             });
                         }
                         if(ctxRisk) {
                             new Chart(ctxRisk, {
                                 type: 'doughnut',
-                                data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [riskData.Critical, riskData.High, riskData.Medium, riskData.Low], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'] }] },
-                                options: { responsive: true }
+                                data: { labels: ['Critical', 'High', 'Medium', 'Low'], datasets: [{ data: [riskData.Critical, riskData.High, riskData.Medium, riskData.Low], backgroundColor: ['#ef4444', '#f97316', '#eab308', '#10b981'], borderWidth: 0 }] },
+                                options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
                             });
                         }
                         if(ctxValue) {
                             new Chart(ctxValue, {
                                 type: 'bar',
-                                data: { labels: aLabels, datasets: [{ label: 'চুক্তিমূল্য (BDT)', data: aData, backgroundColor: 'rgba(16, 185, 129, 0.7)' }] },
-                                options: { responsive: true, plugins: { legend: { display: false } } }
+                                data: { labels: aLabels, datasets: [{ label: 'চুক্তিমূল্য (BDT)', data: aData, backgroundColor: 'rgba(16, 185, 129, 0.7)', borderRadius: 4 }] },
+                                options: chartOptions
                             });
                         }
+                        
+                        // Force open details for printing
+                        window.onbeforeprint = function() {
+                            document.querySelectorAll('.report-tab-content').forEach(el => {
+                                el.classList.remove('hidden');
+                                el.classList.add('flex');
+                            });
+                        };
                     };
+
+                    function switchReportTab(caseId) {
+                        document.getElementById('default-case-message').style.display = 'none';
+                        document.querySelectorAll('.report-tab-content').forEach(el => {
+                            el.classList.add('hidden');
+                            el.classList.remove('active', 'flex');
+                        });
+                        document.querySelectorAll('.report-tab-btn').forEach(el => {
+                            el.classList.remove('bg-white', 'border-l-4', 'border-red-500', 'shadow-sm');
+                        });
+                        
+                        const targetContent = document.getElementById('content-' + caseId);
+                        const targetBtn = document.getElementById('btn-' + caseId);
+                        
+                        if(targetContent) {
+                            targetContent.classList.remove('hidden');
+                            targetContent.classList.add('active', 'flex');
+                        }
+                        if(targetBtn) {
+                            targetBtn.classList.add('bg-white', 'border-l-4', 'border-red-500', 'shadow-sm');
+                        }
+                    }
                 <\/script>
             `;
 
-            const fullHtml = `<html><head><meta charset="utf-8"><title>Investigation Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f1f5f9; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:850px; margin:0 auto; background:white; padding:50px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.05);} h1,h2,h3,h4,h5,p,span,div{color:#1f2937; font-family:'Noto Serif Bengali',serif;} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } canvas{max-height:250px;} .hidden{display:none;} @media print{body{background:white; padding:0;} * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .story-container{box-shadow:none; padding:0;} details[open] div{display:block!important;} details summary i {display:none;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
+            const fullHtml = `<html><head><meta charset="utf-8"><title>Investigation Report</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700;900&display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><style>body{background:#f1f5f9; padding:40px 20px; font-family:system-ui,sans-serif;} .story-container{max-width:1400px; margin:0 auto; background:white; padding:40px; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.05);} h1,h2,h3,h4,h5,p,span,div{color:#1f2937; font-family:'Noto Serif Bengali',serif;} details > summary { list-style: none; } details > summary::-webkit-details-marker { display: none; } canvas{max-height:250px;} .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; } .custom-scroll::-webkit-scrollbar-track { background: transparent; } .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; } html { scroll-behavior: smooth; } @media print{body{background:white; padding:0;} * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .story-container{box-shadow:none; padding:0; max-width:100%;} .report-tab-content{display:flex!important; page-break-inside: avoid;}}</style></head><body><div class="story-container">${containerHtml}</div>${chartInjectionScript}</body></html>`;
             
             const blob = new Blob([fullHtml], { type: 'text/html' });
             const a = document.createElement('a'); 
             a.href = URL.createObjectURL(blob); 
-            a.download = `Investigation_Report_Public_${new Date().getTime()}.html`; 
+            a.download = `Investigation_Report_Final_${new Date().getTime()}.html`; 
             a.click();
             URL.revokeObjectURL(a.href);
+        }
+
+        // Add this helper function for live preview functionality
+        function switchReportTab(caseId) {
+            document.getElementById('default-case-message').style.display = 'none';
+            document.querySelectorAll('.report-tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('active', 'flex');
+            });
+            document.querySelectorAll('.report-tab-btn').forEach(el => {
+                el.classList.remove('bg-white', 'border-l-4', 'border-red-500', 'shadow-sm');
+            });
+            
+            const targetContent = document.getElementById('content-' + caseId);
+            const targetBtn = document.getElementById('btn-' + caseId);
+            
+            if(targetContent) {
+                targetContent.classList.remove('hidden');
+                targetContent.classList.add('active', 'flex');
+            }
+            if(targetBtn) {
+                targetBtn.classList.add('bg-white', 'border-l-4', 'border-red-500', 'shadow-sm');
+            }
         }
     </script>
 </body>
