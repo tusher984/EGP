@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Signed on the last legal day — the complete e-GP investigation</title>
 <meta name="description" content="The complete data investigation into 1,158 Bangladesh e-GP construction tenders worth ৳3,724 crore: every detection, every chart, and the source PDF for every one of 645 awards. Concentration, the 28-day signing cliff, competition that vanishes at evaluation, repeat contractor-office pairings, and officers whose awards flow to a single firm.">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://tusher984.github.io/EGP/story.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="e-GP Watch">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="https://tusher984.github.io/EGP/story.html">
+<meta property="og:title" content="Signed on the last legal day — the complete e-GP investigation">
+<meta property="og:description" content="1,158 tenders, 645 awards, ৳3,724 crore. One firm holds 28.7% of the money. 130 contracts were signed on precisely the last legal day, then none for nine days. Every figure is checkable against the government's own PDF.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Signed on the last legal day — the complete e-GP investigation">
+<meta name="twitter:description" content="1,158 tenders, 645 awards, ৳3,724 crore, and 1,290 source documents attached. Red flags warranting scrutiny in Bangladesh development-authority procurement.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -285,8 +298,13 @@ function pct(n,d){return fmt(n,d===undefined?1:d)+'%';}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/');}
-function noticeURL(f){return f?encPath(META.notice_dir+'/'+f):null;}
-function awardURL(f){return f?encPath(META.award_dir+'/'+f):null;}
+/* Source PDFs sit in two folders beside this page. A self-contained build that
+   travels away from the repository sets <body data-pdf-base="https://…/"> so the
+   1,290 document links keep resolving to the published copies. Empty = relative. */
+function pdfBase(){var b=document.body.getAttribute('data-pdf-base')||'';
+  return b&&b.slice(-1)!=='/'?b+'/':b;}
+function noticeURL(f){return f?pdfBase()+encPath(META.notice_dir+'/'+f):null;}
+function awardURL(f){return f?pdfBase()+encPath(META.award_dir+'/'+f):null;}
 function pdfCell(url,label){return url?'<a class="pdflink" href="'+url+'" target="_blank" rel="noopener">'+
   '&#128196; '+esc(label)+'</a>':'<span class="pdflink na">—</span>';}
 function tip(s){return ' data-tip="'+esc(s).replace(/"/g,'&quot;')+'"';}
@@ -1187,20 +1205,34 @@ function render(){
     ' repeat pairs · '+fmt(D.headline.pdfs)+' source PDFs<br>'+
     'Regenerate from <code>'+esc(D.generated_from)+'</code> + <code>article_data.json</code> in this repository.';
 }
-fetch('article_data.json',{cache:'no-cache'}).then(function(r){
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  return r.json();
-}).then(function(j){
+/* ---------- data source ----------
+   Two ways in, one code path. If a build has inlined the dataset into
+   <script id="story-data">, use that and make no network request at all — that is
+   the self-contained file you can publish or email. Otherwise fetch the JSON from
+   alongside this page, which is how the repository copy stays regenerable. */
+function boot(j){
   D=j;
   if(D.case_meta){META.notice_dir=D.case_meta.notice_dir||META.notice_dir;
     META.award_dir=D.case_meta.award_dir||META.award_dir;}
   render();
-}).catch(function(err){
+}
+function bootFail(err){
   document.getElementById('app').innerHTML='<div class="wrap err"><b>Could not load article_data.json.</b><br>'+
     esc(err.message)+'<br><span class="note">This page must be served over HTTP (not opened as a file://) so it can '+
     'read the data file. From the repository root: <code>python3 -m http.server 8123</code> then open '+
-    '<code>http://localhost:8123/story.html</code>.</span></div>';
-});
+    '<code>http://localhost:8123/story.html</code>. The self-contained '+
+    '<code>egp-investigation.html</code> build needs no server.</span></div>';
+}
+(function(){
+  var inline=document.getElementById('story-data');
+  if(inline&&inline.textContent.trim().charAt(0)==='{'){
+    try{ boot(JSON.parse(inline.textContent)); return; }catch(e){ bootFail(e); return; }
+  }
+  fetch('article_data.json',{cache:'no-cache'}).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(boot).catch(bootFail);
+})();
 
 /* ---------- theme ---------- */
 (function(){
