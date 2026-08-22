@@ -188,6 +188,8 @@
     background:var(--surface);color:var(--secondary);cursor:pointer;font-family:inherit}
   .chip:hover{color:var(--ink)}
   .chip.on{background:var(--ink);color:var(--page);border-color:var(--ink)}
+  .chip b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+  .chip.on b{color:var(--page)}
   .meta{font-size:12.5px;color:var(--muted);margin-top:8px}
 
   /* ---- heatmap ---- */
@@ -761,7 +763,8 @@ function sCompetition(){
     '<p class="note">Definitional note: this story treats <b>'+fmt(OFF.strict.n)+' / '+pct(OFF.strict.pct)+
     '</b> as the primary single-responsive rate because it excludes lots that only ever had one bidder; the '+
     'broader <b>'+fmt(h.single_resp)+' / '+pct(h.single_resp_pct)+'</b> counts every tender with one responsive bid. '+
-    'Always state which definition a quoted figure uses.</p>'
+    'Always state which definition a quoted figure uses. Both are filters in '+
+    '<a href="#evidence">the evidence room</a>, so either population can be listed row by row.</p>'
   );
 }
 /* ---- id → case lookup, so every tender id can link to its PDFs ---- */
@@ -983,17 +986,47 @@ function sOther(){
 }
 /* ============ 11 · EVIDENCE ROOM ============ */
 var EV={q:'',org:'',flag:'',sort:'crore',dir:-1};
-function evFlags(c){
-  var f=[];
-  if(c.resp===1&&c.recv>1) f.push('single');
-  if(c.resp===1&&c.recv>=3) f.push('elim');
-  if(c.delay===28) f.push('day28');
-  if(c.delay>28) f.push('late');
-  return f;
+/* One definition per flag, used for the chip filter, the chip's own count and the
+   row tag — so a reader clicking a chip lands on exactly the number the article
+   quotes. `sold` is the count of firms that bought the tender documents: a tender
+   with one responsive bid but documents sold to several firms had rivals who
+   walked away, which is why the primary single-responsive figure (149) is larger
+   than the bids-received-only figure (114). */
+var EVFLAGS=[
+  {k:'resp1', t:'One responsive bid',
+   f:function(c){return c.resp===1;}},
+  {k:'single',t:'Rivals existed, one survived',
+   f:function(c){return c.resp===1&&((c.recv||0)>1||(c.sold||0)>1);}},
+  {k:'elim',  t:'3+ bidders → 1',
+   f:function(c){return c.resp===1&&(c.recv||0)>=3;}},
+  {k:'day28', t:'Signed on day 28',
+   f:function(c){return c.delay===28;}},
+  {k:'late',  t:'Signed after day 28',
+   f:function(c){return c.delay!=null&&c.delay>28;}}
+];
+function evFlag(k){
+  for(var i=0;i<EVFLAGS.length;i++) if(EVFLAGS[i].k===k) return EVFLAGS[i];
+  return null;
+}
+function evFlagCount(k){
+  var d=evFlag(k); return d?D.cases.filter(d.f).length:D.cases.length;
+}
+/* Strongest competition tag only — the three overlap by construction — plus the
+   timing tag, which is a separate axis. */
+function evTags(c){
+  var t=[];
+  if(c.resp===1){
+    if((c.recv||0)>=3) t.push('<span class="tag">'+c.recv+' bids → 1</span>');
+    else if((c.recv||0)>1||(c.sold||0)>1) t.push('<span class="tag">rivals → 1</span>');
+    else t.push('<span class="tag neutral">1 responsive</span>');
+  }
+  if(c.delay===28) t.push('<span class="tag warn">day 28</span>');
+  else if(c.delay!=null&&c.delay>28) t.push('<span class="tag">'+(c.delay-28)+'d over</span>');
+  return t.join(' ');
 }
 function evMatch(c){
   if(EV.org&&c.org!==EV.org) return false;
-  if(EV.flag&&evFlags(c).indexOf(EV.flag)<0) return false;
+  if(EV.flag){var d=evFlag(EV.flag); if(d&&!d.f(c)) return false;}
   if(EV.q){
     var q=EV.q.toLowerCase();
     var hay=(c.id+' '+orgName(c.org)+' '+c.pe+' '+c.sup+' '+(c.pkg||'')).toLowerCase();
@@ -1018,18 +1051,15 @@ function evRender(){
   cnt.innerHTML='Showing <b>'+fmt(rows.length)+'</b> of '+fmt(D.cases.length)+' awarded contracts · '+
     cr(tv)+' · every row links to the government\'s own tender notice and contract-award notice.';
   body.innerHTML=rows.map(function(c){
-    var fl=evFlags(c), tags=fl.map(function(f){
-      return {single:'<span class="tag">single responsive</span>',
-        elim:'<span class="tag">'+c.recv+'→1</span>',
-        day28:'<span class="tag warn">day 28</span>',
-        late:'<span class="tag">'+c.delay+'d late</span>'}[f];
-    }).join(' ');
+    var tags=evTags(c);
+    var sold=(c.sold==null)?'' :
+      ' title="Tender documents sold to '+c.sold+' firm'+(c.sold===1?'':'s')+'"';
     return '<tr><td><span class="tid">#'+esc(c.id)+'</span></td>'+
       '<td>'+esc(orgName(c.org))+'</td>'+
       '<td>'+esc(c.sup)+(c.pkg?'<span class="pkg">'+esc(c.pkg.length>110?c.pkg.slice(0,109)+'…':c.pkg)+'</span>':'')+'</td>'+
       '<td>'+esc(c.pe)+'</td>'+
       '<td class="num">'+fmt(c.crore,2)+'</td>'+
-      '<td class="num">'+(c.recv||'—')+' → '+(c.resp||'—')+'</td>'+
+      '<td class="num"'+sold+'>'+(c.recv||'—')+' → '+(c.resp||'—')+'</td>'+
       '<td class="num">'+(c.delay==null?'—':c.delay)+'</td>'+
       '<td><span class="risk '+esc(c.risk)+'">'+esc(c.risk)+'</span>'+(tags?' '+tags:'')+'</td>'+
       '<td>'+pdfCell(noticeURL(c.n),'notice')+'<br>'+pdfCell(awardURL(c.a),'award')+'</td></tr>';
@@ -1048,11 +1078,10 @@ function sEvidence(){
   }).join('');
   var chips='<button class="chip" data-org="">All authorities</button>'+
     orgs.map(function(o){return '<button class="chip" data-org="'+esc(o)+'" title="'+esc(orgName(o))+'">'+esc(orgName(o))+'</button>';}).join('');
-  var fchips='<button class="chip on" data-flag="">No flag filter</button>'+
-    '<button class="chip" data-flag="single">Single responsive</button>'+
-    '<button class="chip" data-flag="elim">3+ bidders → 1</button>'+
-    '<button class="chip" data-flag="day28">Signed on day 28</button>'+
-    '<button class="chip" data-flag="late">Signed late</button>';
+  var fchips='<button class="chip on" data-flag="">No flag filter <b>'+fmt(D.cases.length)+'</b></button>'+
+    EVFLAGS.map(function(d){
+      return '<button class="chip" data-flag="'+d.k+'">'+d.t+' <b>'+fmt(evFlagCount(d.k))+'</b></button>';
+    }).join('');
   return section('evidence','11','The evidence room',
     'Every one of the '+fmt(D.cases.length)+' awarded contracts in this investigation, with both source documents '+
     'attached. Search it, filter it, sort it, and check any claim on this page against the government\'s own PDF.',
@@ -1061,7 +1090,13 @@ function sEvidence(){
     '<div class="toolbar">'+chips+'</div>'+
     '<div class="tblwrap tall"><table><thead><tr>'+head+'</tr></thead><tbody id="evBody"></tbody></table></div>'+
     '<div class="meta" id="evCount"></div>'+
-    '<p class="note" style="margin-top:16px">PDFs open from this repository\'s '+
+    '<p class="note" style="margin-top:16px">The number on each filter is the count it returns, so every headline '+
+    'figure on this page can be reproduced with one click. Two of them describe single bidding and differ on '+
+    'purpose: <b>one responsive bid</b> counts every award with a lone qualifying bidder, including tenders nobody '+
+    'else entered; <b>rivals existed, one survived</b> — the figure the article leads with — counts only those where '+
+    'more than one firm bid or bought the tender documents, so competitors demonstrably existed. Hover the '+
+    '“Bids&nbsp;→&nbsp;resp.” cell to see how many firms bought the documents for that tender.</p>'+
+    '<p class="note">PDFs open from this repository\'s '+
     '<code>'+esc(META.notice_dir)+'/</code> and <code>'+esc(META.award_dir)+'/</code> folders — '+
     fmt(D.evidence_counts.notice)+' tender notices and '+fmt(D.evidence_counts.award)+' contract-award notices as '+
     'downloaded from the public portal, unmodified.</p>'
@@ -1121,6 +1156,11 @@ function sMethod(){
     'top-10 value shares and a Lorenz curve. Capture at office or officer level is flagged when one contractor holds '+
     'more than half — and, for the tables in section 08, at least 80% — of that unit\'s award value across two or more '+
     'tenders. Officers are keyed on name + authority.</p>'+
+    '<h3>Reproducing the figures</h3>'+
+    '<p>Every one of the '+fmt(h.awarded)+' awarded records is listed in <a href="#evidence">section 11</a> carrying '+
+    'the four fields the competition and timing claims rest on — bids received, bids ruled responsive, firms that '+
+    'bought the documents, and award-to-signing days. Each filter there is labelled with the count it returns, so the '+
+    'headline numbers in this story can be re-derived from the rows themselves rather than taken on trust.</p>'+
     '<h3>Limitations — read before quoting any number</h3>'+
     '<ol>'+
     '<li><b>Association is not causation, and a red flag is not a finding of wrongdoing.</b> Every pattern here has '+
