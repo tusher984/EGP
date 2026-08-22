@@ -11,6 +11,11 @@ disk, dropped into a CMS, or attached to an email.
     python3 build_publish.py --base ''       # keep links relative
     python3 build_publish.py -o out.html
 
+The published site's front page is this same build with relative links, because
+GitHub Pages serves the repository root and the PDFs sit beside the page:
+
+    python3 build_publish.py -o index.html --base ''
+
 Nothing is edited by hand in the output: rerun this after article_data.json or
 story.html changes.
 """
@@ -27,7 +32,7 @@ SRC_HTML = "story.html"
 SRC_DATA = "article_data.json"
 OUT = "egp-investigation.html"
 BASE = "https://tusher984.github.io/EGP/"
-SIBLINGS = ("index.html", "investigation.html", "findings.html")
+SIBLINGS = ("tool.html", "investigation.html", "findings.html")
 
 
 def die(msg):

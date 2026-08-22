@@ -160,6 +160,6 @@ All figures regenerate from two files committed to this repository:
 - **`Procurement_Database.json`** — 1,158 raw tender records (the source of truth).
 - **`article_data.json`** — precomputed verified aggregates (headline, funnel, concentration, cliff, repeat_pairs, pe_capture, elimination, etc.).
 
-The interactive tool **`index.html`** ("Smart Investigator") reproduces the per-tender forensic scoring and the cross-tender **প্যাটার্ন বিশ্লেষণ** (pattern analysis) view — repeat pairs, contractor/entity leaderboards, and captured-entity detection — directly in the browser. The narrative article lives in **`investigation.html`**.
+The interactive tool **`tool.html`** ("Smart Investigator") reproduces the per-tender forensic scoring and the cross-tender **প্যাটার্ন বিশ্লেষণ** (pattern analysis) view — repeat pairs, contractor/entity leaderboards, and captured-entity detection — directly in the browser. The narrative article lives in **`investigation.html`**.
 
 *Figures verified 2026-08-22: 645 awards · ৳3,723.7 cr · 308 contractors · 73 officers · HHI 927 · top-1 28.7% · top-10 52.7% · 130 signings at day 28 · 149/201 single-responsive · 53 mass-disqualification · 98/40 repeat pairs.*
