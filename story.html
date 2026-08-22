@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Signed on the last legal day — the complete e-GP investigation</title>
+<script>/* theme + language before first paint, so neither flashes the wrong state */(function(){try{var d=document.documentElement,t=localStorage.getItem('egp-theme'),l=localStorage.getItem('egp-lang');if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)t='dark';d.setAttribute('data-theme',t==='dark'?'dark':'light');if(l==='bn'){d.setAttribute('data-lang','bn');d.setAttribute('lang','bn');document.title='আইনের শেষ দিনে সই — সম্পূর্ণ ই-জিপি অনুসন্ধান';}}catch(e){}})();</script>
 <meta name="description" content="The complete data investigation into 1,158 Bangladesh e-GP construction tenders worth ৳3,724 crore: every detection, every chart, and the source PDF for every one of 645 awards. Concentration, the 28-day signing cliff, competition that vanishes at evaluation, repeat contractor-office pairings, and officers whose awards flow to a single firm.">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
@@ -12,6 +13,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="e-GP Watch">
 <meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="bn_BD">
 <meta property="og:url" content="https://tusher984.github.io/EGP/story.html">
 <meta property="og:title" content="Signed on the last legal day — the complete e-GP investigation">
 <meta property="og:description" content="1,158 tenders, 645 awards, ৳3,724 crore. One firm holds 28.7% of the money. 130 contracts were signed on precisely the last legal day, then none for nine days. Every figure is checkable against the government's own PDF.">
@@ -43,8 +45,26 @@
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--page);color:var(--ink);line-height:1.62;font-size:18px;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Bengali",sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,
+    "Noto Sans Bengali","Nirmala UI","Kalpurush","Vrinda",sans-serif;  /* the last four carry ৳ */
     -webkit-font-smoothing:antialiased}
+
+  /* ---- bilingual edition ----
+     Both languages ship in the static markup so the page is readable and
+     indexable without JS; only one is displayed. JS-generated prose picks its
+     language through L() instead. */
+  html[data-lang="en"] .i18n-bn{display:none!important}
+  html[data-lang="bn"] .i18n-en{display:none!important}
+  /* Bengali stack: the webfont first, then the fonts actually installed on Bangla
+     desktops, so the edition stays readable with no network and no Google Fonts. */
+  html[data-lang="bn"] body{font-family:"Noto Sans Bengali","Hind Siliguri","Nirmala UI",
+    "Shonar Bangla","Kalpurush","SolaimanLipi","Vrinda",-apple-system,BlinkMacSystemFont,
+    "Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.85;font-size:17.5px}
+  html[data-lang="bn"] h1{line-height:1.28}
+  html[data-lang="bn"] h2{line-height:1.4}
+  html[data-lang="bn"] .brand{letter-spacing:.06em}
+  html[data-lang="bn"] .tid,html[data-lang="bn"] .pdflink,html[data-lang="bn"] code,
+  html[data-lang="bn"] .latn{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
   .narrow{max-width:760px;margin-left:auto;margin-right:auto}
 
@@ -191,6 +211,10 @@
   .chip b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
   .chip.on b{color:var(--page)}
   .meta{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .pager{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0}
+  .pager .chip[disabled]{opacity:.38;cursor:default}
+  .pgnum{font-size:12.5px;color:var(--muted)}
+  .pgnum b{color:var(--ink);font-variant-numeric:tabular-nums}
 
   /* ---- heatmap ---- */
   .hm{border-collapse:separate;border-spacing:2px;width:100%;font-size:12px}
@@ -227,7 +251,7 @@
   .loading{padding:90px 0;text-align:center;color:var(--muted)}
   .err{padding:40px 0;color:var(--critical)}
   @media print{
-    .topbar,.toolbar,.theme-btn{display:none}
+    .topbar,.toolbar,.theme-btn,.pager{display:none}
     body{font-size:12pt;background:#fff;color:#000}
     figure,.method,.tblwrap{break-inside:avoid}
     .tblwrap.tall{max-height:none}
@@ -241,45 +265,52 @@
   <div class="wrap">
     <div class="brand">e-GP <span>WATCH</span></div>
     <nav class="topnav">
-      <a href="#funnel">Funnel</a>
-      <a href="#concentration">Concentration</a>
-      <a href="#anchor">The anchor case</a>
-      <a href="#cliff">28-day cliff</a>
-      <a href="#competition">Competition</a>
-      <a href="#pairs">Repeat pairs</a>
-      <a href="#officers">Officers</a>
-      <a href="#evidence">Evidence room</a>
-      <a href="#method">Method</a>
-      <a href="index.html" class="strong">The tool →</a>
+      <a href="#funnel"><span class="i18n-en">Funnel</span><span class="i18n-bn">ফানেল</span></a>
+      <a href="#concentration"><span class="i18n-en">Concentration</span><span class="i18n-bn">কেন্দ্রীভবন</span></a>
+      <a href="#anchor"><span class="i18n-en">The anchor case</span><span class="i18n-bn">মূল ঘটনা</span></a>
+      <a href="#cliff"><span class="i18n-en">28-day cliff</span><span class="i18n-bn">২৮ দিনের দেয়াল</span></a>
+      <a href="#competition"><span class="i18n-en">Competition</span><span class="i18n-bn">প্রতিযোগিতা</span></a>
+      <a href="#pairs"><span class="i18n-en">Repeat pairs</span><span class="i18n-bn">পুনরাবৃত্ত জোড়</span></a>
+      <a href="#officers"><span class="i18n-en">Officers</span><span class="i18n-bn">কর্মকর্তা</span></a>
+      <a href="#evidence"><span class="i18n-en">Evidence room</span><span class="i18n-bn">নথিঘর</span></a>
+      <a href="#method"><span class="i18n-en">Method</span><span class="i18n-bn">পদ্ধতি</span></a>
+      <a href="index.html" class="strong"><span class="i18n-en">The tool →</span><span class="i18n-bn">টুল →</span></a>
     </nav>
+    <button class="theme-btn" id="langBtn" aria-label="Switch language">বাংলা</button>
     <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">Dark</button>
   </div>
 </div>
 
 <header class="hero">
   <div class="wrap">
-    <div class="kicker">Data investigation · Public procurement · Bangladesh</div>
-    <h1>Signed on the last legal day</h1>
-    <p class="standfirst">Six government development authorities awarded <b>৳3,723.7 crore</b> of construction work through Bangladesh's electronic tender system. A record-by-record reading of <b>1,158 tenders</b> finds competition collapsing to a single bidder, the same offices handing repeat work to the same contractors, more than a quarter of all money going to one firm — and one in five contracts signed on the very last day the law allows. Every number below is linked to the government's own PDF.</p>
+    <div class="kicker"><span class="i18n-en">Data investigation · Public procurement · Bangladesh</span><span class="i18n-bn">ডেটা অনুসন্ধান · সরকারি ক্রয় · বাংলাদেশ</span></div>
+    <h1><span class="i18n-en">Signed on the last legal day</span><span class="i18n-bn">আইনের শেষ দিনে সই</span></h1>
+    <p class="standfirst i18n-en">Six government development authorities awarded <b>৳3,723.7 crore</b> of construction work through Bangladesh's electronic tender system. A record-by-record reading of <b>1,158 tenders</b> finds competition collapsing to a single bidder, the same offices handing repeat work to the same contractors, more than a quarter of all money going to one firm — and one in five contracts signed on the very last day the law allows. Every number below is linked to the government's own PDF.</p>
+    <p class="standfirst i18n-bn">ছয়টি সরকারি উন্নয়ন কর্তৃপক্ষ বাংলাদেশের বৈদ্যুতিন দরপত্র ব্যবস্থার মধ্য দিয়ে <b>৳৩,৭২৩.৭ কোটি</b> টাকার নির্মাণকাজের কার্যাদেশ দিয়েছে। <b>১,১৫৮টি দরপত্র</b> একটি একটি করে পড়ে দেখা যায় — প্রতিযোগিতা বহু ক্ষেত্রে একজন দরদাতায় এসে মিলিয়ে যাচ্ছে, একই দপ্তর বারবার একই ঠিকাদারকে কাজ দিচ্ছে, মোট অর্থের এক-চতুর্থাংশের বেশি যাচ্ছে একটিমাত্র প্রতিষ্ঠানে — এবং পাঁচটির একটি চুক্তি সই হচ্ছে আইন যত দিন সময় দেয়, ঠিক তার শেষ দিনে। নিচের প্রতিটি সংখ্যার সঙ্গে সরকারের নিজের পিডিএফের লিংক জুড়ে দেওয়া আছে।</p>
     <div class="byline">
-      <span><b>By e-GP Watch</b> · data desk</span>
-      <span>Analysis verified 2026-08-22</span>
-      <span id="genfrom">Source: official e-GP records</span>
+      <span><b>By e-GP Watch</b> · <span class="i18n-en">data desk</span><span class="i18n-bn">ডেটা ডেস্ক</span></span>
+      <span><span class="i18n-en">Analysis verified 2026-08-22</span><span class="i18n-bn">বিশ্লেষণ যাচাই: ২০২৬-০৮-২২</span></span>
+      <span id="genfrom"><span class="i18n-en">Source: official e-GP records</span><span class="i18n-bn">সূত্র: সরকারি ই-জিপি নথি</span></span>
     </div>
-    <div class="disclaimer">
+    <div class="disclaimer i18n-en">
       <b>Read this first.</b> Every figure here comes from Bangladesh's official e-GP tender and contract-award documents, and every claim links to the source PDF. <b>None of these patterns is proof of wrongdoing on its own.</b> Each is a <em class="term">red flag</em> that — taken together and at this frequency — warrants closer scrutiny by auditors and by the procuring agencies themselves. Named firms, offices and officials appear because the public record names them, not as an accusation. Limitations are set out in full in the <a href="#method" class="inlink">method note</a>; read it before quoting any single number.
+    </div>
+    <div class="disclaimer i18n-bn">
+      <b>আগে এটি পড়ুন।</b> এখানকার প্রতিটি সংখ্যা বাংলাদেশের সরকারি ই-জিপি দরপত্র ও কার্যাদেশ দলিল থেকে নেওয়া, এবং প্রতিটি দাবির সঙ্গে মূল পিডিএফের লিংক দেওয়া আছে। <b>এই ধরনগুলোর কোনোটিই একা কোনো অনিয়মের প্রমাণ নয়।</b> প্রতিটি একটি <em class="term">লাল সংকেত</em> — একসঙ্গে এবং এই মাত্রায় দেখা দিলে নিরীক্ষক ও ক্রয়কারী সংস্থার নিজেরই তা খতিয়ে দেখা দরকার। যেসব প্রতিষ্ঠান, দপ্তর ও কর্মকর্তার নাম এসেছে, তা এসেছে কারণ সরকারি নথিতেই তাঁদের নাম আছে — অভিযোগ হিসেবে নয়। সব সীমাবদ্ধতা বিস্তারিতভাবে <a href="#method" class="inlink">পদ্ধতি নোটে</a> দেওয়া আছে; কোনো একটি সংখ্যা উদ্ধৃত করার আগে সেটি পড়ুন।
     </div>
   </div>
 </header>
 
 <div id="app">
-  <div class="loading wrap">Loading the evidence…</div>
+  <div class="loading wrap"><span class="i18n-en">Loading the evidence…</span><span class="i18n-bn">নথি লোড হচ্ছে…</span></div>
 </div>
 
 <footer>
   <div class="wrap narrow">
-    <p><b>e-GP Watch</b> — a data investigation built entirely on official Bangladesh e-Government Procurement records. Named firms, offices and officials appear because the public record names them, not as an accusation.</p>
-    <p>Companion outputs in this repository: the interactive per-tender <a href="index.html">forensic tool</a> (18 rules + cross-tender pattern analysis), the <a href="investigation.html">narrative article</a>, and the <a href="findings.html">findings summary</a>.</p>
+    <p class="i18n-en"><b>e-GP Watch</b> — a data investigation built entirely on official Bangladesh e-Government Procurement records. Named firms, offices and officials appear because the public record names them, not as an accusation.</p>
+    <p class="i18n-bn"><b>e-GP Watch</b> — সম্পূর্ণভাবে বাংলাদেশের সরকারি ই-জিপি ক্রয়-নথির উপর দাঁড়ানো একটি ডেটা অনুসন্ধান। যেসব প্রতিষ্ঠান, দপ্তর ও কর্মকর্তার নাম এসেছে, তা এসেছে কারণ সরকারি নথিতেই তাঁদের নাম আছে — অভিযোগ হিসেবে নয়।</p>
+    <p class="i18n-en">Companion outputs in this repository: the interactive per-tender <a href="index.html">forensic tool</a> (18 rules + cross-tender pattern analysis), the <a href="investigation.html">narrative article</a>, and the <a href="findings.html">findings summary</a>.</p>
+    <p class="i18n-bn">এই রিপোজিটরির সহযোগী আউটপুট: দরপত্র-ভিত্তিক ইন্টারঅ্যাক্টিভ <a href="index.html">ফরেনসিক টুল</a> (১৮টি নিয়ম + আন্তঃদরপত্র ধরন বিশ্লেষণ), <a href="investigation.html">বর্ণনামূলক প্রতিবেদন</a> এবং <a href="findings.html">ফলাফলের সারসংক্ষেপ</a>।</p>
     <div class="mono" id="footprint">Verifying…</div>
   </div>
 </footer>
@@ -293,9 +324,45 @@
    ============================================================ */
 var D=null, META={notice_dir:'Tender Notice_PDFs', award_dir:'Contract_Awards_PDFs'};
 
+/* ---------- language ----------
+   The page ships in English and Bangla. Static markup carries both variants and
+   CSS hides one; everything generated here picks its variant through L(en,bn).
+   The head script has already put the saved choice on <html data-lang>, so LANG
+   is correct before the first string is built. */
+var LANG=(document.documentElement.getAttribute('data-lang')==='bn')?'bn':'en';
+function L(en,bn){return LANG==='bn'?bn:en;}
+var BNDIG=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+function bdig(s){return String(s).replace(/[0-9]/g,function(d){return BNDIG[+d];});}
+function adig(s){return String(s).replace(/[০-৯]/g,function(d){
+  return String(d.charCodeAt(0)-2534);});}
+/* Bengali numerals are applied to the rendered tree, not at each of the ~200 places
+   a number is written, so no figure can be missed. Deliberately skipped: anything a
+   reader would type into the portal or a shell — tender ids, package codes, PDF file
+   names, database field names. Those stay in Latin digits and are marked .tid /
+   .pkg / .pdflink / .latn / <code>. */
+var LATN_CLASS=/(^|\s)(tid|pkg|pdflink|latn)(\s|$)/;
+function bnTree(el){
+  if(LANG!=='bn'||!el) return;
+  if(el.nodeType===1){
+    var tag=el.tagName;
+    if(tag==='CODE'||tag==='SCRIPT'||tag==='STYLE') return;
+    var cn=el.getAttribute&&el.getAttribute('class');
+    if(cn&&LATN_CLASS.test(cn)) return;
+    var t=el.getAttribute&&el.getAttribute('data-tip');
+    if(t) el.setAttribute('data-tip',bdig(t));
+    var ti=el.getAttribute&&el.getAttribute('title');
+    if(ti) el.setAttribute('title',bdig(ti));
+  }
+  var ch=el.childNodes;
+  for(var i=0;i<ch.length;i++){
+    if(ch[i].nodeType===3) ch[i].nodeValue=bdig(ch[i].nodeValue);
+    else if(ch[i].nodeType===1) bnTree(ch[i]);
+  }
+}
+
 /* ---------- helpers ---------- */
 function fmt(n,d){d=d||0;return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
-function cr(n,d){return '৳'+fmt(n,d===undefined?1:d)+' cr';}
+function cr(n,d){return '৳'+fmt(n,d===undefined?1:d)+L(' cr',' কোটি');}
 function pct(n,d){return fmt(n,d===undefined?1:d)+'%';}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -309,6 +376,8 @@ function noticeURL(f){return f?pdfBase()+encPath(META.notice_dir+'/'+f):null;}
 function awardURL(f){return f?pdfBase()+encPath(META.award_dir+'/'+f):null;}
 function pdfCell(url,label){return url?'<a class="pdflink" href="'+url+'" target="_blank" rel="noopener">'+
   '&#128196; '+esc(label)+'</a>':'<span class="pdflink na">—</span>';}
+function noticeCell(c){return pdfCell(noticeURL(c),L('notice','বিজ্ঞপ্তি'));}
+function awardCell(c){return pdfCell(awardURL(c),L('award','কার্যাদেশ'));}
 function tip(s){return ' data-tip="'+esc(s).replace(/"/g,'&quot;')+'"';}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 /* The per-case `org` label in article_data.json is stored truncated to 14 characters,
@@ -320,7 +389,30 @@ var ORGNAME={'Bangladesh Wat':'Bangladesh Water Development Board',
   'Local Governme':'Local Government Engineering Dept.',
   'Power Grid Com':'Power Grid Company of Bangladesh',
   'Zilla Parishad':'Zilla Parishad, Sirajganj'};
-function orgName(o){return ORGNAME[o]||o;}
+/* Institution names in Bangla. Contractor and officer names are NOT translated or
+   transliterated anywhere: they appear exactly as the public record spells them. */
+var ORGNAME_BN={'Bangladesh Wat':'বাংলাদেশ পানি উন্নয়ন বোর্ড',
+  'Department of ':'জনস্বাস্থ্য ইঞ্জিনিয়ারিং অধিদপ্তর',
+  'Gazipur Develo':'গাজীপুর উন্নয়ন কর্তৃপক্ষ',
+  'Local Governme':'স্থানীয় সরকার ইঞ্জিনিয়ারিং অধিদপ্তর',
+  'Power Grid Com':'পাওয়ার গ্রিড কোম্পানি অব বাংলাদেশ',
+  'Zilla Parishad':'জেলা পরিষদ, সিরাজগঞ্জ',
+  'RAJUK':'রাজউক','CDA':'সিডিএ','KDA':'কেডিএ','RDA':'আরডিএ','CoxDA':'কক্সডিএ'};
+function orgName(o){
+  if(LANG==='bn'&&ORGNAME_BN[o]) return ORGNAME_BN[o];
+  return ORGNAME[o]||o;
+}
+/* District and funnel-stage labels come from the data file, so they are mapped
+   rather than written inline. The portal records Chattogram under two spellings;
+   both are kept, distinguished, rather than silently merged. */
+var DIST_BN={'Dhaka':'ঢাকা','Chattogram':'চট্টগ্রাম (Chattogram)','Cox\'s Bazar':'কক্সবাজার',
+  'Khulna':'খুলনা','Rajshahi':'রাজশাহী','Chittagong':'চট্টগ্রাম (Chittagong)','Gazipur':'গাজীপুর',
+  'Dinajpur':'দিনাজপুর','Comilla':'কুমিল্লা','Barisal':'বরিশাল','Sirajganj':'সিরাজগঞ্জ',
+  'Bogra':'বগুড়া','Natore':'নাটোর','Pabna':'পাবনা','Naogaon':'নওগাঁ','Jashore':'যশোর'};
+var STAGE_BN={'Documents sold':'দস্তাবেজ বিক্রি','Bids received':'জমা পড়া দর',
+  'Bids ruled responsive':'রেসপনসিভ ঘোষিত দর','Contracts awarded':'কার্যাদেশ পাওয়া চুক্তি'};
+function distName(d){return (LANG==='bn'&&DIST_BN[d])?DIST_BN[d]:d;}
+function stageName(s){return (LANG==='bn'&&STAGE_BN[s])?STAGE_BN[s]:s;}
 /* ---------- generic building blocks ---------- */
 function section(id,num,title,dek,body){
   return '<section id="'+id+'" class="anchor"><div class="wrap">'+
@@ -413,22 +505,36 @@ var OFF={
 /* ============ 01 · HEADLINE ============ */
 function sHeadline(){
   var h=D.headline;
-  return section('headline','01','What the record shows',
-    'Across 1,158 tenders published by six development authorities and related bodies, '+fmt(h.awarded)+
-    ' resulted in a recorded award. Those awards went to '+OFF.n_suppliers_dedup+
-    ' distinct contractors (after de-duplicating name variants), authorised by '+OFF.n_officers+
-    ' distinct officials, across '+OFF.n_units+' organisational units.',
+  return section('headline','01',L('What the record shows','নথিতে যা আছে'),
+    L('Across 1,158 tenders published by six development authorities and related bodies, '+fmt(h.awarded)+
+      ' resulted in a recorded award. Those awards went to '+OFF.n_suppliers_dedup+
+      ' distinct contractors (after de-duplicating name variants), authorised by '+OFF.n_officers+
+      ' distinct officials, across '+OFF.n_units+' organisational units.',
+      'ছয়টি উন্নয়ন কর্তৃপক্ষ ও সংশ্লিষ্ট সংস্থার প্রকাশ করা ১,১৫৮টি দরপত্রের মধ্যে '+fmt(h.awarded)+
+      'টিতে কার্যাদেশের নথি পাওয়া গেছে। এই কার্যাদেশগুলো গেছে '+OFF.n_suppliers_dedup+
+      'টি আলাদা ঠিকাদারি প্রতিষ্ঠানে (নামের বানানভেদ মিলিয়ে নেওয়ার পর), অনুমোদন দিয়েছেন '+OFF.n_officers+
+      'জন আলাদা কর্মকর্তা, '+OFF.n_units+'টি দপ্তরে।'),
     tiles([
-      {v:fmt(h.tenders),l:'tenders published',tip:'Every tender record scraped from the public e-GP portal'},
-      {v:fmt(h.awarded),l:'recorded awards',tip:'Records carrying both a named supplier and a contract value'},
-      {v:fmt(h.value_crore,1),u:' cr',l:'total award value (৳)',tip:'৳'+fmt(h.value_bdt,0)+' in full'},
-      {v:fmt(OFF.n_suppliers_dedup),l:'distinct contractors'},
-      {v:fmt(OFF.n_officers),l:'authorising officers'},
-      {v:fmt(h.pdfs),l:'source PDFs archived',k:'ok',tip:fmt(h.tenders-3)+' tender notices + '+fmt(h.awarded)+' contract-award notices'}
+      {v:fmt(h.tenders),l:L('tenders published','প্রকাশিত দরপত্র'),
+       tip:L('Every tender record scraped from the public e-GP portal',
+             'সরকারি ই-জিপি পোর্টাল থেকে নেওয়া প্রতিটি দরপত্রের নথি')},
+      {v:fmt(h.awarded),l:L('recorded awards','নথিভুক্ত কার্যাদেশ'),
+       tip:L('Records carrying both a named supplier and a contract value',
+             'যেসব নথিতে ঠিকাদারের নাম ও চুক্তিমূল্য — দুটোই আছে')},
+      {v:fmt(h.value_crore,1),u:L(' cr',' কোটি'),l:L('total award value (৳)','মোট কার্যাদেশ মূল্য (৳)'),
+       tip:L('৳'+fmt(h.value_bdt,0)+' in full','পূর্ণ অঙ্কে ৳'+fmt(h.value_bdt,0))},
+      {v:fmt(OFF.n_suppliers_dedup),l:L('distinct contractors','আলাদা ঠিকাদার')},
+      {v:fmt(OFF.n_officers),l:L('authorising officers','অনুমোদনকারী কর্মকর্তা')},
+      {v:fmt(h.pdfs),l:L('source PDFs archived','সংরক্ষিত মূল পিডিএফ'),k:'ok',
+       tip:L(fmt(h.tenders-3)+' tender notices + '+fmt(h.awarded)+' contract-award notices',
+             fmt(h.tenders-3)+'টি দরপত্র বিজ্ঞপ্তি + '+fmt(h.awarded)+'টি কার্যাদেশ বিজ্ঞপ্তি')}
     ])+
-    '<p class="note">Every chart on this page is generated from the data file — nothing is drawn by hand. '+
-    'Each of the '+fmt(h.awarded)+' awards is listed with links to its two source PDFs in the '+
-    '<a href="#evidence" class="inlink">evidence room</a>.</p>'
+    L('<p class="note">Every chart on this page is generated from the data file — nothing is drawn by hand. '+
+      'Each of the '+fmt(h.awarded)+' awards is listed with links to its two source PDFs in the '+
+      '<a href="#evidence" class="inlink">evidence room</a>.</p>',
+      '<p class="note">এই পাতার প্রতিটি চার্ট ডেটা ফাইল থেকে তৈরি — কোনোটি হাতে আঁকা নয়। '+fmt(h.awarded)+
+      'টি কার্যাদেশের প্রত্যেকটি, তার দুটি মূল পিডিএফের লিংকসহ, '+
+      '<a href="#evidence" class="inlink">নথিঘরে</a> তালিকাভুক্ত আছে।</p>')
   );
 }
 /* ============ 02 · THE FUNNEL ============ */
@@ -436,24 +542,39 @@ function sFunnel(){
   var f=D.funnel, top=f[0].v;
   var rows=f.map(function(s,i){
     var loss=i?((f[i-1].v-s.v)/f[i-1].v*100):0;
-    return {l:s.stage,v:s.v,disp:fmt(s.v)+(i?'  <span class="dim">−'+fmt(loss,0)+'%</span>':''),
+    return {l:stageName(s.stage),v:s.v,disp:fmt(s.v)+(i?'  <span class="dim">−'+fmt(loss,0)+'%</span>':''),
       cls:i===f.length-1?'peak':(i?'alt':''),
-      tip:'<b>'+esc(s.stage)+'</b><br>'+fmt(s.v)+' — '+pct(s.v/top*100)+' of documents sold'+
-        (i?'<br><span class="k">lost at this step:</span> '+fmt(f[i-1].v-s.v)+' ('+pct(loss,0)+')':'')};
+      tip:'<b>'+esc(stageName(s.stage))+'</b><br>'+fmt(s.v)+' — '+pct(s.v/top*100)+
+        L(' of documents sold',' (বিক্রি হওয়া দস্তাবেজের অনুপাতে)')+
+        (i?'<br><span class="k">'+L('lost at this step:','এই ধাপে ঝরে গেছে:')+'</span> '+
+          fmt(f[i-1].v-s.v)+' ('+pct(loss,0)+')':'')};
   });
-  return section('funnel','02','From 3,436 documents sold to 591 contracts',
-    'Competition in a tender is supposed to narrow gradually: firms buy documents, some bid, some bids '+
-    'are judged responsive, one wins. Here the narrowing is steep — and most of it happens at the '+
-    'stage the public cannot see, the responsiveness ruling.',
-    figure('The competition funnel','Counts across all tenders with bid data',
+  return section('funnel','02',
+    L('From 3,436 documents sold to 591 contracts','৩,৪৩৬টি দস্তাবেজ বিক্রি থেকে ৫৯১টি চুক্তি'),
+    L('Competition in a tender is supposed to narrow gradually: firms buy documents, some bid, some bids '+
+      'are judged responsive, one wins. Here the narrowing is steep — and most of it happens at the '+
+      'stage the public cannot see, the responsiveness ruling.',
+      'একটি দরপত্রে প্রতিযোগিতা ধীরে ধীরে সংকুচিত হওয়ার কথা: প্রতিষ্ঠানগুলো দস্তাবেজ কেনে, কেউ কেউ দর দেয়, '+
+      'কিছু দর রেসপনসিভ বিবেচিত হয়, একজন জেতে। এখানে সংকোচনটা খাড়া — এবং তার বড় অংশটাই ঘটে সেই ধাপে যা '+
+      'জনসাধারণের চোখের আড়ালে থাকে: রেসপনসিভনেসের সিদ্ধান্ত।'),
+    figure(L('The competition funnel','প্রতিযোগিতার ফানেল'),
+      L('Counts across all tenders with bid data','দর-সংখ্যার তথ্য আছে এমন সব দরপত্রের হিসাব'),
       hbars(rows,{wide:true}),
-      '<b>2,749 bids were received; 1,752 were ruled responsive; 591 tenders had usable bid data at award.</b> '+
-      'Roughly one bid in three that firms actually submitted was eliminated before the price comparison — '+
-      'the single most consequential and least visible step in the process.')+
-    '<div class="callout warn"><b>Why this step matters.</b> A bid ruled "non-responsive" never reaches price '+
-    'comparison. That ruling is made inside the procuring entity, is not published in the award notice, and is '+
-    'the mechanism by which a competitive-looking tender can produce an uncompetitive outcome. Section '+
-    '<a href="#competition" class="inlink">06</a> isolates the tenders where it happened at scale.</div>'
+      L('<b>2,749 bids were received; 1,752 were ruled responsive; 591 tenders had usable bid data at award.</b> '+
+        'Roughly one bid in three that firms actually submitted was eliminated before the price comparison — '+
+        'the single most consequential and least visible step in the process.',
+        '<b>২,৭৪৯টি দর জমা পড়েছে; ১,৭৫২টি রেসপনসিভ ঘোষিত হয়েছে; কার্যাদেশের সময় ৫৯১টি দরপত্রে ব্যবহারযোগ্য '+
+        'দর-তথ্য ছিল।</b> প্রতিষ্ঠানগুলো যত দর সত্যিই জমা দিয়েছে, তার প্রায় প্রতি তিনটির একটি দাম তুলনার আগেই '+
+        'বাদ পড়েছে — গোটা প্রক্রিয়ার সবচেয়ে গুরুত্বপূর্ণ এবং সবচেয়ে কম দৃশ্যমান ধাপ।'))+
+    L('<div class="callout warn"><b>Why this step matters.</b> A bid ruled "non-responsive" never reaches price '+
+      'comparison. That ruling is made inside the procuring entity, is not published in the award notice, and is '+
+      'the mechanism by which a competitive-looking tender can produce an uncompetitive outcome. Section '+
+      '<a href="#competition" class="inlink">06</a> isolates the tenders where it happened at scale.</div>',
+      '<div class="callout warn"><b>এই ধাপটি কেন গুরুত্বপূর্ণ।</b> “নন-রেসপনসিভ” ঘোষিত দর দাম তুলনার পর্যায়েই '+
+      'পৌঁছায় না। সেই সিদ্ধান্ত হয় ক্রয়কারী সংস্থার ভেতরে, কার্যাদেশ বিজ্ঞপ্তিতে তা প্রকাশ করা হয় না — এবং এটিই '+
+      'সেই পথ, যেখানে বাইরে থেকে প্রতিযোগিতাপূর্ণ দেখতে একটি দরপত্র ভেতরে অপ্রতিযোগিতামূলক ফল দিতে পারে। '+
+      '<a href="#competition" class="inlink">০৬</a> অংশে সেই দরপত্রগুলো আলাদা করা হয়েছে, যেখানে এটি বড় আকারে '+
+      'ঘটেছে।</div>')
   );
 }
 
@@ -462,29 +583,42 @@ function sConcentration(){
   var c=D.concentration, tv=c.total_crore;
   var top=D.top_by_value.slice(0,12).map(function(s,i){
     return {l:s.name.length>34?s.name.slice(0,33)+'…':s.name, v:s.crore,
-      disp:fmt(s.crore,1)+' cr  <span class="dim">'+pct(s.crore/tv*100,1)+'</span>',
+      disp:fmt(s.crore,1)+L(' cr',' কোটি')+'  <span class="dim">'+pct(s.crore/tv*100,1)+'</span>',
       cls:i===0?'peak':'',
-      tip:'<b>'+esc(s.name)+'</b><br>'+cr(s.crore)+' across '+s.contracts+' contract'+(s.contracts>1?'s':'')+
-        '<br><span class="k">share of all award value:</span> '+pct(s.crore/tv*100,2)};
+      tip:'<b>'+esc(s.name)+'</b><br>'+cr(s.crore)+
+        L(' across '+s.contracts+' contract'+(s.contracts>1?'s':''),' — '+s.contracts+'টি চুক্তিতে')+
+        '<br><span class="k">'+L('share of all award value:','মোট কার্যাদেশ মূল্যের অংশ:')+'</span> '+
+        pct(s.crore/tv*100,2)};
   });
   var lz=lorenzSVG(c.lorenz);
-  return section('concentration','03','A quarter of all the money, one firm',
-    'Of ৳'+fmt(tv,1)+' crore awarded, <b>৳'+fmt(D.top_by_value[0].crore,1)+' crore — '+pct(c.top1_pct)+
-    ' — went to a single contractor across just '+D.top_by_value[0].contracts+' tenders.</b> The concentration '+
-    'index (HHI ≈ '+fmt(c.hhi,0)+') sits at the edge of what competition regulators call moderately concentrated; '+
-    'the top ten firms hold '+pct(c.top10_pct)+' of everything.',
+  return section('concentration','03',
+    L('A quarter of all the money, one firm','মোট অর্থের এক-চতুর্থাংশ, একটি প্রতিষ্ঠান'),
+    L('Of ৳'+fmt(tv,1)+' crore awarded, <b>৳'+fmt(D.top_by_value[0].crore,1)+' crore — '+pct(c.top1_pct)+
+      ' — went to a single contractor across just '+D.top_by_value[0].contracts+' tenders.</b> The concentration '+
+      'index (HHI ≈ '+fmt(c.hhi,0)+') sits at the edge of what competition regulators call moderately concentrated; '+
+      'the top ten firms hold '+pct(c.top10_pct)+' of everything.',
+      'কার্যাদেশ দেওয়া ৳'+fmt(tv,1)+' কোটি টাকার মধ্যে <b>৳'+fmt(D.top_by_value[0].crore,1)+' কোটি — '+
+      pct(c.top1_pct)+' — গেছে একটিমাত্র ঠিকাদারের কাছে, মাত্র '+D.top_by_value[0].contracts+
+      'টি দরপত্রে।</b> কেন্দ্রীভবন সূচক (এইচএইচআই ≈ '+fmt(c.hhi,0)+') প্রতিযোগিতা-নিয়ন্ত্রকেরা যাকে '+
+      '“মধ্যম মাত্রায় কেন্দ্রীভূত” বলেন, তার সীমানায় দাঁড়িয়ে; শীর্ষ দশটি প্রতিষ্ঠানের হাতেই আছে '+
+      pct(c.top10_pct)+'।'),
     tiles([
-      {v:pct(c.top1_pct,1),l:'to the single largest contractor',k:'crit'},
-      {v:pct(c.top4_pct,1),l:'to the top 4 firms',k:'warn'},
-      {v:pct(c.top10_pct,1),l:'to the top 10 firms',k:'warn'},
-      {v:fmt(c.hhi,0),l:'HHI concentration index'},
-      {v:fmt(c.suppliers),l:'contractors sharing the rest'}
+      {v:pct(c.top1_pct,1),l:L('to the single largest contractor','একক বৃহত্তম ঠিকাদারের কাছে'),k:'crit'},
+      {v:pct(c.top4_pct,1),l:L('to the top 4 firms','শীর্ষ ৪টি প্রতিষ্ঠানের কাছে'),k:'warn'},
+      {v:pct(c.top10_pct,1),l:L('to the top 10 firms','শীর্ষ ১০টি প্রতিষ্ঠানের কাছে'),k:'warn'},
+      {v:fmt(c.hhi,0),l:L('HHI concentration index','এইচএইচআই কেন্দ্রীভবন সূচক')},
+      {v:fmt(c.suppliers),l:L('contractors sharing the rest','বাকিটা ভাগ করে নেওয়া ঠিকাদার')}
     ])+
-    figure('Award value by contractor','Top 12 of '+fmt(c.suppliers)+' contractors, ৳ crore',
+    figure(L('Award value by contractor','ঠিকাদার অনুযায়ী কার্যাদেশ মূল্য'),
+      L('Top 12 of '+fmt(c.suppliers)+' contractors, ৳ crore',
+        fmt(c.suppliers)+'টি ঠিকাদারের মধ্যে শীর্ষ ১২টি, ৳ কোটি'),
       hbars(top,{wide:true}),
-      '<b>The leader is not slightly ahead — it is 7.5× the second-placed firm.</b> '+
-      'One tender, #775105 at ৳881 crore, accounts for most of that position; it is dissected in section '+
-      '<a href="#anchor" class="inlink">04</a>.')+
+      L('<b>The leader is not slightly ahead — it is 7.5× the second-placed firm.</b> '+
+        'One tender, #775105 at ৳881 crore, accounts for most of that position; it is dissected in section '+
+        '<a href="#anchor" class="inlink">04</a>.',
+        '<b>শীর্ষ প্রতিষ্ঠানটি অল্প ব্যবধানে এগিয়ে নেই — দ্বিতীয় স্থানের প্রতিষ্ঠানের চেয়ে ৭.৫ গুণ এগিয়ে।</b> '+
+        'একটি দরপত্র — <span class="latn">#775105</span>, ৳৮৮১ কোটি — এই অবস্থানের বড় অংশের কারণ; '+
+        '<a href="#anchor" class="inlink">০৪</a> অংশে সেটি বিশদে দেখা হয়েছে।'))+
     lz
   );
 }
@@ -507,11 +641,14 @@ function lorenzSVG(lz){
   var marks=[1,3,10].map(function(k){
     var d=lz.reduce(function(best,x){return Math.abs(x.pct_sup-k)<Math.abs(best.pct_sup-k)?x:best;},lz[0]);
     return '<circle cx="'+X(d.pct_sup)+'" cy="'+Y(d.share)+'" r="5" fill="var(--seq6)" stroke="var(--surface)" '+
-      'stroke-width="2"'+tip('<b>Top '+pct(d.pct_sup,1)+' of contractors</b><br>hold '+pct(d.share,1)+
-      ' of all award value<br><span class="k">('+d.k+' firms)</span>')+'/>'+
+      'stroke-width="2"'+tip(L('<b>Top '+pct(d.pct_sup,1)+' of contractors</b><br>hold '+pct(d.share,1)+
+        ' of all award value<br><span class="k">('+d.k+' firms)</span>',
+        '<b>শীর্ষ '+pct(d.pct_sup,1)+' ঠিকাদার</b><br>মোট কার্যাদেশ মূল্যের '+pct(d.share,1)+
+        ' তাদের হাতে<br><span class="k">('+d.k+'টি প্রতিষ্ঠান)</span>'))+'/>'+
       '<text class="val-label" x="'+(X(d.pct_sup)+10)+'" y="'+(Y(d.share)-8)+'">'+pct(d.share,0)+'</text>';
   }).join('');
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Lorenz curve of award value concentration">'+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+
+    L('Lorenz curve of award value concentration','কার্যাদেশ মূল্যের কেন্দ্রীভবনের লরেঞ্জ রেখা')+'">'+
     '<g class="grid">'+g+'</g>'+
     '<line class="ref" x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'"/>'+
     '<path d="'+area+'" fill="var(--seq1)" opacity=".55"/>'+
@@ -520,15 +657,23 @@ function lorenzSVG(lz){
     '<line class="baseline" x1="'+ml+'" y1="'+Y(0)+'" x2="'+(W-mr)+'" y2="'+Y(0)+'"/>'+
     '<line class="baseline" x1="'+ml+'" y1="'+mt+'" x2="'+ml+'" y2="'+Y(0)+'"/>'+
     ticks+
-    '<text x="'+(ml+iw/2)+'" y="'+(H-2)+'" text-anchor="middle">share of contractors (poorest → richest)</text>'+
-    '<text x="14" y="'+(mt+ih/2)+'" text-anchor="middle" transform="rotate(-90 14 '+(mt+ih/2)+')">share of award value</text>'+
+    '<text x="'+(ml+iw/2)+'" y="'+(H-8)+'" text-anchor="middle">'+
+    L('share of contractors (poorest → richest)','ঠিকাদারের অনুপাত (সবচেয়ে কম → সবচেয়ে বেশি)')+'</text>'+
+    '<text x="14" y="'+(mt+ih/2)+'" text-anchor="middle" transform="rotate(-90 14 '+(mt+ih/2)+')">'+
+    L('share of award value','কার্যাদেশ মূল্যের অনুপাত')+'</text>'+
     '</svg>';
-  var legend='<div class="legend"><span><i class="swatch" style="background:var(--seq6)"></i>actual distribution</span>'+
-    '<span><i class="swatch ring"></i>perfect equality (every firm the same)</span></div>';
-  return figure('How unequally the money is shared','Cumulative award value against cumulative contractors',
+  var legend='<div class="legend"><span><i class="swatch" style="background:var(--seq6)"></i>'+
+    L('actual distribution','প্রকৃত বিতরণ')+'</span>'+
+    '<span><i class="swatch ring"></i>'+L('perfect equality (every firm the same)',
+      'পূর্ণ সমতা (প্রতিটি প্রতিষ্ঠান সমান)')+'</span></div>';
+  return figure(L('How unequally the money is shared','অর্থ কত অসমভাবে ভাগ হয়েছে'),
+    L('Cumulative award value against cumulative contractors','ক্রমযোজিত কার্যাদেশ মূল্য বনাম ক্রমযোজিত ঠিকাদার'),
     legend+svg,
-    '<b>The top 1% of contractors — three firms — hold about a third of all award value; the top 3% hold over half.</b> '+
-    'The dashed line is what an equal market would look like. The gap between the two lines is the story.');
+    L('<b>The top 1% of contractors — three firms — hold about a third of all award value; the top 3% hold over half.</b> '+
+      'The dashed line is what an equal market would look like. The gap between the two lines is the story.',
+      '<b>শীর্ষ ১% ঠিকাদার — তিনটি প্রতিষ্ঠান — মোট কার্যাদেশ মূল্যের প্রায় এক-তৃতীয়াংশ ধরে রেখেছে; শীর্ষ ৩% '+
+      'ধরে রেখেছে অর্ধেকেরও বেশি।</b> ছেদরেখাটি দেখাচ্ছে, একটি সমান বাজার দেখতে কেমন হতো। দুই রেখার মধ্যেকার '+
+      'ফাঁকটাই আসল খবর।'));
 }
 /* ============ 04 · THE ANCHOR CASE ============ */
 function sAnchor(){
@@ -540,31 +685,49 @@ function sAnchor(){
       '<span class="'+(c.crore>500?'hi':'')+'">'+fmt(c.crore,1)+'</span>',
       fmt(c.sold||0,0), fmt(c.recv||0,0),
       (elim?'<span class="hi">'+fmt(c.resp,0)+'</span>':fmt(c.resp,0)),
-      esc(c.pe)+(c.officer?'<span class="pkg">officer: '+esc(c.officer)+'</span>':''),
+      esc(c.pe)+(c.officer?'<span class="pkg">'+L('officer: ','কর্মকর্তা: ')+esc(c.officer)+'</span>':''),
       esc(c.award||'—')+' → '+esc(c.sign||'—'),
-      pdfCell(noticeURL(c.notice),'notice')+' '+pdfCell(awardURL(c.awardpdf),'award')
+      noticeCell(c.notice)+' '+awardCell(c.awardpdf)
     ];
   });
-  var cols=[{t:'Tender'},{t:'৳ crore',num:true},{t:'Sold',num:true},{t:'Bids',num:true},
-    {t:'Responsive',num:true},{t:'Procuring entity'},{t:'Award → signing'},{t:'Source PDFs'}];
-  return section('anchor','04','The anchor case: ৳1,068 crore to one firm',
-    '<b>'+esc(a.supplier)+'</b> holds '+pct(a.pct_of_all)+' of every taka awarded in this dataset — '+
-    cr(a.total_crore)+' — and every one of its '+a.cases.length+' contracts comes from a single authority, the '+
-    esc(orgName(a.org))+'.',
+  var cols=[{t:L('Tender','দরপত্র')},{t:L('৳ crore','৳ কোটি'),num:true},
+    {t:L('Sold','বিক্রি'),num:true},{t:L('Bids','দর'),num:true},
+    {t:L('Responsive','রেসপনসিভ'),num:true},{t:L('Procuring entity','ক্রয়কারী সংস্থা')},
+    {t:L('Award → signing','কার্যাদেশ → সই')},{t:L('Source PDFs','মূল নথি')}];
+  return section('anchor','04',
+    L('The anchor case: ৳1,068 crore to one firm','মূল ঘটনা: এক প্রতিষ্ঠানকে ৳১,০৬৮ কোটি'),
+    L('<b>'+esc(a.supplier)+'</b> holds '+pct(a.pct_of_all)+' of every taka awarded in this dataset — '+
+      cr(a.total_crore)+' — and every one of its '+a.cases.length+' contracts comes from a single authority, the '+
+      esc(orgName(a.org))+'.',
+      '<b>'+esc(a.supplier)+'</b> এই ডেটাসেটে দেওয়া প্রতি টাকার '+pct(a.pct_of_all)+' ধরে রেখেছে — '+
+      cr(a.total_crore)+' — এবং এর '+a.cases.length+'টি চুক্তির প্রত্যেকটি এসেছে একটিমাত্র সংস্থা, '+
+      esc(orgName(a.org))+' থেকে।'),
     table(cols,rows)+
-    '<div class="callout crit"><b>Three things an auditor would ask about.</b> '+
-    '(1) The ৳881 crore contract — by itself almost a quarter of all award value in the dataset — drew '+
-    '<b>two bids</b>. (2) Two of the four awards began with three-to-four bidders and ended with a '+
-    '<b>single responsive</b> one. (3) On the largest contract the procuring-entity field itself reads '+
-    '"Project Director(Rajib Das)" — the authorising officer\'s own name embedded in the entity label, on the '+
-    'contract that made up 99% of that officer\'s authorised value.</div>'+
-    '<div class="pull">A single firm dominating one officer\'s book can be a specialism. The same firm dominating '+
-    'three officers\' books inside one authority is a pattern that needs an explanation.'+
-    '<cite>See section 08 — officers whose awards flow to one firm</cite></div>'+
-    '<p class="note">None of this establishes wrongdoing. Very large, technically specialised works legitimately '+
-    'attract few qualified bidders, and a firm with the capacity to deliver an ৳881 crore project may genuinely '+
-    'be one of very few. The point is that this is precisely the configuration that ought to be documented and '+
-    'checked — and the documentation is what the public record does not contain.</p>'
+    L('<div class="callout crit"><b>Three things an auditor would ask about.</b> '+
+      '(1) The ৳881 crore contract — by itself almost a quarter of all award value in the dataset — drew '+
+      '<b>two bids</b>. (2) Two of the four awards began with three-to-four bidders and ended with a '+
+      '<b>single responsive</b> one. (3) On the largest contract the procuring-entity field itself reads '+
+      '"Project Director(Rajib Das)" — the authorising officer\'s own name embedded in the entity label, on the '+
+      'contract that made up 99% of that officer\'s authorised value.</div>',
+      '<div class="callout crit"><b>একজন নিরীক্ষক যে তিনটি বিষয়ে প্রশ্ন করবেন।</b> '+
+      '(১) ৳৮৮১ কোটির চুক্তিটি — যা একাই ডেটাসেটের মোট কার্যাদেশ মূল্যের প্রায় এক-চতুর্থাংশ — পেয়েছে '+
+      '<b>মাত্র দুটি দর</b>। (২) চারটি কার্যাদেশের দুটিতে শুরুতে তিন থেকে চারজন দরদাতা ছিলেন, শেষে টিকে ছিল '+
+      '<b>একটিমাত্র রেসপনসিভ</b> দর। (৩) সবচেয়ে বড় চুক্তিতে ক্রয়কারী সংস্থার ঘরেই লেখা '+
+      '"Project Director(Rajib Das)" — অর্থাৎ অনুমোদনকারী কর্মকর্তার নিজের নামই সংস্থার নামের ভেতরে বসানো, আর '+
+      'সেই চুক্তিটিই ওই কর্মকর্তার অনুমোদিত মোট মূল্যের ৯৯%।</div>')+
+    L('<div class="pull">A single firm dominating one officer\'s book can be a specialism. The same firm dominating '+
+      'three officers\' books inside one authority is a pattern that needs an explanation.'+
+      '<cite>See section 08 — officers whose awards flow to one firm</cite></div>',
+      '<div class="pull">একজন কর্মকর্তার খাতায় একটি প্রতিষ্ঠানের প্রাধান্য বিশেষায়িত দক্ষতার কারণে হতে পারে। '+
+      'কিন্তু একই সংস্থার তিনজন কর্মকর্তার খাতায় একই প্রতিষ্ঠানের প্রাধান্য এমন একটি ধরন, যার ব্যাখ্যা দরকার।'+
+      '<cite>দেখুন অংশ ০৮ — যেসব কর্মকর্তার কার্যাদেশ এক প্রতিষ্ঠানেই যায়</cite></div>')+
+    L('<p class="note">None of this establishes wrongdoing. Very large, technically specialised works legitimately '+
+      'attract few qualified bidders, and a firm with the capacity to deliver an ৳881 crore project may genuinely '+
+      'be one of very few. The point is that this is precisely the configuration that ought to be documented and '+
+      'checked — and the documentation is what the public record does not contain.</p>',
+      '<p class="note">এর কোনোটিই অনিয়ম প্রমাণ করে না। খুব বড় ও কৌশলগতভাবে বিশেষায়িত কাজে বৈধভাবেই যোগ্য '+
+      'দরদাতা কম থাকে, আর ৳৮৮১ কোটির প্রকল্প বাস্তবায়নের সামর্থ্য রাখে এমন প্রতিষ্ঠান সত্যিই হাতে গোনা হতে পারে। '+
+      'কথা হলো, ঠিক এই বিন্যাসটিই নথিবদ্ধ ও যাচাই হওয়া উচিত — আর সেই নথিপত্রই সরকারি রেকর্ডে নেই।</p>')
   );
 }
 /* ---- the 28-day cliff column chart ---- */
@@ -584,84 +747,122 @@ function cliffSVG(){
   var shade='<rect x="'+vx1+'" y="'+mt+'" width="'+(vx2-vx1)+'" height="'+ih+'" '+
     'fill="var(--critical)" opacity=".055"/>'+
     '<text class="tickv" x="'+((vx1+vx2)/2)+'" y="'+(mt+14)+'" text-anchor="middle" '+
-    'style="fill:var(--critical);font-weight:700">days '+vlo+'–'+vhi+': zero contracts</text>';
+    'style="fill:var(--critical);font-weight:700">'+
+    L('days '+vlo+'–'+vhi+': zero contracts',vlo+'–'+vhi+' দিন: একটিও চুক্তি নয়')+'</text>';
   var bars=curve.map(function(d){
     var peak=d.day===28, x=ml+d.day*step+(step-bw)/2, y=Y(d.n), h=Math.max(d.n?2:0,mt+ih-y);
     return '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" '+
       'fill="'+(peak?'var(--critical)':(d.day>28?'var(--serious)':'var(--seq4)'))+'"'+
-      tip('<b>Day '+d.day+'</b><br>'+d.n+' contract'+(d.n===1?'':'s')+' signed'+
-        (peak?'<br><span class="k">the last legally permitted day</span>':'')+
-        (d.day>28?'<br><span class="k">beyond the legal maximum</span>':''))+'/>';
+      tip(L('<b>Day '+d.day+'</b><br>'+d.n+' contract'+(d.n===1?'':'s')+' signed'+
+          (peak?'<br><span class="k">the last legally permitted day</span>':'')+
+          (d.day>28?'<br><span class="k">beyond the legal maximum</span>':''),
+        '<b>'+d.day+'তম দিন</b><br>'+d.n+'টি চুক্তি সই'+
+          (peak?'<br><span class="k">আইনত অনুমোদিত শেষ দিন</span>':'')+
+          (d.day>28?'<br><span class="k">আইনি সীমার বাইরে</span>':'')))+'/>';
   }).join('');
   var xlab='';
   [0,7,14,21,28,35,42].forEach(function(d){
     xlab+='<text class="tickv" x="'+(ml+d*step+step/2)+'" y="'+(H-mb+18)+'" text-anchor="middle">'+d+'</text>';
   });
   var line28=ml+28*step+step/2;
+  /* Bengali matra sit higher than Latin caps, so the callout is clamped into the top
+     margin rather than pinned a fixed distance above the peak bar. */
+  var annY=Math.max(Y(c.at28)-10,14);
   var ann='<line x1="'+line28+'" y1="'+(mt-4)+'" x2="'+line28+'" y2="'+(mt+ih)+'" stroke="var(--critical)" '+
     'stroke-width="1" stroke-dasharray="3 3" opacity=".6"/>'+
-    '<text class="val-label" x="'+(line28+8)+'" y="'+(Y(c.at28)-10)+'" style="fill:var(--critical)">'+
-    c.at28+' contracts signed on day 28</text>';
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Contracts signed by number of days after award">'+
+    '<text class="val-label" x="'+(line28+8)+'" y="'+annY+'" style="fill:var(--critical)">'+
+    L(c.at28+' contracts signed on day 28','২৮তম দিনে সই হওয়া চুক্তি '+c.at28+'টি')+'</text>';
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+
+    L('Contracts signed by number of days after award','কার্যাদেশের কত দিন পরে চুক্তি সই হয়েছে')+'">'+
     '<g class="grid">'+g+'</g>'+shade+bars+ann+
     '<line class="baseline" x1="'+ml+'" y1="'+(mt+ih)+'" x2="'+(W-mr)+'" y2="'+(mt+ih)+'"/>'+xlab+
-    '<text x="'+(ml+iw/2)+'" y="'+(H-4)+'" text-anchor="middle">days from Notification of Award to contract signing</text>'+
-    '</svg>';
+    '<text x="'+(ml+iw/2)+'" y="'+(H-9)+'" text-anchor="middle">'+
+    L('days from Notification of Award to contract signing','কার্যাদেশের নোটিফিকেশন থেকে চুক্তি সই পর্যন্ত দিন')+
+    '</text></svg>';
   var legend='<div class="legend">'+
-    '<span><i class="swatch" style="background:var(--seq4)"></i>within the legal window (0–27 days)</span>'+
-    '<span><i class="swatch" style="background:var(--critical)"></i>day 28 — the legal maximum</span>'+
-    '<span><i class="swatch" style="background:var(--serious)"></i>beyond the legal maximum</span></div>';
-  return figure('When contracts actually get signed',
-    'n = '+fmt(c.n)+' awards · median '+D.delay.median+' days · legal maximum 28 days (e-PG3A, ITT 67.2)',
+    '<span><i class="swatch" style="background:var(--seq4)"></i>'+
+    L('within the legal window (0–27 days)','আইনি সময়সীমার ভেতরে (০–২৭ দিন)')+'</span>'+
+    '<span><i class="swatch" style="background:var(--critical)"></i>'+
+    L('day 28 — the legal maximum','২৮তম দিন — আইনি সর্বোচ্চ সীমা')+'</span>'+
+    '<span><i class="swatch" style="background:var(--serious)"></i>'+
+    L('beyond the legal maximum','আইনি সীমার বাইরে')+'</span></div>';
+  return figure(L('When contracts actually get signed','চুক্তিগুলো আসলে কখন সই হয়'),
+    L('n = '+fmt(c.n)+' awards · median '+D.delay.median+' days · legal maximum 28 days (e-PG3A, ITT 67.2)',
+      'n = '+fmt(c.n)+'টি কার্যাদেশ · মধ্যমা '+D.delay.median+' দিন · আইনি সর্বোচ্চ ২৮ দিন '+
+      '<span class="latn">(e-PG3A, ITT 67.2)</span>'),
     legend+svg,
-    '<b>'+c.at28+' contracts — '+pct(c.at28_pct)+' of all awards — were signed on precisely day 28</b>, the last '+
-    'legal day, and then the count falls to <b>zero for the next nine days</b>. A hard spike against a regulatory '+
-    'ceiling followed by an empty void is the signature of a process managed <em>to</em> the rule rather than by the work.');
+    L('<b>'+c.at28+' contracts — '+pct(c.at28_pct)+' of all awards — were signed on precisely day 28</b>, the last '+
+      'legal day, and then the count falls to <b>zero for the next nine days</b>. A hard spike against a regulatory '+
+      'ceiling followed by an empty void is the signature of a process managed <em>to</em> the rule rather than by the work.',
+      '<b>'+c.at28+'টি চুক্তি — সব কার্যাদেশের '+pct(c.at28_pct)+' — সই হয়েছে ঠিক ২৮তম দিনে</b>, অর্থাৎ আইনের শেষ '+
+      'দিনে; তার পরের <b>নয় দিনে সংখ্যাটি শূন্য</b>। নিয়মের ছাদে গিয়ে ধাক্কা খাওয়া একটি খাড়া চূড়া, আর তার পরেই '+
+      'একটি ফাঁকা শূন্যতা — এ হলো এমন একটি প্রক্রিয়ার চিহ্ন, যা কাজের গতিতে নয়, নিয়মের <em>হিসাব মিলিয়ে</em> চালানো হয়।'));
 }
 /* ============ 05a · THE CLIFF SECTION ============ */
 function sCliff(){
   var c=D.cliff, dl=D.delay;
   var byOrg=c.by_org.filter(function(o){return o.total>=20;}).map(function(o){
-    return {l:o.org+' ('+o.at28+'/'+o.total+')',v:o.pct,disp:pct(o.pct),
+    return {l:orgName(o.org)+' ('+o.at28+'/'+o.total+')',v:o.pct,disp:pct(o.pct),
       cls:o.pct>25?'peak':'',
-      tip:'<b>'+esc(o.org)+'</b><br>'+o.at28+' of '+o.total+' contracts signed on day 28<br>'+
-        '<span class="k">= '+pct(o.pct)+' of that authority\'s awards</span>'};
+      tip:'<b>'+esc(orgName(o.org))+'</b><br>'+
+        L(o.at28+' of '+o.total+' contracts signed on day 28<br>'+
+          '<span class="k">= '+pct(o.pct)+' of that authority\'s awards</span>',
+          o.total+'টির মধ্যে '+o.at28+'টি চুক্তি সই হয়েছে ২৮তম দিনে<br>'+
+          '<span class="k">= ওই সংস্থার কার্যাদেশের '+pct(o.pct)+'</span>')};
   });
   var worst=(dl.worst||[]).slice(0,8).map(function(w){
     return ['<span class="tid">#'+esc(w.id)+'</span>','<span class="hi">'+fmt(w.days)+'</span>',
       esc(orgName(w.org)),esc(w.sup),fmt(w.crore,2),
-      pdfCell(noticeURL(w.notice),'notice')+' '+pdfCell(awardURL(w.award),'award')];
+      noticeCell(w.notice)+' '+awardCell(w.award)];
   });
-  return section('cliff','05','The 28-day cliff',
-    'Bangladesh\'s procurement rules give a procuring entity a maximum of 28 days between the Notification of '+
-    'Award and signing the contract. If signing dates reflected the real pace of paperwork, they would scatter '+
-    'across that window and taper off. They do not.',
+  return section('cliff','05',L('The 28-day cliff','২৮ দিনের দেয়াল'),
+    L('Bangladesh\'s procurement rules give a procuring entity a maximum of 28 days between the Notification of '+
+      'Award and signing the contract. If signing dates reflected the real pace of paperwork, they would scatter '+
+      'across that window and taper off. They do not.',
+      'বাংলাদেশের ক্রয়বিধি অনুযায়ী কার্যাদেশের নোটিফিকেশন থেকে চুক্তি সই পর্যন্ত ক্রয়কারী সংস্থা সর্বোচ্চ ২৮ দিন '+
+      'সময় পায়। সই করার তারিখগুলো যদি কাগজপত্র এগোনোর প্রকৃত গতি অনুসরণ করত, তবে সেগুলো এই সময়সীমার ভেতরে '+
+      'ছড়িয়ে থাকত এবং ধীরে ধীরে কমে আসত। তা হয়নি।'),
     cliffSVG()+
     tiles([
-      {v:fmt(c.at28),l:'signed on day 28 exactly',k:'crit'},
-      {v:pct(c.at28_pct),l:'of all awards',k:'crit'},
-      {v:fmt(c.void_n),l:'signed on days '+c.void_lo+'–'+c.void_hi,k:'ok'},
-      {v:fmt(dl.median),l:'median days to signing'},
-      {v:fmt(dl.over28),l:'signed beyond the legal limit',k:'warn'},
-      {v:fmt(dl.max),l:'worst single delay (days)',k:'crit'}
+      {v:fmt(c.at28),l:L('signed on day 28 exactly','ঠিক ২৮তম দিনে সই'),k:'crit'},
+      {v:pct(c.at28_pct),l:L('of all awards','সব কার্যাদেশের অনুপাত'),k:'crit'},
+      {v:fmt(c.void_n),l:L('signed on days '+c.void_lo+'–'+c.void_hi,
+        c.void_lo+'–'+c.void_hi+' দিনে সই'),k:'ok'},
+      {v:fmt(dl.median),l:L('median days to signing','সই পর্যন্ত মধ্যমা দিন')},
+      {v:fmt(dl.over28),l:L('signed beyond the legal limit','আইনি সীমার পরে সই'),k:'warn'},
+      {v:fmt(dl.max),l:L('worst single delay (days)','সবচেয়ে বেশি বিলম্ব (দিন)'),k:'crit'}
     ])+
-    figure('The spike is not spread evenly across government',
-      'Share of each authority\'s awards signed on day 28 · authorities with 20+ awards',
+    figure(L('The spike is not spread evenly across government','এই চূড়া সরকারের সব দপ্তরে সমান নয়'),
+      L('Share of each authority\'s awards signed on day 28 · authorities with 20+ awards',
+        'প্রতিটি সংস্থার কার্যাদেশের কত অংশ ২৮তম দিনে সই হয়েছে · ২০+ কার্যাদেশ আছে যেসব সংস্থার'),
       hbars(byOrg,{wide:true}),
-      '<b>The cliff is overwhelmingly a RAJUK phenomenon:</b> '+pct(c.by_org[0].pct)+' of RAJUK\'s '+
-      fmt(c.by_org[0].total)+' awards were signed on day 28, against 2–3% at every other authority. '+
-      'A pattern this localised points at one office\'s working practice rather than a nationwide data convention — '+
-      'which makes it more answerable, not less.')+
-    '<div class="callout warn"><b>The benign reading, stated fairly.</b> A batch data-entry habit — filling in '+
-    'signing dates as "the deadline" rather than the true date — would produce exactly this spike without any '+
-    'misconduct. That possibility cannot be excluded from published dates alone. But it is itself a finding: if '+
-    'one in five signing dates in the national procurement record is a placeholder, the register cannot be used to '+
-    'audit compliance at all. Either the dates are real and the process is being run to the wire, or they are not '+
-    'real and the record is unreliable.</div>'+
-    '<h3>And at the other extreme: the overruns</h3>'+
-    '<p>Fifty-two contracts were signed <em>after</em> the legal maximum — '+fmt(dl.over60)+' of them more than 60 '+
-    'days late, the worst '+fmt(dl.max)+' days. These are documented compliance breaches, each with its own PDF:</p>'+
-    table([{t:'Tender'},{t:'Days',num:true},{t:'Authority'},{t:'Contractor'},{t:'৳ crore',num:true},{t:'Source PDFs'}],worst)
+      L('<b>The cliff is overwhelmingly a RAJUK phenomenon:</b> '+pct(c.by_org[0].pct)+' of RAJUK\'s '+
+        fmt(c.by_org[0].total)+' awards were signed on day 28, against 2–3% at every other authority. '+
+        'A pattern this localised points at one office\'s working practice rather than a nationwide data convention — '+
+        'which makes it more answerable, not less.',
+        '<b>এই দেয়াল মূলত রাজউকেরই ঘটনা:</b> রাজউকের '+fmt(c.by_org[0].total)+'টি কার্যাদেশের '+
+        pct(c.by_org[0].pct)+' সই হয়েছে ২৮তম দিনে, অথচ বাকি প্রতিটি সংস্থায় হার ২–৩%। এতটা এক জায়গায় জমে থাকা '+
+        'ধরন সারা দেশের কোনো ডেটা-এন্ট্রি রীতির দিকে নয়, একটি নির্দিষ্ট দপ্তরের কাজের অভ্যাসের দিকেই ইঙ্গিত করে — '+
+        'ফলে এর জবাব চাওয়া সহজ, কঠিন নয়।'))+
+    L('<div class="callout warn"><b>The benign reading, stated fairly.</b> A batch data-entry habit — filling in '+
+      'signing dates as "the deadline" rather than the true date — would produce exactly this spike without any '+
+      'misconduct. That possibility cannot be excluded from published dates alone. But it is itself a finding: if '+
+      'one in five signing dates in the national procurement record is a placeholder, the register cannot be used to '+
+      'audit compliance at all. Either the dates are real and the process is being run to the wire, or they are not '+
+      'real and the record is unreliable.</div>',
+      '<div class="callout warn"><b>নির্দোষ ব্যাখ্যাটিও সৎভাবে বলা যাক।</b> একসঙ্গে গাদা করে ডেটা তোলার অভ্যাস — '+
+      'অর্থাৎ প্রকৃত তারিখের বদলে "শেষ তারিখ"টিই সইয়ের ঘরে বসিয়ে দেওয়া — কোনো অনিয়ম ছাড়াই ঠিক এই চূড়াটি '+
+      'তৈরি করতে পারে। প্রকাশিত তারিখ দেখে এই সম্ভাবনা বাতিল করা যায় না। কিন্তু এটিও একটি সন্ধান: জাতীয় ক্রয় '+
+      'রেকর্ডে সইয়ের প্রতি পাঁচটি তারিখের একটি যদি নামমাত্র বসানো হয়, তবে সেই রেজিস্টার দিয়ে বিধি মানা হচ্ছে কি না '+
+      'যাচাই করাই অসম্ভব। হয় তারিখগুলো সত্যি এবং প্রক্রিয়াটি শেষ মুহূর্ত ঘেঁষে চালানো হচ্ছে, নয়তো তারিখগুলো সত্যি নয় '+
+      'এবং রেকর্ডটি নির্ভরযোগ্য নয়।</div>')+
+    L('<h3>And at the other extreme: the overruns</h3>','<h3>আর ঠিক উল্টো প্রান্তে: সময় ছাড়িয়ে যাওয়া চুক্তি</h3>')+
+    L('<p>Fifty-two contracts were signed <em>after</em> the legal maximum — '+fmt(dl.over60)+' of them more than 60 '+
+      'days late, the worst '+fmt(dl.max)+' days. These are documented compliance breaches, each with its own PDF:</p>',
+      '<p>বায়ান্নটি চুক্তি সই হয়েছে আইনি সর্বোচ্চ সীমার <em>পরে</em> — এর '+fmt(dl.over60)+'টি ৬০ দিনেরও বেশি দেরিতে, '+
+      'সবচেয়ে খারাপটি '+fmt(dl.max)+' দিন। এগুলো নথিবদ্ধ বিধি-লঙ্ঘন, প্রত্যেকটির নিজের পিডিএফ আছে:</p>')+
+    table([{t:L('Tender','দরপত্র')},{t:L('Days','দিন'),num:true},{t:L('Authority','সংস্থা')},
+      {t:L('Contractor','ঠিকাদার')},{t:L('৳ crore','৳ কোটি'),num:true},{t:L('Source PDFs','মূল নথি')}],worst)
   );
 }
 /* ---- bids received vs bids ruled responsive ---- */
@@ -688,83 +889,127 @@ function scatterSVG(){
     return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(flag?4.2:3.1)+'" '+
       'fill="'+(flag?'var(--critical)':'var(--seq5)')+'" opacity="'+(flag?0.9:0.42)+'" '+
       (flag?'stroke="var(--surface)" stroke-width="1.2" ':'')+
-      tip('<b>Tender #'+esc(p.id)+'</b> · '+esc(orgName(p.org))+'<br>'+p.recv+' bids received → <b>'+p.resp+
-        '</b> ruled responsive<br><span class="k">'+cr(p.crore,2)+'</span>'+
-        (flag?'<br><span class="k">flagged: 3+ bidders reduced to one</span>':''))+'/>';
+      tip(L('<b>Tender #'+esc(p.id)+'</b> · '+esc(orgName(p.org))+'<br>'+p.recv+' bids received → <b>'+p.resp+
+          '</b> ruled responsive<br><span class="k">'+cr(p.crore,2)+'</span>'+
+          (flag?'<br><span class="k">flagged: 3+ bidders reduced to one</span>':''),
+        '<b>দরপত্র #'+esc(p.id)+'</b> · '+esc(orgName(p.org))+'<br>জমা পড়া দর '+p.recv+'টি → রেসপনসিভ ঘোষিত <b>'+
+          p.resp+'</b>টি<br><span class="k">'+cr(p.crore,2)+'</span>'+
+          (flag?'<br><span class="k">চিহ্নিত: ৩+ দরদাতা কমে একজনে</span>':'')))+'/>';
   }).join('');
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Bids received versus bids ruled responsive">'+
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+
+    L('Bids received versus bids ruled responsive','জমা পড়া দর বনাম রেসপনসিভ ঘোষিত দর')+'">'+
     '<g class="grid">'+g+'</g>'+
     '<line class="ref" x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(m)+'" y2="'+Y(m)+'"/>'+
-    '<text class="tickv" x="'+(X(m)-6)+'" y="'+(Y(m)+16)+'" text-anchor="end">every bid responsive</text>'+
+    '<text class="tickv" x="'+(X(m)-6)+'" y="'+(Y(m)+16)+'" text-anchor="end">'+
+    L('every bid responsive','প্রতিটি দরই রেসপনসিভ')+'</text>'+
     '<line x1="'+ml+'" y1="'+Y(1)+'" x2="'+(W-mr)+'" y2="'+Y(1)+'" stroke="var(--critical)" '+
     'stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>'+
     '<text class="tickv" x="'+(W-mr)+'" y="'+(Y(1)-7)+'" text-anchor="end" '+
-    'style="fill:var(--critical);font-weight:700">only one bid survives</text>'+
+    'style="fill:var(--critical);font-weight:700">'+L('only one bid survives','টিকে থাকে একটিমাত্র দর')+'</text>'+
     dots+
     '<line class="baseline" x1="'+ml+'" y1="'+(mt+ih)+'" x2="'+(W-mr)+'" y2="'+(mt+ih)+'"/>'+
     '<line class="baseline" x1="'+ml+'" y1="'+mt+'" x2="'+ml+'" y2="'+(mt+ih)+'"/>'+
-    '<text x="'+(ml+iw/2)+'" y="'+(H-6)+'" text-anchor="middle">bids received</text>'+
-    '<text x="14" y="'+(mt+ih/2)+'" text-anchor="middle" transform="rotate(-90 14 '+(mt+ih/2)+')">bids ruled responsive</text>'+
+    '<text x="'+(ml+iw/2)+'" y="'+(H-6)+'" text-anchor="middle">'+L('bids received','জমা পড়া দর')+'</text>'+
+    '<text x="14" y="'+(mt+ih/2)+'" text-anchor="middle" transform="rotate(-90 14 '+(mt+ih/2)+')">'+
+    L('bids ruled responsive','রেসপনসিভ ঘোষিত দর')+'</text>'+
     '</svg>';
   var legend='<div class="legend">'+
-    '<span><i class="swatch" style="background:var(--seq5)"></i>tender ('+fmt(pts.length)+' with bid data)</span>'+
-    '<span><i class="swatch" style="background:var(--critical)"></i>3+ bidders reduced to a single responsive bid</span>'+
-    '<span><i class="swatch ring"></i>reference lines</span></div>';
-  return figure('Where the competition disappears',
-    'Each dot is one tender · jittered to separate identical values · axes capped at '+m,
+    '<span><i class="swatch" style="background:var(--seq5)"></i>'+
+    L('tender ('+fmt(pts.length)+' with bid data)','দরপত্র (দরের তথ্য আছে '+fmt(pts.length)+'টিতে)')+'</span>'+
+    '<span><i class="swatch" style="background:var(--critical)"></i>'+
+    L('3+ bidders reduced to a single responsive bid','৩+ দরদাতা কমে একটিমাত্র রেসপনসিভ দরে')+'</span>'+
+    '<span><i class="swatch ring"></i>'+L('reference lines','নির্দেশক রেখা')+'</span></div>';
+  return figure(L('Where the competition disappears','প্রতিযোগিতা কোথায় হারিয়ে যায়'),
+    L('Each dot is one tender · jittered to separate identical values · axes capped at '+m,
+      'প্রতিটি বিন্দু একটি দরপত্র · একই মানের বিন্দু আলাদা করতে সামান্য সরানো হয়েছে · অক্ষ '+m+' পর্যন্ত সীমিত'),
     legend+svg,
-    '<b>The dense red band along the bottom is the finding.</b> Every dot on that line is a tender that attracted '+
-    'real competition and ended with exactly one bid left standing. The further right a red dot sits, the more '+
-    'rivals were eliminated to get there.');
+    L('<b>The dense red band along the bottom is the finding.</b> Every dot on that line is a tender that attracted '+
+      'real competition and ended with exactly one bid left standing. The further right a red dot sits, the more '+
+      'rivals were eliminated to get there.',
+      '<b>নিচের দিকে ঘন লাল সারিটাই আসল সন্ধান।</b> ওই রেখার প্রতিটি বিন্দু এমন একটি দরপত্র, যেখানে সত্যিকারের '+
+      'প্রতিযোগিতা হয়েছিল, অথচ শেষে টিকে ছিল ঠিক একটি দর। লাল বিন্দুটি যত ডানে, সেখানে পৌঁছাতে তত বেশি '+
+      'প্রতিযোগীকে বাদ পড়তে হয়েছে।'));
 }
 /* ============ 06 · COMPETITION ============ */
 function sCompetition(){
   var h=D.headline, e=D.elimination;
   var auth=D.authorities.slice().sort(function(a,b){return b.single_pct-a.single_pct;}).map(function(o){
-    return {l:o.org+' ('+o.single+'/'+o.n+')',v:o.single_pct,disp:pct(o.single_pct),
+    return {l:orgName(o.org)+' ('+o.single+'/'+o.n+')',v:o.single_pct,disp:pct(o.single_pct),
       cls:o.single_pct>=50?'peak':'',
-      tip:'<b>'+esc(o.org)+'</b><br>'+o.single+' single-responsive tenders ('+pct(o.single_pct)+')<br>'+
-        '<span class="k">avg '+fmt(o.recv_per,2)+' bids received → '+fmt(o.resp_per,2)+' ruled responsive</span><br>'+
-        '<span class="k">'+cr(o.crore)+' awarded across '+o.awarded+' contracts</span>'};
+      tip:'<b>'+esc(orgName(o.org))+'</b><br>'+
+        L(o.single+' single-responsive tenders ('+pct(o.single_pct)+')<br>'+
+          '<span class="k">avg '+fmt(o.recv_per,2)+' bids received → '+fmt(o.resp_per,2)+' ruled responsive</span><br>'+
+          '<span class="k">'+cr(o.crore)+' awarded across '+o.awarded+' contracts</span>',
+          'একটিমাত্র রেসপনসিভ দরে নিষ্পন্ন দরপত্র '+o.single+'টি ('+pct(o.single_pct)+')<br>'+
+          '<span class="k">গড়ে '+fmt(o.recv_per,2)+'টি দর জমা → '+fmt(o.resp_per,2)+'টি রেসপনসিভ</span><br>'+
+          '<span class="k">'+o.awarded+'টি চুক্তিতে মোট '+cr(o.crore)+'</span>')};
   });
   var ecases=e.cases.map(function(c){
     return ['<span class="tid">#'+esc(c.id)+'</span>',esc(orgName(c.org)),
       '<span class="hi">'+fmt(c.recv)+' → 1</span>',esc(c.sup)+
       (c.pkg?'<span class="pkg">'+esc(c.pkg.length>120?c.pkg.slice(0,119)+'…':c.pkg)+'</span>':''),
-      fmt(c.crore,2),pdfCell(noticeURL(c.notice),'notice')+' '+pdfCell(awardURL(c.award),'award')];
+      fmt(c.crore,2),noticeCell(c.notice)+' '+awardCell(c.award)];
   });
-  return section('competition','06','Competition that vanishes at evaluation',
-    'How competitive these awards were depends entirely on where you draw the line — and the range is itself '+
-    'the finding.',
+  return section('competition','06',
+    L('Competition that vanishes at evaluation','মূল্যায়নের ধাপে উবে যাওয়া প্রতিযোগিতা'),
+    L('How competitive these awards were depends entirely on where you draw the line — and the range is itself '+
+      'the finding.',
+      'এই কার্যাদেশগুলোতে কতটা প্রতিযোগিতা হয়েছে, তার উত্তর পুরোপুরি নির্ভর করে আপনি সীমারেখা কোথায় টানছেন তার '+
+      'ওপর — আর এই ব্যবধানটিই একটি সন্ধান।'),
     tiles([
-      {v:fmt(h.single_resp),u:' · '+pct(h.single_resp_pct),l:'awards with exactly one responsive bidder (broadest measure)',k:'warn'},
-      {v:fmt(OFF.strict.n),u:' · '+pct(OFF.strict.pct),l:'single responsive bidder <em>despite</em> rivals showing up',k:'warn'},
-      {v:fmt(e.n),l:'tenders where 3+ bidders collapsed to one',k:'crit'},
-      {v:fmt(e.n5),l:'of those, where 5+ bidders collapsed to one',k:'crit'}
+      {v:fmt(h.single_resp),u:' · '+pct(h.single_resp_pct),
+        l:L('awards with exactly one responsive bidder (broadest measure)',
+          'ঠিক একজন রেসপনসিভ দরদাতা নিয়ে দেওয়া কার্যাদেশ (সবচেয়ে প্রশস্ত মাপ)'),k:'warn'},
+      {v:fmt(OFF.strict.n),u:' · '+pct(OFF.strict.pct),
+        l:L('single responsive bidder <em>despite</em> rivals showing up',
+          'প্রতিযোগী হাজির থাকা <em>সত্ত্বেও</em> একজনই রেসপনসিভ দরদাতা'),k:'warn'},
+      {v:fmt(e.n),l:L('tenders where 3+ bidders collapsed to one',
+        'যেসব দরপত্রে ৩+ দরদাতা কমে একজনে দাঁড়ায়'),k:'crit'},
+      {v:fmt(e.n5),l:L('of those, where 5+ bidders collapsed to one',
+        'তার মধ্যে যেখানে ৫+ দরদাতা কমে একজনে'),k:'crit'}
     ])+
-    '<p>The first number counts genuinely uncontested lots, which large specialist works can legitimately be. '+
-    'The last two are the ones that warrant scrutiny: cases where a field of rivals showed up and was then '+
-    '<b>disqualified down to a single survivor</b>. Mass disqualification is lawful and sometimes correct — but '+
-    fmt(e.n)+' instances is a population an oversight body would want to sample, starting with the evaluation '+
-    'reports that recorded why each rival was ruled non-responsive.</p>'+
+    L('<p>The first number counts genuinely uncontested lots, which large specialist works can legitimately be. '+
+      'The last two are the ones that warrant scrutiny: cases where a field of rivals showed up and was then '+
+      '<b>disqualified down to a single survivor</b>. Mass disqualification is lawful and sometimes correct — but '+
+      fmt(e.n)+' instances is a population an oversight body would want to sample, starting with the evaluation '+
+      'reports that recorded why each rival was ruled non-responsive.</p>',
+      '<p>প্রথম সংখ্যাটি সেইসব লটের হিসাব, যেখানে সত্যিই কোনো প্রতিযোগিতা ছিল না — বড় ও বিশেষায়িত কাজে যা বৈধভাবেই '+
+      'ঘটতে পারে। শেষ দুটিই যাচাই দাবি করে: যেখানে একদল প্রতিযোগী হাজির হয়েছিল, তারপর <b>বাদ পড়তে পড়তে টিকে '+
+      'ছিল একজন</b>। গণহারে অযোগ্য ঘোষণা আইনসিদ্ধ এবং কখনো যথার্থও — কিন্তু '+fmt(e.n)+'টি ঘটনা এমন একটি সংখ্যা, '+
+      'যা থেকে যেকোনো তদারকি সংস্থা নমুনা নিয়ে দেখতে চাইবে; শুরু করবে সেই মূল্যায়ন প্রতিবেদন থেকে, যেখানে লেখা আছে '+
+      'কোন প্রতিযোগী কেন নন-রেসপনসিভ হলো।</p>')+
     scatterSVG()+
-    figure('Some authorities barely have competition at all',
-      'Share of each authority\'s tenders decided by a single responsive bid',
+    figure(L('Some authorities barely have competition at all','কোনো কোনো সংস্থায় প্রতিযোগিতা প্রায় নেই'),
+      L('Share of each authority\'s tenders decided by a single responsive bid',
+        'প্রতিটি সংস্থার কত অংশ দরপত্র একটিমাত্র রেসপনসিভ দরে নিষ্পন্ন হয়েছে'),
       hbars(auth,{wide:true}),
-      '<b>At RDA, CoxDA and CDA more than half of all tenders come down to one surviving bid.</b> '+
-      'RAJUK, which runs by far the most tenders, attracts nearly twice as many bidders per tender '+
-      '(avg '+fmt(D.authorities[4].recv_per,1)+') — evidence that the low-competition pattern is a property of '+
-      'particular authorities, not of the construction market as a whole.')+
-    '<h3>The clearest cases: many bidders, one survivor</h3>'+
-    '<p>These are the tenders where the most competition was eliminated. Each row links to the government\'s own '+
-    'tender notice and award notice, so the claim can be checked directly:</p>'+
-    table([{t:'Tender'},{t:'Authority'},{t:'Bids → responsive',num:true},{t:'Winner / package'},
-      {t:'৳ crore',num:true},{t:'Source PDFs'}],ecases,{tall:true})+
-    '<p class="note">Definitional note: this story treats <b>'+fmt(OFF.strict.n)+' / '+pct(OFF.strict.pct)+
-    '</b> as the primary single-responsive rate because it excludes lots that only ever had one bidder; the '+
-    'broader <b>'+fmt(h.single_resp)+' / '+pct(h.single_resp_pct)+'</b> counts every tender with one responsive bid. '+
-    'Always state which definition a quoted figure uses. Both are filters in '+
-    '<a href="#evidence">the evidence room</a>, so either population can be listed row by row.</p>'
+      L('<b>At RDA, CoxDA and CDA more than half of all tenders come down to one surviving bid.</b> '+
+        'RAJUK, which runs by far the most tenders, attracts nearly twice as many bidders per tender '+
+        '(avg '+fmt(D.authorities[4].recv_per,1)+') — evidence that the low-competition pattern is a property of '+
+        'particular authorities, not of the construction market as a whole.',
+        '<b>আরডিএ, কক্সডিএ ও সিডিএ-তে অর্ধেকেরও বেশি দরপত্র শেষ হয় একটিমাত্র টিকে থাকা দর দিয়ে।</b> '+
+        'রাজউক, যারা সবচেয়ে বেশি দরপত্র চালায়, প্রতি দরপত্রে প্রায় দ্বিগুণ দরদাতা পায় (গড়ে '+
+        fmt(D.authorities[4].recv_per,1)+') — অর্থাৎ কম প্রতিযোগিতার ধরনটি গোটা নির্মাণ বাজারের বৈশিষ্ট্য নয়, '+
+        'নির্দিষ্ট কিছু সংস্থার।'))+
+    L('<h3>The clearest cases: many bidders, one survivor</h3>',
+      '<h3>সবচেয়ে স্পষ্ট ঘটনাগুলো: বহু দরদাতা, টিকে একজন</h3>')+
+    L('<p>These are the tenders where the most competition was eliminated. Each row links to the government\'s own '+
+      'tender notice and award notice, so the claim can be checked directly:</p>',
+      '<p>এই দরপত্রগুলোতেই সবচেয়ে বেশি প্রতিযোগিতা বাদ পড়েছে। প্রতিটি সারি সরকারের নিজের দরপত্র বিজ্ঞপ্তি ও '+
+      'কার্যাদেশ বিজ্ঞপ্তির সঙ্গে যুক্ত, যাতে দাবিটি সরাসরি যাচাই করা যায়:</p>')+
+    table([{t:L('Tender','দরপত্র')},{t:L('Authority','সংস্থা')},
+      {t:L('Bids → responsive','দর → রেসপনসিভ'),num:true},{t:L('Winner / package','বিজয়ী / প্যাকেজ')},
+      {t:L('৳ crore','৳ কোটি'),num:true},{t:L('Source PDFs','মূল নথি')}],ecases,{tall:true})+
+    L('<p class="note">Definitional note: this story treats <b>'+fmt(OFF.strict.n)+' / '+pct(OFF.strict.pct)+
+      '</b> as the primary single-responsive rate because it excludes lots that only ever had one bidder; the '+
+      'broader <b>'+fmt(h.single_resp)+' / '+pct(h.single_resp_pct)+'</b> counts every tender with one responsive bid. '+
+      'Always state which definition a quoted figure uses. Both are filters in '+
+      '<a href="#evidence">the evidence room</a>, so either population can be listed row by row.</p>',
+      '<p class="note">সংজ্ঞা বিষয়ে একটি নোট: এই প্রতিবেদন <b>'+fmt(OFF.strict.n)+' / '+pct(OFF.strict.pct)+
+      '</b>-কেই মূল একক-রেসপনসিভ হার হিসেবে ধরেছে, কারণ এটি সেইসব লট বাদ দেয় যেখানে কখনোই একজনের বেশি দরদাতা '+
+      'ছিল না; আর প্রশস্ত <b>'+fmt(h.single_resp)+' / '+pct(h.single_resp_pct)+'</b> গোনে একটি রেসপনসিভ দর আছে এমন '+
+      'প্রতিটি দরপত্র। উদ্ধৃত সংখ্যা কোন সংজ্ঞায় বলা হচ্ছে, তা সবসময় উল্লেখ করা উচিত। দুটিই '+
+      '<a href="#evidence">নথিঘরে</a> ফিল্টার হিসেবে আছে, ফলে যেকোনো একটির পুরো তালিকা সারি ধরে দেখা যায়।</p>')
   );
 }
 /* ---- id → case lookup, so every tender id can link to its PDFs ---- */
@@ -784,22 +1029,29 @@ function heatmap(){
   var head='<tr><th></th>'+m.cols.map(function(c){
     return '<th class="colh"><span>'+esc(c.sup)+'</span></th>';}).join('')+'</tr>';
   var body=m.grid.map(function(r){
-    return '<tr><th class="rowh"'+tip('<b>'+esc(r.pe)+'</b><br>'+r.pe_total+' awards in total')+'>'+
+    return '<tr><th class="rowh"'+tip('<b>'+esc(r.pe)+'</b><br>'+
+      L(r.pe_total+' awards in total','মোট কার্যাদেশ '+r.pe_total+'টি'))+'>'+
       esc(r.pe.length>34?r.pe.slice(0,33)+'…':r.pe)+'</th>'+
       r.cells.map(function(cell,i){
         var t=cell.n/max, sq=t===0?'transparent':'var(--seq'+clamp(Math.ceil(t*7),1,7)+')';
         var lightText=t>0.5;
         return '<td><div class="cell" style="background:'+sq+';color:'+(lightText?'var(--surface)':'var(--secondary)')+'"'+
-          tip('<b>'+esc(m.cols[i].sup)+'</b><br>awarded by '+esc(r.pe)+'<br><b>'+cell.n+
-            '</b> contract'+(cell.n===1?'':'s')+' · '+cr(cell.crore,2))+'>'+(cell.n||'')+'</div></td>';
+          tip(L('<b>'+esc(m.cols[i].sup)+'</b><br>awarded by '+esc(r.pe)+'<br><b>'+cell.n+
+              '</b> contract'+(cell.n===1?'':'s')+' · '+cr(cell.crore,2),
+            '<b>'+esc(m.cols[i].sup)+'</b><br>কার্যাদেশ দিয়েছে '+esc(r.pe)+'<br><b>'+cell.n+
+              '</b>টি চুক্তি · '+cr(cell.crore,2)))+'>'+(cell.n||'')+'</div></td>';
       }).join('')+'</tr>';
   }).join('');
-  return figure('Which contractor wins from which office',
-    'Top 9 procuring entities × top 11 contractors · cell = number of contracts',
+  return figure(L('Which contractor wins from which office','কোন ঠিকাদার কোন দপ্তর থেকে কাজ পায়'),
+    L('Top 9 procuring entities × top 11 contractors · cell = number of contracts',
+      'শীর্ষ ৯টি ক্রয়কারী সংস্থা × শীর্ষ ১১ ঠিকাদার · প্রতিটি ঘরে চুক্তির সংখ্যা'),
     '<div class="tblwrap"><table class="hm"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>',
-    '<b>The matrix is almost empty except along a handful of cells.</b> If contractors competed across offices, '+
-    'this grid would be evenly speckled. Instead most firms appear at exactly one office — and at that office they '+
-    'appear ten or fourteen times.');
+    L('<b>The matrix is almost empty except along a handful of cells.</b> If contractors competed across offices, '+
+      'this grid would be evenly speckled. Instead most firms appear at exactly one office — and at that office they '+
+      'appear ten or fourteen times.',
+      '<b>হাতে গোনা কয়েকটি ঘর ছাড়া গোটা ছকটাই প্রায় ফাঁকা।</b> ঠিকাদাররা যদি বিভিন্ন দপ্তরে প্রতিযোগিতা করত, তবে '+
+      'এই ছক সমানভাবে ছিটানো থাকত। বাস্তবে বেশির ভাগ প্রতিষ্ঠানের নাম আসে ঠিক একটি দপ্তরেই — এবং সেই দপ্তরে '+
+      'তারা আসে দশ বা চৌদ্দবার।'));
 }
 
 /* ============ 07 · REPEAT PAIRS ============ */
@@ -811,72 +1063,109 @@ function sPairs(){
     return [esc(p.pe),fmt(p.total),esc(p.topsup),fmt(p.n),
       '<span class="'+(p.pct>=30?'hi':'')+'">'+pct(p.pct)+'</span>'];
   });
-  return section('pairs','07','The same names, over and over',
-    'Repeat business is normal in construction — a good local firm wins repeatedly on merit. But <b>'+
-    OFF.pairs_pe.ge2+' contractor–office pairings recur in two or more tenders, and '+OFF.pairs_pe.ge3+
-    ' recur in three or more.</b> At the top of that list the same firm wins from the same office fourteen times.',
+  return section('pairs','07',L('The same names, over and over','একই নাম, বারবার'),
+    L('Repeat business is normal in construction — a good local firm wins repeatedly on merit. But <b>'+
+      OFF.pairs_pe.ge2+' contractor–office pairings recur in two or more tenders, and '+OFF.pairs_pe.ge3+
+      ' recur in three or more.</b> At the top of that list the same firm wins from the same office fourteen times.',
+      'নির্মাণ খাতে একই প্রতিষ্ঠানের বারবার কাজ পাওয়া স্বাভাবিক — যোগ্যতার জোরেই একটি ভালো স্থানীয় প্রতিষ্ঠান '+
+      'বারবার জিততে পারে। কিন্তু <b>'+OFF.pairs_pe.ge2+'টি ঠিকাদার–দপ্তর জোড়া দুই বা তার বেশি দরপত্রে ফিরে আসে, '+
+      'আর '+OFF.pairs_pe.ge3+'টি ফিরে আসে তিন বা তার বেশিবার।</b> সেই তালিকার শীর্ষে একই প্রতিষ্ঠান একই দপ্তর '+
+      'থেকে কাজ পেয়েছে চৌদ্দবার।'),
     heatmap()+
-    table([{t:'Contractor'},{t:'Authorising office'},{t:'Contracts',num:true},{t:'৳ crore',num:true},
-      {t:'Sample tenders (click for the award PDF)'}],rp)+
-    '<div class="pull">A recurring pair is not evidence of wrongdoing. It is evidence of where to look — these are '+
-    'the relationships whose tender files, disqualification records and pricing an auditor could most usefully pull.</div>'+
-    '<h3>Offices where one contractor takes the largest slice</h3>'+
-    '<p>Read from the office\'s side, the same relationships show up as concentration: the share of an office\'s '+
-    'total awards going to its single most frequent contractor.</p>'+
-    table([{t:'Procuring entity'},{t:'Total awards',num:true},{t:'Most frequent contractor'},
-      {t:'Its contracts',num:true},{t:'Share',num:true}],cap)
+    table([{t:L('Contractor','ঠিকাদার')},{t:L('Authorising office','অনুমোদনকারী দপ্তর')},
+      {t:L('Contracts','চুক্তি'),num:true},{t:L('৳ crore','৳ কোটি'),num:true},
+      {t:L('Sample tenders (click for the award PDF)','নমুনা দরপত্র (কার্যাদেশের পিডিএফের জন্য ক্লিক করুন)')}],rp)+
+    L('<div class="pull">A recurring pair is not evidence of wrongdoing. It is evidence of where to look — these are '+
+      'the relationships whose tender files, disqualification records and pricing an auditor could most usefully pull.</div>',
+      '<div class="pull">বারবার ফিরে আসা কোনো জোড়া অনিয়মের প্রমাণ নয়। এটি প্রমাণ, কোথায় খুঁজতে হবে তার — এই '+
+      'সম্পর্কগুলোরই দরপত্র নথি, অযোগ্য ঘোষণার রেকর্ড আর দর একজন নিরীক্ষকের সবচেয়ে বেশি কাজে লাগবে।</div>')+
+    L('<h3>Offices where one contractor takes the largest slice</h3>',
+      '<h3>যেসব দপ্তরে সবচেয়ে বড় ভাগটা এক ঠিকাদারের</h3>')+
+    L('<p>Read from the office\'s side, the same relationships show up as concentration: the share of an office\'s '+
+      'total awards going to its single most frequent contractor.</p>',
+      '<p>দপ্তরের দিক থেকে দেখলে একই সম্পর্কগুলোই ধরা পড়ে কেন্দ্রীভবন হিসেবে: একটি দপ্তরের মোট কার্যাদেশের কত অংশ '+
+      'যাচ্ছে তার সবচেয়ে ঘন ঘন কাজ পাওয়া একটিমাত্র ঠিকাদারের কাছে।</p>')+
+    table([{t:L('Procuring entity','ক্রয়কারী সংস্থা')},{t:L('Total awards','মোট কার্যাদেশ'),num:true},
+      {t:L('Most frequent contractor','সবচেয়ে ঘন ঘন কাজ পাওয়া ঠিকাদার')},
+      {t:L('Its contracts','তার চুক্তি'),num:true},{t:L('Share','অনুপাত'),num:true}],cap)
   );
 }
 /* ============ 08 · OFFICERS ============ */
 function sOfficers(){
   var capRows=OFF.capture.map(function(o){
-    return [esc(o.off)+' <span class="dim">('+esc(o.auth)+')</span>',fmt(o.n),fmt(o.crore,1),
+    return [esc(o.off)+' <span class="dim">('+esc(orgName(o.auth))+')</span>',fmt(o.n),fmt(o.crore,1),
       '<span class="'+(o.share>=90?'hi':'')+'">'+pct(o.share,0)+'</span>',esc(o.sup)];
   });
   var pairRows=OFF.offpairs.map(function(p){
-    return [esc(p.sup),esc(p.off)+' <span class="dim">('+esc(p.auth)+')</span>',
+    return [esc(p.sup),esc(p.off)+' <span class="dim">('+esc(orgName(p.auth))+')</span>',
       '<span class="tag">'+p.n+'×</span>',fmt(p.crore,1)];
   });
   var broadRows=OFF.broad.map(function(o){
-    return [esc(o.off)+' <span class="dim">('+esc(o.auth)+')</span>',fmt(o.n),fmt(o.crore,1),
+    return [esc(o.off)+' <span class="dim">('+esc(orgName(o.auth))+')</span>',fmt(o.n),fmt(o.crore,1),
       o.sups?fmt(o.sups):'<span class="dim">—</span>',
       o.share?pct(o.share,0):'<span class="dim">—</span>'];
   });
   var shares=OFF.capture.map(function(o){
     return {l:o.off+' → '+(o.sup.length>22?o.sup.slice(0,21)+'…':o.sup),v:o.share,
-      disp:pct(o.share,0)+'  <span class="dim">'+fmt(o.crore,1)+' cr</span>',
+      disp:pct(o.share,0)+'  <span class="dim">'+fmt(o.crore,1)+L(' cr',' কোটি')+'</span>',
       cls:o.share>=94?'peak':'',
-      tip:'<b>'+esc(o.off)+'</b> ('+esc(o.auth)+')<br>'+o.n+' tenders · '+cr(o.crore)+'<br>'+
-        pct(o.share,0)+' of that value to <b>'+esc(o.sup)+'</b>'};
+      tip:'<b>'+esc(o.off)+'</b> ('+esc(orgName(o.auth))+')<br>'+
+        L(o.n+' tenders · '+cr(o.crore)+'<br>'+pct(o.share,0)+' of that value to <b>'+esc(o.sup)+'</b>',
+          o.n+'টি দরপত্র · '+cr(o.crore)+'<br>এর '+pct(o.share,0)+' গেছে <b>'+esc(o.sup)+'</b>-এর কাছে')};
   });
-  return section('officers','08','The officials, not just the firms',
-    'Contractor-level patterns can be explained by the market. Patterns attached to the <em>named individual '+
-    'who authorised the award</em> are harder to explain that way — and the e-GP record names them. Of '+
-    OFF.n_officers+' authorising officers, these directed the overwhelming majority of their value to a single firm.',
-    figure('Officers whose awards flow to one contractor',
-      'Share of each officer\'s authorised value going to their single largest contractor · officers with 2+ awards',
+  return section('officers','08',L('The officials, not just the firms','কেবল প্রতিষ্ঠান নয়, কর্মকর্তারাও'),
+    L('Contractor-level patterns can be explained by the market. Patterns attached to the <em>named individual '+
+      'who authorised the award</em> are harder to explain that way — and the e-GP record names them. Of '+
+      OFF.n_officers+' authorising officers, these directed the overwhelming majority of their value to a single firm.',
+      'ঠিকাদার-পর্যায়ের ধরন বাজারের যুক্তিতে ব্যাখ্যা করা যায়। কিন্তু <em>যে নামধারী ব্যক্তি কার্যাদেশটি অনুমোদন '+
+      'করেছেন</em> তাঁর সঙ্গে জড়িয়ে থাকা ধরন সেভাবে ব্যাখ্যা করা কঠিন — আর ই-জিপি রেকর্ডে তাঁদের নাম আছে। '+
+      OFF.n_officers+'জন অনুমোদনকারী কর্মকর্তার মধ্যে এঁরা নিজেদের অনুমোদিত মূল্যের বিপুল অংশ পাঠিয়েছেন '+
+      'একটিমাত্র প্রতিষ্ঠানে।'),
+    figure(L('Officers whose awards flow to one contractor','যেসব কর্মকর্তার কার্যাদেশ এক ঠিকাদারেই যায়'),
+      L('Share of each officer\'s authorised value going to their single largest contractor · officers with 2+ awards',
+        'প্রতিটি কর্মকর্তার অনুমোদিত মূল্যের কত অংশ তাঁর সবচেয়ে বড় একটিমাত্র ঠিকাদারের কাছে গেছে · ২+ কার্যাদেশ '+
+        'আছে যেসব কর্মকর্তার'),
       hbars(shares,{wide:true}),
-      '<b>Spectra Engineers Ltd. holds a near-exclusive position with three separate CDA officers</b> — '+
-      'Rajib Das (99%), Asad Bin Anwar (94%) and Kazi Hasan Bin Shams (86%). One officer favouring one firm can be '+
-      'a specialism. Three officers inside one authority is a firm-and-authority pattern.')+
-    table([{t:'Authorising officer (authority)'},{t:'Tenders',num:true},{t:'৳ crore',num:true},
-      {t:'Share to one firm',num:true},{t:'That firm'}],capRows)+
-    '<h3>Officer–contractor pairs that recur</h3>'+
-    '<p>Counting pairs of <em>officer</em> and contractor rather than office and contractor, '+OFF.pairs_of.ge2+
-    ' pairs recur twice or more and '+OFF.pairs_of.ge3+' recur three times or more:</p>'+
-    table([{t:'Contractor'},{t:'Authorising officer (authority)'},{t:'Contracts',num:true},{t:'৳ crore',num:true}],pairRows)+
-    '<h3>The control: officers who spread the work</h3>'+
-    '<p>The same measure identifies the opposite. These are the highest-volume officers in the dataset — and the '+
-    'first of them is the clearest example of what a broad, competitive book looks like:</p>'+
-    table([{t:'Authorising officer (authority)'},{t:'Tenders',num:true},{t:'৳ crore',num:true},
-      {t:'Distinct contractors',num:true},{t:'Top-firm share',num:true}],broadRows)+
-    '<div class="callout"><b>Mohammad Muzaffar Uddin (RAJUK) authorised 43 tenders across 33 different '+
-    'contractors.</b> That is what the absence of this red flag looks like, in the same dataset, at the same '+
-    'authority, under the same rules — which is why the concentrated books above are a fair question to ask.</div>'+
-    '<p class="note">These officer-level figures are computed directly from the <code>Authorised_Officer</code> field '+
-    'of the source database rather than from the precomputed aggregate file, using the same name normalisation. '+
-    'Officers are identified by name + authority, so two officials sharing a name at different authorities are '+
-    'counted separately, and one official who moved between authorities would appear twice.</p>'
+      L('<b>Spectra Engineers Ltd. holds a near-exclusive position with three separate CDA officers</b> — '+
+        'Rajib Das (99%), Asad Bin Anwar (94%) and Kazi Hasan Bin Shams (86%). One officer favouring one firm can be '+
+        'a specialism. Three officers inside one authority is a firm-and-authority pattern.',
+        '<b>সিডিএ-র তিনজন আলাদা কর্মকর্তার ক্ষেত্রেই Spectra Engineers Ltd. প্রায় একচেটিয়া জায়গা ধরে রেখেছে</b> — '+
+        'Rajib Das (৯৯%), Asad Bin Anwar (৯৪%) এবং Kazi Hasan Bin Shams (৮৬%)। একজন কর্মকর্তার একটি প্রতিষ্ঠানের '+
+        'দিকে ঝোঁক বিশেষায়িত দক্ষতার কারণে হতে পারে। কিন্তু একই সংস্থার তিনজন কর্মকর্তার ক্ষেত্রে তা প্রতিষ্ঠান-ও-সংস্থা '+
+        'মিলিয়ে একটি ধরন।'))+
+    table([{t:L('Authorising officer (authority)','অনুমোদনকারী কর্মকর্তা (সংস্থা)')},
+      {t:L('Tenders','দরপত্র'),num:true},{t:L('৳ crore','৳ কোটি'),num:true},
+      {t:L('Share to one firm','এক প্রতিষ্ঠানের অংশ'),num:true},{t:L('That firm','সেই প্রতিষ্ঠান')}],capRows)+
+    L('<h3>Officer–contractor pairs that recur</h3>','<h3>বারবার ফিরে আসা কর্মকর্তা–ঠিকাদার জোড়া</h3>')+
+    L('<p>Counting pairs of <em>officer</em> and contractor rather than office and contractor, '+OFF.pairs_of.ge2+
+      ' pairs recur twice or more and '+OFF.pairs_of.ge3+' recur three times or more:</p>',
+      '<p>দপ্তর-ও-ঠিকাদারের বদলে <em>কর্মকর্তা</em>-ও-ঠিকাদারের জোড়া গুনলে '+OFF.pairs_of.ge2+'টি জোড়া দুই বা তার '+
+      'বেশিবার এবং '+OFF.pairs_of.ge3+'টি জোড়া তিন বা তার বেশিবার ফিরে আসে:</p>')+
+    table([{t:L('Contractor','ঠিকাদার')},{t:L('Authorising officer (authority)','অনুমোদনকারী কর্মকর্তা (সংস্থা)')},
+      {t:L('Contracts','চুক্তি'),num:true},{t:L('৳ crore','৳ কোটি'),num:true}],pairRows)+
+    L('<h3>The control: officers who spread the work</h3>','<h3>তুলনার জন্য: যাঁরা কাজ ছড়িয়ে দেন</h3>')+
+    L('<p>The same measure identifies the opposite. These are the highest-volume officers in the dataset — and the '+
+      'first of them is the clearest example of what a broad, competitive book looks like:</p>',
+      '<p>একই মাপকাঠি উল্টো চিত্রটিও ধরিয়ে দেয়। এঁরা ডেটাসেটে সবচেয়ে বেশি কার্যাদেশ দেওয়া কর্মকর্তা — এবং এঁদের '+
+      'প্রথমজনই সবচেয়ে স্পষ্ট উদাহরণ, একটি প্রশস্ত ও প্রতিযোগিতামূলক খাতা দেখতে কেমন হয়:</p>')+
+    table([{t:L('Authorising officer (authority)','অনুমোদনকারী কর্মকর্তা (সংস্থা)')},
+      {t:L('Tenders','দরপত্র'),num:true},{t:L('৳ crore','৳ কোটি'),num:true},
+      {t:L('Distinct contractors','আলাদা ঠিকাদার'),num:true},
+      {t:L('Top-firm share','শীর্ষ প্রতিষ্ঠানের অংশ'),num:true}],broadRows)+
+    L('<div class="callout"><b>Mohammad Muzaffar Uddin (RAJUK) authorised 43 tenders across 33 different '+
+      'contractors.</b> That is what the absence of this red flag looks like, in the same dataset, at the same '+
+      'authority, under the same rules — which is why the concentrated books above are a fair question to ask.</div>',
+      '<div class="callout"><b>Mohammad Muzaffar Uddin (রাজউক) ৩৩টি আলাদা ঠিকাদারের মধ্যে ৪৩টি দরপত্র অনুমোদন '+
+      'করেছেন।</b> একই ডেটাসেটে, একই সংস্থায়, একই বিধির অধীনে এই লাল সংকেতের অনুপস্থিতি দেখতে ঠিক এমনই — আর '+
+      'সে কারণেই ওপরের কেন্দ্রীভূত খাতাগুলো নিয়ে প্রশ্ন তোলা ন্যায্য।</div>')+
+    L('<p class="note">These officer-level figures are computed directly from the <code>Authorised_Officer</code> field '+
+      'of the source database rather than from the precomputed aggregate file, using the same name normalisation. '+
+      'Officers are identified by name + authority, so two officials sharing a name at different authorities are '+
+      'counted separately, and one official who moved between authorities would appear twice.</p>',
+      '<p class="note">কর্মকর্তা-পর্যায়ের এই সংখ্যাগুলো আগে থেকে হিসাব করা সমষ্টি ফাইল থেকে নয়, মূল ডেটাবেসের '+
+      '<code>Authorised_Officer</code> ঘর থেকেই সরাসরি গণনা করা হয়েছে, একই নাম-সমন্বয় পদ্ধতিতে। কর্মকর্তাদের চেনা '+
+      'হয়েছে নাম + সংস্থা মিলিয়ে; ফলে ভিন্ন সংস্থায় একই নামের দুজন আলাদা করে গোনা হয়েছে, আর কোনো কর্মকর্তা এক '+
+      'সংস্থা থেকে অন্য সংস্থায় গেলে তিনি দুবার আসবেন।</p>')
   );
 }
 /* ---- generic vertical column chart (single measure, single axis) ---- */
@@ -903,7 +1192,8 @@ function columnsSVG(rows,opts){
   var xl=rows.map(function(r,ix){
     return '<text class="tickv" x="'+(ml+ix*step+step/2)+'" y="'+(H-mb+18)+'" text-anchor="middle">'+esc(r.k)+'</text>';
   }).join('');
-  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(opts.aria||'column chart')+'">'+
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+
+    esc(opts.aria||L('column chart','স্তম্ভ লেখচিত্র'))+'">'+
     '<g class="grid">'+g+'</g>'+bars+
     '<line class="baseline" x1="'+ml+'" y1="'+(mt+ih)+'" x2="'+(W-mr)+'" y2="'+(mt+ih)+'"/>'+xl+'</svg>';
 }
@@ -912,80 +1202,134 @@ function columnsSVG(rows,opts){
 function sTime(){
   var yv=D.years.map(function(y){
     return {k:y.y,v:y.crore,flag:y.crore>1000,dl:y.crore>1000?fmt(y.crore,0):'',
-      tip:'<b>'+y.y+'</b><br>'+cr(y.crore)+' awarded<br><span class="k">'+y.n+' contracts</span>'};
+      tip:'<b>'+y.y+'</b><br>'+L(cr(y.crore)+' awarded<br><span class="k">'+y.n+' contracts</span>',
+        cr(y.crore)+' কার্যাদেশ<br><span class="k">'+y.n+'টি চুক্তি</span>')};
   });
   var yn=D.years.map(function(y){
     return {k:y.y,v:y.n,flag:false,
-      tip:'<b>'+y.y+'</b><br>'+y.n+' contracts awarded<br><span class="k">'+cr(y.crore)+'</span>'};
+      tip:'<b>'+y.y+'</b><br>'+L(y.n+' contracts awarded<br><span class="k">'+cr(y.crore)+'</span>',
+        y.n+'টি চুক্তিতে কার্যাদেশ<br><span class="k">'+cr(y.crore)+'</span>')};
   });
   var dist=D.districts.slice(0,10).map(function(d){
-    return {l:d.d,v:d.crore,disp:fmt(d.crore,1)+' cr  <span class="dim">'+d.n+' tenders</span>',
-      tip:'<b>'+esc(d.d)+'</b><br>'+cr(d.crore)+' across '+d.n+' tenders'};
+    return {l:distName(d.d),v:d.crore,
+      disp:fmt(d.crore,1)+L(' cr','  কোটি')+'  <span class="dim">'+d.n+L(' tenders','টি দরপত্র')+'</span>',
+      tip:'<b>'+esc(distName(d.d))+'</b><br>'+
+        L(cr(d.crore)+' across '+d.n+' tenders',d.n+'টি দরপত্রে মোট '+cr(d.crore))};
   });
-  return section('time','09','When and where the money moved',
-    'The two charts below deliberately use separate axes on separate charts rather than one dual-axis chart, '+
-    'because the number of contracts and the value of contracts tell opposite stories — and overlaying them would '+
-    'hide exactly that.',
+  return section('time','09',L('When and where the money moved','টাকা কখন কোথায় গেছে'),
+    L('The two charts below deliberately use separate axes on separate charts rather than one dual-axis chart, '+
+      'because the number of contracts and the value of contracts tell opposite stories — and overlaying them would '+
+      'hide exactly that.',
+      'নিচের দুটি চার্ট ইচ্ছাকৃতভাবে আলাদা চার্টে আলাদা অক্ষ ব্যবহার করেছে, একটিমাত্র দ্বি-অক্ষ চার্ট নয় — কারণ চুক্তির '+
+      'সংখ্যা আর চুক্তির মূল্য দুটি উল্টো গল্প বলে, আর একসঙ্গে চাপিয়ে দিলে ঠিক সেটিই ঢাকা পড়ে যেত।'),
     '<div class="grid2">'+
-      figure('Award value by year','৳ crore',columnsSVG(yv,{aria:'Award value by year',fmtTick:function(v){return fmt(v,0);}}),
-        '<b>2023 is an outlier driven almost entirely by one contract</b> — the ৳881 crore CDA award. Strip that '+
-        'single tender out and 2023 looks like every other year.')+
-      figure('Number of contracts by year','count of awards',columnsSVG(yn,{aria:'Number of contracts by year'}),
-        '<b>Contract volume peaks in 2024, value does not.</b> The busiest year and the biggest year are different '+
-        'years — a reminder that counting tenders and following money are separate exercises.')+
+      figure(L('Award value by year','বছরভিত্তিক কার্যাদেশ মূল্য'),L('৳ crore','৳ কোটি'),
+        columnsSVG(yv,{aria:L('Award value by year','বছরভিত্তিক কার্যাদেশ মূল্য'),
+          fmtTick:function(v){return fmt(v,0);}}),
+        L('<b>2023 is an outlier driven almost entirely by one contract</b> — the ৳881 crore CDA award. Strip that '+
+          'single tender out and 2023 looks like every other year.',
+          '<b>২০২৩ সাল ব্যতিক্রম, আর তা প্রায় পুরোটাই একটি চুক্তির কারণে</b> — সিডিএ-র ৳৮৮১ কোটির কার্যাদেশ। ওই '+
+          'একটি দরপত্র বাদ দিলে ২০২৩ দেখতে বাকি সব বছরের মতোই।'))+
+      figure(L('Number of contracts by year','বছরভিত্তিক চুক্তির সংখ্যা'),L('count of awards','কার্যাদেশের সংখ্যা'),
+        columnsSVG(yn,{aria:L('Number of contracts by year','বছরভিত্তিক চুক্তির সংখ্যা')}),
+        L('<b>Contract volume peaks in 2024, value does not.</b> The busiest year and the biggest year are different '+
+          'years — a reminder that counting tenders and following money are separate exercises.',
+          '<b>চুক্তির সংখ্যা সবচেয়ে বেশি ২০২৪ সালে, মূল্য নয়।</b> সবচেয়ে ব্যস্ত বছর আর সবচেয়ে বড় বছর আলাদা — মনে '+
+          'করিয়ে দেয়, দরপত্র গোনা আর টাকার পথ ধরা দুটি ভিন্ন কাজ।'))+
     '</div>'+
-    figure('Award value by district','Top 10 districts, ৳ crore',hbars(dist,{wide:true}),
-      'Dhaka leads on volume, but <b>Chattogram carries nearly as much value from a fifth as many tenders</b> — '+
-      'the arithmetic of a handful of very large CDA contracts.')
+    figure(L('Award value by district','জেলাভিত্তিক কার্যাদেশ মূল্য'),
+      L('Top 10 districts, ৳ crore','শীর্ষ ১০ জেলা, ৳ কোটি'),hbars(dist,{wide:true}),
+      L('Dhaka leads on volume, but <b>Chattogram carries nearly as much value from a fifth as many tenders</b> — '+
+        'the arithmetic of a handful of very large CDA contracts.',
+        'সংখ্যার দিকে ঢাকা এগিয়ে, কিন্তু <b>চট্টগ্রাম পাঁচ ভাগের এক ভাগ দরপত্র দিয়েই প্রায় সমান মূল্য বহন করছে</b> — '+
+        'হাতে গোনা কয়েকটি বিশাল সিডিএ চুক্তির হিসাব।'))
   );
 }
 /* ============ 10 · THE OTHER DETECTIONS ============ */
 function sOther(){
   var cl=D.clustering, dp=D.docprice, nc=D.namecheck;
   var ncRows=nc.map(function(p){
-    return [esc(p.a),esc(p.b),'<span class="tag warn">near-identical</span>'];
+    return [esc(p.a),esc(p.b),'<span class="tag warn">'+L('near-identical','প্রায় হুবহু এক')+'</span>'];
   });
-  return section('other','10','Four more checks — including the ones that came back clean',
-    'An honest investigation reports the tests that found nothing as well as the ones that found something. '+
-    'Four further detections were run across the whole dataset.',
-    '<h3>1. Same-day bulk awards <span class="tag">flag raised</span></h3>'+
+  return section('other','10',
+    L('Four more checks — including the ones that came back clean',
+      'আরও চারটি পরীক্ষা — যেগুলো কিছুই পায়নি সেগুলোসহ'),
+    L('An honest investigation reports the tests that found nothing as well as the ones that found something. '+
+      'Four further detections were run across the whole dataset.',
+      'একটি সৎ অনুসন্ধান কেবল যেসব পরীক্ষায় কিছু পাওয়া গেছে তা নয়, যেগুলোতে কিছুই পাওয়া যায়নি সেগুলোরও হিসাব দেয়। '+
+      'গোটা ডেটাসেটের ওপর আরও চারটি পরীক্ষা চালানো হয়েছে।'),
+    L('<h3>1. Same-day bulk awards <span class="tag">flag raised</span></h3>',
+      '<h3>১. একই দিনে গাদা করে দেওয়া কার্যাদেশ <span class="tag">সংকেত উঠেছে</span></h3>')+
     tiles([
-      {v:fmt(cl.clusters),l:'clusters of awards issued on the same day by the same office',k:'warn'},
-      {v:fmt(cl.records_in),l:'contracts inside those clusters',k:'warn'},
-      {v:pct(cl.pct),l:'of all awards',k:'warn'},
-      {v:fmt(cl.events),l:'distinct award events in total'}
+      {v:fmt(cl.clusters),l:L('clusters of awards issued on the same day by the same office',
+        'একই দপ্তর একই দিনে দেওয়া কার্যাদেশের গুচ্ছ'),k:'warn'},
+      {v:fmt(cl.records_in),l:L('contracts inside those clusters','ওই গুচ্ছগুলোর ভেতরের চুক্তি'),k:'warn'},
+      {v:pct(cl.pct),l:L('of all awards','সব কার্যাদেশের অনুপাত'),k:'warn'},
+      {v:fmt(cl.events),l:L('distinct award events in total','মোট আলাদা কার্যাদেশ-ঘটনা')}
     ])+
-    '<p>Roughly one award in six was issued as part of a batch signed off on a single day by a single office. '+
-    'Bundling is administratively normal — a project reaching a milestone releases many packages at once. It is '+
-    'also the mechanism by which a large work can be split into many small ones that each fall below a '+
-    'competitive-tendering or approval threshold. Whether these are the former or the latter cannot be told from '+
-    'the register alone; it can be told from the package descriptions, which is a finite piece of work.</p>'+
-    '<h3>2. Tender document pricing <span class="tag ok">no flag</span></h3>'+
-    '<p>Prohibitive document fees are a classic way to thin a bidder field before it forms. That is not happening '+
-    'here: of '+fmt(dp.n)+' tenders with a published document price, <b>'+fmt(dp.hist[0].n)+' are priced at or below '+
-    '৳1,000</b>, with a median of ৳'+fmt(dp.median,0)+' and only '+fmt(dp.n-dp.hist[0].n)+' outliers up to ৳'+
-    fmt(dp.max,0)+'. Document cost is not the barrier to entry in this dataset — the responsiveness ruling is.</p>'+
-    '<h3>3. Near-identical contractor names <span class="tag warn">flag raised</span></h3>'+
-    '<p>Automated name comparison across all '+fmt(D.concentration.suppliers)+' supplier names surfaced two pairs '+
-    'that differ by a single letter or a suffix. This is a data-quality flag first — it affects how contractors are '+
-    'counted — and a relationship question second, because closely-named firms bidding into the same offices is '+
-    'something an auditor checks:</p>'+
-    table([{t:'Name as recorded'},{t:'Name as recorded'},{t:'Flag'}],ncRows)+
-    '<p class="note">Two similar names are not evidence of a shell arrangement — Bangladeshi construction naming '+
-    'conventions produce genuine coincidences constantly. It is listed because it changes the contractor count, and '+
-    'because the ownership records that would settle it are not in the procurement register.</p>'+
-    '<h3>4. Winning price against the engineer\'s estimate <span class="tag neutral">could not be run</span></h3>'+
-    '<div class="callout crit"><b>This is the most important test in the whole investigation, and the public record '+
-    'will not support it.</b> The single most direct signature of price rigging is a winning bid sitting suspiciously '+
-    'close to — typically just under — the engineer\'s own cost estimate. The <code>Estimated_Cost</code> field is '+
-    '<b>empty in all '+fmt(D.headline.tenders)+' records</b>. Without it, no amount of analysis here can say whether '+
-    'these contracts were priced competitively. The estimates exist: they are published in each authority\'s Annual '+
-    'Procurement Plan, package by package. Retrieving them is the highest-value next step, and the scraper built for '+
-    'exactly that job is in this repository.</div>'
+    L('<p>Roughly one award in six was issued as part of a batch signed off on a single day by a single office. '+
+      'Bundling is administratively normal — a project reaching a milestone releases many packages at once. It is '+
+      'also the mechanism by which a large work can be split into many small ones that each fall below a '+
+      'competitive-tendering or approval threshold. Whether these are the former or the latter cannot be told from '+
+      'the register alone; it can be told from the package descriptions, which is a finite piece of work.</p>',
+      '<p>মোটামুটি প্রতি ছয়টি কার্যাদেশের একটি এসেছে এমন একটি গুচ্ছের অংশ হিসেবে, যা একটি দপ্তর একদিনেই অনুমোদন '+
+      'করেছে। একসঙ্গে গুচ্ছ করে দেওয়া প্রশাসনিকভাবে স্বাভাবিক — কোনো প্রকল্প একটি ধাপে পৌঁছালে একবারেই অনেক '+
+      'প্যাকেজ ছাড়া হয়। কিন্তু এটিই আবার সেই উপায়, যাতে একটি বড় কাজকে ভেঙে অনেক ছোট কাজে পরিণত করা যায় এবং '+
+      'প্রত্যেকটি প্রতিযোগিতামূলক দরপত্র বা অনুমোদনের সীমার নিচে থেকে যায়। এগুলো কোনটি — তা কেবল রেজিস্টার দেখে '+
+      'বলা যায় না; প্যাকেজের বিবরণ দেখে বলা যায়, আর সেটি একটি সীমিত পরিমাণ কাজ।</p>')+
+    L('<h3>2. Tender document pricing <span class="tag ok">no flag</span></h3>',
+      '<h3>২. দরপত্র দস্তাবেজের দাম <span class="tag ok">কোনো সংকেত নেই</span></h3>')+
+    L('<p>Prohibitive document fees are a classic way to thin a bidder field before it forms. That is not happening '+
+      'here: of '+fmt(dp.n)+' tenders with a published document price, <b>'+fmt(dp.hist[0].n)+' are priced at or below '+
+      '৳1,000</b>, with a median of ৳'+fmt(dp.median,0)+' and only '+fmt(dp.n-dp.hist[0].n)+' outliers up to ৳'+
+      fmt(dp.max,0)+'. Document cost is not the barrier to entry in this dataset — the responsiveness ruling is.</p>',
+      '<p>দস্তাবেজের চড়া দাম হলো দরদাতার সংখ্যা গড়ে ওঠার আগেই কমিয়ে দেওয়ার একটি চেনা কৌশল। এখানে তা ঘটছে না: '+
+      'প্রকাশিত দস্তাবেজ-মূল্য আছে এমন '+fmt(dp.n)+'টি দরপত্রের মধ্যে <b>'+fmt(dp.hist[0].n)+'টির দাম ৳১,০০০ বা তার '+
+      'কম</b>, মধ্যমা ৳'+fmt(dp.median,0)+', আর মাত্র '+fmt(dp.n-dp.hist[0].n)+'টি ব্যতিক্রম সর্বোচ্চ ৳'+fmt(dp.max,0)+
+      ' পর্যন্ত। এই ডেটাসেটে প্রবেশের বাধা দস্তাবেজের দাম নয় — বাধা হলো রেসপনসিভ কি না, সেই সিদ্ধান্ত।</p>')+
+    L('<h3>3. Near-identical contractor names <span class="tag warn">flag raised</span></h3>',
+      '<h3>৩. প্রায় হুবহু এক ঠিকাদারের নাম <span class="tag warn">সংকেত উঠেছে</span></h3>')+
+    L('<p>Automated name comparison across all '+fmt(D.concentration.suppliers)+' supplier names surfaced two pairs '+
+      'that differ by a single letter or a suffix. This is a data-quality flag first — it affects how contractors are '+
+      'counted — and a relationship question second, because closely-named firms bidding into the same offices is '+
+      'something an auditor checks:</p>',
+      '<p>সরবরাহকারীর '+fmt(D.concentration.suppliers)+'টি নামের ওপর স্বয়ংক্রিয় তুলনা চালিয়ে দুটি জোড়া পাওয়া গেছে, '+
+      'যেগুলোর পার্থক্য মাত্র একটি অক্ষর বা একটি শেষাংশে। এটি প্রথমত ডেটার গুণমান নিয়ে একটি সংকেত — কারণ এতে ঠিকাদার '+
+      'গণনা বদলে যায় — আর দ্বিতীয়ত সম্পর্ক নিয়ে একটি প্রশ্ন, কারণ কাছাকাছি নামের প্রতিষ্ঠান একই দপ্তরে দর দিলে '+
+      'নিরীক্ষকেরা তা যাচাই করে দেখেন:</p>')+
+    table([{t:L('Name as recorded','রেকর্ডে লেখা নাম')},{t:L('Name as recorded','রেকর্ডে লেখা নাম')},
+      {t:L('Flag','সংকেত')}],ncRows)+
+    L('<p class="note">Two similar names are not evidence of a shell arrangement — Bangladeshi construction naming '+
+      'conventions produce genuine coincidences constantly. It is listed because it changes the contractor count, and '+
+      'because the ownership records that would settle it are not in the procurement register.</p>',
+      '<p class="note">দুটি মিলে যাওয়া নাম কোনো ভুয়া প্রতিষ্ঠানের ব্যবস্থার প্রমাণ নয় — বাংলাদেশে নির্মাণ প্রতিষ্ঠানের '+
+      'নামকরণের রীতিতে এমন সত্যিকারের কাকতাল অহরহ ঘটে। এটি তালিকায় রাখা হয়েছে কারণ এতে ঠিকাদারের সংখ্যা বদলায়, '+
+      'আর যে মালিকানার রেকর্ড বিষয়টি নিষ্পত্তি করত, তা ক্রয় রেজিস্টারে নেই।</p>')+
+    L('<h3>4. Winning price against the engineer\'s estimate <span class="tag neutral">could not be run</span></h3>',
+      '<h3>৪. বিজয়ী দর বনাম ইঞ্জিনিয়ারের প্রাক্কলন <span class="tag neutral">চালানো যায়নি</span></h3>')+
+    L('<div class="callout crit"><b>This is the most important test in the whole investigation, and the public record '+
+      'will not support it.</b> The single most direct signature of price rigging is a winning bid sitting suspiciously '+
+      'close to — typically just under — the engineer\'s own cost estimate. The <code>Estimated_Cost</code> field is '+
+      '<b>empty in all '+fmt(D.headline.tenders)+' records</b>. Without it, no amount of analysis here can say whether '+
+      'these contracts were priced competitively. The estimates exist: they are published in each authority\'s Annual '+
+      'Procurement Plan, package by package. Retrieving them is the highest-value next step, and the scraper built for '+
+      'exactly that job is in this repository.</div>',
+      '<div class="callout crit"><b>গোটা অনুসন্ধানে এটিই সবচেয়ে গুরুত্বপূর্ণ পরীক্ষা, আর সরকারি রেকর্ড এটি চালাতে '+
+      'দেয় না।</b> দর কারসাজির সবচেয়ে সরাসরি চিহ্ন হলো বিজয়ী দর ইঞ্জিনিয়ারের নিজের প্রাক্কলনের সন্দেহজনকভাবে '+
+      'কাছাকাছি — সাধারণত ঠিক তার সামান্য নিচে — বসে থাকা। কিন্তু <code>Estimated_Cost</code> ঘরটি '+
+      '<b>'+fmt(D.headline.tenders)+'টি রেকর্ডের প্রত্যেকটিতেই ফাঁকা</b>। এটি ছাড়া এখানে যত বিশ্লেষণই হোক, এই '+
+      'চুক্তিগুলোর দর প্রতিযোগিতামূলক ছিল কি না তা বলা সম্ভব নয়। প্রাক্কলনগুলো আছে: প্রতিটি সংস্থার বার্ষিক ক্রয় '+
+      'পরিকল্পনায় প্যাকেজ ধরে ধরে প্রকাশিত। সেগুলো সংগ্রহ করাই সবচেয়ে মূল্যবান পরবর্তী ধাপ, আর ঠিক সেই কাজের জন্য '+
+      'বানানো স্ক্রেপারটি এই রিপোজিটরিতেই আছে।</div>')
   );
 }
 /* ============ 11 · EVIDENCE ROOM ============ */
-var EV={q:'',org:'',flag:'',sort:'crore',dir:-1};
+/* `page`/`per` keep the rendered table to one screenful of rows. The unpaginated
+   version put all 645 rows — ~10,000 nodes, 80% of the whole document — inside a
+   620px scroll box, which on mobile left the browser with a 32,000px page whose
+   last two sections were not painted until an anchor jump forced it. */
+var EV={q:'',org:'',flag:'',sort:'crore',dir:-1,page:0,per:50};
+var EVPER=[25,50,100,250,1e9];
 /* One definition per flag, used for the chip filter, the chip's own count and the
    row tag — so a reader clicking a chip lands on exactly the number the article
    quotes. `sold` is the count of firms that bought the tender documents: a tender
@@ -993,15 +1337,15 @@ var EV={q:'',org:'',flag:'',sort:'crore',dir:-1};
    walked away, which is why the primary single-responsive figure (149) is larger
    than the bids-received-only figure (114). */
 var EVFLAGS=[
-  {k:'resp1', t:'One responsive bid',
+  {k:'resp1', t:'One responsive bid', b:'একটি রেসপনসিভ দর',
    f:function(c){return c.resp===1;}},
-  {k:'single',t:'Rivals existed, one survived',
+  {k:'single',t:'Rivals existed, one survived', b:'প্রতিযোগী ছিল, টিকল একজন',
    f:function(c){return c.resp===1&&((c.recv||0)>1||(c.sold||0)>1);}},
-  {k:'elim',  t:'3+ bidders → 1',
+  {k:'elim',  t:'3+ bidders → 1', b:'৩+ দরদাতা → ১',
    f:function(c){return c.resp===1&&(c.recv||0)>=3;}},
-  {k:'day28', t:'Signed on day 28',
+  {k:'day28', t:'Signed on day 28', b:'২৮তম দিনে সই',
    f:function(c){return c.delay===28;}},
-  {k:'late',  t:'Signed after day 28',
+  {k:'late',  t:'Signed after day 28', b:'২৮তম দিনের পরে সই',
    f:function(c){return c.delay!=null&&c.delay>28;}}
 ];
 function evFlag(k){
@@ -1013,23 +1357,29 @@ function evFlagCount(k){
 }
 /* Strongest competition tag only — the three overlap by construction — plus the
    timing tag, which is a separate axis. */
+var RISK_BN={'HIGH':'উচ্চ','MEDIUM':'মধ্যম','LOW':'নিম্ন'};
+function riskName(r){return (LANG==='bn'&&RISK_BN[r])?RISK_BN[r]:r;}
 function evTags(c){
   var t=[];
   if(c.resp===1){
-    if((c.recv||0)>=3) t.push('<span class="tag">'+c.recv+' bids → 1</span>');
-    else if((c.recv||0)>1||(c.sold||0)>1) t.push('<span class="tag">rivals → 1</span>');
-    else t.push('<span class="tag neutral">1 responsive</span>');
+    if((c.recv||0)>=3) t.push('<span class="tag">'+L(c.recv+' bids → 1',c.recv+' দর → ১')+'</span>');
+    else if((c.recv||0)>1||(c.sold||0)>1) t.push('<span class="tag">'+L('rivals → 1','প্রতিযোগী → ১')+'</span>');
+    else t.push('<span class="tag neutral">'+L('1 responsive','১ রেসপনসিভ')+'</span>');
   }
-  if(c.delay===28) t.push('<span class="tag warn">day 28</span>');
-  else if(c.delay!=null&&c.delay>28) t.push('<span class="tag">'+(c.delay-28)+'d over</span>');
+  if(c.delay===28) t.push('<span class="tag warn">'+L('day 28','২৮তম দিন')+'</span>');
+  else if(c.delay!=null&&c.delay>28)
+    t.push('<span class="tag">'+L((c.delay-28)+'d over',(c.delay-28)+' দিন বেশি')+'</span>');
   return t.join(' ');
 }
 function evMatch(c){
   if(EV.org&&c.org!==EV.org) return false;
   if(EV.flag){var d=evFlag(EV.flag); if(d&&!d.f(c)) return false;}
   if(EV.q){
-    var q=EV.q.toLowerCase();
-    var hay=(c.id+' '+orgName(c.org)+' '+c.pe+' '+c.sup+' '+(c.pkg||'')).toLowerCase();
+    /* Bengali digits typed into the box are folded back to ASCII so the Bangla
+       edition can still search the Latin tender ids the portal uses. */
+    var q=adig(EV.q).toLowerCase();
+    var hay=(c.id+' '+orgName(c.org)+' '+(ORGNAME[c.org]||'')+' '+c.org+' '+c.pe+' '+c.sup+' '+
+      (c.pkg||'')).toLowerCase();
     if(hay.indexOf(q)<0) return false;
   }
   return true;
@@ -1048,12 +1398,23 @@ function evRender(){
   var rows=evRows(), body=document.getElementById('evBody'), cnt=document.getElementById('evCount');
   if(!body) return;
   var tv=rows.reduce(function(s,c){return s+(c.crore||0);},0);
-  cnt.innerHTML='Showing <b>'+fmt(rows.length)+'</b> of '+fmt(D.cases.length)+' awarded contracts · '+
-    cr(tv)+' · every row links to the government\'s own tender notice and contract-award notice.';
-  body.innerHTML=rows.map(function(c){
+  var pages=Math.max(1,Math.ceil(rows.length/EV.per));
+  EV.page=clamp(EV.page,0,pages-1);
+  var start=EV.page*EV.per, slice=rows.slice(start,start+EV.per);
+  cnt.innerHTML=L(
+    (rows.length?'Rows <b>'+fmt(start+1)+'–'+fmt(start+slice.length)+'</b> of ':'')+
+    '<b>'+fmt(rows.length)+'</b> matching contract'+(rows.length===1?'':'s')+' · '+cr(tv)+' in this filter · '+
+    fmt(D.cases.length)+' awarded contracts in the dataset · every row links to the government\'s own tender '+
+    'notice and contract-award notice.',
+    (rows.length?'সারি <b>'+fmt(start+1)+'–'+fmt(start+slice.length)+'</b>, মোট ':'')+
+    '<b>'+fmt(rows.length)+'</b>টি মিলে যাওয়া চুক্তি · এই ফিল্টারে '+cr(tv)+' · ডেটাসেটে মোট '+
+    fmt(D.cases.length)+'টি কার্যাদেশ পাওয়া চুক্তি · প্রতিটি সারি সরকারের নিজের দরপত্র বিজ্ঞপ্তি ও কার্যাদেশ '+
+    'বিজ্ঞপ্তির সঙ্গে যুক্ত।');
+  body.innerHTML=slice.map(function(c){
     var tags=evTags(c);
     var sold=(c.sold==null)?'' :
-      ' title="Tender documents sold to '+c.sold+' firm'+(c.sold===1?'':'s')+'"';
+      ' title="'+L('Tender documents sold to '+c.sold+' firm'+(c.sold===1?'':'s'),
+        'দরপত্রের দস্তাবেজ বিক্রি হয়েছে '+c.sold+'টি প্রতিষ্ঠানের কাছে')+'"';
     return '<tr><td><span class="tid">#'+esc(c.id)+'</span></td>'+
       '<td>'+esc(orgName(c.org))+'</td>'+
       '<td>'+esc(c.sup)+(c.pkg?'<span class="pkg">'+esc(c.pkg.length>110?c.pkg.slice(0,109)+'…':c.pkg)+'</span>':'')+'</td>'+
@@ -1061,60 +1422,110 @@ function evRender(){
       '<td class="num">'+fmt(c.crore,2)+'</td>'+
       '<td class="num"'+sold+'>'+(c.recv||'—')+' → '+(c.resp||'—')+'</td>'+
       '<td class="num">'+(c.delay==null?'—':c.delay)+'</td>'+
-      '<td><span class="risk '+esc(c.risk)+'">'+esc(c.risk)+'</span>'+(tags?' '+tags:'')+'</td>'+
-      '<td>'+pdfCell(noticeURL(c.n),'notice')+'<br>'+pdfCell(awardURL(c.a),'award')+'</td></tr>';
-  }).join('')||'<tr><td colspan="9" class="dim" style="padding:26px;text-align:center">No contracts match that filter.</td></tr>';
+      '<td><span class="risk '+esc(c.risk)+'">'+esc(riskName(c.risk))+'</span>'+(tags?' '+tags:'')+'</td>'+
+      '<td>'+noticeCell(c.n)+'<br>'+awardCell(c.a)+'</td></tr>';
+  }).join('')||'<tr><td colspan="9" class="dim" style="padding:26px;text-align:center">'+
+    L('No contracts match that filter.','এই ফিল্টারে কোনো চুক্তি মেলেনি।')+'</td></tr>';
+  evPager(pages,rows.length);
+  /* the table is re-rendered on every filter and page change, so it needs its own
+     numeral pass — render()'s pass only saw the first page */
+  bnTree(cnt); bnTree(body); bnTree(document.getElementById('evPager'));
+}
+/* Prev / Next / page count, plus a rows-per-page control whose last option is
+   "all" — so the whole filtered set can still be printed or Ctrl-F'd in one go. */
+function evPager(pages,total){
+  var el=document.getElementById('evPager');
+  if(!el) return;
+  var per=EVPER.map(function(n){
+    return '<button class="chip'+(EV.per===n?' on':'')+'" data-per="'+n+'">'+
+      (n>=1e9?L('all','সব'):fmt(n))+'</button>';
+  }).join('');
+  el.innerHTML='<button class="chip" data-page="prev"'+(EV.page<=0?' disabled':'')+'>&larr; '+
+    L('Prev','আগের')+'</button>'+
+    '<span class="pgnum">'+L('Page <b>'+fmt(EV.page+1)+'</b> of <b>'+fmt(pages)+'</b>',
+      'পৃষ্ঠা <b>'+fmt(EV.page+1)+'</b> / <b>'+fmt(pages)+'</b>')+'</span>'+
+    '<button class="chip" data-page="next"'+(EV.page>=pages-1?' disabled':'')+'>'+
+    L('Next','পরের')+' &rarr;</button>'+
+    '<span class="pgnum" style="margin-left:auto">'+L('rows per page','প্রতি পৃষ্ঠায় সারি')+'</span>'+per;
 }
 function sEvidence(){
   var orgs=[],seen={};
   D.cases.forEach(function(c){if(!seen[c.org]){seen[c.org]=1;orgs.push(c.org);}});
   orgs.sort();
-  var cols=[{k:'id',t:'Tender'},{k:'org',t:'Authority'},{k:'sup',t:'Contractor / package'},
-    {k:'pe',t:'Procuring entity'},{k:'crore',t:'৳ crore',num:true},{k:'recv',t:'Bids → resp.',num:true},
-    {k:'delay',t:'Days',num:true},{k:'risk',t:'Flags'},{k:null,t:'Source PDFs'}];
+  var cols=[{k:'id',t:L('Tender','দরপত্র')},{k:'org',t:L('Authority','সংস্থা')},
+    {k:'sup',t:L('Contractor / package','ঠিকাদার / প্যাকেজ')},
+    {k:'pe',t:L('Procuring entity','ক্রয়কারী সংস্থা')},{k:'crore',t:L('৳ crore','৳ কোটি'),num:true},
+    {k:'recv',t:L('Bids → resp.','দর → রেসপ.'),num:true},
+    {k:'delay',t:L('Days','দিন'),num:true},{k:'risk',t:L('Flags','সংকেত')},
+    {k:null,t:L('Source PDFs','মূল নথি')}];
   var head=cols.map(function(c){
     return '<th'+(c.num?' class="num sortable"':(c.k?' class="sortable"':''))+
       (c.k?' data-sort="'+c.k+'"':'')+'>'+c.t+(c.k?' <span class="dim">⇅</span>':'')+'</th>';
   }).join('');
-  var chips='<button class="chip" data-org="">All authorities</button>'+
-    orgs.map(function(o){return '<button class="chip" data-org="'+esc(o)+'" title="'+esc(orgName(o))+'">'+esc(orgName(o))+'</button>';}).join('');
-  var fchips='<button class="chip on" data-flag="">No flag filter <b>'+fmt(D.cases.length)+'</b></button>'+
+  var chips='<button class="chip'+(EV.org?'':' on')+'" data-org="">'+
+    L('All authorities','সব সংস্থা')+'</button>'+
+    orgs.map(function(o){return '<button class="chip'+(EV.org===o?' on':'')+'" data-org="'+esc(o)+
+      '" title="'+esc(orgName(o))+'">'+esc(orgName(o))+'</button>';}).join('');
+  var fchips='<button class="chip'+(EV.flag?'':' on')+'" data-flag="">'+
+    L('No flag filter','সংকেত ফিল্টার নেই')+' <b>'+fmt(D.cases.length)+'</b></button>'+
     EVFLAGS.map(function(d){
-      return '<button class="chip" data-flag="'+d.k+'">'+d.t+' <b>'+fmt(evFlagCount(d.k))+'</b></button>';
+      return '<button class="chip'+(EV.flag===d.k?' on':'')+'" data-flag="'+d.k+'">'+L(d.t,d.b)+
+        ' <b>'+fmt(evFlagCount(d.k))+'</b></button>';
     }).join('');
-  return section('evidence','11','The evidence room',
-    'Every one of the '+fmt(D.cases.length)+' awarded contracts in this investigation, with both source documents '+
-    'attached. Search it, filter it, sort it, and check any claim on this page against the government\'s own PDF.',
-    '<div class="toolbar"><input id="evQ" type="search" placeholder="Search tender ID, contractor, office, package…" '+
-    'aria-label="Search contracts">'+fchips+'</div>'+
+  return section('evidence','11',L('The evidence room','নথিঘর'),
+    L('Every one of the '+fmt(D.cases.length)+' awarded contracts in this investigation, with both source documents '+
+      'attached. Search it, filter it, sort it, and check any claim on this page against the government\'s own PDF.',
+      'এই অনুসন্ধানে কার্যাদেশ পাওয়া '+fmt(D.cases.length)+'টি চুক্তির প্রত্যেকটি, দুটি মূল নথিসহ। খুঁজুন, ফিল্টার করুন, '+
+      'সাজান — আর এই পাতার যেকোনো দাবি সরকারের নিজের পিডিএফের সঙ্গে মিলিয়ে দেখুন।'),
+    '<div class="toolbar"><input id="evQ" type="search" value="'+esc(EV.q)+'" '+
+    'placeholder="'+L('Search tender ID, contractor, office, package…',
+      'দরপত্র আইডি, ঠিকাদার, দপ্তর, প্যাকেজ খুঁজুন…')+'" aria-label="'+
+    L('Search contracts','চুক্তি খুঁজুন')+'">'+fchips+'</div>'+
     '<div class="toolbar">'+chips+'</div>'+
     '<div class="tblwrap tall"><table><thead><tr>'+head+'</tr></thead><tbody id="evBody"></tbody></table></div>'+
+    '<div class="pager" id="evPager"></div>'+
     '<div class="meta" id="evCount"></div>'+
-    '<p class="note" style="margin-top:16px">The number on each filter is the count it returns, so every headline '+
-    'figure on this page can be reproduced with one click. Two of them describe single bidding and differ on '+
-    'purpose: <b>one responsive bid</b> counts every award with a lone qualifying bidder, including tenders nobody '+
-    'else entered; <b>rivals existed, one survived</b> — the figure the article leads with — counts only those where '+
-    'more than one firm bid or bought the tender documents, so competitors demonstrably existed. Hover the '+
-    '“Bids&nbsp;→&nbsp;resp.” cell to see how many firms bought the documents for that tender.</p>'+
-    '<p class="note">PDFs open from this repository\'s '+
-    '<code>'+esc(META.notice_dir)+'/</code> and <code>'+esc(META.award_dir)+'/</code> folders — '+
-    fmt(D.evidence_counts.notice)+' tender notices and '+fmt(D.evidence_counts.award)+' contract-award notices as '+
-    'downloaded from the public portal, unmodified.</p>'
+    L('<p class="note" style="margin-top:16px">The number on each filter is the count it returns, so every headline '+
+      'figure on this page can be reproduced with one click. Two of them describe single bidding and differ on '+
+      'purpose: <b>one responsive bid</b> counts every award with a lone qualifying bidder, including tenders nobody '+
+      'else entered; <b>rivals existed, one survived</b> — the figure the article leads with — counts only those where '+
+      'more than one firm bid or bought the tender documents, so competitors demonstrably existed. Hover the '+
+      '“Bids&nbsp;→&nbsp;resp.” cell to see how many firms bought the documents for that tender. '+
+      'The table pages in blocks of 50 so the whole story stays quick to load on a phone; set rows per page to '+
+      '<b>all</b> to have the entire filtered set on one screen for searching or printing.</p>',
+      '<p class="note" style="margin-top:16px">প্রতিটি ফিল্টারের পাশে লেখা সংখ্যাটিই সেটি যতগুলো সারি ফেরায়, তার হিসাব — '+
+      'ফলে এই পাতার প্রতিটি প্রধান সংখ্যা এক ক্লিকেই মিলিয়ে দেখা যায়। এর দুটি ফিল্টার একক দর নিয়েই, তবে উদ্দেশ্যে আলাদা: '+
+      '<b>একটি রেসপনসিভ দর</b> গোনে এমন প্রতিটি কার্যাদেশ যেখানে যোগ্য দরদাতা ছিলেন একজনই — এমনকি যেসব দরপত্রে আর '+
+      'কেউই অংশ নেয়নি সেগুলোসহ; আর <b>প্রতিযোগী ছিল, টিকল একজন</b> — প্রতিবেদন যেটি দিয়ে শুরু হয় — গোনে কেবল সেগুলো, '+
+      'যেখানে একাধিক প্রতিষ্ঠান দর দিয়েছিল বা দরপত্রের দস্তাবেজ কিনেছিল, অর্থাৎ প্রতিযোগীর অস্তিত্ব প্রমাণিত। '+
+      '“দর&nbsp;→&nbsp;রেসপ.” ঘরটিতে মাউস রাখলে দেখা যাবে ওই দরপত্রের দস্তাবেজ কতটি প্রতিষ্ঠান কিনেছিল। '+
+      'টেবিলটি ৫০টি সারির ভাগে ভাগে দেখানো হয়, যাতে গোটা প্রতিবেদন ফোনেও দ্রুত খোলে; পুরো ফিল্টার করা তালিকা একসঙ্গে '+
+      'দেখতে বা ছাপাতে প্রতি পৃষ্ঠায় সারি <b>সব</b> করে দিন। ঠিকাদার ও দপ্তরের নাম সরকারি নথিতে যেভাবে ইংরেজিতে লেখা '+
+      'আছে হুবহু সেভাবেই রাখা হয়েছে, তাই নাম ইংরেজিতে খুঁজতে হবে; দরপত্র আইডি বাংলা বা ইংরেজি — দুই অঙ্কেই খোঁজা '+
+      'যায়।</p>')+
+    L('<p class="note">PDFs open from this repository\'s '+
+      '<code>'+esc(META.notice_dir)+'/</code> and <code>'+esc(META.award_dir)+'/</code> folders — '+
+      fmt(D.evidence_counts.notice)+' tender notices and '+fmt(D.evidence_counts.award)+' contract-award notices as '+
+      'downloaded from the public portal, unmodified.</p>',
+      '<p class="note">পিডিএফগুলো খোলে এই রিপোজিটরির <code>'+esc(META.notice_dir)+'/</code> ও '+
+      '<code>'+esc(META.award_dir)+'/</code> ফোল্ডার থেকে — সরকারি পোর্টাল থেকে নামানো '+
+      fmt(D.evidence_counts.notice)+'টি দরপত্র বিজ্ঞপ্তি ও '+fmt(D.evidence_counts.award)+'টি কার্যাদেশ বিজ্ঞপ্তি, '+
+      'অপরিবর্তিত অবস্থায়।</p>')
   );
 }
 function evBind(){
   var q=document.getElementById('evQ');
-  if(q) q.addEventListener('input',function(){EV.q=this.value.trim();evRender();});
+  if(q) q.addEventListener('input',function(){EV.q=this.value.trim();EV.page=0;evRender();});
   document.querySelectorAll('[data-org]').forEach(function(b){
     b.addEventListener('click',function(){
-      EV.org=this.getAttribute('data-org');
+      EV.org=this.getAttribute('data-org'); EV.page=0;
       document.querySelectorAll('[data-org]').forEach(function(x){x.classList.remove('on');});
       this.classList.add('on'); evRender();
     });
   });
   document.querySelectorAll('[data-flag]').forEach(function(b){
     b.addEventListener('click',function(){
-      EV.flag=this.getAttribute('data-flag');
+      EV.flag=this.getAttribute('data-flag'); EV.page=0;
       document.querySelectorAll('[data-flag]').forEach(function(x){x.classList.remove('on');});
       this.classList.add('on'); evRender();
     });
@@ -1123,77 +1534,143 @@ function evBind(){
     th.addEventListener('click',function(){
       var k=this.getAttribute('data-sort');
       if(EV.sort===k) EV.dir=-EV.dir; else {EV.sort=k;EV.dir=(k==='crore'||k==='delay'||k==='recv')?-1:1;}
-      evRender();
+      EV.page=0; evRender();
     });
   });
-  var all=document.querySelector('[data-org=""]'); if(all) all.classList.add('on');
+  /* the pager redraws itself on every render, so it is delegated rather than bound */
+  var pg=document.getElementById('evPager');
+  if(pg) pg.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('button'):null;
+    if(!b||b.disabled) return;
+    var p=b.getAttribute('data-page'), n=b.getAttribute('data-per');
+    if(p==='prev') EV.page--;
+    else if(p==='next') EV.page++;
+    else if(n){ EV.per=Number(n); EV.page=0; }
+    else return;
+    evRender();
+    var box=document.querySelector('#evidence .tblwrap');
+    if(box) box.scrollTop=0;
+  });
   evRender();
 }
 /* ============ 12 · METHOD & LIMITATIONS ============ */
 function sMethod(){
   var h=D.headline;
-  return section('method','12','Method, and what this analysis cannot tell you',
+  return section('method','12',
+    L('Method, and what this analysis cannot tell you','পদ্ধতি, এবং এই বিশ্লেষণ যা বলতে পারে না'),
     '',
     '<div class="narrow"><div class="method">'+
-    '<h3>Source</h3>'+
-    '<p><code>Procurement_Database.json</code> — '+fmt(h.tenders)+' tender records scraped from Bangladesh\'s public '+
-    'e-GP portal, one record per tender, together with '+fmt(D.evidence_counts.notice)+' tender-notice PDFs and '+
-    fmt(D.evidence_counts.award)+' contract-award PDFs archived alongside them. Award values use '+
-    '<code>Contract_Value_BDT</code>; the officer dimension uses <code>Authorised_Officer</code>; competition uses '+
-    '<code>Tenders_Received</code>, <code>Tenders_Sold</code> and <code>Responsive_Tenders</code>; timing uses '+
-    '<code>Notification_of_Award_Date</code> and <code>Contract_Signing_Date</code>.</p>'+
-    '<h3>Scope of each figure</h3>'+
-    '<p>Monetary and concentration figures are computed on the <b>'+fmt(h.awarded)+' awarded</b> records (those with '+
-    'both a named supplier and a contract value). Competition rates are computed on the <b>'+fmt(h.with_bid_data)+
-    ' awarded records that carry bid-count data</b>. Timing is computed on all '+fmt(h.awarded)+'.</p>'+
-    '<h3>Entity de-duplication</h3>'+
-    '<p>Contractor and office names are free text. Before matching they are upper-cased, <code>&amp;</code> is expanded '+
-    'to <code>AND</code>, punctuation is stripped, and the suffixes <code>LTD / LIMITED / PVT / PRIVATE</code> and the '+
-    'prefix <code>M/S</code> are removed — so "Spectra Engineers Ltd." and "Spectra Engineers Ltd" count as one firm. '+
-    'This is imperfect; see limitation 2.</p>'+
-    '<h3>Measures</h3>'+
-    '<p>Concentration uses the Herfindahl–Hirschman Index (sum of squared value shares × 10,000) plus top-1 / top-4 / '+
-    'top-10 value shares and a Lorenz curve. Capture at office or officer level is flagged when one contractor holds '+
-    'more than half — and, for the tables in section 08, at least 80% — of that unit\'s award value across two or more '+
-    'tenders. Officers are keyed on name + authority.</p>'+
-    '<h3>Reproducing the figures</h3>'+
-    '<p>Every one of the '+fmt(h.awarded)+' awarded records is listed in <a href="#evidence">section 11</a> carrying '+
-    'the four fields the competition and timing claims rest on — bids received, bids ruled responsive, firms that '+
-    'bought the documents, and award-to-signing days. Each filter there is labelled with the count it returns, so the '+
-    'headline numbers in this story can be re-derived from the rows themselves rather than taken on trust.</p>'+
-    '<h3>Limitations — read before quoting any number</h3>'+
+    L('<h3>Source</h3>','<h3>উৎস</h3>')+
+    L('<p><code>Procurement_Database.json</code> — '+fmt(h.tenders)+' tender records scraped from Bangladesh\'s public '+
+      'e-GP portal, one record per tender, together with '+fmt(D.evidence_counts.notice)+' tender-notice PDFs and '+
+      fmt(D.evidence_counts.award)+' contract-award PDFs archived alongside them. Award values use '+
+      '<code>Contract_Value_BDT</code>; the officer dimension uses <code>Authorised_Officer</code>; competition uses '+
+      '<code>Tenders_Received</code>, <code>Tenders_Sold</code> and <code>Responsive_Tenders</code>; timing uses '+
+      '<code>Notification_of_Award_Date</code> and <code>Contract_Signing_Date</code>.</p>',
+      '<p><code>Procurement_Database.json</code> — বাংলাদেশের সরকারি ই-জিপি পোর্টাল থেকে সংগ্রহ করা '+
+      fmt(h.tenders)+'টি দরপত্র রেকর্ড, প্রতি দরপত্রে একটি রেকর্ড; সঙ্গে সংরক্ষিত '+fmt(D.evidence_counts.notice)+
+      'টি দরপত্র-বিজ্ঞপ্তি পিডিএফ ও '+fmt(D.evidence_counts.award)+'টি কার্যাদেশ পিডিএফ। কার্যাদেশ মূল্যের জন্য '+
+      '<code>Contract_Value_BDT</code>; কর্মকর্তা-মাত্রার জন্য <code>Authorised_Officer</code>; প্রতিযোগিতার জন্য '+
+      '<code>Tenders_Received</code>, <code>Tenders_Sold</code> ও <code>Responsive_Tenders</code>; সময়ের জন্য '+
+      '<code>Notification_of_Award_Date</code> ও <code>Contract_Signing_Date</code>।</p>')+
+    L('<h3>Scope of each figure</h3>','<h3>কোন সংখ্যা কোন ভিত্তিতে</h3>')+
+    L('<p>Monetary and concentration figures are computed on the <b>'+fmt(h.awarded)+' awarded</b> records (those with '+
+      'both a named supplier and a contract value). Competition rates are computed on the <b>'+fmt(h.with_bid_data)+
+      ' awarded records that carry bid-count data</b>. Timing is computed on all '+fmt(h.awarded)+'.</p>',
+      '<p>অর্থ ও কেন্দ্রীভবনের সংখ্যাগুলো হিসাব করা হয়েছে <b>কার্যাদেশ পাওয়া '+fmt(h.awarded)+'টি</b> রেকর্ডের ওপর '+
+      '(যেগুলোতে সরবরাহকারীর নাম ও চুক্তিমূল্য দুটিই আছে)। প্রতিযোগিতার হার হিসাব করা হয়েছে <b>দরের সংখ্যা আছে এমন '+
+      fmt(h.with_bid_data)+'টি কার্যাদেশ পাওয়া রেকর্ডের</b> ওপর। সময়ের হিসাব পুরো '+fmt(h.awarded)+'টির ওপর।</p>')+
+    L('<h3>Entity de-duplication</h3>','<h3>নাম মিলিয়ে একক করা</h3>')+
+    L('<p>Contractor and office names are free text. Before matching they are upper-cased, <code>&amp;</code> is expanded '+
+      'to <code>AND</code>, punctuation is stripped, and the suffixes <code>LTD / LIMITED / PVT / PRIVATE</code> and the '+
+      'prefix <code>M/S</code> are removed — so "Spectra Engineers Ltd." and "Spectra Engineers Ltd" count as one firm. '+
+      'This is imperfect; see limitation 2.</p>',
+      '<p>ঠিকাদার ও দপ্তরের নাম মুক্ত লেখা হিসেবে রাখা। মেলানোর আগে সেগুলো বড় হাতের অক্ষরে আনা হয়, <code>&amp;</code>-কে '+
+      '<code>AND</code> করা হয়, যতিচিহ্ন সরানো হয়, আর <code>LTD / LIMITED / PVT / PRIVATE</code> শেষাংশ ও '+
+      '<code>M/S</code> উপসর্গ বাদ দেওয়া হয় — ফলে "Spectra Engineers Ltd." ও "Spectra Engineers Ltd" একই প্রতিষ্ঠান '+
+      'হিসেবে গোনা হয়। এই পদ্ধতি নিখুঁত নয়; সীমাবদ্ধতা ২ দেখুন।</p>')+
+    L('<h3>Measures</h3>','<h3>মাপকাঠি</h3>')+
+    L('<p>Concentration uses the Herfindahl–Hirschman Index (sum of squared value shares × 10,000) plus top-1 / top-4 / '+
+      'top-10 value shares and a Lorenz curve. Capture at office or officer level is flagged when one contractor holds '+
+      'more than half — and, for the tables in section 08, at least 80% — of that unit\'s award value across two or more '+
+      'tenders. Officers are keyed on name + authority.</p>',
+      '<p>কেন্দ্রীভবন মাপা হয়েছে হারফিনডাল–হার্শম্যান সূচক (মূল্য-অংশের বর্গের যোগফল × ১০,০০০) দিয়ে, সঙ্গে শীর্ষ-১ / '+
+      'শীর্ষ-৪ / শীর্ষ-১০ মূল্য-অংশ এবং একটি লরেঞ্জ রেখা। দপ্তর বা কর্মকর্তা পর্যায়ে দখল চিহ্নিত করা হয় যখন একটি '+
+      'ঠিকাদার দুই বা তার বেশি দরপত্র জুড়ে ওই ইউনিটের কার্যাদেশ মূল্যের অর্ধেকের বেশি — আর অংশ ০৮-এর টেবিলগুলোর '+
+      'ক্ষেত্রে অন্তত ৮০% — ধরে রাখে। কর্মকর্তাদের চেনা হয় নাম + সংস্থা মিলিয়ে।</p>')+
+    L('<h3>Reproducing the figures</h3>','<h3>সংখ্যাগুলো নিজে মিলিয়ে দেখা</h3>')+
+    L('<p>Every one of the '+fmt(h.awarded)+' awarded records is listed in <a href="#evidence">section 11</a> carrying '+
+      'the four fields the competition and timing claims rest on — bids received, bids ruled responsive, firms that '+
+      'bought the documents, and award-to-signing days. Each filter there is labelled with the count it returns, so the '+
+      'headline numbers in this story can be re-derived from the rows themselves rather than taken on trust.</p>',
+      '<p>কার্যাদেশ পাওয়া '+fmt(h.awarded)+'টি রেকর্ডের প্রত্যেকটি <a href="#evidence">অংশ ১১</a>-এ তালিকাবদ্ধ, আর '+
+      'সঙ্গে আছে সেই চারটি ঘর যার ওপর প্রতিযোগিতা ও সময়ের দাবিগুলো দাঁড়িয়ে — জমা পড়া দর, রেসপনসিভ ঘোষিত দর, '+
+      'দস্তাবেজ কেনা প্রতিষ্ঠানের সংখ্যা, এবং কার্যাদেশ থেকে সই পর্যন্ত দিন। সেখানে প্রতিটি ফিল্টারের পাশে লেখা আছে '+
+      'সেটি কতগুলো সারি ফেরায়, ফলে এই প্রতিবেদনের প্রধান সংখ্যাগুলো বিশ্বাসে নয়, সারি থেকেই আবার বের করে নেওয়া '+
+      'যায়।</p>')+
+    L('<h3>Limitations — read before quoting any number</h3>','<h3>সীমাবদ্ধতা — কোনো সংখ্যা উদ্ধৃত করার আগে পড়ুন</h3>')+
     '<ol>'+
-    '<li><b>Association is not causation, and a red flag is not a finding of wrongdoing.</b> Every pattern here has '+
-    'lawful explanations. This investigation identifies where scrutiny is warranted; it does not conclude that '+
-    'scrutiny would find misconduct.</li>'+
-    '<li><b>Name de-duplication is imperfect.</b> Normalisation merges obvious variants but cannot catch every '+
-    'misspelling, transliteration, or genuinely distinct firm sharing a name — so counts of "distinct" contractors and '+
-    'officers are approximate (see section 10, check 3).</li>'+
-    '<li><b>The estimated-cost field is empty throughout</b>, so this analysis <b>cannot</b> test whether winning '+
-    'prices sat suspiciously close to the engineer\'s estimate — the most direct test of price rigging.</li>'+
-    '<li><b>The single-responsive rate is definition-sensitive</b> ('+pct(h.single_resp_pct)+' vs '+pct(OFF.strict.pct)+
-    ' vs the '+D.elimination.n+' mass-disqualification cases). Always state which definition a quoted figure uses.</li>'+
-    '<li><b>Coverage.</b> The dataset is what was retrievable from the public portal at collection time. It is not '+
-    'guaranteed to be every tender these authorities ran, and status fields reflect the portal\'s state on that date.</li>'+
-    '<li><b>Timing precision.</b> Award-to-signing delays come from the two published dates. A data-entry convention '+
-    'that standardises signing dates would itself produce the day-28 spike — a benign explanation the analysis cannot '+
-    'exclude, and one that would itself make the register unusable for compliance auditing.</li>'+
-    '<li><b>Officer attribution.</b> <code>Authorised_Officer</code> records who signed off, not who evaluated the '+
-    'bids or drafted the specification. An officer named here may have inherited a process decided elsewhere.</li>'+
+    L('<li><b>Association is not causation, and a red flag is not a finding of wrongdoing.</b> Every pattern here has '+
+      'lawful explanations. This investigation identifies where scrutiny is warranted; it does not conclude that '+
+      'scrutiny would find misconduct.</li>',
+      '<li><b>সম্পর্ক মানেই কারণ নয়, আর লাল সংকেত মানেই অন্যায়ের প্রমাণ নয়।</b> এখানকার প্রতিটি প্যাটার্নেরই বৈধ '+
+      'ব্যাখ্যা থাকতে পারে। এই অনুসন্ধান দেখায় কোথায় খতিয়ে দেখা দরকার; খতিয়ে দেখলে অনিয়ম পাওয়া যাবে, এমন সিদ্ধান্ত '+
+      'দেয় না।</li>')+
+    L('<li><b>Name de-duplication is imperfect.</b> Normalisation merges obvious variants but cannot catch every '+
+      'misspelling, transliteration, or genuinely distinct firm sharing a name — so counts of "distinct" contractors and '+
+      'officers are approximate (see section 10, check 3).</li>',
+      '<li><b>নাম মিলিয়ে একক করা নিখুঁত নয়।</b> স্বাভাবিকীকরণ স্পষ্ট বানানভেদ মিলিয়ে দেয়, কিন্তু প্রতিটি ভুল বানান, '+
+      'প্রতিবর্ণীকরণ, বা একই নামের সত্যিকারের আলাদা প্রতিষ্ঠান ধরতে পারে না — তাই "আলাদা" ঠিকাদার ও কর্মকর্তার সংখ্যা '+
+      'আনুমানিক (অংশ ১০, পরীক্ষা ৩ দেখুন)।</li>')+
+    L('<li><b>The estimated-cost field is empty throughout</b>, so this analysis <b>cannot</b> test whether winning '+
+      'prices sat suspiciously close to the engineer\'s estimate — the most direct test of price rigging.</li>',
+      '<li><b>প্রাক্কলিত ব্যয়ের ঘরটি সর্বত্র ফাঁকা</b>, তাই এই বিশ্লেষণ পরীক্ষা করতে <b>পারে না</b> বিজয়ী দর '+
+      'প্রকৌশলীর প্রাক্কলনের সন্দেহজনকভাবে কাছাকাছি ছিল কি না — দাম কারসাজির সবচেয়ে সরাসরি পরীক্ষাটি।</li>')+
+    L('<li><b>The single-responsive rate is definition-sensitive</b> ('+pct(h.single_resp_pct)+' vs '+pct(OFF.strict.pct)+
+      ' vs the '+D.elimination.n+' mass-disqualification cases). Always state which definition a quoted figure uses.</li>',
+      '<li><b>একক-রেসপনসিভ হার সংজ্ঞার ওপর নির্ভরশীল</b> ('+pct(h.single_resp_pct)+' বনাম '+pct(OFF.strict.pct)+
+      ' বনাম গণ-অযোগ্যতার '+D.elimination.n+'টি ঘটনা)। উদ্ধৃত সংখ্যাটি কোন সংজ্ঞায় বলা হচ্ছে, সবসময় তা উল্লেখ '+
+      'করুন।</li>')+
+    L('<li><b>Coverage.</b> The dataset is what was retrievable from the public portal at collection time. It is not '+
+      'guaranteed to be every tender these authorities ran, and status fields reflect the portal\'s state on that date.</li>',
+      '<li><b>পরিধি।</b> এই ডেটাসেট হলো সংগ্রহের সময়ে সরকারি পোর্টাল থেকে যা তোলা গেছে তাই। এই সংস্থাগুলোর সব দরপত্র '+
+      'এতে আছে, তার নিশ্চয়তা নেই, আর অবস্থার ঘরগুলো ওই তারিখে পোর্টালে যা ছিল তাই দেখায়।</li>')+
+    L('<li><b>Timing precision.</b> Award-to-signing delays come from the two published dates. A data-entry convention '+
+      'that standardises signing dates would itself produce the day-28 spike — a benign explanation the analysis cannot '+
+      'exclude, and one that would itself make the register unusable for compliance auditing.</li>',
+      '<li><b>সময়ের নির্ভুলতা।</b> কার্যাদেশ থেকে সই পর্যন্ত বিলম্ব এসেছে প্রকাশিত দুটি তারিখ থেকে। সই-তারিখ '+
+      'একরকম করে বসানোর কোনো দপ্তরি অভ্যাসই ২৮তম দিনের এই ঝাঁকুনি তৈরি করতে পারে — এমন নিরীহ ব্যাখ্যা বিশ্লেষণ বাতিল '+
+      'করতে পারে না, আর সেটি সত্যি হলে এই নথি বিধি-পরিপালন নিরীক্ষার কাজেই আর ব্যবহারযোগ্য থাকে না।</li>')+
+    L('<li><b>Officer attribution.</b> <code>Authorised_Officer</code> records who signed off, not who evaluated the '+
+      'bids or drafted the specification. An officer named here may have inherited a process decided elsewhere.</li>',
+      '<li><b>কর্মকর্তার দায় নির্ধারণ।</b> <code>Authorised_Officer</code> ঘরে থাকে কে অনুমোদন দিয়েছেন, কে দর '+
+      'মূল্যায়ন করেছেন বা কে স্পেসিফিকেশন লিখেছেন তা নয়। এখানে নাম আসা কোনো কর্মকর্তা হয়তো অন্য কোথাও নেওয়া '+
+      'সিদ্ধান্তের ধারাবাহিকতাই পালন করেছেন।</li>')+
     '</ol>'+
-    '<h3>What would resolve the open questions</h3>'+
+    L('<h3>What would resolve the open questions</h3>','<h3>খোলা প্রশ্নগুলোর নিষ্পত্তি কীভাবে হতে পারে</h3>')+
     '<ul>'+
-    '<li><b>Pull the APP package estimates</b> for the concentrated contracts and compare winning bid to engineer\'s '+
-    'estimate — the price test this dataset cannot run. <code>fetch_app_estimates.py</code> in this repository is built '+
-    'for exactly that.</li>'+
-    '<li><b>Request the evaluation reports</b> for the '+D.elimination.n+' mass-disqualification tenders — the '+
-    'documented reason each rival was ruled non-responsive.</li>'+
-    '<li><b>Review the file trail</b> on the highest-frequency repeat pairings (section 07) and the single-firm '+
-    'officers (section 08).</li>'+
-    '<li><b>Ask the CDA</b> to explain Spectra Engineers\' '+pct(D.concentration.top1_pct)+' share and its '+
-    'near-exclusive awards from three separate officers.</li>'+
-    '<li><b>Ask RAJUK</b> why '+pct(D.cliff.by_org[0].pct)+' of its contracts were signed on the last legal day, and '+
-    'whether those dates are the real signing dates.</li>'+
+    L('<li><b>Pull the APP package estimates</b> for the concentrated contracts and compare winning bid to engineer\'s '+
+      'estimate — the price test this dataset cannot run. <code>fetch_app_estimates.py</code> in this repository is built '+
+      'for exactly that.</li>',
+      '<li><b>এপিপি প্যাকেজের প্রাক্কলন সংগ্রহ করুন</b> কেন্দ্রীভূত চুক্তিগুলোর জন্য, আর বিজয়ী দরের সঙ্গে '+
+      'প্রকৌশলীর প্রাক্কলন মিলিয়ে দেখুন — যে দাম-পরীক্ষা এই ডেটাসেট দিয়ে চালানো যায় না। এই রিপোজিটরির '+
+      '<code>fetch_app_estimates.py</code> ঠিক সেই কাজের জন্যই লেখা।</li>')+
+    L('<li><b>Request the evaluation reports</b> for the '+D.elimination.n+' mass-disqualification tenders — the '+
+      'documented reason each rival was ruled non-responsive.</li>',
+      '<li><b>মূল্যায়ন প্রতিবেদন চেয়ে নিন</b> গণ-অযোগ্যতার '+D.elimination.n+'টি দরপত্রের — প্রতিটি প্রতিযোগীকে '+
+      'নন-রেসপনসিভ ঘোষণার লিখিত কারণটি।</li>')+
+    L('<li><b>Review the file trail</b> on the highest-frequency repeat pairings (section 07) and the single-firm '+
+      'officers (section 08).</li>',
+      '<li><b>নথির পথ ধরে দেখুন</b> সবচেয়ে বেশিবার ফিরে আসা জোড়াগুলোর (অংশ ০৭) এবং এক-প্রতিষ্ঠাননির্ভর '+
+      'কর্মকর্তাদের (অংশ ০৮) ক্ষেত্রে।</li>')+
+    L('<li><b>Ask the CDA</b> to explain Spectra Engineers\' '+pct(D.concentration.top1_pct)+' share and its '+
+      'near-exclusive awards from three separate officers.</li>',
+      '<li><b>সিডিএ-কে জিজ্ঞেস করুন</b> স্পেক্ট্রা ইঞ্জিনিয়ার্সের '+pct(D.concentration.top1_pct)+' অংশ এবং তিনজন '+
+      'আলাদা কর্মকর্তার কাছ থেকে পাওয়া প্রায়-একচেটিয়া কার্যাদেশের ব্যাখ্যা কী।</li>')+
+    L('<li><b>Ask RAJUK</b> why '+pct(D.cliff.by_org[0].pct)+' of its contracts were signed on the last legal day, and '+
+      'whether those dates are the real signing dates.</li>',
+      '<li><b>রাজউককে জিজ্ঞেস করুন</b> কেন তার '+pct(D.cliff.by_org[0].pct)+' চুক্তি আইনি শেষ দিনেই সই হয়েছে, এবং '+
+      'সেই তারিখগুলোই আসল সই-তারিখ কি না।</li>')+
     '</ul>'+
     '</div></div>'
   );
@@ -1202,29 +1679,56 @@ function sMethod(){
 function sLead(){
   var h=D.headline,c=D.concentration,cl=D.cliff,e=D.elimination;
   var sum=[
-    ['<b>Value concentration</b>','One firm holds '+pct(c.top1_pct)+' of all award value; the top 10 hold '+
-      pct(c.top10_pct)+'. HHI ≈ '+fmt(c.hhi,0)+'.','<a href="#concentration" class="inlink">§03</a>'],
-    ['<b>The 28-day cliff</b>',fmt(cl.at28)+' contracts ('+pct(cl.at28_pct)+') signed on exactly the last legal day '+
-      '— then zero for nine days.','<a href="#cliff" class="inlink">§05</a>'],
-    ['<b>Vanishing competition</b>',fmt(e.n)+' tenders where 3+ bidders collapsed to a single responsive bid '+
-      '('+fmt(e.n5)+' of them from 5+).','<a href="#competition" class="inlink">§06</a>'],
-    ['<b>Repeat pairings</b>',OFF.pairs_pe.ge2+' contractor–office pairs recur; one appears 14 times. '+
-      OFF.pairs_of.ge2+' officer–contractor pairs recur.','<a href="#pairs" class="inlink">§07</a>'],
-    ['<b>Captured books</b>','Officers directing 86–100% of their authorised value to one firm — three of them to '+
-      'the same firm.','<a href="#officers" class="inlink">§08</a>']
+    [L('<b>Value concentration</b>','<b>মূল্যের কেন্দ্রীভবন</b>'),
+      L('One firm holds '+pct(c.top1_pct)+' of all award value; the top 10 hold '+
+        pct(c.top10_pct)+'. HHI ≈ '+fmt(c.hhi,0)+'.',
+        'একটি প্রতিষ্ঠানের হাতে মোট কার্যাদেশ মূল্যের '+pct(c.top1_pct)+'; শীর্ষ ১০-এর হাতে '+
+        pct(c.top10_pct)+'। এইচএইচআই ≈ '+fmt(c.hhi,0)+'।'),
+      '<a href="#concentration" class="inlink">§03</a>'],
+    [L('<b>The 28-day cliff</b>','<b>২৮ দিনের দেয়াল</b>'),
+      L(fmt(cl.at28)+' contracts ('+pct(cl.at28_pct)+') signed on exactly the last legal day '+
+        '— then zero for nine days.',
+        fmt(cl.at28)+'টি চুক্তি ('+pct(cl.at28_pct)+') সই হয়েছে ঠিক আইনি শেষ দিনটিতে — তারপর নয় দিন একটিও নয়।'),
+      '<a href="#cliff" class="inlink">§05</a>'],
+    [L('<b>Vanishing competition</b>','<b>উবে যাওয়া প্রতিযোগিতা</b>'),
+      L(fmt(e.n)+' tenders where 3+ bidders collapsed to a single responsive bid '+
+        '('+fmt(e.n5)+' of them from 5+).',
+        fmt(e.n)+'টি দরপত্রে ৩+ দরদাতা নেমে এসেছে একটিমাত্র রেসপনসিভ দরে (এর '+fmt(e.n5)+'টিতে ছিল ৫+ দরদাতা)।'),
+      '<a href="#competition" class="inlink">§06</a>'],
+    [L('<b>Repeat pairings</b>','<b>বারবার একই জোড়া</b>'),
+      L(OFF.pairs_pe.ge2+' contractor–office pairs recur; one appears 14 times. '+
+        OFF.pairs_of.ge2+' officer–contractor pairs recur.',
+        OFF.pairs_pe.ge2+'টি ঠিকাদার–দপ্তর জোড়া বারবার ফিরে আসে; একটি ১৪ বার। '+
+        OFF.pairs_of.ge2+'টি কর্মকর্তা–ঠিকাদার জোড়া বারবার ফিরে আসে।'),
+      '<a href="#pairs" class="inlink">§07</a>'],
+    [L('<b>Captured books</b>','<b>দখল হয়ে যাওয়া খাতা</b>'),
+      L('Officers directing 86–100% of their authorised value to one firm — three of them to '+
+        'the same firm.',
+        'কর্মকর্তারা তাঁদের অনুমোদিত মূল্যের ৮৬–১০০% পাঠিয়েছেন একটিমাত্র প্রতিষ্ঠানে — তাঁদের তিনজন একই '+
+        'প্রতিষ্ঠানে।'),
+      '<a href="#officers" class="inlink">§08</a>']
   ].map(function(r){return r;});
   return '<section class="anchor"><div class="wrap"><div class="narrow">'+
-    '<p class="lead">Bangladesh moved its public procurement online to make it harder to rig. Every tender notice, '+
-    'every bid count, every award and every contract-signing date is now published. This investigation took '+
-    fmt(h.tenders)+' of those published tenders — the construction work of six government development authorities, '+
-    cr(h.value_crore)+' of it awarded — and read them not one at a time, but as a single body of evidence.</p>'+
-    '<p>Read individually, almost every tender here looks unremarkable. Read together, five patterns emerge that '+
-    'no single document would reveal — and that is the entire point of reading them together.</p>'+
+    L('<p class="lead">Bangladesh moved its public procurement online to make it harder to rig. Every tender notice, '+
+      'every bid count, every award and every contract-signing date is now published. This investigation took '+
+      fmt(h.tenders)+' of those published tenders — the construction work of six government development authorities, '+
+      cr(h.value_crore)+' of it awarded — and read them not one at a time, but as a single body of evidence.</p>'+
+      '<p>Read individually, almost every tender here looks unremarkable. Read together, five patterns emerge that '+
+      'no single document would reveal — and that is the entire point of reading them together.</p>',
+      '<p class="lead">কারসাজি কঠিন করতেই বাংলাদেশ সরকারি কেনাকাটাকে অনলাইনে নিয়ে এসেছে। প্রতিটি দরপত্র বিজ্ঞপ্তি, '+
+      'প্রতিটি দরের সংখ্যা, প্রতিটি কার্যাদেশ ও প্রতিটি চুক্তি সইয়ের তারিখ এখন প্রকাশিত। এই অনুসন্ধান সেই প্রকাশিত '+
+      fmt(h.tenders)+'টি দরপত্র নিয়েছে — ছয়টি সরকারি উন্নয়ন সংস্থার নির্মাণকাজ, যার '+cr(h.value_crore)+
+      ' কার্যাদেশ হয়েছে — এবং সেগুলো একটি একটি করে নয়, একটিই সাক্ষ্যপুঞ্জ হিসেবে পড়েছে।</p>'+
+      '<p>আলাদা করে পড়লে এখানকার প্রায় প্রতিটি দরপত্রই সাধারণ মনে হয়। একসঙ্গে পড়লে পাঁচটি প্যাটার্ন বেরিয়ে আসে, '+
+      'যা কোনো একক নথি দেখাতে পারত না — একসঙ্গে পড়ার পুরো কারণটাই এটি।</p>')+
     '</div>'+
-    table([{t:'Pattern'},{t:'What the record shows'},{t:'Detail'}],sum)+
-    '<p class="note" style="margin-top:14px">Each pattern is a red flag warranting scrutiny, not an allegation. '+
-    'The <a href="#method" class="inlink">method note</a> sets out seven limitations, including the one test that '+
-    'matters most and could not be run.</p>'+
+    table([{t:L('Pattern','প্যাটার্ন')},{t:L('What the record shows','নথি যা দেখায়')},{t:L('Detail','বিস্তারিত')}],sum)+
+    L('<p class="note" style="margin-top:14px">Each pattern is a red flag warranting scrutiny, not an allegation. '+
+      'The <a href="#method" class="inlink">method note</a> sets out seven limitations, including the one test that '+
+      'matters most and could not be run.</p>',
+      '<p class="note" style="margin-top:14px">প্রতিটি প্যাটার্ন খতিয়ে দেখার দাবি রাখা একটি লাল সংকেত, কোনো '+
+      'অভিযোগ নয়। <a href="#method" class="inlink">পদ্ধতি টীকায়</a> সাতটি সীমাবদ্ধতা বলা আছে, যার মধ্যে সবচেয়ে '+
+      'জরুরি যে পরীক্ষাটি চালানোই যায়নি সেটিও আছে।</p>')+
     '</div></section>';
 }
 
@@ -1235,15 +1739,29 @@ function render(){
     sLead()+sHeadline()+sFunnel()+sConcentration()+sAnchor()+sCliff()+sCompetition()+
     sPairs()+sOfficers()+sTime()+sOther()+sEvidence()+sMethod();
   evBind();
-  document.getElementById('genfrom').textContent='Source: '+D.generated_from;
+  document.getElementById('genfrom').textContent=L('Source: ','সূত্র: ')+D.generated_from;
   document.getElementById('footprint').innerHTML=
-    'Verified '+new Date().toISOString().slice(0,10)+' · '+fmt(D.headline.awarded)+' awards · '+
-    cr(D.headline.value_crore)+' · '+OFF.n_suppliers_dedup+' contractors · '+OFF.n_officers+' officers · HHI '+
-    fmt(D.concentration.hhi,0)+' · top-1 '+pct(D.concentration.top1_pct)+' · top-10 '+pct(D.concentration.top10_pct)+
-    ' · '+fmt(D.cliff.at28)+' signings on day 28 · '+fmt(OFF.strict.n)+'/'+fmt(D.headline.single_resp)+
-    ' single-responsive · '+D.elimination.n+' mass-disqualification · '+OFF.pairs_pe.ge2+'/'+OFF.pairs_pe.ge3+
-    ' repeat pairs · '+fmt(D.headline.pdfs)+' source PDFs<br>'+
-    'Regenerate from <code>'+esc(D.generated_from)+'</code> + <code>article_data.json</code> in this repository.';
+    L('Verified '+new Date().toISOString().slice(0,10)+' · '+fmt(D.headline.awarded)+' awards · '+
+      cr(D.headline.value_crore)+' · '+OFF.n_suppliers_dedup+' contractors · '+OFF.n_officers+' officers · HHI '+
+      fmt(D.concentration.hhi,0)+' · top-1 '+pct(D.concentration.top1_pct)+' · top-10 '+pct(D.concentration.top10_pct)+
+      ' · '+fmt(D.cliff.at28)+' signings on day 28 · '+fmt(OFF.strict.n)+'/'+fmt(D.headline.single_resp)+
+      ' single-responsive · '+D.elimination.n+' mass-disqualification · '+OFF.pairs_pe.ge2+'/'+OFF.pairs_pe.ge3+
+      ' repeat pairs · '+fmt(D.headline.pdfs)+' source PDFs<br>'+
+      'Regenerate from <code>'+esc(D.generated_from)+'</code> + <code>article_data.json</code> in this repository.',
+      'যাচাই '+new Date().toISOString().slice(0,10)+' · '+fmt(D.headline.awarded)+'টি কার্যাদেশ · '+
+      cr(D.headline.value_crore)+' · '+OFF.n_suppliers_dedup+'টি ঠিকাদার · '+OFF.n_officers+'জন কর্মকর্তা · এইচএইচআই '+
+      fmt(D.concentration.hhi,0)+' · শীর্ষ-১ '+pct(D.concentration.top1_pct)+' · শীর্ষ-১০ '+
+      pct(D.concentration.top10_pct)+' · ২৮তম দিনে সই '+fmt(D.cliff.at28)+'টি · একক-রেসপনসিভ '+fmt(OFF.strict.n)+'/'+
+      fmt(D.headline.single_resp)+' · গণ-অযোগ্যতা '+D.elimination.n+'টি · পুনরাবৃত্ত জোড়া '+OFF.pairs_pe.ge2+'/'+
+      OFF.pairs_pe.ge3+' · উৎস পিডিএফ '+fmt(D.headline.pdfs)+'টি<br>'+
+      'এই রিপোজিটরির <code>'+esc(D.generated_from)+'</code> + <code>article_data.json</code> থেকে আবার তৈরি করা '+
+      'যায়।');
+  /* Bangla edition: fold ASCII digits in the rendered prose to Bengali numerals.
+     One pass after innerHTML covers every generated string, so no figure can be
+     missed; tender ids, package codes and PDF links carry .latn and are left alone.
+     bnTree() is a no-op in the English edition. */
+  bnTree(document.getElementById('app'));
+  bnTree(document.getElementById('footprint'));
 }
 /* ---------- data source ----------
    Two ways in, one code path. If a build has inlined the dataset into
@@ -1257,11 +1775,17 @@ function boot(j){
   render();
 }
 function bootFail(err){
-  document.getElementById('app').innerHTML='<div class="wrap err"><b>Could not load article_data.json.</b><br>'+
-    esc(err.message)+'<br><span class="note">This page must be served over HTTP (not opened as a file://) so it can '+
-    'read the data file. From the repository root: <code>python3 -m http.server 8123</code> then open '+
-    '<code>http://localhost:8123/story.html</code>. The self-contained '+
-    '<code>egp-investigation.html</code> build needs no server.</span></div>';
+  document.getElementById('app').innerHTML='<div class="wrap err">'+
+    L('<b>Could not load article_data.json.</b>','<b>article_data.json লোড করা গেল না।</b>')+'<br>'+
+    esc(err.message)+'<br><span class="note">'+
+    L('This page must be served over HTTP (not opened as a file://) so it can '+
+      'read the data file. From the repository root: <code>python3 -m http.server 8123</code> then open '+
+      '<code>http://localhost:8123/story.html</code>. The self-contained '+
+      '<code>egp-investigation.html</code> build needs no server.',
+      'ডেটা ফাইলটি পড়তে পারার জন্য এই পাতাটি HTTP দিয়ে সার্ভ করা দরকার (file:// হিসেবে খোলা নয়)। '+
+      'রিপোজিটরির মূল ফোল্ডার থেকে: <code>python3 -m http.server 8123</code> চালিয়ে তারপর '+
+      '<code>http://localhost:8123/story.html</code> খুলুন। স্বয়ংসম্পূর্ণ '+
+      '<code>egp-investigation.html</code> বিল্ডের জন্য কোনো সার্ভার লাগে না।')+'</span></div>';
 }
 (function(){
   var inline=document.getElementById('story-data');
@@ -1274,15 +1798,50 @@ function bootFail(err){
   }).then(boot).catch(bootFail);
 })();
 
-/* ---------- theme ---------- */
+/* ---------- theme + language ----------
+   Both toggles name the state you would switch *to*, and both persist, so a reader
+   who wants Bangla in dark mode gets it on every visit. Language is a full re-render
+   rather than a class swap: every generated string is built through L() at render
+   time, so one render() call moves the whole page — charts, tables and tooltips
+   included — and the evidence-room filter state survives on EV. */
 (function(){
-  var root=document.documentElement, btn=document.getElementById('themeBtn');
-  function apply(t){root.setAttribute('data-theme',t);btn.textContent=(t==='dark'?'Light':'Dark');
-    try{localStorage.setItem('egp-theme',t);}catch(e){}}
+  var root=document.documentElement,
+      tBtn=document.getElementById('themeBtn'),
+      lBtn=document.getElementById('langBtn'),
+      TITLE={en:'Signed on the last legal day — the complete e-GP investigation',
+             bn:'আইনের শেষ দিনে সই — সম্পূর্ণ ই-জিপি অনুসন্ধান'};
+
+  function labels(){
+    var dark=root.getAttribute('data-theme')==='dark';
+    tBtn.textContent=dark?L('Light','লাইট'):L('Dark','ডার্ক');
+    tBtn.setAttribute('aria-label',dark?L('Switch to light mode','লাইট মোডে যান')
+                                      :L('Switch to dark mode','ডার্ক মোডে যান'));
+    lBtn.textContent=(LANG==='bn')?'English':'বাংলা';
+    lBtn.setAttribute('aria-label',(LANG==='bn')?'Switch to English':'বাংলায় পড়ুন');
+  }
+  function applyTheme(t){
+    root.setAttribute('data-theme',t);
+    try{localStorage.setItem('egp-theme',t);}catch(e){}
+    labels();
+  }
+  function applyLang(l){
+    LANG=(l==='bn')?'bn':'en';
+    root.setAttribute('data-lang',LANG);
+    root.setAttribute('lang',LANG);
+    document.title=TITLE[LANG];
+    try{localStorage.setItem('egp-lang',LANG);}catch(e){}
+    labels();
+    if(D) render();
+  }
+
   var saved; try{saved=localStorage.getItem('egp-theme');}catch(e){}
   if(!saved&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches) saved='dark';
-  apply(saved||'light');
-  btn.addEventListener('click',function(){apply(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+  applyTheme(saved||'light');   /* the head script already set data-lang before first paint */
+  labels();
+
+  tBtn.addEventListener('click',function(){
+    applyTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+  lBtn.addEventListener('click',function(){applyLang(LANG==='bn'?'en':'bn');});
 })();
 </script>
 </body>
