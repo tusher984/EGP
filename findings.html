@@ -5,9 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Red flags warranting scrutiny — Cross-tender findings, Bangladesh e-GP</title>
 <meta name="description" content="Verified cross-tender findings from 1,158 e-GP construction tenders worth ৳3,724 crore: value concentration, the 28-day signing cliff, vanishing competition, repeat contractor–office pairings, and officers whose awards flow to a single firm. Framed as red flags warranting scrutiny.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Regular.ttf" as="font" type="font/ttf" crossorigin>
 <style>
+  /* Same self-hosted face as the main investigation: Li Ador Noirrit (Lipighor)
+     covers Bangla, Latin, Bengali numerals and the taka sign in one family, so
+     this page needs no font CDN either. */
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:400;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Regular.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:italic;font-weight:400;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Italic.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:600;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit SemiBold.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:700;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Bold.ttf") format("truetype")}
   :root{
     --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --secondary:#52514e; --muted:#898781;
     --gridline:#e1e0d9; --baseline:#c3c2b7; --hairline:#e6e5df;
@@ -29,7 +39,8 @@
   html{scroll-behavior:smooth}
   body{
     margin:0;background:var(--page);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Bengali",sans-serif;
+    font-family:"Li Ador Noirrit",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,
+      "Noto Sans Bengali","Nirmala UI","Kalpurush","Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;
     line-height:1.62;font-size:18px;-webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
@@ -168,12 +179,12 @@
 <section id="headline" class="anchor">
   <div class="wrap">
     <h2><span class="num">01</span>The headline</h2>
-    <p class="dek">Across 1,158 tenders published by six development authorities and related bodies, 645 resulted in a recorded award. Those awards went to 308 distinct contractors, authorised by 73 distinct officials, across 11 organisational units.</p>
+    <p class="dek">Across 1,158 tenders published by six development authorities and related bodies, 645 resulted in a recorded award. Those awards went to 308 contractors once the spelling variants of the same firm are merged (310 distinct names as filed), authorised by 73 named officials across 11 organisational units.</p>
     <div class="tiles">
       <div class="tile"><div class="v">1,158</div><div class="l">tenders published</div></div>
       <div class="tile"><div class="v">645</div><div class="l">recorded awards</div></div>
       <div class="tile"><div class="v">৳3,723.7<small> cr</small></div><div class="l">total award value</div></div>
-      <div class="tile"><div class="v">308</div><div class="l">distinct contractors</div></div>
+      <div class="tile"><div class="v">308</div><div class="l">contractors, name variants merged</div></div>
       <div class="tile"><div class="v">73</div><div class="l">authorising officers</div></div>
       <div class="tile crit"><div class="v">28.7<small>%</small></div><div class="l">held by one firm</div></div>
     </div>
@@ -234,12 +245,12 @@
     <p class="dek">How "competitive" the awards were depends on definition — and the range itself is informative.</p>
     <div class="tiles">
       <div class="tile warn"><div class="v">201<small> · 34.0%</small></div><div class="l">awards with exactly one responsive bidder (broadest measure)</div></div>
-      <div class="tile warn"><div class="v">149<small> · 25.3%</small></div><div class="l">single responsive bidder <em>despite</em> competition existing</div></div>
+      <div class="tile warn"><div class="v">149<small> · 25.2%</small></div><div class="l">single responsive bidder <em>despite</em> competition existing</div></div>
       <div class="tile crit"><div class="v">53</div><div class="l">tenders where 3+ bidders collapsed to one responsive</div></div>
       <div class="tile crit"><div class="v">15</div><div class="l">of those, where 5+ bidders collapsed to one</div></div>
     </div>
     <p>The first number counts genuinely uncontested lots, which large specialist works can legitimately be. The last two are the ones that warrant scrutiny: cases where a field of rivals showed up and was then <strong>disqualified down to a single survivor</strong>. Mass disqualification is lawful and sometimes correct — but 53 instances is a population an oversight body would want to sample and review, starting with the evaluation reports that recorded why each rival was ruled non-responsive.</p>
-    <p class="note">Definitional note: this analysis treats <b>149 / 25.3%</b> as its primary single-responsive rate (it excludes genuinely single-bidder lots); the broader <b>201 / 34.0%</b> counts every tender with one responsive bidder. Always state which definition a quoted figure uses.</p>
+    <p class="note">Definitional note: this analysis treats <b>149 / 25.2%</b> as its primary single-responsive rate (it excludes genuinely single-bidder lots); the broader <b>201 / 34.0%</b> counts every tender with one responsive bidder. Always state which definition a quoted figure uses.</p>
   </div>
 </section>
 
@@ -304,7 +315,7 @@
         <li><b>Association is not causation, and a red flag is not a finding of wrongdoing.</b> Every pattern here has lawful explanations. This document identifies where scrutiny is warranted; it does not conclude that scrutiny would find misconduct.</li>
         <li><b>Name de-duplication is imperfect.</b> Contractor and officer names are free text. Normalisation merges obvious variants but cannot catch every misspelling, transliteration, or genuinely distinct firm sharing a name — so "distinct entity" counts are approximate.</li>
         <li><b>The estimated-cost field is empty</b> throughout the dataset, so this analysis <b>cannot</b> test whether winning prices sat suspiciously close to the engineer's estimate — the most direct test of price rigging. That requires the package-level APP estimates and is deferred.</li>
-        <li><b>The single-responsive rate is definition-sensitive</b> (34.0% vs 25.3% vs the 53 mass-disqualification cases). Always state which definition a quoted figure uses.</li>
+        <li><b>The single-responsive rate is definition-sensitive</b> (34.0% vs 25.2% vs the 53 mass-disqualification cases). Always state which definition a quoted figure uses.</li>
         <li><b>Coverage.</b> The dataset is what was scrapeable from the public portal at collection time; it is not guaranteed to be every tender these authorities ran, and status fields reflect the portal's state on that date.</li>
         <li><b>Timing precision.</b> Award-to-signing delays come from the two published dates; a data-entry convention that standardises signing dates would itself produce a day-28 spike — one more benign explanation the cliff analysis cannot rule out.</li>
       </ol>
@@ -329,9 +340,9 @@
 
 <footer id="repro">
   <div class="wrap narrow">
-    <p><b>Reproducibility.</b> Every figure regenerates from two files in this repository: <code>Procurement_Database.json</code> (1,158 raw tender records — the source of truth) and <code>article_data.json</code> (precomputed verified aggregates). The interactive tool <a href="tool.html">tool.html</a> reproduces the per-tender forensic scoring and the cross-tender pattern view; the narrative article lives at <a href="investigation.html">investigation.html</a>.</p>
-    <div class="mono">Verified 2026-08-22 · 645 awards · ৳3,723.7 cr · 308 contractors · 73 officers · HHI 927 · top-1 28.7% · top-10 52.7% · 130 signings at day 28 · 149/201 single-responsive · 53 mass-disqualification · 98/40 repeat pairs</div>
-    <p style="margin-top:20px"><b>e-GP Watch</b> — a demonstration data investigation built on official Bangladesh e-Government Procurement records. Named firms and offices appear because the public record names them, not as an accusation.</p>
+    <p><b>Reproducibility.</b> Every figure regenerates from two files in this repository: <code>Procurement_Database.json</code> (1,158 raw tender records — the source of truth) and <code>article_data.json</code> (precomputed aggregates). Run <code>python3 verify_figures.py</code> to recompute every published number from the raw register and see the pass/fail list. The interactive tool <a href="tool.html">tool.html</a> reproduces the per-tender forensic scoring and the cross-tender pattern view; the full story, in English and Bangla, is at <a href="index.html">the front page</a>.</p>
+    <div class="mono">Verified 2026-08-23 · 645 awards · ৳3,723.7 cr · 308 contractors · 73 officers · HHI 927 · top-1 28.7% · top-10 52.7% · 130 signings at day 28 · 149/201 single-responsive · 53 mass-disqualification · 98/40 repeat pairs</div>
+    <p style="margin-top:20px"><b>e-GP Watch</b> — a data investigation built entirely on official Bangladesh e-Government Procurement records. Named firms, offices and officials appear because the public record names them, not as an accusation.</p>
   </div>
 </footer>
 

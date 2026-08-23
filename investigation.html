@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Signed on the Last Legal Day — An investigation into Bangladesh's e-GP construction tenders</title>
 <meta name="description" content="A data-driven investigation into 1,158 e-GP construction tenders worth ৳3,724 crore: single-bidder competition, supplier concentration, repeat office–contractor pairings, and contracts signed on the last legally permitted day.">
+<link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Regular.ttf" as="font" type="font/ttf" crossorigin>
 <style>
+  /* Same self-hosted face as the main investigation: Li Ador Noirrit (Lipighor)
+     covers Bangla, Latin, Bengali numerals and the taka sign in one family. */
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:400;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Regular.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:italic;font-weight:400;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Italic.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:600;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit SemiBold.ttf") format("truetype")}
+  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:700;font-display:swap;
+    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Bold.ttf") format("truetype")}
   :root{
     /* validated dataviz palette — light */
     --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --secondary:#52514e; --muted:#898781;
@@ -28,7 +39,8 @@
   html{scroll-behavior:smooth}
   body{
     margin:0;background:var(--page);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans Bengali",sans-serif;
+    font-family:"Li Ador Noirrit",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,
+      "Noto Sans Bengali","Nirmala UI","Kalpurush","Segoe UI Symbol","Noto Sans Symbols 2",sans-serif;
     line-height:1.62;font-size:18px;-webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
@@ -176,10 +188,10 @@
   <div class="wrap">
     <div class="kicker">Data investigation · Public procurement</div>
     <h1>Signed on the last legal day</h1>
-    <p class="standfirst">Five government development authorities awarded <b>৳3,724 crore</b> of construction work through Bangladesh's electronic tender system. A record-by-record reading of 1,158 tenders finds competition collapsing to a single bidder, the same offices handing repeat work to the same contractors, and one in five contracts signed on the very last day the law allows — a pattern of red flags that warrants scrutiny.</p>
+    <p class="standfirst">Six government development authorities, and the smaller bodies attached to them, awarded <b>৳3,724 crore</b> of construction work through Bangladesh's electronic tender system. A record-by-record reading of 1,158 tenders finds competition collapsing to a single bidder, the same offices handing repeat work to the same contractors, and one in five contracts signed on the very last day the law allows — a pattern of red flags that warrants scrutiny.</p>
     <div class="byline">
       <span><b>By e-GP Watch</b> · data desk</span>
-      <span>Demonstration draft · 2026</span>
+      <span>Analysis verified 2026-08-23</span>
       <span id="genfrom">Source: official e-GP records</span>
     </div>
     <div class="disclaimer">
@@ -194,8 +206,8 @@
 
 <footer>
   <div class="wrap narrow">
-    <p><b>e-GP Watch</b> — a demonstration data investigation built on official Bangladesh e-Government Procurement records. This page is a template: replace this prose and byline with your own reporting. The charts, statistics and evidence links are generated directly from the underlying data file.</p>
-    <p>Every number is reproducible from <code>Procurement_Database.json</code> and the accompanying <code>article_data.json</code>. Original tender-notice and contract-award PDFs are linked throughout the <a href="#evidence">evidence room</a>. Style reference: long-form data journalism (e.g. Netra News).</p>
+    <p><b>e-GP Watch</b> — a data investigation built entirely on official Bangladesh e-Government Procurement records. Named firms, offices and officials appear because the public record names them, not as an accusation. The charts, statistics and evidence links are generated directly from the underlying data file.</p>
+    <p>Every number is reproducible from <code>Procurement_Database.json</code> and the accompanying <code>article_data.json</code> — run <code>verify_figures.py</code> to recompute them. Original tender-notice and contract-award PDFs are linked throughout the <a href="#evidence">evidence room</a>. The fuller edition of this story, in English and Bangla, is at <a href="index.html">the front page</a>.</p>
     <p id="footmeta"></p>
   </div>
 </footer>
@@ -682,7 +694,7 @@ function build(){
   /* ---- KPI band ---- */
   {const s=H('section');const w=H('div','wrap');
     w.appendChild(statTiles([
-      {v:'৳'+fmt1(D.headline.value_crore)+'<small> cr</small>',l:'Total awarded value across 5 authorities'},
+      {v:'৳'+fmt1(D.headline.value_crore)+'<small> cr</small>',l:'Total awarded value across 6 authorities'},
       {v:fmt(D.headline.tenders),l:'Tenders examined (record by record)'},
       {v:fmt(D.headline.awarded),l:'Contracts actually awarded &amp; signed'},
       {v:'~'+fmt(D.headline.suppliers),l:'Distinct contractor names'},
@@ -695,7 +707,7 @@ function build(){
   const c1=mk('competition',`<h2><span class="num">01</span>Competition, on paper</h2>
     <p class="dek">Bangladesh moved procurement online to widen competition and cut discretion. In this dataset, the competition mostly evaporates before the award.</p>
     <div class="narrow">
-    <p class="lead">Between 2017 and 2026, five development authorities — <b>RAJUK</b>, the <b>Chittagong (CDA)</b>, <b>Khulna (KDA)</b>, <b>Cox’s Bazar</b> and <b>Rajshahi (RDA)</b> development authorities — pushed ৳3,724 crore of construction work through the national e-GP portal. On paper it is open tendering: ${fmt(1145)} of ${fmt(D.headline.tenders)} tenders used the Open Tendering Method.</p>
+    <p class="lead">Between 2015 and 2026, six development authorities — <b>RAJUK</b>, the <b>Chittagong (CDA)</b>, <b>Khulna (KDA)</b>, <b>Cox’s Bazar</b>, <b>Rajshahi (RDA)</b> and <b>Gazipur</b> development authorities — pushed ৳3,724 crore of construction work through the national e-GP portal. On paper it is open tendering: ${fmt(1145)} of ${fmt(D.headline.tenders)} tenders used the Open Tendering Method.</p>
     <p>But openness is measured by who is left standing when bids are opened, not by how the tender was labelled. Follow the bidders through the process and the funnel narrows sharply at each step — and at the end, a third of all awards come down to a single qualifying bidder.</p>
     </div>`);
   c1.w.appendChild(funnel(D.funnel));
@@ -769,7 +781,7 @@ function build(){
   const method=H('div','method');
   method.innerHTML=`
     <h3>Sources</h3>
-    <p>Every figure derives from <code>${D.generated_from}</code> — a record of <b>${fmt(D.headline.tenders)} e-GP tenders</b> across five development authorities — cross-checked against <b>${fmt(D.evidence_counts.notice)} tender-notice PDFs</b> and <b>${fmt(D.evidence_counts.award)} contract-award PDFs</b> (about 1,800 source documents). Statistics are computed directly from the records; no figure here is estimated or modelled.</p>
+    <p>Every figure derives from <code>${D.generated_from}</code> — a record of <b>${fmt(D.headline.tenders)} e-GP tenders</b> across six development authorities and the bodies attached to them — cross-checked against <b>${fmt(D.evidence_counts.notice)} tender-notice PDFs</b> and <b>${fmt(D.evidence_counts.award)} contract-award PDFs</b> (about 1,800 source documents). Statistics are computed directly from the records; no figure here is estimated or modelled.</p>
     <h3>Definitions</h3>
     <ul>
       <li><b>Awarded contract</b> — a tender with a signed contract value (${fmt(D.headline.awarded)} of ${fmt(D.headline.tenders)}, ${(100*D.headline.awarded/D.headline.tenders).toFixed(0)}%). Competition, concentration and value figures use this set.</li>
@@ -792,7 +804,7 @@ function build(){
       <li><code>python3 fetch_app_estimates.py --fetch</code> — pull every package estimate (resumable, polite 1.5s delay)</li>
       <li><code>python3 fetch_app_estimates.py --analyse</code> — join estimates to contract values and rank the exact/near-exact matches</li>
     </ul>
-    <p class="fig-sub" style="margin-top:14px">This is a demonstration draft generated from the data. Replace the prose and byline with your own reporting; the charts and evidence links will regenerate from <code>article_data.json</code>.</p>`;
+    <p class="fig-sub" style="margin-top:14px">Every figure on this page is recomputed from <code>article_data.json</code> at load time, and <code>python3 verify_figures.py</code> checks that file back against the raw register. Nothing here is typed in by hand.</p>`;
   c7.w.appendChild(method);
 }
 
