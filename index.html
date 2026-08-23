@@ -56,9 +56,16 @@
     --page:#f9f9f7; --surface:#f9f9f7; --fill:#f1f0ea; --ink:#0b0b0b;
     --secondary:#52514e; --muted:#898781;
     --gridline:#e1e0d9; --baseline:#c3c2b7; --hairline:#e6e5df;
-    --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#8256d0; --c5:#c93d6f;
-    --seq0:#eaf1fb; --seq1:#cfe0f6; --seq2:#a9c8ee; --seq3:#78a8e4;
-    --seq4:#4a89db; --seq5:#2a78d6; --seq6:#1a5aa8; --seq7:#123f75;
+    /* the one blue left on the site: a hyperlink, which is a text convention, not a
+       data encoding. No chart draws with it. */
+    --link:#2a78d6;
+    /* Data marks are ink, not a hue: a warm graphite ramp on warm paper, with the
+       one red reserved for the flagged case. Two consequences, both checked rather
+       than eyeballed: the ordinary bar is --seq6, near-ink, because any mid-grey
+       sits only ΔE 6 from the red under protanopia, and every step is a lightness
+       step, which is the one difference no colour-vision deficiency can take away. */
+    --seq0:#efeee9; --seq1:#dbd9cf; --seq2:#c4c1b6; --seq3:#9d9a91;
+    --seq4:#6b6862; --seq5:#4e4c47; --seq6:#2b2a27; --seq7:#171614;
     --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
     --accent:#b0201d; --maxw:1160px; --measure:700px;
   }
@@ -66,9 +73,12 @@
     --page:#0d0d0d; --surface:#0d0d0d; --fill:#181817; --ink:#ffffff;
     --secondary:#c3c2b7; --muted:#898781;
     --gridline:#2c2c2a; --baseline:#383835; --hairline:#242422;
-    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#9166e0; --c5:#d9557f;
-    --seq0:#10233b; --seq1:#153458; --seq2:#1c4a80; --seq3:#2461a8;
-    --seq4:#3379cf; --seq5:#4a90e2; --seq6:#77aeec; --seq7:#a9ccf5;
+    --link:#3987e5;
+    /* Dark is stepped, not flipped. The ramp runs the other way — more ink means
+       lighter on a black page — and --seq6 is set high enough (14.2:1) to stay
+       clear of both flag colours, which the light ramp gets for free. */
+    --seq0:#232320; --seq1:#33322e; --seq2:#474540; --seq3:#615e58;
+    --seq4:#8d8a82; --seq5:#a8a49b; --seq6:#e0dcd2; --seq7:#f5f2e9;
     --good:#3cc13c; --warning:#f5c04a; --serious:#f0946e; --critical:#e35d5d;
     --accent:#ff6b64;
   }
@@ -130,11 +140,16 @@
   .kicker{color:var(--accent);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:12.5px;margin-bottom:20px}
   h1{font-size:clamp(33px,5.2vw,58px);line-height:1.04;letter-spacing:-.025em;margin:0 0 22px;font-weight:700}
   .standfirst{font-size:clamp(19px,2.2vw,23px);color:var(--secondary);line-height:1.52;max-width:780px;font-weight:400}
-  .byline{margin-top:26px;padding-top:18px;border-top:1px solid var(--hairline);font-size:14px;color:var(--muted);
-    display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;max-width:780px}
-  .byline b{color:var(--secondary);font-weight:600}
-  .disclaimer{margin-top:24px;font-size:14.5px;color:var(--secondary);
-    border-left:2px solid var(--warning);padding:2px 0 2px 16px;max-width:780px;line-height:1.6}
+  /* Byline: the name on its own line, the provenance under it in small type, the way
+     a printed page sets it. */
+  .byline{margin-top:26px;padding-top:18px;border-top:1px solid var(--hairline);max-width:780px}
+  .bl-name{font-size:15px;color:var(--secondary)}
+  .bl-name b{color:var(--ink);font-weight:700}
+  .bl-meta{margin-top:5px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:3px 16px}
+  /* The ethical framing is a panel, not a marginal note: it has to be read before
+     any single number is quoted. */
+  .disclaimer{margin-top:26px;font-size:14.5px;color:var(--secondary);max-width:780px;line-height:1.62;
+    background:var(--fill);border:1px solid var(--hairline);border-radius:3px;padding:17px 20px}
   .disclaimer b{color:var(--ink)}
   /* Contents: the section list the sticky nav hides on narrow screens. */
   .contents{margin:34px 0 0;padding-top:18px;border-top:1px solid var(--hairline);max-width:780px}
@@ -146,7 +161,7 @@
   .contents a i{font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px;padding-top:3px}
 
   /* ---- sections & prose ---- */
-  section{padding:54px 0}
+  section{padding:64px 0}
   section+section{border-top:1px solid var(--baseline)}
   h2{font-size:clamp(25px,3.2vw,33px);letter-spacing:-.02em;margin:0 0 10px;font-weight:700;line-height:1.14}
   /* The section number sits above the headline as an overline, not inline with it. */
@@ -159,7 +174,8 @@
   a.inlink{color:var(--accent);text-decoration:none;font-weight:600;
     border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
   a.inlink:hover{border-bottom-color:var(--accent)}
-  em.term{font-style:normal;background:color-mix(in srgb,var(--warning) 22%,transparent);padding:0 4px;border-radius:2px}
+  /* A term being defined, not highlighted: a rule under the words, no marker-pen box. */
+  em.term{font-style:normal;box-shadow:inset 0 -1px 0 0 var(--baseline);padding-bottom:1px}
   strong,b{color:var(--ink)}
   .pull{border-left:3px solid var(--accent);padding:4px 0 4px 22px;margin:34px 0;font-size:23px;
     line-height:1.36;font-weight:600;letter-spacing:-.015em;color:var(--ink);max-width:760px}
@@ -174,12 +190,16 @@
   /* auto-fit leaves a collapsed track when the tiles do not fill the row; this
      covers the 1px gutter that would otherwise show as a stray right-hand rule. */
   .tile:last-child{margin-right:-1px}
-  .tile .v{font-size:31px;font-weight:700;letter-spacing:-.025em;line-height:1}
+  /* The number itself always wears ink. A flagged tile is marked by a short rule above
+     it, sized to the figure — colour stays secondary to the label, which already says
+     in words what the flag is, and no digit is legible by hue alone. */
+  .tile .v{font-size:31px;font-weight:700;letter-spacing:-.025em;line-height:1;
+    width:fit-content;padding-top:9px;border-top:2px solid transparent}
   .tile .v small{font-size:15px;font-weight:600;color:var(--muted)}
   .tile .l{margin-top:9px;font-size:13px;color:var(--secondary);line-height:1.38}
-  .tile.crit .v{color:var(--critical)}
-  .tile.warn .v{color:var(--serious)}
-  .tile.ok .v{color:var(--good)}
+  .tile.crit .v{border-top-color:var(--critical)}
+  .tile.warn .v{border-top-color:var(--serious)}
+  .tile.ok .v{border-top-color:var(--good)}
 
   /* ---- figures / charts ----
      No panel, no fill: a rule above the chart title, a rule under the caption.
@@ -192,6 +212,9 @@
   figcaption{margin-top:16px;font-size:14px;color:var(--secondary);border-top:1px solid var(--hairline);padding-top:12px;
     max-width:820px}
   figcaption b{color:var(--ink)}
+  /* Every chart carries its own source, because charts get screenshotted and shared
+     away from the article that explains them. */
+  .fig-src{margin-top:9px;font-size:11.5px;color:var(--muted);letter-spacing:.02em;max-width:820px}
   .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--secondary);margin:8px 0 12px}
   .legend span{display:inline-flex;align-items:center;gap:7px}
   .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
@@ -206,15 +229,16 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
   @media(max-width:860px){.grid2{grid-template-columns:1fr}}
 
-  /* ---- CSS bar rows (horizontal magnitude charts) ---- */
-  .bars{display:grid;grid-template-columns:auto 1fr auto;gap:8px 12px;align-items:center}
+  /* ---- CSS bar rows (horizontal magnitude charts) ----
+     Thinner bars and more air between rows than a dashboard would use: the row is
+     a line of type with a measured length, not a widget. */
+  .bars{display:grid;grid-template-columns:auto 1fr auto;gap:11px 14px;align-items:center}
   .bars.wide{grid-template-columns:minmax(120px,220px) 1fr auto}
   .bars .rl{font-size:13px;color:var(--secondary);text-align:right;line-height:1.25;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
-  .bars .track{background:color-mix(in srgb,var(--gridline) 55%,transparent);border-radius:4px;height:20px;overflow:hidden}
-  .bars .fill{height:100%;border-radius:4px;background:var(--seq4);transition:width .3s}
+  .bars .track{background:color-mix(in srgb,var(--gridline) 55%,transparent);border-radius:4px;height:16px;overflow:hidden}
+  .bars .fill{height:100%;border-radius:4px;background:var(--seq6);transition:width .3s}
   .bars .fill.peak{background:var(--critical)}
-  .bars .fill.alt{background:var(--seq6)}
   .bars .fill.zero{background:transparent;border:1px dashed var(--baseline)}
   .bars .rv{font-size:13px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
   .bars .rv.peak{color:var(--critical)}
@@ -239,7 +263,7 @@
   thead th.sortable:hover{color:var(--ink)}
   tbody td{padding:10px 14px 10px 0;border-bottom:1px solid var(--hairline);vertical-align:top}
   tbody tr:last-child td{border-bottom:none}
-  tbody tr:hover{background:color-mix(in srgb,var(--c1) 6%,transparent)}
+  tbody tr:hover{background:color-mix(in srgb,var(--link) 6%,transparent)}
   thead th:last-child,tbody td:last-child{padding-right:0}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   .hi{color:var(--critical);font-weight:700}
@@ -254,9 +278,9 @@
   .risk.HIGH{background:color-mix(in srgb,var(--serious) 20%,transparent);color:var(--serious)}
   .risk.MEDIUM{background:color-mix(in srgb,var(--warning) 24%,transparent);color:var(--secondary)}
   .risk.LOW{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
-  .pdflink{color:var(--c1);text-decoration:none;font-weight:600;white-space:nowrap;font-size:12.5px;
-    border-bottom:1px solid color-mix(in srgb,var(--c1) 35%,transparent)}
-  .pdflink:hover{border-bottom-color:var(--c1)}
+  .pdflink{color:var(--link);text-decoration:none;font-weight:600;white-space:nowrap;font-size:12.5px;
+    border-bottom:1px solid color-mix(in srgb,var(--link) 35%,transparent)}
+  .pdflink:hover{border-bottom-color:var(--link)}
   .pdflink.na{color:var(--muted);font-weight:400;border-bottom:0}
   .tid{font-variant-numeric:tabular-nums;font-weight:600}
   .pkg{color:var(--secondary);font-size:12.5px;display:block;max-width:420px;line-height:1.35}
@@ -297,7 +321,7 @@
   .method ol,.method ul{margin:0 0 10px;padding-left:22px}
   .method li{margin-bottom:9px}
   .method code{background:var(--fill);border:1px solid var(--hairline);border-radius:2px;padding:1px 6px;font-size:13px}
-  .callout{background:none;border:0;border-left:2px solid var(--c1);
+  .callout{background:none;border:0;border-left:2px solid var(--link);
     border-radius:0;padding:3px 0 3px 18px;font-size:15.5px;color:var(--secondary);margin:24px 0;line-height:1.6}
   .callout.warn{border-left-color:var(--warning)}
   .callout.crit{border-left-color:var(--critical)}
@@ -359,11 +383,13 @@
     <div class="kicker"><span class="i18n-en">Data investigation · Public procurement · Bangladesh</span><span class="i18n-bn">ডেটা অনুসন্ধান · সরকারি ক্রয় · বাংলাদেশ</span></div>
     <h1><span class="i18n-en">Signed on the last legal day</span><span class="i18n-bn">আইনের শেষ দিনে সই</span></h1>
     <p class="standfirst i18n-en">Six government development authorities, and the smaller bodies attached to them, put <b>৳3,723.7 crore</b> of construction work through Bangladesh's electronic tender system. We read all <b>1,158 tenders</b>, record by record. In a third of the contracts that publish their bid counts only one bid survived the technical check; the same offices keep hiring the same contractors; one firm holds more than a quarter of the money; and one contract in five was signed on the last day the law allows. Every figure here links back to the government's own PDF.</p>
-    <p class="standfirst i18n-bn">ছয়টি সরকারি উন্নয়ন কর্তৃপক্ষ ও তাদের সঙ্গে যুক্ত ছোট সংস্থাগুলো বাংলাদেশের বৈদ্যুতিন দরপত্র ব্যবস্থায় <b>৳৩,৭২৩.৭ কোটি</b> টাকার নির্মাণকাজ দিয়েছে। <b>১,১৫৮টি দরপত্র</b> আমরা একটি একটি করে পড়েছি। যেসব চুক্তিতে দরের হিসাব প্রকাশ করা হয়েছে, তার এক-তৃতীয়াংশে কারিগরি যাচাই টিকেছে মাত্র একটি দর; একই দপ্তর বারবার একই ঠিকাদারকেই কাজ দিচ্ছে; মোট অর্থের এক-চতুর্থাংশের বেশি একটিমাত্র প্রতিষ্ঠানের হাতে; আর পাঁচটির একটি চুক্তি সই হয়েছে আইন যত দিন সময় দেয়, তার একেবারে শেষ দিনে। এখানকার প্রতিটি সংখ্যার সঙ্গে সরকারের নিজের পিডিএফের লিংক আছে।</p>
+    <p class="standfirst i18n-bn">ছয়টি সরকারি উন্নয়ন কর্তৃপক্ষ ও তাদের সঙ্গে যুক্ত ছোট সংস্থাগুলো বাংলাদেশের বৈদ্যুতিন দরপত্র ব্যবস্থায় <b>৳ ৩,৭২৩.৭ কোটি</b> টাকার নির্মাণকাজ দিয়েছে। <b>১,১৫৮টি দরপত্র</b> আমরা একটি একটি করে পড়েছি। যেসব চুক্তিতে দরের হিসাব প্রকাশ করা হয়েছে, তার এক-তৃতীয়াংশে কারিগরি যাচাই টিকেছে মাত্র একটি দর; একই দপ্তর বারবার একই ঠিকাদারকেই কাজ দিচ্ছে; মোট অর্থের এক-চতুর্থাংশের বেশি একটিমাত্র প্রতিষ্ঠানের হাতে; আর পাঁচটির একটি চুক্তি সই হয়েছে আইন যত দিন সময় দেয়, তার একেবারে শেষ দিনে। এখানকার প্রতিটি সংখ্যার সঙ্গে সরকারের নিজের পিডিএফের লিংক আছে।</p>
     <div class="byline">
-      <span class="i18n-en"><b>By e-GP Watch</b> · data desk</span><span class="i18n-bn"><b>প্রতিবেদন: e-GP Watch</b> · ডেটা ডেস্ক</span>
-      <span><span class="i18n-en">Analysis verified 2026-08-23</span><span class="i18n-bn">বিশ্লেষণ যাচাই: ২০২৬-০৮-২৩</span></span>
-      <span id="genfrom"><span class="i18n-en">Source: official e-GP records</span><span class="i18n-bn">সূত্র: সরকারি ই-জিপি নথি</span></span>
+      <div class="bl-name"><span class="i18n-en"><b>By e-GP Watch</b> · data desk</span><span class="i18n-bn"><b>প্রতিবেদন: e-GP Watch</b> · ডেটা ডেস্ক</span></div>
+      <div class="bl-meta">
+        <span><span class="i18n-en">Analysis verified 2026-08-23</span><span class="i18n-bn">বিশ্লেষণ যাচাই: ২০২৬-০৮-২৩</span></span>
+        <span><span class="i18n-en">Source: official e-GP tender and award records</span><span class="i18n-bn">সূত্র: সরকারি ই-জিপি দরপত্র ও কার্যাদেশ নথি</span></span>
+      </div>
     </div>
     <div class="disclaimer i18n-en">
       <b>Read this first.</b> Every figure here comes from Bangladesh's official e-GP tender and contract-award documents, and every claim links to the source PDF. <b>On its own, none of these patterns proves wrongdoing.</b> Each is a <em class="term">red flag</em>: taken together, and at this frequency, they are the kind of thing auditors and the procuring agencies themselves should look into. Firms, offices and officials are named here because the public record names them, not as an accusation. What this data cannot show is set out in the <a href="#method" class="inlink">method note</a>. Please read it before quoting any single number.
@@ -425,7 +451,16 @@ var D=null, META={notice_dir:'Tender Notice_PDFs', award_dir:'Contract_Awards_PD
 var LANG=(document.documentElement.getAttribute('data-lang')==='bn')?'bn':'en';
 function L(en,bn){return LANG==='bn'?bn:en;}
 var BNDIG=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-function bdig(s){return String(s).replace(/[0-9]/g,function(d){return BNDIG[+d];});}
+/* In Li Ador Noirrit — the face this site is required to use — the taka sign ৳ (U+09F3) and
+   the Bengali digit ৮ (eight) are drawn almost identically. Set tight against a numeral,
+   "৳১,০৬৮" reads as "৮১,০৬৮": an eighty-fold misreading in a story that is entirely about
+   sums of money. So in the Bangla edition the sign is held off the first digit by a narrow
+   no-break space — no line break, a visible sliver of air, and the digit count is unmistakable.
+   The English edition needs nothing: there the numerals are Latin, so no reader is going to
+   parse the sign as a leading digit. */
+var TK_GAP=' ';
+function bdig(s){return String(s).replace(/[0-9]/g,function(d){return BNDIG[+d];})
+  .replace(/৳(?=[০-৯])/g,'৳'+TK_GAP);}
 function adig(s){return String(s).replace(/[০-৯]/g,function(d){
   return String(d.charCodeAt(0)-2534);});}
 /* Bengali numerals are applied to the rendered tree, not at each of the ~200 places
@@ -521,10 +556,12 @@ function tiles(arr){
       '<div class="l">'+t.l+'</div></div>';
   }).join('')+'</div>';
 }
-function figure(title,sub,inner,cap,legend){
+function figure(title,sub,inner,cap,legend,src){
   return '<figure><div class="fig-head"><div class="fig-title">'+title+'</div>'+
     (sub?'<div class="fig-sub">'+sub+'</div>':'')+'</div>'+
-    (legend||'')+inner+(cap?'<figcaption>'+cap+'</figcaption>':'')+'</figure>';
+    (legend||'')+inner+(cap?'<figcaption>'+cap+'</figcaption>':'')+
+    '<div class="fig-src">'+(src||L('Source: Bangladesh e-GP tender and contract-award records',
+      'সূত্র: বাংলাদেশ ই-জিপি দরপত্র ও কার্যাদেশ নথি'))+'</div></figure>';
 }
 /* horizontal magnitude bars: rows=[{l,v,disp,cls,tip}] */
 function hbars(rows,opts){
@@ -642,7 +679,7 @@ function sFunnel(){
   var rows=f.map(function(s,i){
     var loss=i?((f[i-1].v-s.v)/f[i-1].v*100):0;
     return {l:stageName(s.stage),v:s.v,disp:fmt(s.v)+(i?'  <span class="dim">−'+fmt(loss,0)+'%</span>':''),
-      cls:i===f.length-1?'peak':(i?'alt':''),
+      cls:i===f.length-1?'peak':'',
       tip:'<b>'+esc(stageName(s.stage))+'</b><br>'+fmt(s.v)+' — '+pct(s.v/top*100)+
         L(' of documents sold',' (বিক্রি হওয়া দস্তাবেজের অনুপাতে)')+
         (i?'<br><span class="k">'+L('lost at this step:','এই ধাপে ঝরে গেছে:')+'</span> '+
@@ -855,7 +892,7 @@ function cliffSVG(){
   var bars=curve.map(function(d){
     var peak=d.day===28, x=ml+d.day*step+(step-bw)/2, y=Y(d.n), h=Math.max(d.n?2:0,mt+ih-y);
     return '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" '+
-      'fill="'+(peak?'var(--critical)':(d.day>28?'var(--serious)':'var(--seq4)'))+'"'+
+      'fill="'+(peak?'var(--critical)':(d.day>28?'var(--serious)':'var(--seq6)'))+'"'+
       tip(L('<b>Day '+d.day+'</b><br>'+d.n+' contract'+(d.n===1?'':'s')+' signed'+
           (peak?'<br><span class="k">the last legally permitted day</span>':'')+
           (d.day>28?'<br><span class="k">beyond the legal maximum</span>':''),
@@ -883,7 +920,7 @@ function cliffSVG(){
     L('days from Notification of Award to contract signing','কার্যাদেশের নোটিফিকেশন থেকে চুক্তি সই পর্যন্ত দিন')+
     '</text></svg>';
   var legend='<div class="legend">'+
-    '<span><i class="swatch" style="background:var(--seq4)"></i>'+
+    '<span><i class="swatch" style="background:var(--seq6)"></i>'+
     L('within the legal window (0–27 days)','আইনি সময়সীমার ভেতরে (০–২৭ দিন)')+'</span>'+
     '<span><i class="swatch" style="background:var(--critical)"></i>'+
     L('day 28 — the legal maximum','২৮তম দিন — আইনি সর্বোচ্চ সীমা')+'</span>'+
@@ -990,9 +1027,14 @@ function scatterSVG(){
   var dots=pts.map(function(p){
     var flag=(p.resp===1&&p.recv>=3);
     var x=X(p.recv+jit(p.id,0.42)), y=Y(p.resp+jit(p.id+'r',0.42));
-    return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(flag?4.2:3.1)+'" '+
-      'fill="'+(flag?'var(--critical)':'var(--seq5)')+'" opacity="'+(flag?0.9:0.42)+'" '+
-      (flag?'stroke="var(--surface)" stroke-width="1.2" ':'')+
+    /* These dots used to be drawn at .42 opacity, which measured 2.07:1 against the card in
+       light and 2.31:1 in dark — under the 3:1 floor a mark needs to be seen at all. At .84
+       over near-ink they read 8.4:1 and 9.3:1, and stay dE 25 from the flagged red (worst
+       case 9.7 under dichromacy). The flagged dot is also 40% wider and ringed, so the class
+       is never carried by hue alone. */
+    return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(flag?4.6:3.3)+'" '+
+      'fill="'+(flag?'var(--critical)':'var(--seq6)')+'" opacity="'+(flag?0.92:0.84)+'" '+
+      'stroke="var(--surface)" stroke-width="'+(flag?1.3:0.7)+'" '+
       tip(L('<b>Tender #'+esc(p.id)+'</b> · '+esc(orgName(p.org))+'<br>'+p.recv+' bids received → <b>'+p.resp+
           '</b> ruled responsive<br><span class="k">'+cr(p.crore,2)+'</span>'+
           (flag?'<br><span class="k">flagged: 3+ bidders reduced to one</span>':''),
@@ -1018,7 +1060,7 @@ function scatterSVG(){
     L('bids ruled responsive','রেসপনসিভ ঘোষিত দর')+'</text>'+
     '</svg>';
   var legend='<div class="legend">'+
-    '<span><i class="swatch" style="background:var(--seq5)"></i>'+
+    '<span><i class="swatch" style="background:var(--seq6)"></i>'+
     L('tender ('+fmt(pts.length)+' with bid data)','দরপত্র (দরের তথ্য আছে '+fmt(pts.length)+'টিতে)')+'</span>'+
     '<span><i class="swatch" style="background:var(--critical)"></i>'+
     L('3+ bidders reduced to a single responsive bid','৩+ দরদাতা কমে একটিমাত্র রেসপনসিভ দরে')+'</span>'+
@@ -1289,10 +1331,13 @@ function columnsSVG(rows,opts){
   }
   var bars=rows.map(function(r,ix){
     var x=ml+ix*step+(step-bw)/2, y=Y(r.v), h=Math.max(r.v?2:0,mt+ih-y);
+    /* The bar carries the flag; the number above it stays in ink. A value label painted the
+       series colour says the same thing twice and leaves the reader nothing to read if the
+       hue is lost. */
     return '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+
-      (r.flag?'var(--critical)':'var(--seq5)')+'"'+(r.tip?tip(r.tip):'')+'/>'+
-      (r.dl?'<text class="val-label" x="'+(x+bw/2)+'" y="'+(y-7)+'" text-anchor="middle"'+
-        (r.flag?' style="fill:var(--critical)"':'')+'>'+r.dl+'</text>':'');
+      (r.flag?'var(--critical)':'var(--seq6)')+'"'+(r.tip?tip(r.tip):'')+'/>'+
+      (r.dl?'<text class="val-label" x="'+(x+bw/2)+'" y="'+(y-7)+'" text-anchor="middle">'+
+        r.dl+'</text>':'');
   }).join('');
   var xl=rows.map(function(r,ix){
     return '<text class="tickv" x="'+(ml+ix*step+step/2)+'" y="'+(H-mb+18)+'" text-anchor="middle">'+esc(r.k)+'</text>';
@@ -1855,7 +1900,6 @@ function render(){
     sLead()+sHeadline()+sFunnel()+sConcentration()+sAnchor()+sCliff()+sCompetition()+
     sPairs()+sOfficers()+sTime()+sOther()+sEvidence()+sMethod();
   evBind();
-  document.getElementById('genfrom').textContent=L('Source: ','সূত্র: ')+D.generated_from;
   document.getElementById('footprint').innerHTML=
     L('Verified '+new Date().toISOString().slice(0,10)+' · '+fmt(D.headline.awarded)+' awards · '+
       cr(D.headline.value_crore)+' · '+OFF.n_suppliers_dedup+' contractors · '+OFF.n_officers+' officers · HHI '+
@@ -1876,9 +1920,12 @@ function render(){
   /* Bangla edition: fold ASCII digits in the rendered prose to Bengali numerals.
      One pass after innerHTML covers every generated string, so no figure can be
      missed; tender ids, package codes and PDF links carry .latn and are left alone.
+     The hero's table of contents is static markup rather than generated, so it needs
+     its own pass — its 01..12 are ordinals in prose, not identifiers.
      bnTree() is a no-op in the English edition. */
   bnTree(document.getElementById('app'));
   bnTree(document.getElementById('footprint'));
+  bnTree(document.querySelector('nav.contents'));
 }
 /* ---------- data source ----------
    Two ways in, one code path. If a build has inlined the dataset into
