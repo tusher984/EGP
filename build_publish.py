@@ -33,6 +33,10 @@ SRC_DATA = "article_data.json"
 OUT = "egp-investigation.html"
 BASE = "https://tusher984.github.io/EGP/"
 SIBLINGS = ("tool.html", "investigation.html", "findings.html")
+# The typeface is served from the repository, so an off-site copy of the page has to
+# point at it absolutely or fall back to the system sans — and lose the Bangla face.
+FONT_REF = '"fonts/LiAdorNoirritMultiweight/'
+FONT_REFS = 6          # 2 preload links + 4 @font-face sources
 
 
 def die(msg):
@@ -84,7 +88,7 @@ def main():
         "  official appears because the public e-GP record names them. Every pattern\n"
         "  is a red flag warranting scrutiny, not a finding of wrongdoing.\n"
         "\n"
-        "  Source documents and the sibling pages are linked to %s\n"
+        "  Source documents, fonts and the sibling pages are linked to %s\n"
         "  Change the data-pdf-base attribute on <body> to point them elsewhere.\n"
         "-->\n"
     ) % (stamp, SRC_DATA, len(cases),
@@ -105,6 +109,14 @@ def main():
     if base:
         for name in SIBLINGS:
             out = out.replace('href="%s"' % name, 'href="%s%s"' % (base, name))
+
+    # 2b · absolute base for the four font files, so the Bangla and Latin faces
+    #      still load when the page is opened from disk or from another domain
+    if out.count(FONT_REF) != FONT_REFS:
+        die("expected %d references to %s in story.html, found %d — update this script"
+            % (FONT_REFS, FONT_REF, out.count(FONT_REF)))
+    if base:
+        out = out.replace(FONT_REF, '"%sfonts/LiAdorNoirritMultiweight/' % base)
 
     # 3 · the dataset itself, immediately before the application script
     marker = "\n<script>\n"

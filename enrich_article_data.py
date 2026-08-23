@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-"""Add the missing `sold` field to every case row in article_data.json.
+"""Re-join every case row in article_data.json to its raw record.
 
 The evidence room in story.html lets a reader reproduce each headline figure by
-filtering the 645 award rows. One figure could not be reproduced: the article's
-primary single-responsive rate counts a tender as contested when rivals showed up
-*or* when documents were sold to more than one firm — and `Tenders_Sold` was never
-carried into the case rows. Without it the filter returned 114 rows where the
-article says 149.
+filtering the 645 award rows, so those rows have to carry the same bid counts the
+raw register does. Two fields did not survive the original precomputation:
+
+  * `sold` was never written at all. The article's primary single-responsive rate
+    counts a tender as contested when rivals showed up *or* when documents were
+    sold to more than one firm, so without `Tenders_Sold` the filter returned 114
+    rows where the article says 149.
+  * `resp` was dropped on the one award whose responsive-bid count is **zero**
+    (tender 95841 — 54 bids received, none responsive, and an award recorded
+    anyway). A falsy-vs-missing slip: it left the competition base at 590 rows
+    while the headline quotes 591, so the strict rate could not be recomputed
+    from the published file.
 
 This joins each case back to Procurement_Database.json on Tender_Proposal_ID and
-writes `sold` alongside the existing `recv` / `resp` counts. It is idempotent and
-changes nothing else in the file.
+writes `sold`, `resp` and `recv` from the register. It is idempotent and changes
+nothing else in the file.
 
     python3 enrich_article_data.py            # patch in place
     python3 enrich_article_data.py --check    # report only, write nothing
@@ -79,14 +86,22 @@ def main():
         die("%d case ids match more than one database row (e.g. %s)."
             % (len(ambiguous), ambiguous[:5]))
 
-    filled = blank = 0
+    filled = blank = repaired = 0
     for c in cases:
-        sold = as_int(by_id[str(c["id"])][0].get("Tenders_Sold"))
+        row = by_id[str(c["id"])][0]
+        sold = as_int(row.get("Tenders_Sold"))
         c["sold"] = sold
         if sold is None:
             blank += 1
         else:
             filled += 1
+        # `resp` and `recv` already exist on every row; rewrite them from the
+        # register so a zero is carried as 0 rather than dropped as missing.
+        for key, field in (("resp", "Responsive_Tenders"), ("recv", "Tenders_Received")):
+            was, now = c.get(key), as_int(row.get(field))
+            if was != now:
+                c[key] = now
+                repaired += 1
 
     def contested(c):
         return c.get("resp") == 1 and ((c.get("recv") or 0) > 1 or (c.get("sold") or 0) > 1)
@@ -94,13 +109,18 @@ def main():
     resp1 = sum(1 for c in cases if c.get("resp") == 1)
     recv_only = sum(1 for c in cases if c.get("resp") == 1 and (c.get("recv") or 0) > 1)
     both = sum(1 for c in cases if contested(c))
+    base = sum(1 for c in cases if c.get("resp") is not None)
 
     print("%d cases joined · %d carry a documents-sold count, %d blank"
           % (len(cases), filled, blank))
-    print("one responsive bid                          : %d" % resp1)
+    print("%d bid counts re-synced with the register" % repaired)
+    print("awards with a responsive-bid count          : %d   <- the competition base"
+          % base)
+    print("one responsive bid                          : %d  (%.1f%%)"
+          % (resp1, 100.0 * resp1 / base))
     print("  ...with more than one bid received        : %d" % recv_only)
-    print("  ...or documents sold to more than one firm: %d   <- the article's figure"
-          % both)
+    print("  ...or documents sold to more than one firm: %d  (%.1f%%)   <- the article's figure"
+          % (both, 100.0 * both / base))
 
     if args.check:
         print("--check: %s left untouched" % DATA)

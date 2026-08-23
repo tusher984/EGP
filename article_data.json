@@ -17314,7 +17314,7 @@
    "pkg": "",
    "crore": 0.048,
    "recv": 54,
-   "resp": null,
+   "resp": 0,
    "delay": 15,
    "risk": "MEDIUM",
    "n": "RAJUK_Tender_95841.pdf",
