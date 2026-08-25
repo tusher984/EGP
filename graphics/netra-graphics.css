@@ -1,0 +1,440 @@
+/* netra-graphics.css — standalone chart styles for the e-GP procurement investigation.
+   ==================================================================================
+
+   HOW THIS FITS INTO THE SITE
+   This file declares no site-level tokens. It *reads* the existing ones
+   (--surface-*, --text-*, --color-primary, --ntr-home-*) through var() and
+   derives everything it needs into a private, namespaced set (--ntrg-*) on a
+   scoped root, .ntrg. Nothing here can collide with or overwrite the main
+   stylesheets, and dark mode needs no JavaScript: every derived value is a
+   color-mix() against tokens that the site already flips under html.dark-mode,
+   so the ramp re-steps itself.
+
+   Usage:  <div class="ntrg"> …figures… </div>
+   Put .ntrg on a wrapper (not on <html>), then include netra-graphics-data.js
+   and netra-graphics.js. Set lang="bn" on the wrapper for the Bangla edition.
+
+   HOUSE RULES OBSERVED
+   No border-radius. No box-shadow. Borders only where they carry meaning: the
+   hairline above a source line (print credit convention) and the row rules
+   inside a data table. Every figure is exactly title → deck → legend → plot →
+   source; there is no card, no panel, no frame around a chart.
+
+   THE THREE NEW COLOURS
+   The site token set has no data-flag hues, so this file adds exactly three per
+   theme: --ntrg-flag (a red flag on a figure), --ntrg-warn (past the statutory
+   deadline) and --ntrg-good (a status dot beside a word, never a mark). Every
+   other colour is derived from tokens that already exist.
+
+   MEASURED, NOT EYEBALLED
+   The hex values in the fallback declarations are the computed results of the
+   color-mix() line beneath them, kept so engines without color-mix() still get
+   the intended ramp. Both themes were checked for WCAG contrast on three
+   surfaces, OKLab separation of every mark pair under protanopia, deuteranopia
+   and tritanopia, ramp monotonicity and adjacent-step separation. Three design
+   decisions are load-bearing and must not be "simplified": the aggregate
+   "other" mark is the same hue drawn stroke-only rather than a second grey
+   (fill-vs-outline survives every colour-vision deficiency and print); a zero
+   value renders as an empty track plus "0" in ink, never a faint mark; and
+   green appears only as a dot next to a label, never as a chart mark.
+*/
+
+/* ------------------------------------------------------------------- palette */
+.ntrg{
+  /* Marks. --color-primary is #00243e light / #6ea8d8 dark on the live site. */
+  --ntrg-mark: var(--color-primary, #00243e);
+
+  /* Ink. Three roles only: values and titles, deck and axis names, small print.
+     --text-muted alone measures 4.24:1 on --surface-sunken, just under the 4.5:1
+     text floor, so the small-print role is pulled toward --text-strong until it
+     clears: 5.82:1 light, 6.32:1 dark. */
+  --ntrg-ink:   var(--text-strong, #0b0c0d);
+  --ntrg-ink-2: var(--text-default, #35373a);
+  --ntrg-ink-3: #51626b;
+  --ntrg-ink-3: color-mix(in srgb, var(--text-muted, #637882) 80%, var(--text-strong, #0b0c0d));
+
+  /* Lines. Recessive but present: 1.15–1.5:1 against the page in both themes. */
+  --ntrg-grid: var(--ntr-home-line, rgba(11,12,13,.09));
+  --ntrg-axis: var(--ntr-home-line-strong, rgba(11,12,13,.16));
+
+  /* The empty part of a bar. A track, not a value — it must never read as data. */
+  --ntrg-track: #edf0f1;
+  --ntrg-track: color-mix(in srgb, var(--color-primary, #00243e) 7%, var(--surface-page, #fff));
+
+  /* Sequential ramp, one hue, light to dark. Because both --color-primary and
+     --surface-page flip under html.dark-mode, this single set of declarations
+     produces a correct light ramp AND a correct dark ramp — the dark steps are
+     re-stepped from the dark accent, not an inversion of the light ones.
+     Light:  #e0e5e8 #bdc6cd #94a3ae #667c8b #335065 #00243e (worst ΔE 9.8)
+     Dark:   #202830 #2c3d4b #3a5469 #4a6e8c #5c8bb2 #6ea8d8 (worst ΔE 8.0) */
+  --ntrg-seq-1: #e0e5e8;
+  --ntrg-seq-1: color-mix(in srgb, var(--color-primary, #00243e) 12%, var(--surface-page, #fff));
+  --ntrg-seq-2: #bdc6cd;
+  --ntrg-seq-2: color-mix(in srgb, var(--color-primary, #00243e) 26%, var(--surface-page, #fff));
+  --ntrg-seq-3: #94a3ae;
+  --ntrg-seq-3: color-mix(in srgb, var(--color-primary, #00243e) 42%, var(--surface-page, #fff));
+  --ntrg-seq-4: #667c8b;
+  --ntrg-seq-4: color-mix(in srgb, var(--color-primary, #00243e) 60%, var(--surface-page, #fff));
+  --ntrg-seq-5: #335065;
+  --ntrg-seq-5: color-mix(in srgb, var(--color-primary, #00243e) 80%, var(--surface-page, #fff));
+  --ntrg-seq-6: var(--color-primary, #00243e);
+
+  /* The only new hues. Light mode. */
+  --ntrg-flag: #a52714;  /* 7.24:1 on page; vs mark ΔE 31.5 normal, 16.6 protan */
+  --ntrg-warn: #a06d00;  /* 4.49:1 on page; vs flag ΔE 15.2 normal, 9.5 deutan  */
+  --ntrg-good: #0f6b52;  /* status dot only, beside a word — never a chart mark */
+}
+
+/* -------------------------------------------------------------- dark mode
+   Only the three added hues need restating: everything derived above re-resolves
+   itself because the tokens it reads are already flipped by the site. These are
+   not the light hues lightened — they were re-stepped, because a red at the same
+   lightness as the dark small-print grey (#77787a) collapses under protanopia.
+   The hex-then-color-mix pairs repeat so engines without color-mix() get the
+   dark ramp rather than the light one. */
+html.dark-mode .ntrg,
+html.dark-mode.ntrg{
+  --ntrg-flag: #ca5744;  /* 4.24:1 on page, 3.56:1 on sunken; vs mark ΔE 21.4 deutan */
+  --ntrg-warn: #dca651;  /* 8.23:1 on page; vs flag ΔE 15.9 deutan */
+  --ntrg-good: #6ebda1;
+  --ntrg-ink-3: #a7a8a9;
+  --ntrg-ink-3: color-mix(in srgb, var(--text-muted, #a7a8a9) 80%, var(--text-strong, #ececed));
+  --ntrg-track: #1b2126;
+  --ntrg-track: color-mix(in srgb, var(--color-primary, #6ea8d8) 7%, var(--surface-page, #131718));
+  --ntrg-seq-1: #202830;
+  --ntrg-seq-1: color-mix(in srgb, var(--color-primary, #6ea8d8) 12%, var(--surface-page, #131718));
+  --ntrg-seq-2: #2c3d4b;
+  --ntrg-seq-2: color-mix(in srgb, var(--color-primary, #6ea8d8) 26%, var(--surface-page, #131718));
+  --ntrg-seq-3: #3a5469;
+  --ntrg-seq-3: color-mix(in srgb, var(--color-primary, #6ea8d8) 42%, var(--surface-page, #131718));
+  --ntrg-seq-4: #4a6e8c;
+  --ntrg-seq-4: color-mix(in srgb, var(--color-primary, #6ea8d8) 60%, var(--surface-page, #131718));
+  --ntrg-seq-5: #5c8bb2;
+  --ntrg-seq-5: color-mix(in srgb, var(--color-primary, #6ea8d8) 80%, var(--surface-page, #131718));
+}
+
+/* ---------------------------------------------------------------- typography
+   Labels, values and titles take the heading face; the deck takes the body face;
+   the source line takes the caption face. Bangla swaps the faces through these
+   private variables — the site's own --font-* tokens are never redefined. */
+.ntrg{
+  --ntrg-ui:   var(--font-heading, "museo-sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  --ntrg-prose: var(--font-body, "utopia-std", Georgia, "Times New Roman", serif);
+  --ntrg-cap:  var(--font-caption, "utopia-caption", Georgia, serif);
+  --ntrg-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+.ntrg[lang="bn"], .ntrg [lang="bn"]{
+  --ntrg-ui:    var(--font-bn, "Noto Sans Bengali", sans-serif);
+  --ntrg-prose: var(--font-bn-body, "Noto Serif Bengali", serif);
+  --ntrg-cap:   var(--font-bn-body, "Noto Serif Bengali", serif);
+}
+
+/* -------------------------------------------------------------------- base
+   Sizes inside are em-relative to this one declaration, so the bundle is
+   deterministic wherever it is dropped. To make it scale with the site's own
+   type instead, override .ntrg{font-size:1rem}. */
+.ntrg{
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: var(--ntrg-ui);
+  color: var(--ntrg-ink-2);
+  -webkit-text-size-adjust: 100%;
+}
+.ntrg *, .ntrg *::before, .ntrg *::after{ box-sizing: border-box }
+
+/* ------------------------------------------------------------------ figure
+   Title, deck, legend, plot, source. Nothing else: no card, no frame, no
+   background. The single hairline is above the source line, which is the print
+   convention for a credit and the only rule that carries meaning here. */
+.ntrg-fig{ margin: 0 0 2.75em; padding: 0; border: 0 }
+.ntrg-fig:last-child{ margin-bottom: 0 }
+.ntrg-fig__title{
+  margin: 0 0 .3em;
+  font-family: var(--ntrg-ui); font-size: 1.0625em; font-weight: 700;
+  line-height: 1.3; color: var(--ntrg-ink);
+}
+.ntrg-fig__dek{
+  margin: 0 0 1em; max-width: 68ch;
+  font-family: var(--ntrg-prose); font-size: .9375em; line-height: 1.5;
+  color: var(--ntrg-ink-2);
+}
+.ntrg-fig__plot{ margin: 0; position: relative }
+.ntrg-fig__src{
+  margin: .9em 0 0; padding-top: .65em; border-top: 1px solid var(--ntrg-grid);
+  font-family: var(--ntrg-cap); font-size: .75em; line-height: 1.45;
+  color: var(--ntrg-ink-3);
+}
+.ntrg-fig__src b{ font-weight: 700; color: var(--ntrg-ink-2) }
+
+/* ------------------------------------------------------------------ legend
+   Present whenever a figure uses more than one mark class, so identity is never
+   carried by colour alone. The "aggregate" swatch is an outline, not a second
+   fill — the distinction survives colour-vision deficiency and monochrome print. */
+.ntrg-legend{
+  display: flex; flex-wrap: wrap; gap: .4em 1.15em; margin: 0 0 .85em;
+  font-family: var(--ntrg-ui); font-size: .75em; line-height: 1.4;
+  color: var(--ntrg-ink-2);
+}
+.ntrg-legend__i{ display: inline-flex; align-items: center; gap: .45em }
+.ntrg-legend__sw{
+  flex: 0 0 auto; width: .8em; height: .8em; background: var(--ntrg-seq-6);
+}
+.ntrg-legend__sw--flag{ background: var(--ntrg-flag) }
+.ntrg-legend__sw--warn{ background: var(--ntrg-warn) }
+.ntrg-legend__sw--good{ background: var(--ntrg-good); border-radius: 50% }
+.ntrg-legend__sw--out{ background: none; border: 1.5px solid var(--ntrg-seq-6) }
+.ntrg-legend__sw--line{ height: 0; background: none; border-top: 2px solid var(--ntrg-seq-6) }
+.ntrg-legend__sw--ref{ height: 0; background: none; border-top: 2px dashed var(--ntrg-axis) }
+.ntrg-legend__sw--s1{ background: var(--ntrg-seq-1) }
+.ntrg-legend__sw--s2{ background: var(--ntrg-seq-2) }
+.ntrg-legend__sw--s3{ background: var(--ntrg-seq-3) }
+.ntrg-legend__sw--s4{ background: var(--ntrg-seq-4) }
+.ntrg-legend__sw--s5{ background: var(--ntrg-seq-5) }
+.ntrg-legend__sw--s6{ background: var(--ntrg-seq-6) }
+/* A ramp reads as one continuous thing, so its steps sit flush with no gaps. */
+.ntrg-legend__ramp{ display: inline-flex; align-items: center; gap: 0 }
+.ntrg-legend__ramp .ntrg-legend__sw{ width: 1.6em; height: .7em }
+
+/* ------------------------------------------------------------------- plots
+   The viewBox is rebuilt from the container's pixel width on every render, so
+   one SVG unit is one CSS pixel and label type is never scaled by the browser.
+   That is why sizes below are in px: inside these plots, px is literal. */
+.ntrg-svg{ display: block; width: 100%; height: auto; overflow: visible }
+.ntrg-svg text{ font-family: var(--ntrg-ui); fill: var(--ntrg-ink-3) }
+
+.ntrg-grid{ stroke: var(--ntrg-grid); stroke-width: 1; fill: none; shape-rendering: crispEdges }
+.ntrg-axis{ stroke: var(--ntrg-axis); stroke-width: 1; fill: none; shape-rendering: crispEdges }
+.ntrg-track{ fill: var(--ntrg-track) }
+
+/* Marks. No rounded data-ends: the house rule is no radius, and a square end
+   also reports the value more honestly at small heights. */
+.ntrg-mk{ fill: var(--ntrg-seq-6) }
+.ntrg-mk--1{ fill: var(--ntrg-seq-1) }
+.ntrg-mk--2{ fill: var(--ntrg-seq-2) }
+.ntrg-mk--3{ fill: var(--ntrg-seq-3) }
+.ntrg-mk--4{ fill: var(--ntrg-seq-4) }
+.ntrg-mk--5{ fill: var(--ntrg-seq-5) }
+.ntrg-mk--6{ fill: var(--ntrg-seq-6) }
+.ntrg-mk--flag{ fill: var(--ntrg-flag) }
+.ntrg-mk--warn{ fill: var(--ntrg-warn) }
+/* The aggregate / "everyone else" class: same hue, outline instead of fill. */
+.ntrg-mk--out{ fill: none; stroke: var(--ntrg-seq-6); stroke-width: 1.5 }
+.ntrg-mk--zero{ fill: none; stroke: none }
+
+/* Lines and points. 2px strokes, markers at least 8px across, and a 2px ring in
+   the page colour on anything that overlaps, so dense clusters stay countable. */
+.ntrg-ln{
+  fill: none; stroke: var(--ntrg-seq-6); stroke-width: 2;
+  stroke-linejoin: round; stroke-linecap: round;
+}
+.ntrg-ln--flag{ stroke: var(--ntrg-flag) }
+.ntrg-ln--ref{ stroke: var(--ntrg-axis); stroke-width: 2; stroke-dasharray: 4 4 }
+.ntrg-ln--rule{ stroke: var(--ntrg-flag); stroke-width: 1; stroke-dasharray: 3 3 }
+.ntrg-area{ fill: var(--ntrg-seq-1); stroke: none }
+.ntrg-dot{ fill: var(--ntrg-seq-6); stroke: var(--surface-page, #fff); stroke-width: 2 }
+.ntrg-dot--flag{ fill: var(--ntrg-flag) }
+.ntrg-dot--warn{ fill: var(--ntrg-warn) }
+.ntrg-dot--out{ fill: var(--surface-page, #fff); stroke: var(--ntrg-seq-6); stroke-width: 1.5 }
+.ntrg-conn{ stroke: var(--ntrg-seq-3); stroke-width: 2; stroke-linecap: round }
+
+/* Text inside plots. Values and category names wear ink, never the series
+   colour: a number painted the same hue as its bar says one thing twice and
+   leaves nothing legible if the hue is lost. */
+.ntrg-t{ font-size: 11px; fill: var(--ntrg-ink-3) }
+.ntrg-t--cat{ font-size: 11.5px; fill: var(--ntrg-ink-2) }
+.ntrg-t--val{ font-size: 11.5px; font-weight: 700; fill: var(--ntrg-ink); font-variant-numeric: tabular-nums }
+.ntrg-t--big{ font-size: 13px; font-weight: 700; fill: var(--ntrg-ink) }
+.ntrg-t--note{ font-size: 10.5px; fill: var(--ntrg-ink-3) }
+.ntrg-t--flag{ font-size: 10.5px; font-weight: 700; fill: var(--ntrg-flag) }
+.ntrg-t--onmark{ font-size: 11px; font-weight: 700; fill: var(--on-accent, #fff) }
+.ntrg-t--axis{ font-size: 10.5px; fill: var(--ntrg-ink-3); font-variant-numeric: tabular-nums }
+
+/* ---------------------------------------------------------------- stat tiles
+   A number and its label, set in type. No box, no rule, no tint: the figures
+   are large enough to be the structure. */
+.ntrg-tiles{
+  display: grid; gap: 1.4em 1.6em; margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(8.5em, 1fr));
+}
+.ntrg-tile{ margin: 0 }
+.ntrg-tile__v{
+  display: block; font-family: var(--ntrg-ui); font-size: 1.75em; font-weight: 700;
+  line-height: 1.05; letter-spacing: -.01em; color: var(--ntrg-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ntrg-tile__v .ntrg-u{ font-size: .5em; font-weight: 700; letter-spacing: 0; color: var(--ntrg-ink-3) }
+.ntrg-tile__k{
+  display: block; margin-top: .35em; font-family: var(--ntrg-ui); font-size: .75em;
+  line-height: 1.35; color: var(--ntrg-ink-2);
+}
+.ntrg-tile__n{ display: block; margin-top: .2em; font-family: var(--ntrg-cap); font-size: .6875em; color: var(--ntrg-ink-3) }
+.ntrg-tile--flag .ntrg-tile__v{ color: var(--ntrg-flag) }
+
+/* --------------------------------------------------------------------- table
+   Horizontal rules only. No outer frame, no vertical lines, no zebra tint: the
+   row rule is the one border that is doing work. */
+.ntrg-tw{ overflow-x: auto; -webkit-overflow-scrolling: touch }
+.ntrg-tb{
+  width: 100%; border-collapse: collapse; margin: 0;
+  font-family: var(--ntrg-ui); font-size: .8125em; line-height: 1.4;
+}
+.ntrg-tb caption{ text-align: left; margin-bottom: .5em; color: var(--ntrg-ink-3); font-size: .9em }
+.ntrg-tb th{
+  padding: .45em 1em .45em 0; text-align: left; vertical-align: bottom;
+  font-weight: 700; color: var(--ntrg-ink); white-space: nowrap;
+  border-bottom: 1px solid var(--ntrg-axis);
+}
+.ntrg-tb td{
+  padding: .5em 1em .5em 0; vertical-align: top; color: var(--ntrg-ink-2);
+  border-bottom: 1px solid var(--ntrg-grid);
+}
+.ntrg-tb tr:last-child td{ border-bottom: 0 }
+.ntrg-tb th:last-child, .ntrg-tb td:last-child{ padding-right: 0 }
+.ntrg-tb .num{
+  text-align: right; white-space: nowrap; color: var(--ntrg-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ntrg-tb .nm{ color: var(--ntrg-ink); font-weight: 600 }
+.ntrg-tb .id{ font-family: var(--ntrg-mono); font-size: .92em; color: var(--ntrg-ink-3) }
+/* A flagged row is marked by a word in the risk column, not by a tinted row. */
+.ntrg-flagword{ color: var(--ntrg-flag); font-weight: 700 }
+.ntrg-warnword{ color: var(--ntrg-warn); font-weight: 700 }
+/* Source-PDF links in the evidence table. A thin-underlined text link in the
+   accent ink — never an icon, since the bundle ships no emoji face. Two per row
+   (notice + award); an em-dash stands in where a document is absent. */
+.ntrg-evd{ white-space: nowrap }
+.ntrg-pdf{
+  font-family: var(--ntrg-ui); font-size: .92em; font-weight: 600; text-decoration: none;
+  color: var(--color-primary);
+  border-bottom: 1px solid var(--color-primary);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 38%, transparent);
+}
+.ntrg-pdf + .ntrg-pdf{ margin-left: .7em }
+.ntrg-pdf:hover{ border-bottom-color: var(--color-primary) }
+.ntrg-pdf--na{ color: var(--ntrg-ink-3); font-weight: 400; border-bottom: 0 }
+.ntrg-dot-good{
+  display: inline-block; width: .55em; height: .55em; border-radius: 50%;
+  background: var(--ntrg-good); margin-right: .4em; vertical-align: baseline;
+}
+
+/* ------------------------------------------------------------- controls
+   Filters live in one row above the plot. Selection is carried by a filled
+   background rather than a border, which keeps the border count at zero. */
+.ntrg-ctl{ display: flex; flex-wrap: wrap; align-items: center; gap: .4em; margin: 0 0 .9em }
+.ntrg-ctl__lab{ font-size: .75em; color: var(--ntrg-ink-3); margin-right: .2em }
+.ntrg-chip{
+  font: inherit; font-family: var(--ntrg-ui); font-size: .75em; line-height: 1;
+  padding: .55em .7em; margin: 0; border: 0; cursor: pointer;
+  background: var(--ntrg-seq-1); color: var(--ntrg-ink);
+}
+/* Selected state uses a darker ramp step with ink text, not text-on-accent:
+   a mid-ramp fill contrasts with the theme's ink in BOTH modes, whereas the
+   accent step would flip lightness and could collide with --on-accent. */
+.ntrg-chip[aria-pressed="true"]{ background: var(--ntrg-seq-3); color: var(--ntrg-ink); font-weight: 700 }
+.ntrg-chip:focus-visible{ outline: 2px solid var(--ntrg-seq-6); outline-offset: 2px }
+.ntrg-chip__n{ opacity: .72; margin-left: .35em; font-variant-numeric: tabular-nums }
+
+.ntrg-pager{
+  display: flex; align-items: center; gap: .7em; margin: .8em 0 0;
+  font-family: var(--ntrg-ui); font-size: .75em; color: var(--ntrg-ink-3);
+}
+.ntrg-pager button{
+  font: inherit; padding: .5em .8em; border: 0; cursor: pointer;
+  background: var(--ntrg-seq-1); color: var(--ntrg-ink);
+}
+.ntrg-pager button[disabled]{ cursor: default; color: var(--ntrg-ink-3); opacity: .55 }
+.ntrg-pager button:focus-visible{ outline: 2px solid var(--ntrg-seq-6); outline-offset: 2px }
+.ntrg-pager__at{ font-variant-numeric: tabular-nums }
+
+/* ------------------------------------------------------------------ tooltip
+   One element, reused by every figure, positioned in viewport coordinates so no
+   plot can clip it. The hairline is what separates it from whatever is behind;
+   without a shadow it is the only available separation. */
+.ntrg-tip{
+  position: fixed; z-index: 60; top: 0; left: 0; max-width: 20em;
+  padding: .55em .7em; pointer-events: none; opacity: 0; visibility: hidden;
+  background: var(--surface-raised, #fff); border: 1px solid var(--ntrg-axis);
+  font-family: var(--ntrg-ui); font-size: 12px; line-height: 1.45;
+  color: var(--ntrg-ink-2);
+}
+.ntrg-tip[data-on="1"]{ opacity: 1; visibility: visible }
+.ntrg-tip b{ display: block; color: var(--ntrg-ink); font-weight: 700; margin-bottom: .15em }
+.ntrg-tip i{ font-style: normal; color: var(--ntrg-ink); font-weight: 700; font-variant-numeric: tabular-nums }
+.ntrg-hit{ fill: transparent; stroke: none; cursor: default }
+
+/* Focusable marks: keyboard reaches the same readout the pointer gets. */
+.ntrg-svg [tabindex]:focus{ outline: none }
+.ntrg-svg [tabindex]:focus-visible{ outline: 2px solid var(--ntrg-seq-6); outline-offset: 1px }
+
+/* --------------------------------------------------------- notes & framing
+   The methodology and limitation blocks the story is obliged to carry. A tinted
+   panel, not a bordered one — except the left rule, which marks it as an aside. */
+.ntrg-note{
+  margin: 0 0 1.6em; padding: .9em 1.1em; background: var(--ntrg-seq-1);
+  border-left: 3px solid var(--ntrg-seq-4);
+  font-family: var(--ntrg-prose); font-size: .875em; line-height: 1.55;
+  color: var(--ntrg-ink-2);
+}
+.ntrg-note--flag{ border-left-color: var(--ntrg-flag) }
+.ntrg-note__h{
+  margin: 0 0 .3em; font-family: var(--ntrg-ui); font-size: .8125em; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--ntrg-ink);
+}
+.ntrg-note p{ margin: 0 0 .5em } .ntrg-note p:last-child{ margin-bottom: 0 }
+.ntrg-note ul{ margin: .3em 0 0; padding-left: 1.15em } .ntrg-note li{ margin: 0 0 .3em }
+
+.ntrg-byline{
+  margin: 0 0 1.6em; font-family: var(--ntrg-ui); font-size: .8125em; line-height: 1.5;
+  color: var(--ntrg-ink-3);
+}
+.ntrg-byline b{ display: block; color: var(--ntrg-ink); font-weight: 700; font-size: 1.05em }
+
+/* ----------------------------------------------------------------- cartogram
+   Every tile is name-labelled and the source line says it is a schematic
+   arrangement, not a projection. Nothing here draws a national boundary: the
+   record contains district names, and inventing geometry for them would be an
+   assertion the data cannot support. */
+.ntrg-tile-mk{ stroke: var(--surface-page, #fff); stroke-width: 2 }
+.ntrg-tile-mk--empty{ fill: var(--ntrg-track) }
+/* Halo text: a stroke in the surface colour under an ink fill, so a label stays
+   legible on top of any ramp step in either theme without needing to know the
+   step's lightness. Both colours flip with the theme, so the halo always matches
+   whatever is behind it. This is what lets a heatmap cell or cartogram tile carry
+   a number even though the fill under it can be light or dark. */
+.ntrg-t--halo{
+  fill: var(--ntrg-ink); stroke: var(--surface-page, #fff); stroke-width: 3px;
+  paint-order: stroke; stroke-linejoin: round;
+}
+.ntrg-t--tile{ font-size: 11px; font-weight: 700; text-anchor: middle }
+.ntrg-t--cell{ font-size: 10.5px; font-weight: 700; text-anchor: middle }
+
+
+/* --------------------------------------------------------------- utilities */
+.ntrg-sr{
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.ntrg-2up{ display: grid; gap: 2.75em 2.2em; grid-template-columns: repeat(auto-fit, minmax(20em, 1fr)) }
+.ntrg-2up > .ntrg-fig{ margin-bottom: 0 }
+.ntrg-empty{ font-family: var(--ntrg-ui); font-size: .8125em; color: var(--ntrg-ink-3); margin: 0; padding: 1.2em 0 }
+.ntrg-scroll{ overflow-x: auto; -webkit-overflow-scrolling: touch }
+
+/* --------------------------------------------------------------- fallbacks */
+@media (prefers-reduced-motion: reduce){
+  .ntrg *{ transition: none !important; animation: none !important }
+}
+/* Forced colours: keep the outline-vs-fill distinction, which is the one piece
+   of encoding that survives when the palette is replaced wholesale. */
+@media (forced-colors: active){
+  .ntrg-mk, .ntrg-mk--flag, .ntrg-mk--warn{ fill: CanvasText }
+  .ntrg-mk--out{ fill: Canvas; stroke: CanvasText }
+  .ntrg-track, .ntrg-tile-mk--empty{ fill: Canvas; stroke: CanvasText; stroke-width: 1 }
+  .ntrg-chip{ border: 1px solid CanvasText }
+  .ntrg-chip[aria-pressed="true"]{ background: Highlight; color: HighlightText }
+  .ntrg-tip{ border-color: CanvasText }
+}
+@media print{
+  .ntrg-ctl, .ntrg-pager, .ntrg-tip{ display: none !important }
+  .ntrg-fig{ break-inside: avoid; page-break-inside: avoid }
+  .ntrg-tb{ font-size: 9pt }
+}
