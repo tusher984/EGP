@@ -33,10 +33,12 @@ SRC_DATA = "article_data.json"
 OUT = "egp-investigation.html"
 BASE = "https://tusher984.github.io/EGP/"
 SIBLINGS = ("tool.html", "investigation.html", "findings.html")
-# The typeface is served from the repository, so an off-site copy of the page has to
-# point at it absolutely or fall back to the system sans — and lose the Bangla face.
-FONT_REF = '"fonts/LiAdorNoirritMultiweight/'
-FONT_REFS = 6          # 2 preload links + 4 @font-face sources
+# The chart/map/table bundle is three local files (a stylesheet + two scripts). An
+# off-site copy has to point at them absolutely; the typefaces are now loaded from
+# Adobe Fonts and Google Fonts (already absolute URLs), so nothing font-related is
+# rewritten here anymore.
+GRAPHICS_REF = '"graphics/netra-graphics'
+GRAPHICS_REFS = 3      # 1 stylesheet link + 2 script sources
 
 
 def die(msg):
@@ -88,7 +90,7 @@ def main():
         "  official appears because the public e-GP record names them. Every pattern\n"
         "  is a red flag warranting scrutiny, not a finding of wrongdoing.\n"
         "\n"
-        "  Source documents, fonts and the sibling pages are linked to %s\n"
+        "  Source documents, the graphics bundle and the sibling pages are linked to %s\n"
         "  Change the data-pdf-base attribute on <body> to point them elsewhere.\n"
         "-->\n"
     ) % (stamp, SRC_DATA, len(cases),
@@ -110,13 +112,13 @@ def main():
         for name in SIBLINGS:
             out = out.replace('href="%s"' % name, 'href="%s%s"' % (base, name))
 
-    # 2b · absolute base for the four font files, so the Bangla and Latin faces
-    #      still load when the page is opened from disk or from another domain
-    if out.count(FONT_REF) != FONT_REFS:
+    # 2b · absolute base for the graphics bundle (stylesheet + two scripts), so the
+    #      charts, map and tables still load when the page is opened off-site
+    if out.count(GRAPHICS_REF) != GRAPHICS_REFS:
         die("expected %d references to %s in story.html, found %d — update this script"
-            % (FONT_REFS, FONT_REF, out.count(FONT_REF)))
+            % (GRAPHICS_REFS, GRAPHICS_REF, out.count(GRAPHICS_REF)))
     if base:
-        out = out.replace(FONT_REF, '"%sfonts/LiAdorNoirritMultiweight/' % base)
+        out = out.replace(GRAPHICS_REF, '"%sgraphics/netra-graphics' % base)
 
     # 3 · the dataset itself, immediately before the application script
     marker = "\n<script>\n"
