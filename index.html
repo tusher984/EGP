@@ -34,6 +34,9 @@
 <meta name="twitter:description" content="1,158 tenders, 645 awards, ৳3,724 crore, and 1,290 source documents attached. Red flags warranting scrutiny in Bangladesh development-authority procurement.">
 <link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Bold.ttf" as="font" type="font/ttf" crossorigin>
+<!-- standalone graphics bundle: styles first, so the site's inline <style> below
+     (which carries the .ntrg token adapter) wins the cascade for the flag hues -->
+<link rel="stylesheet" href="graphics/netra-graphics.css">
 <style>
   /* ---- one family for both editions ----
      Li Ador Noirrit (Lipighor) carries Bangla, Latin, Bengali numerals, the taka
@@ -68,6 +71,39 @@
     --seq4:#6b6862; --seq5:#4e4c47; --seq6:#2b2a27; --seq7:#171614;
     --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
     --accent:#b0201d; --maxw:1160px; --measure:700px;
+  }
+  /* ---- adapter for the standalone graphics bundle (graphics/netra-graphics.*) ----
+     That bundle reads its own set of token names (--surface-*, --text-*,
+     --color-primary, --ntr-home-*, --font-*) and expects dark mode on html.dark-mode.
+     This site names its tokens differently and toggles dark on [data-theme]. The
+     block below maps this site's tokens onto the ones the bundle reads, all scoped
+     to .ntrg, so the bundle inherits this palette, typeface and BOTH themes with no
+     edit to any bundle file: because every value is var()-ed to a site token that
+     already flips under [data-theme="dark"], the bundle's colour-mix ramps and the
+     three flag hues re-resolve for dark on their own. */
+  .ntrg{
+    --surface-page: var(--page);
+    --surface-raised: var(--surface);
+    --surface-sunken: var(--fill);
+    --text-strong: var(--ink);
+    --text-default: var(--secondary);
+    --text-muted: var(--muted);
+    --text-faint: var(--muted);
+    --color-primary: var(--seq6);          /* marks take the site's near-ink graphite, not a blue */
+    --on-accent: var(--page);
+    --ntr-home-line: var(--gridline);
+    --ntr-home-line-strong: var(--baseline);
+    --font-heading: "Li Ador Noirrit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-body: "Li Ador Noirrit", Georgia, serif;
+    --font-caption: "Li Ador Noirrit", Georgia, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-bn: "Li Ador Noirrit", "Noto Sans Bengali", sans-serif;
+    --font-bn-body: "Li Ador Noirrit", "Noto Serif Bengali", serif;
+    /* the bundle's three data-flag hues -> this site's reserved status colours,
+       so they flip with [data-theme] exactly like the rest of the page */
+    --ntrg-flag: var(--accent);
+    --ntrg-warn: var(--warning);
+    --ntrg-good: var(--good);
   }
   html[data-theme="dark"]{
     --page:#0d0d0d; --surface:#0d0d0d; --fill:#181817; --ink:#ffffff;
@@ -369,6 +405,7 @@
       <a href="#officers"><span class="i18n-en">Officers</span><span class="i18n-bn">কর্মকর্তা</span></a>
       <a href="#evidence"><span class="i18n-en">Evidence room</span><span class="i18n-bn">নথিঘর</span></a>
       <a href="#method"><span class="i18n-en">Method</span><span class="i18n-bn">পদ্ধতি</span></a>
+      <a href="#graphics"><span class="i18n-en">Graphics</span><span class="i18n-bn">গ্রাফিক</span></a>
       <a href="tool.html" class="strong"><span class="i18n-en">The tool</span><span class="i18n-bn">টুল</span></a>
     </nav>
     <div class="toggles">
@@ -420,6 +457,41 @@
 <div id="app">
   <div class="loading wrap"><span class="i18n-en">Loading the evidence…</span><span class="i18n-bn">নথি লোড হচ্ছে…</span></div>
 </div>
+
+<!-- ============================================================================
+     GRAPHICS APPENDIX — the standalone bundle in graphics/, mounted as one
+     section. Every figure below is drawn by graphics/netra-graphics.js from
+     graphics/netra-graphics-data.js; the .ntrg wrapper inherits the site's
+     palette and typeface through the adapter in <head>, and follows the page's
+     dark-mode and Bangla toggles on its own. This lives outside #app so the
+     narrative re-render never touches it. -->
+<section id="graphics" class="anchor">
+  <div class="wrap">
+    <h2 class="narrow"><span class="i18n-en">Every chart, in one place</span><span class="i18n-bn">সব চার্ট, এক জায়গায়</span></h2>
+    <p class="narrow"><span class="i18n-en">The full set of figures from this investigation, rendered from the standalone graphics bundle. Each reads the same records as the story above, so the numbers match; hover any mark for detail, and every row of the award table links to the government's own notice and award PDF.</span><span class="i18n-bn">এই অনুসন্ধানের সম্পূর্ণ চিত্রমালা, স্বতন্ত্র গ্রাফিক বান্ডল থেকে তৈরি। প্রতিটি উপরের প্রতিবেদনের একই নথি পড়ে, তাই সংখ্যাগুলো মেলে; বিস্তারিত জানতে যেকোনো চিহ্নে হোভার করুন, আর কার্যাদেশ সারণির প্রতিটি সারি সরকারের নিজস্ব বিজ্ঞপ্তি ও কার্যাদেশ পিডিএফে যুক্ত।</span></p>
+    <div class="ntrg">
+      <figure data-ntrg="stat-tiles"></figure>
+      <figure data-ntrg="funnel"></figure>
+      <figure data-ntrg="authorities"></figure>
+      <figure data-ntrg="scatter"></figure>
+      <figure data-ntrg="elimination"></figure>
+      <figure data-ntrg="cliff"></figure>
+      <figure data-ntrg="cliff-by-org"></figure>
+      <figure data-ntrg="contractor-value"></figure>
+      <figure data-ntrg="contractor-count"></figure>
+      <figure data-ntrg="lorenz"></figure>
+      <figure data-ntrg="dumbbell"></figure>
+      <figure data-ntrg="matrix"></figure>
+      <figure data-ntrg="pe-capture"></figure>
+      <figure data-ntrg="officers"></figure>
+      <figure data-ntrg="districts"></figure>
+      <figure data-ntrg="cartogram"></figure>
+      <figure data-ntrg="years"></figure>
+      <figure data-ntrg="docprice"></figure>
+      <figure data-ntrg="cases"></figure>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="wrap narrow">
@@ -2008,5 +2080,11 @@ function bootFail(err){
   lBtn.addEventListener('click',function(){applyLang(LANG==='bn'?'en':'bn');});
 })();
 </script>
+
+<!-- graphics bundle: data first (defines window.NTRG_DATA), then the renderer,
+     which auto-mounts every [data-ntrg] figure on load and re-renders on the
+     Bangla toggle. Kept in graphics/ and referenced from here. -->
+<script src="graphics/netra-graphics-data.js"></script>
+<script src="graphics/netra-graphics.js"></script>
 </body>
 </html>
