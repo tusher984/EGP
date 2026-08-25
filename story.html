@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Signed on the last legal day — the complete e-GP investigation</title>
-<script>/* theme + language before first paint, so neither flashes the wrong state */(function(){try{var d=document.documentElement,t=localStorage.getItem('egp-theme'),l=localStorage.getItem('egp-lang');if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)t='dark';d.setAttribute('data-theme',t==='dark'?'dark':'light');if(l==='bn'){d.setAttribute('data-lang','bn');d.setAttribute('lang','bn');document.title='আইনের শেষ দিনে সই — সম্পূর্ণ ই-জিপি অনুসন্ধান';}}catch(e){}})();</script>
+<script>/* theme + language before first paint, so neither flashes the wrong state */(function(){try{var d=document.documentElement,t=localStorage.getItem('egp-theme'),l=localStorage.getItem('egp-lang');if(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)t='dark';if(t==='dark')d.classList.add('dark-mode');if(l==='bn'){d.setAttribute('data-lang','bn');d.setAttribute('lang','bn');document.title='আইনের শেষ দিনে সই — সম্পূর্ণ ই-জিপি অনুসন্ধান';}}catch(e){}})();</script>
 <meta name="description" content="The complete data investigation into 1,158 Bangladesh e-GP construction tenders worth ৳3,724 crore: every detection, every chart, and the source PDF for every one of 645 awards. Concentration, the 28-day signing cliff, competition that vanishes at evaluation, repeat contractor-office pairings, and officers whose awards flow to a single firm.">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="theme-color" content="#f9f9f7" media="(prefers-color-scheme: light)">
@@ -20,63 +20,107 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Signed on the last legal day — the complete e-GP investigation">
 <meta name="twitter:description" content="1,158 tenders, 645 awards, ৳3,724 crore, and 1,290 source documents attached. Red flags warranting scrutiny in Bangladesh development-authority procurement.">
-<link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Regular.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20Bold.ttf" as="font" type="font/ttf" crossorigin>
+<!-- Site typefaces. museo-sans (headings) and utopia-std (body) are the Netra
+     design-system faces; on the production site they load from the shared Adobe
+     Fonts (Typekit) project named in the main stylesheet. This standalone page is
+     not licensed to embed them, so paste that kit's <link> in the slot below to
+     render them; until then they fall back to the system serif/sans in the tokens.
+     ADOBE FONTS (Typekit) — add the site's kit link here:
+     <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css"> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;500;700&display=swap">
+<!-- standalone graphics bundle: its stylesheet first so the page's inline <style>
+     below can still override where needed -->
+<link rel="stylesheet" href="graphics/netra-graphics.css">
 <style>
-  /* ---- one family for both editions ----
-     Li Ador Noirrit (Lipighor) carries Bangla, Latin, Bengali numerals, the taka
-     sign and typographic punctuation in a single face, so the English and Bangla
-     editions are set in the same voice instead of two unrelated typefaces. The
-     files ship in this repository; nothing is fetched from a font CDN. Symbols the
-     face does not cover (arrows, ≈, §) fall back per-glyph to the system sans. */
-  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:400;font-display:swap;
-    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Regular.ttf") format("truetype")}
-  @font-face{font-family:"Li Ador Noirrit";font-style:italic;font-weight:400;font-display:swap;
-    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Italic.ttf") format("truetype")}
-  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:600;font-display:swap;
-    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit SemiBold.ttf") format("truetype")}
-  @font-face{font-family:"Li Ador Noirrit";font-style:normal;font-weight:700;font-display:swap;
-    src:url("fonts/LiAdorNoirritMultiweight/Li Ador Noirrit Bold.ttf") format("truetype")}
+  /* Type comes from the site design system: --font-heading (museo-sans) for
+     display, --font-body (utopia-std) for text, and Noto Sans/Serif Bengali for
+     the Bangla edition (loaded in <head> above). No face is self-hosted here. */
   :root{
-    /* validated dataviz palette — light. --surface is deliberately the same colour
-       as --page: charts sit directly on the page, and every 2px separator ring in
-       the SVGs is drawn in --surface, so the two must match. */
-    --page:#f9f9f7; --surface:#f9f9f7; --fill:#f1f0ea; --ink:#0b0b0b;
-    --secondary:#52514e; --muted:#898781;
-    --gridline:#e1e0d9; --baseline:#c3c2b7; --hairline:#e6e5df;
-    /* the one blue left on the site: a hyperlink, which is a text convention, not a
-       data encoding. No chart draws with it. */
-    --link:#2a78d6;
-    /* Data marks are ink, not a hue: a warm graphite ramp on warm paper, with the
-       one red reserved for the flagged case. Two consequences, both checked rather
-       than eyeballed: the ordinary bar is --seq6, near-ink, because any mid-grey
-       sits only ΔE 6 from the red under protanopia, and every step is a lightness
-       step, which is the one difference no colour-vision deficiency can take away. */
-    --seq0:#efeee9; --seq1:#dbd9cf; --seq2:#c4c1b6; --seq3:#9d9a91;
-    --seq4:#6b6862; --seq5:#4e4c47; --seq6:#2b2a27; --seq7:#171614;
-    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
-    --accent:#b0201d; --maxw:1160px; --measure:700px;
+    /* ---- Netra design-system tokens (from the site's main stylesheet) ----
+       Adopted verbatim so this page shares the site's palette, surfaces and type.
+       The repo's own token names are aliased to these in the block below. */
+    --color-primary:#00243e; --color-darkgrey:#15171A; --color-midgrey:#3f535c;
+    --color-lightgrey:#c5d2d9; --color-wash:#e5eff5; --color-darkmode:#151719;
+    --surface-page:#ffffff; --surface-raised:#F8FCFF; --surface-sunken:#f0f6f9;
+    --surface-pure:#ffffff; --surface-placeholder:#e1e8ec; --surface-hover:#e5e5e5;
+    --text-strong:#0b0c0d; --text-body:#222222; --text-default:#35373a;
+    --text-muted:#637882; --text-faint:#8ca0a8; --on-accent:#ffffff;
+    --accent-fill:var(--color-primary); --ghost-accent-color:#00243e;
+    --button-bg-color:#ffffff; --button-text-color:var(--color-darkgrey);
+    --ntr-home-panel:linear-gradient(180deg,rgba(248,252,255,.84) 0%,rgba(255,255,255,.98) 78%);
+    --ntr-home-panel-soft:linear-gradient(180deg,rgba(248,252,255,.46) 0%,rgba(248,252,255,0) 54%);
+    --ntr-home-line:rgba(12,24,32,.08); --ntr-home-line-soft:rgba(12,24,32,.06);
+    --ntr-home-line-strong:rgba(12,24,32,.12); --ntr-home-accent:#F8FCFF;
+    --ntr-home-accent-strong:#edf7fc; --ntr-home-muted:#617784; --ntr-home-muted-strong:#536a76;
+    /* type */
+    --font-system-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Helvetica Neue",sans-serif;
+    --font-system-serif:Georgia,Cambria,"Times New Roman",Times,serif;
+    --font-museo-sans:"museo-sans","museo-fallback",var(--font-system-sans);
+    --font-utopia-std:"utopia-std","utopia-fallback",var(--font-system-serif);
+    --font-utopia-caption:"utopia-std-caption","utopia-std",var(--font-system-serif);
+    --gh-font-heading:"museo-sans",var(--font-system-sans);
+    --gh-font-body:"utopia-std",var(--font-system-serif);
+    --font-heading:var(--font-museo-sans); --font-body:var(--font-utopia-std);
+    --font-serif:var(--font-utopia-std); --font-caption:var(--font-utopia-caption);
+    --font-mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --font-bn:'Noto Sans Bengali',sans-serif; --font-bn-body:'Noto Serif Bengali',serif;
   }
-  html[data-theme="dark"]{
-    --page:#0d0d0d; --surface:#0d0d0d; --fill:#181817; --ink:#ffffff;
-    --secondary:#c3c2b7; --muted:#898781;
-    --gridline:#2c2c2a; --baseline:#383835; --hairline:#242422;
-    --link:#3987e5;
-    /* Dark is stepped, not flipped. The ramp runs the other way — more ink means
-       lighter on a black page — and --seq6 is set high enough (14.2:1) to stay
-       clear of both flag colours, which the light ramp gets for free. */
-    --seq0:#232320; --seq1:#33322e; --seq2:#474540; --seq3:#615e58;
-    --seq4:#8d8a82; --seq5:#a8a49b; --seq6:#e0dcd2; --seq7:#f5f2e9;
-    --good:#3cc13c; --warning:#f5c04a; --serious:#f0946e; --critical:#e35d5d;
-    --accent:#ff6b64;
+  /* ---- repo-local aliases -> design-system tokens ----
+     The article body is written against these local names; each now resolves to a
+     design-system token above, so the whole page follows the given roots and both
+     themes without editing the body rules. The graphics bundle reads the
+     design-system tokens (--color-primary, --surface-*, --text-*, --font-*,
+     --ntr-home-line*) directly, so it needs no adapter. */
+  :root{
+    --page:var(--surface-page); --surface:var(--surface-page); --fill:var(--surface-sunken);
+    --ink:var(--text-strong); --secondary:var(--text-default); --muted:var(--text-muted);
+    --gridline:var(--ntr-home-line); --baseline:var(--ntr-home-line-strong);
+    --hairline:var(--ntr-home-line); --link:#2a78d6; --accent:var(--color-primary);
+    /* Sequential ramp built from the site's primary on its page surface, so any
+       native mark matches the bundle's ramp and both flip together in dark mode. */
+    --seq0:color-mix(in srgb,var(--color-primary) 6%,var(--surface-page));
+    --seq1:color-mix(in srgb,var(--color-primary) 12%,var(--surface-page));
+    --seq2:color-mix(in srgb,var(--color-primary) 26%,var(--surface-page));
+    --seq3:color-mix(in srgb,var(--color-primary) 42%,var(--surface-page));
+    --seq4:color-mix(in srgb,var(--color-primary) 60%,var(--surface-page));
+    --seq5:color-mix(in srgb,var(--color-primary) 80%,var(--surface-page));
+    --seq6:var(--color-primary);
+    --seq7:color-mix(in srgb,var(--color-primary) 88%,#000);
+    /* Status hues stay reserved and validated; not part of the brand palette. */
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --maxw:1160px; --measure:700px;
+  }
+  html.dark-mode{
+    /* design-system dark tokens (from the site's main stylesheet). The surface, ink
+       and sequential aliases are var()-ed to these, so they flip on their own. */
+    --surface-page:#151719; --surface-raised:#1c2025; --surface-sunken:#22272c;
+    --surface-pure:#1c2025; --surface-placeholder:#2b3036; --surface-hover:rgba(255,255,255,.1);
+    --text-strong:rgba(255,255,255,.92); --text-body:rgba(255,255,255,.82);
+    --text-default:rgba(255,255,255,.82); --text-muted:rgba(255,255,255,.55);
+    --text-faint:rgba(255,255,255,.42); --on-accent:#ffffff;
+    --color-primary:#6ea8d8; --accent-fill:#1f4e78;
+    --color-darkgrey:rgba(255,255,255,.88); --color-midgrey:rgba(255,255,255,.55);
+    --color-secondary:rgba(255,255,255,.55);
+    --ntr-home-line:rgba(255,255,255,.08); --ntr-home-line-soft:rgba(255,255,255,.05);
+    --ntr-home-line-strong:rgba(255,255,255,.14); --ntr-home-accent:rgba(255,255,255,.04);
+    --ntr-home-accent-strong:rgba(255,255,255,.07); --ntr-home-muted:rgba(255,255,255,.5);
+    --ntr-home-muted-strong:rgba(255,255,255,.7);
+    --ntr-home-panel:linear-gradient(180deg,rgba(255,255,255,.045) 0%,rgba(255,255,255,0) 78%);
+    --ntr-home-panel-soft:linear-gradient(180deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,0) 54%);
+    /* article-only locals with no design-system source: hyperlink + status hues,
+       stepped for the dark surface. */
+    --link:#3987e5; --good:#3cc13c; --warning:#f5c04a; --serious:#f0946e; --critical:#e35d5d;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--page);color:var(--ink);line-height:1.66;font-size:19px;
-    font-family:"Li Ador Noirrit",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,
-    Arial,"Noto Sans Bengali","Nirmala UI","Kalpurush","Vrinda","Segoe UI Symbol",
-    "Noto Sans Symbols 2",sans-serif;
+    font-family:var(--font-body),"Noto Serif Bengali","Segoe UI Symbol","Noto Sans Symbols 2",serif;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  /* Display type is the design system's sans (museo-sans); text is its serif
+     (utopia-std). Everything else inherits the body serif. */
+  h1,h2,h3,h4,h5,h6,.brand,.kicker,.topnav,h2 .num{font-family:var(--font-heading)}
 
   /* ---- bilingual edition ----
      Both languages ship in the static markup so the page is readable and
@@ -85,7 +129,14 @@
   html[data-lang="en"] .i18n-bn{display:none!important}
   html[data-lang="bn"] .i18n-en{display:none!important}
   /* Bangla needs more leading and sits a touch smaller at the same optical size. */
-  html[data-lang="bn"] body{line-height:1.9;font-size:18px}
+  html[data-lang="bn"] body{line-height:1.9;font-size:18px;
+    font-family:var(--font-bn-body),"Noto Sans Bengali",serif}
+  /* museo-sans/utopia-std carry no Bengali, so the Bangla edition sets display and
+     text in Noto Sans/Serif Bengali instead. */
+  html[data-lang="bn"] h1,html[data-lang="bn"] h2,html[data-lang="bn"] h3,
+  html[data-lang="bn"] h4,html[data-lang="bn"] h5,html[data-lang="bn"] h6,
+  html[data-lang="bn"] .brand,html[data-lang="bn"] .kicker,
+  html[data-lang="bn"] .topnav,html[data-lang="bn"] h2 .num{font-family:var(--font-bn)}
   html[data-lang="bn"] h1{line-height:1.24;letter-spacing:-.01em}
   html[data-lang="bn"] h2{line-height:1.38;letter-spacing:0}
   /* Bangla glyphs carry a taller x-height than Latin at the same point size, so the
@@ -200,6 +251,13 @@
   figcaption{margin-top:16px;font-size:14px;color:var(--secondary);border-top:1px solid var(--hairline);padding-top:12px;
     max-width:820px}
   figcaption b{color:var(--ink)}
+  /* The article's interpretive takeaway for a bundle-drawn figure. The bundle owns the
+     figure's own innerHTML (title/deck/legend/source), so the takeaway rides as a sibling
+     directly beneath it, styled to read as an attached caption. */
+  .fig-take{margin-top:-2px;font-size:14px;color:var(--secondary);border-top:1px solid var(--hairline);
+    padding-top:12px;max-width:820px}
+  .fig-take b{color:var(--ink)}
+  .fig-take em{color:var(--ink);font-style:italic}
   /* Every chart carries its own source, because charts get screenshotted and shared
      away from the article that explains them. */
   .fig-src{margin-top:9px;font-size:11.5px;color:var(--muted);letter-spacing:.02em;max-width:820px}
@@ -436,13 +494,12 @@ var D=null, META={notice_dir:'Tender Notice_PDFs', award_dir:'Contract_Awards_PD
 var LANG=(document.documentElement.getAttribute('data-lang')==='bn')?'bn':'en';
 function L(en,bn){return LANG==='bn'?bn:en;}
 var BNDIG=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-/* In Li Ador Noirrit — the face this site is required to use — the taka sign ৳ (U+09F3) and
-   the Bengali digit ৮ (eight) are drawn almost identically. Set tight against a numeral,
-   "৳১,০৬৮" reads as "৮১,০৬৮": an eighty-fold misreading in a story that is entirely about
-   sums of money. So in the Bangla edition the sign is held off the first digit by a narrow
-   no-break space — no line break, a visible sliver of air, and the digit count is unmistakable.
-   The English edition needs nothing: there the numerals are Latin, so no reader is going to
-   parse the sign as a leading digit. */
+/* In several Bengali faces the taka sign ৳ (U+09F3) and the digit ৮ (eight) are drawn
+   very alike. Set tight against a numeral, "৳১,০৬৮" can read as "৮১,০৬৮": an eighty-fold
+   misreading in a story that is entirely about sums of money. So in the Bangla edition
+   the sign is held off the first digit by a narrow no-break space — no line break, a
+   visible sliver of air, and the digit count is unmistakable. The English edition needs
+   nothing: there the numerals are Latin, so no reader parses the sign as a leading digit. */
 var TK_GAP=' ';
 function bdig(s){return String(s).replace(/[0-9]/g,function(d){return BNDIG[+d];})
   .replace(/৳(?=[০-৯])/g,'৳'+TK_GAP);}
@@ -547,6 +604,15 @@ function figure(title,sub,inner,cap,legend,src){
     (legend||'')+inner+(cap?'<figcaption>'+cap+'</figcaption>':'')+
     '<div class="fig-src">'+(src||L('Source: Bangladesh e-GP tender and contract-award records',
       'সূত্র: বাংলাদেশ ই-জিপি দরপত্র ও কার্যাদেশ নথি'))+'</div></figure>';
+}
+/* Mount one figure from the graphics/ bundle in place. netra-graphics.js sets the
+   figure's own innerHTML (title, deck, legend, chart, source) from netra-graphics-data.js
+   and follows the site's dark-mode and Bangla toggles through the .ntrg token adapter in
+   <head>. The article's interpretive takeaway rides as a sibling beneath, because the
+   bundle overwrites the figure body. `attr` carries per-mount overrides, e.g. data-mode. */
+function ntrg(name,cap,attr){
+  return '<div class="ntrg"><figure data-ntrg="'+name+'"'+(attr?' '+attr:'')+'></figure></div>'+
+    (cap?'<p class="fig-take">'+cap+'</p>':'');
 }
 /* horizontal magnitude bars: rows=[{l,v,disp,cls,tip}] */
 function hbars(rows,opts){
@@ -679,9 +745,7 @@ function sFunnel(){
       'একটি দরপত্র ধাপে ধাপে সংকুচিত হওয়ার কথা। প্রতিষ্ঠানগুলো দস্তাবেজ কেনে, কেউ কেউ দর দেয়, সেই দর যাচাই '+
       'হয়, আর সবচেয়ে কম দামের যোগ্য দরটি কাজ পায়। এই নথিতে সংকোচন তার চেয়ে অনেক বেশি খাড়া। আর তার বড় '+
       'অংশটাই ঘটে এমন এক ধাপে, যা বাইরের কেউ দেখতে পান না: দর রেসপনসিভ কি না, সেই সিদ্ধান্তে।'),
-    figure(L('The competition funnel','প্রতিযোগিতার ফানেল'),
-      L('Counts across all tenders with bid data','দর-সংখ্যার তথ্য আছে এমন সব দরপত্রের হিসাব'),
-      hbars(rows,{wide:true}),
+    ntrg('funnel',
       L('<b>2,749 bids came in. 1,752 were ruled responsive. 591 tenders had usable bid data by the time '+
         'the award was recorded.</b> Roughly one bid in three that a firm actually submitted was set aside '+
         'before anyone compared prices.',
@@ -713,7 +777,6 @@ function sConcentration(){
         '<br><span class="k">'+L('share of all award value:','মোট কার্যাদেশ মূল্যের অংশ:')+'</span> '+
         pct(s.crore/tv*100,2)};
   });
-  var lz=lorenzSVG(c.lorenz);
   return section('concentration','03',
     L('A quarter of all the money, one firm','মোট অর্থের এক-চতুর্থাংশ, একটি প্রতিষ্ঠান'),
     L('Of the ৳'+fmt(tv,1)+' crore awarded, <b>৳'+fmt(D.top_by_value[0].crore,1)+' crore, or '+pct(c.top1_pct)+
@@ -732,17 +795,26 @@ function sConcentration(){
       {v:fmt(c.hhi,0),l:L('HHI concentration index','এইচএইচআই কেন্দ্রীভবন সূচক')},
       {v:fmt(c.suppliers),l:L('contractor names in the records','নথিতে ঠিকাদারের নাম')}
     ])+
-    figure(L('Award value by contractor','ঠিকাদার অনুযায়ী কার্যাদেশ মূল্য'),
-      L('Top 12 of '+fmt(c.suppliers)+' contractor names as filed, ৳ crore',
-        'নথিতে থাকা '+fmt(c.suppliers)+'টি ঠিকাদারি নামের মধ্যে শীর্ষ ১২টি, ৳ কোটি'),
-      hbars(top,{wide:true}),
+    ntrg('contractor-value',
       L('<b>The firm at the top is not narrowly ahead. It holds 7.5 times what the second-placed firm holds.</b> '+
         'Most of that comes from a single tender, #775105, worth ৳881 crore. Section '+
         '<a href="#anchor" class="inlink">04</a> takes that contract apart.',
         '<b>শীর্ষ প্রতিষ্ঠানটি অল্প ব্যবধানে এগিয়ে নেই। দ্বিতীয় স্থানের প্রতিষ্ঠানের চেয়ে তার হাতে আছে ৭.৫ গুণ '+
         'বেশি।</b> এর বড় অংশ আসে একটিমাত্র দরপত্র থেকে — <span class="latn">#775105</span>, ৳৮৮১ কোটি টাকার। '+
         '<a href="#anchor" class="inlink">০৪</a> অংশে সেই চুক্তিটি খুলে দেখা হয়েছে।'))+
-    lz
+    ntrg('contractor-count',
+      L('Ranked by the number of contracts rather than their value, a different set of firms rises — the '+
+        'high-volume, lower-value winners. A name near the top of <em>both</em> rankings is the one worth a '+
+        'second look.',
+        'মূল্যের বদলে চুক্তির সংখ্যায় সাজালে অন্য একদল প্রতিষ্ঠান উঠে আসে — বেশি সংখ্যায়, কম মূল্যে কাজ পাওয়া '+
+        'প্রতিষ্ঠান। যে নাম <em>দুই</em> তালিকারই ওপরের দিকে, সেটিই দ্বিতীয়বার দেখার মতো।'))+
+    ntrg('dumbbell',
+      L('For each of the largest firms, the distance between its share of the contract <em>count</em> and its '+
+        'share of the <em>value</em>. A long bar means a firm won little work worth a great deal — the anchor '+
+        'case, drawn as a gap.',
+        'সবচেয়ে বড় প্রতিষ্ঠানগুলোর প্রত্যেকটির জন্য, চুক্তির <em>সংখ্যায়</em> তার অংশ ও <em>মূল্যে</em> তার '+
+        'অংশের ব্যবধান। লম্বা দণ্ড মানে অল্প কাজ কিন্তু বড় অর্থমূল্য — মূল ঘটনাটিই, ব্যবধান হিসেবে আঁকা।'))+
+    ntrg('lorenz')
   );
 }
 /* ---- Lorenz curve (inequality of award value across contractors) ---- */
@@ -947,7 +1019,7 @@ function sCliff(){
       'বাংলাদেশের ক্রয়বিধি অনুযায়ী কার্যাদেশের নোটিফিকেশন থেকে চুক্তি সই পর্যন্ত একটি দপ্তর সর্বোচ্চ ২৮ দিন সময় '+
       'পায়। সইয়ের তারিখগুলো যদি কাগজপত্র এগোনোর প্রকৃত গতি অনুসরণ করত, তবে সেগুলো এই সময়সীমার ভেতরে ছড়িয়ে '+
       'থাকত আর শেষের দিকে পাতলা হয়ে আসত। তা হয়নি।'),
-    cliffSVG()+
+    ntrg('cliff')+
     tiles([
       {v:fmt(c.at28),l:L('signed on day 28 exactly','ঠিক ২৮তম দিনে সই'),k:'crit'},
       {v:pct(c.at28_pct),l:L('of all awards','সব কার্যাদেশের অনুপাত'),k:'crit'},
@@ -957,10 +1029,7 @@ function sCliff(){
       {v:fmt(dl.over28),l:L('signed beyond the legal limit','আইনি সীমার পরে সই'),k:'warn'},
       {v:fmt(dl.max),l:L('worst single delay (days)','সবচেয়ে বেশি বিলম্ব (দিন)'),k:'crit'}
     ])+
-    figure(L('The spike is not spread evenly across government','এই চূড়া সরকারের সব দপ্তরে সমান নয়'),
-      L('Share of each authority\'s awards signed on day 28 · authorities with 20+ awards',
-        'প্রতিটি সংস্থার কার্যাদেশের কত অংশ ২৮তম দিনে সই হয়েছে · ২০+ কার্যাদেশ আছে যেসব সংস্থার'),
-      hbars(byOrg,{wide:true}),
+    ntrg('cliff-by-org',
       L('<b>The cliff is almost entirely RAJUK\'s:</b> '+pct(c.by_org[0].pct)+' of RAJUK\'s '+
         fmt(c.by_org[0].total)+' awards were signed on day 28, against 2–3% everywhere else. '+
         'A pattern that sits inside one office is easier to answer for, not harder — it points at how that office '+
@@ -1109,11 +1178,8 @@ function sCompetition(){
       'গণহারে অযোগ্য ঘোষণা আইনসিদ্ধ, কখনো যথার্থও — কিন্তু '+fmt(e.n)+'টি ঘটনা এমন একটি সংখ্যা, যা থেকে যেকোনো '+
       'তদারকি সংস্থা নমুনা নিয়ে দেখতে চাইবে; শুরু করবে সেই মূল্যায়ন প্রতিবেদন থেকে, যেখানে লেখা আছে কোন প্রতিযোগী '+
       'কেন নন-রেসপনসিভ হলো।</p>')+
-    scatterSVG()+
-    figure(L('Some authorities barely have competition at all','কোনো কোনো সংস্থায় প্রতিযোগিতা প্রায় নেই'),
-      L('Share of each authority\'s tenders decided by a single responsive bid',
-        'প্রতিটি সংস্থার কত অংশ দরপত্র একটিমাত্র রেসপনসিভ দরে নিষ্পন্ন হয়েছে'),
-      hbars(auth,{wide:true}),
+    ntrg('scatter')+
+    ntrg('authorities',
       L('<b>At RDA, CoxDA and CDA more than half of all tenders come down to one surviving bid.</b> '+
         'RAJUK, which runs far more tenders than anyone else, draws nearly twice as many bidders per tender '+
         '(avg '+fmt(D.authorities[4].recv_per,1)+'). So the thin competition belongs to particular offices, not to '+
@@ -1202,7 +1268,7 @@ function sPairs(){
       'বারবার জিততে পারে। কিন্তু <b>'+OFF.pairs_pe.ge2+'টি ঠিকাদার–দপ্তর জোড়া দুই বা তার বেশি দরপত্রে ফিরে আসে, '+
       'আর '+OFF.pairs_pe.ge3+'টি ফিরে আসে তিন বা তার বেশিবার।</b> সেই তালিকার শীর্ষে একই প্রতিষ্ঠান একই দপ্তর '+
       'থেকে কাজ পেয়েছে চৌদ্দবার।'),
-    heatmap()+
+    ntrg('matrix')+
     table([{t:L('Contractor','ঠিকাদার')},{t:L('Authorising office','অনুমোদনকারী দপ্তর')},
       {t:L('Contracts','চুক্তি'),num:true},{t:L('৳ crore','৳ কোটি'),num:true},
       {t:L('Sample tenders (click for the award PDF)','নমুনা দরপত্র (কার্যাদেশের পিডিএফের জন্য ক্লিক করুন)')}],rp)+
@@ -1216,9 +1282,7 @@ function sPairs(){
       'total awards going to its single most frequent contractor.</p>',
       '<p>দপ্তরের দিক থেকে দেখলে একই সম্পর্কগুলোই ধরা পড়ে কেন্দ্রীভবন হিসেবে: একটি দপ্তরের মোট কার্যাদেশের কত অংশ '+
       'যাচ্ছে তার সবচেয়ে ঘন ঘন কাজ পাওয়া একটিমাত্র ঠিকাদারের কাছে।</p>')+
-    table([{t:L('Procuring entity','ক্রয়কারী সংস্থা')},{t:L('Total awards','মোট কার্যাদেশ'),num:true},
-      {t:L('Most frequent contractor','সবচেয়ে ঘন ঘন কাজ পাওয়া ঠিকাদার')},
-      {t:L('Its contracts','তার চুক্তি'),num:true},{t:L('Share','অনুপাত'),num:true}],cap)
+    ntrg('pe-capture')
   );
 }
 /* ============ 08 · OFFICERS ============ */
@@ -1253,11 +1317,7 @@ function sOfficers(){
       'করেছেন</em> তাঁর সঙ্গে জড়িয়ে থাকা ধরন সেভাবে ব্যাখ্যা করা কঠিন — আর ই-জিপি রেকর্ডে তাঁদের নাম আছে। এই '+
       'নথিতে থাকা '+OFF.n_officers+'জন অনুমোদনকারী কর্মকর্তার মধ্যে নিচের এঁরা নিজেদের অনুমোদন করা প্রায় সবটাই '+
       'পাঠিয়েছেন একটিমাত্র প্রতিষ্ঠানে।'),
-    figure(L('Officers whose awards flow to one contractor','যেসব কর্মকর্তার কার্যাদেশ এক ঠিকাদারেই যায়'),
-      L('Share of each officer\'s authorised value going to their single largest contractor · officers with 2+ awards',
-        'প্রতিটি কর্মকর্তার অনুমোদিত মূল্যের কত অংশ তাঁর সবচেয়ে বড় একটিমাত্র ঠিকাদারের কাছে গেছে · ২+ কার্যাদেশ '+
-        'আছে যেসব কর্মকর্তার'),
-      hbars(shares,{wide:true}),
+    ntrg('officers',
       L('<b>Spectra Engineers Ltd. holds a near-exclusive position with three separate CDA officers</b> — '+
         'Rajib Das (99%), Asad Bin Anwar (94%) and Kazi Hasan Bin Shams (86%). One officer favouring one firm can be '+
         'a specialism. Three officers inside one authority is a firm-and-authority pattern.',
@@ -1357,26 +1417,27 @@ function sTime(){
       'টাকা কোথায় গেছে, আর কখন। চুক্তি গোনা আর মূল্যের পথ ধরা দুটি আলাদা উত্তর দেয়, তাই এখানে দুই অক্ষের একটি '+
       'চার্ট নয়, আঁকা হয়েছে আলাদা দুটি চার্ট।'),
     '<div class="grid2">'+
-      figure(L('Award value by year','বছরভিত্তিক কার্যাদেশ মূল্য'),L('৳ crore','৳ কোটি'),
-        columnsSVG(yv,{aria:L('Award value by year','বছরভিত্তিক কার্যাদেশ মূল্য'),
-          fmtTick:function(v){return fmt(v,0);}}),
+      '<div>'+ntrg('years',
         L('<b>2023 is an outlier driven almost entirely by one contract</b> — the ৳881 crore CDA award. Strip that '+
           'single tender out and 2023 looks like every other year.',
           '<b>২০২৩ সাল ব্যতিক্রম, আর তা প্রায় পুরোটাই একটি চুক্তির কারণে</b> — সিডিএ-র ৳৮৮১ কোটির কার্যাদেশ। ওই '+
-          'একটি দরপত্র বাদ দিলে ২০২৩ দেখতে বাকি সব বছরের মতোই।'))+
-      figure(L('Number of contracts by year','বছরভিত্তিক চুক্তির সংখ্যা'),L('count of awards','কার্যাদেশের সংখ্যা'),
-        columnsSVG(yn,{aria:L('Number of contracts by year','বছরভিত্তিক চুক্তির সংখ্যা')}),
+          'একটি দরপত্র বাদ দিলে ২০২৩ দেখতে বাকি সব বছরের মতোই।'))+'</div>'+
+      '<div>'+ntrg('years',
         L('<b>Contract volume peaks in 2024, value does not.</b> The busiest year and the biggest year are different '+
           'years — a reminder that counting tenders and following money are separate exercises.',
           '<b>চুক্তির সংখ্যা সবচেয়ে বেশি ২০২৪ সালে, মূল্য নয়।</b> সবচেয়ে ব্যস্ত বছর আর সবচেয়ে বড় বছর আলাদা — মনে '+
-          'করিয়ে দেয়, দরপত্র গোনা আর টাকার পথ ধরা দুটি ভিন্ন কাজ।'))+
+          'করিয়ে দেয়, দরপত্র গোনা আর টাকার পথ ধরা দুটি ভিন্ন কাজ।'),'data-mode="count"')+'</div>'+
     '</div>'+
-    figure(L('Award value by district','জেলাভিত্তিক কার্যাদেশ মূল্য'),
-      L('Top 10 districts, ৳ crore','শীর্ষ ১০ জেলা, ৳ কোটি'),hbars(dist,{wide:true}),
+    ntrg('districts',
       L('Dhaka leads on volume, but <b>Chattogram carries nearly as much value from a fifth as many tenders</b> — '+
         'the arithmetic of a handful of very large CDA contracts.',
         'সংখ্যার দিকে ঢাকা এগিয়ে, কিন্তু <b>চট্টগ্রাম পাঁচ ভাগের এক ভাগ দরপত্র দিয়েই প্রায় সমান মূল্য বহন করছে</b> — '+
-        'হাতে গোনা কয়েকটি বিশাল সিডিএ চুক্তির হিসাব।'))
+        'হাতে গোনা কয়েকটি বিশাল সিডিএ চুক্তির হিসাব।'))+
+    ntrg('cartogram',
+      L('The same district values laid out as a schematic grid rather than ranked bars — a quick read of where in '+
+        'the country the money landed. It is a diagram, not a geographic map.',
+        'একই জেলা-মূল্য ক্রমসাজানো দণ্ডের বদলে একটি পরিকল্পিত গ্রিড হিসেবে সাজানো — দেশের কোথায় টাকা পৌঁছেছে '+
+        'তার দ্রুত পাঠ। এটি একটি চিত্র, ভৌগোলিক মানচিত্র নয়।'))
   );
 }
 /* ============ 10 · THE OTHER DETECTIONS ============ */
@@ -1421,6 +1482,11 @@ function sOther(){
       'প্রকাশিত দস্তাবেজ-মূল্য আছে এমন '+fmt(dp.n)+'টি দরপত্রের মধ্যে <b>'+fmt(dp.hist[0].n)+'টির দাম ৳১,০০০ বা তার '+
       'কম</b>, মধ্যমা ৳'+fmt(dp.median,0)+', আর মাত্র '+fmt(dp.n-dp.hist[0].n)+'টি ব্যতিক্রম সর্বোচ্চ ৳'+fmt(dp.max,0)+
       ' পর্যন্ত। এই ডেটাসেটে প্রবেশের বাধা দস্তাবেজের দাম নয় — বাধা হলো রেসপনসিভ কি না, সেই সিদ্ধান্ত।</p>')+
+    ntrg('docprice',
+      L('The distribution confirms the paragraph above: document prices bunch at the low end, so the cost of '+
+        'entering the tender was not what thinned these bidder fields.',
+        'বণ্টনটি উপরের অনুচ্ছেদকেই সমর্থন করে: দস্তাবেজের দাম নিচের দিকেই জমাট, তাই দরদাতার সংখ্যা কমার কারণ '+
+        'প্রবেশমূল্য ছিল না।'))+
     L('<h3>3. Near-identical contractor names <span class="tag warn">flag raised</span></h3>',
       '<h3>৩. প্রায় হুবহু এক ঠিকাদারের নাম <span class="tag warn">সংকেত উঠেছে</span></h3>')+
     L('<p>Automated name comparison across all '+fmt(D.concentration.suppliers)+' supplier names surfaced two pairs '+
@@ -1911,6 +1977,12 @@ function render(){
   bnTree(document.getElementById('app'));
   bnTree(document.getElementById('footprint'));
   bnTree(document.querySelector('nav.contents'));
+  /* Draw the bundle figures mounted in the narrative. #app is empty during the async
+     data load and is wiped and rebuilt on every language toggle, so the bundle's own
+     DOMContentLoaded boot cannot see these mount points — draw them here, after the
+     Bangla numeral pass so the bundle renders its own locale rather than being folded
+     twice. Guarded because netra-graphics.js loads at the end of the page. */
+  if(window.NTRG&&window.NTRG.render){ try{ window.NTRG.render(document.getElementById('app')); }catch(e){} }
 }
 /* ---------- data source ----------
    Two ways in, one code path. If a build has inlined the dataset into
@@ -1961,7 +2033,7 @@ function bootFail(err){
              bn:'আইনের শেষ দিনে সই — সম্পূর্ণ ই-জিপি অনুসন্ধান'};
 
   function labels(){
-    var dark=root.getAttribute('data-theme')==='dark';
+    var dark=root.classList.contains('dark-mode');
     tBtn.textContent=dark?L('Light','লাইট'):L('Dark','ডার্ক');
     tBtn.setAttribute('aria-label',dark?L('Switch to light mode','লাইট মোডে যান')
                                       :L('Switch to dark mode','ডার্ক মোডে যান'));
@@ -1969,7 +2041,7 @@ function bootFail(err){
     lBtn.setAttribute('aria-label',(LANG==='bn')?'Switch to English':'বাংলায় পড়ুন');
   }
   function applyTheme(t){
-    root.setAttribute('data-theme',t);
+    root.classList.toggle('dark-mode',t==='dark');
     try{localStorage.setItem('egp-theme',t);}catch(e){}
     labels();
   }
@@ -1989,9 +2061,15 @@ function bootFail(err){
   labels();
 
   tBtn.addEventListener('click',function(){
-    applyTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+    applyTheme(root.classList.contains('dark-mode')?'light':'dark');});
   lBtn.addEventListener('click',function(){applyLang(LANG==='bn'?'en':'bn');});
 })();
 </script>
+
+<!-- graphics bundle: data first (defines window.NTRG_DATA), then the renderer,
+     which auto-mounts every [data-ntrg] figure on load and re-renders on the
+     Bangla toggle. Kept in graphics/ and referenced from here. -->
+<script src="graphics/netra-graphics-data.js"></script>
+<script src="graphics/netra-graphics.js"></script>
 </body>
 </html>
