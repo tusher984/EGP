@@ -77,7 +77,7 @@ def main():
 
     out = {
         'meta': {
-            'verified': '2026-08-23',
+            'verified': '2026-08-30',
             'source': {'en': 'Bangladesh e-GP tender notices and contract-award records',
                        'bn': 'বাংলাদেশ ই-জিপি দরপত্র বিজ্ঞপ্তি ও কার্যাদেশ নথি'},
             'orgBn': ORG_BN, 'distBn': DIST_BN, 'stageBn': STAGE_BN,

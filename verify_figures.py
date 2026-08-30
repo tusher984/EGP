@@ -1,13 +1,28 @@
 #!/usr/bin/env python3
-"""Recompute every published figure from the raw register and diff it.
+"""Recompute every published figure from the raw sources and diff it.
 
 The pages claim that each number is reproducible from the repository. This is that
-claim, executable. It reads Procurement_Database.json on its own terms — importing
-nothing from the scripts that produced the aggregates — and compares the result
-with the two places a reader sees numbers:
+claim, executable. It reads the sources on their own terms — importing nothing from
+the scripts that produced the aggregates — and compares the result with the two
+places a reader sees numbers:
 
   * article_data.json          — everything the charts and tables render
   * the OFF block in story.html — the hand-checked officer-level constants
+
+There are two sources, because two columns of the register cannot be trusted and
+the article says so:
+
+  Procurement_Database.json   the register as scraped. Everything except the two
+                              cases below is recomputed from it.
+  pdf_derived.json            what verify_pdfs.py read out of the 1,800 government
+                              PDFs. It supplies (a) the tender document price, whose
+                              register column holds an unrelated number, and (b) the
+                              full procuring-entity names, because the register cuts
+                              that column at about 40 characters and the cut merges
+                              two different circles into one office. Both corruptions
+                              are asserted below, so a later "fix" that quietly
+                              reverts to the register fails this script instead of
+                              passing it.
 
     python3 verify_figures.py            # full report
     python3 verify_figures.py --quiet    # only the disagreements
@@ -38,6 +53,7 @@ from collections import Counter, defaultdict
 DB = "Procurement_Database.json"
 DATA = "article_data.json"
 STORY = "story.html"
+PDFX = "pdf_derived.json"
 MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
 
 
@@ -169,6 +185,7 @@ def main():
 
     db = load(DB)
     A = load(DATA)
+    P = load(PDFX)
     OFF = off_block(io.open(STORY, encoding="utf-8").read())
     R = Report()
 
@@ -185,12 +202,21 @@ def main():
         "noa": date(r.get("Notification_of_Award_Date")),
         "sign": date(r.get("Contract_Signing_Date")),
         "docp": num(r.get("Document_Price_BDT")),
+        "secvalid": date(r.get("Security_Valid_Up_To")),
     } for r in db]
     aw = [r for r in rows if r["val"] and r["val"] > 0]
 
+    # The award notices, keyed on tender id. These carry the full procuring-entity
+    # name; the register's copy of it is cut short (see the assertions below).
+    pdf = {r["id"]: r for r in P["award_rows"]}
+    pdf_aw = [r for r in P["award_rows"] if r["value"]]
+
     # ---- scale -------------------------------------------------------------
     h = A["headline"]
-    R.chk("tender records", len(rows), h["tenders"])
+    R.chk("rows in the register file", len(rows), h["tender_rows"])
+    R.chk("of those, rows carrying a tender", len([r for r in rows if r["id"]]), h["tenders"])
+    R.chk("  duplicate tender ids", len([r for r in rows if r["id"]])
+          - len({r["id"] for r in rows if r["id"]}), 0)
     R.chk("awarded contracts", len(aw), h["awarded"])
     R.chk("total award value (crore)", round(sum(r["val"] for r in aw) / 1e7, 1), h["value_crore"])
     R.chk("contractor names as filed", len({r["sup"] for r in aw if r["sup"]}), h["suppliers"])
@@ -254,30 +280,165 @@ def main():
     R.chk("contractors signing on day 28", len({k[3] for k in ev28}), rb["at28_suppliers"])
 
     # ---- repeat pairs ------------------------------------------------------
-    def repeats(keyfn):
+    # The office side is counted on the award notices' full procuring-entity names.
+    # Counted on the register's truncated column instead, two circles of the same
+    # engineering wing collapse into one 76-award office and a third office splits
+    # in two, which moves the top pairing from 15 to 14 and ge2 from 99 to 98.
+    def repeats(records, keyfn, supfn):
         c = Counter()
-        for r in aw:
-            k, s = keyfn(r), firm(r["sup"])
+        for r in records:
+            k, s = keyfn(r), firm(supfn(r))
             if k and s:
                 c[(k, s)] += 1
         d = Counter(c.values())
         return (sum(v for n, v in d.items() if n >= 2),
                 sum(v for n, v in d.items() if n >= 3),
                 max(c.values()))
-    pe2, pe3, pemax = repeats(lambda r: r["pe"])
-    of2, of3, _ = repeats(lambda r: person(r["off"]))
+    pe2, pe3, pemax = repeats(pdf_aw, lambda r: r["pe"], lambda r: r["sup"])
+    of2, of3, _ = repeats(aw, lambda r: person(r["off"]), lambda r: r["sup"])
     R.chk("office-contractor pairs seen 2+ times", pe2, OFF["pairs_pe_ge2"])
     R.chk("office-contractor pairs seen 3+ times", pe3, OFF["pairs_pe_ge3"])
     R.chk("largest office-contractor pair", pemax, max(p["n"] for p in A["repeat_pairs"]))
     R.chk("officer-contractor pairs seen 2+ times", of2, OFF["pairs_of_ge2"])
     R.chk("officer-contractor pairs seen 3+ times", of3, OFF["pairs_of_ge3"])
 
-    # ---- document prices ---------------------------------------------------
-    docp = [r["docp"] for r in rows if r["docp"] is not None]
+    # every published pairing row, recomputed from the notices
+    byoff = defaultdict(list)
+    for r in pdf_aw:
+        if r["pe"] and r["sup"]:
+            byoff[(r["pe"], firm(r["sup"]))].append(r)
+
+    def pairkey(pe, label):
+        """Find the group a published pairing row was computed from.
+
+        Grouping is keyed on the contractor string as filed. On joint ventures the
+        portal appends the partners and their percentage shares, which is provenance
+        rather than the firm's name, so the published label drops that tail — making
+        it a prefix of the key. Stripping the tail before grouping instead would
+        merge three JVs into other entries and move ge2 from 99 to 100, so the key
+        keeps the whole string and the label is matched back onto it here.
+        """
+        k = firm(label)
+        if (pe, k) in byoff:
+            return (pe, k)
+        hits = [key for key in byoff if key[0] == pe and key[1].startswith(k)]
+        return hits[0] if len(hits) == 1 else None
+
+    bad_pairs = bad_pair_val = 0
+    for p in A["repeat_pairs"]:
+        got = byoff.get(pairkey(p["pe"], p["supplier"]) or ("", ""))
+        if not got or len(got) != p["n"]:
+            bad_pairs += 1
+        elif abs(round(sum(x["value"] for x in got) / 1e7, 2) - p["crore"]) > 0.011:
+            bad_pair_val += 1
+    R.chk("  published pairing rows whose count is wrong", bad_pairs, 0)
+    R.chk("  published pairing rows whose value is wrong", bad_pair_val, 0)
+
+    # ---- office-level concentration, also grouped on the notices' names ----
+    pe_rows = defaultdict(list)
+    for r in pdf_aw:
+        if r["pe"]:
+            pe_rows[r["pe"]].append(r)
+    bad_cap = 0
+    for c in A["pe_capture"]:
+        got = pe_rows.get(c["pe"]) or []
+        top = Counter(firm(x["sup"]) for x in got if x["sup"])
+        n = top.most_common(1)[0][1] if top else 0
+        if len(got) != c["total"] or n != c["n"] \
+                or abs(round(100.0 * n / max(len(got), 1), 1) - c["pct"]) > 0.051:
+            bad_cap += 1
+    R.chk("offices in the capture table", len(A["pe_capture"]),
+          len([1 for pe, rs in pe_rows.items() if len(rs) >= 12]))
+    R.chk("  of those, rows that do not recompute", bad_cap, 0)
+
+    M = A["matrix"]
+    R.chk("offices in the office x contractor matrix", len(M["rows"]),
+          len([1 for pe, rs in pe_rows.items() if len(rs) >= 20]))
+    bad_cell = 0
+    for row in M["grid"]:
+        got = pe_rows.get(row["pe"]) or []
+        if len(got) != row["pe_total"]:
+            bad_cell += 1
+            continue
+        for cell, col in zip(row["cells"], M["cols"]):
+            hit = [x for x in got if firm(x["sup"]) == firm(col["sup"])]
+            if len(hit) != cell["n"] \
+                    or abs(round(sum(x["value"] for x in hit) / 1e7, 2) - cell["crore"]) > 0.011:
+                bad_cell += 1
+    R.chk("  of those, cells that do not recompute", bad_cell, 0)
+    R.chk("  largest cell", max(c["n"] for row in M["grid"] for c in row["cells"]), M["max"])
+
+    # ---- document prices, read off the notice PDFs -------------------------
+    prices = sorted(P["doc_price"]["by_tender"].values())
     dp = A["docprice"]
-    R.chk("document prices present", len(docp), dp["n"])
-    R.chk("median document price", float(statistics.median(docp)), dp["median"])
-    R.chk("highest document price", float(max(docp)), dp["max"])
+    mode, mode_n = Counter(prices).most_common(1)[0]
+    R.chk("document prices present", len(prices), dp["n"])
+    R.chk("cheapest document price", float(min(prices)), dp["min"])
+    R.chk("median document price", float(statistics.median(prices)), dp["median"])
+    R.chk("mean document price", round(statistics.fmean(prices), 1), dp["mean"])
+    R.chk("highest document price", float(max(prices)), dp["max"])
+    R.chk("commonest document price", float(mode), dp["mode"])
+    R.chk("  tenders at that price", mode_n, dp["mode_n"])
+    R.chk("distinct document prices", len(set(prices)), dp["distinct"])
+    R.chk("tenders at or above 4,000", len([p for p in prices if p >= 4000]), dp.get("ge4k"))
+    R.chk("tenders free of charge", len([p for p in prices if p == 0]), 0)
+    hist = dp.get("hist") or []
+    if hist:
+        band = [len([p for p in prices if p <= 1000]),
+                len([p for p in prices if 1000 < p <= 2000]),
+                len([p for p in prices if 2000 < p <= 5000]),
+                len([p for p in prices if 5000 < p <= 10000]),
+                len([p for p in prices if p > 10000])]
+        R.chk("  price bands sum to the same total", sum(band), len(prices))
+        for i, b in enumerate(band):
+            R.chk("  band %d of the price histogram" % (i + 1), b,
+                  hist[i].get("n") if isinstance(hist[i], dict) else hist[i])
+
+    # ---- the two columns the register gets wrong, asserted -----------------
+    # These are not figures; they are the reasons two blocks above read from the
+    # PDFs. If the register is ever repaired these checks fail, which is the
+    # signal to move those blocks back — not something to silence.
+    agree = dom = odd = nodate = 0
+    for r in rows:
+        want = P["doc_price"]["by_tender"].get(r["id"])
+        if want is None or r["docp"] is None:
+            continue
+        agree += abs(r["docp"] - want) < 0.5
+        if not r["secvalid"]:
+            nodate += 1
+        elif r["docp"] == r["secvalid"].day:
+            dom += 1
+        else:
+            odd += 1
+    R.chk("Document_Price_BDT values matching the notice", agree, 1)
+    R.chk("  ... equal instead to the day of Security_Valid_Up_To", dom, 1101)
+    R.chk("  ... with a security date, equal to neither", odd, 1)
+    R.chk("  ... with no security date to compare against", nodate, 26)
+    tc = P["truncation"]["columns"]
+    R.chk("register rows whose office name is cut short",
+          tc["Procuring_Entity_Name"]["rows_differing"], 271)
+    R.chk("  truncated office names covering more than one office",
+          len(tc["Procuring_Entity_Name"]["keys_covering_more_than_one_name"]), 2)
+    R.chk("register rows whose contractor name is cut short",
+          tc["Supplier_Name"]["rows_differing"], 49)
+    R.chk("  truncated contractor names covering more than one firm",
+          len(tc["Supplier_Name"]["keys_covering_more_than_one_name"]), 0)
+    R.chk("register rows whose officer name is cut short",
+          tc["Authorised_Officer"]["rows_differing"], 0)
+
+    # ---- PDF coverage the page cites ---------------------------------------
+    cov, ec = P["coverage"], A["evidence_counts"]
+    notices = cov["notice_pdfs_read"] + len(cov["withheld"])
+    R.chk("tender-notice PDFs archived", notices, ec["notice"])
+    R.chk("  of those, PDFs the portal would not serve", len(cov["withheld"]), 6)
+    R.chk("contract-award PDFs read", cov["award_pdfs_read"], ec["award"])
+    R.chk("source documents in total", notices + cov["award_pdfs_read"], h["pdfs"])
+    R.chk("register rows with no tender behind them", len(cov["empty_rows"]),
+          h["tender_rows"] - h["tenders"])
+    R.chk("awards on the older template that prints bid counts",
+          P["award_template"]["supplier"], OFF["strict_base"])
+    R.chk("awards on the newer template that prints none",
+          P["award_template"]["economic-operator"], h["awarded"] - h["with_bid_data"])
 
     # ---- the evidence room reproduces the same rows ------------------------
     cases = A.get("cases") or []
