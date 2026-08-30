@@ -278,12 +278,13 @@ contractor.
 
 | Authorising officer (authority) | Tenders | Value | Share to one firm | That firm |
 |---------------------------------|:-------:|------:|:-----------------:|-----------|
-| Md. Arman Hossain (KDA) | 2 | ৳143.8 cr | **100%** | Ataur Rahman Khan Ltd |
+| Md. Arman Hossain (KDA) | 2 | ৳143.8 cr | **100%** | Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV |
 | **Rajib Das (CDA)** | 3 | ৳891.3 cr | **99%** | Spectra Engineers Ltd. |
 | Asad Bin Anwar (CDA) | 2 | ৳84.3 cr | **94%** | Spectra Engineers Ltd. |
 | Md. Julfiker Ali Khan (RAJUK) | 3 | ৳0.6 cr | **92%** | M/S Sunny Construction |
-| Md. Anwar Hussain (RDA) | 6 | ৳33.6 cr | **87%** | The Engineers & Architects |
-| A. A. M. Habibur Rahman (CDA) | 4 | ৳57.5 cr | **86%** | The Engineers & Architects |
+| Md. Anwar Hussain (RDA) | 6 | ৳33.6 cr | **87%** | The Engineers & Architects Limited |
+| Mohammad Abu Issa Anshary (CDA) | 2 | ৳1.2 cr | **87%** | The Decode Ltd. |
+| A. A. M. Habibur Rahman (CDA) | 4 | ৳57.5 cr | **86%** | The Engineers & Architects Limited |
 | Kazi Hasan Bin Shams (CDA) | 2 | ৳112.2 cr | **86%** | Spectra Engineers Ltd. |
 
 One detail warrants particular scrutiny: **Spectra Engineers Ltd. received near-exclusive

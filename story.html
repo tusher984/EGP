@@ -667,13 +667,13 @@ var OFF={
   hhi:927, top1:28.7, top10:52.7,
   pairs_pe:{ge2:99,ge3:40}, pairs_of:{ge2:93,ge3:36},
   capture:[
-    {off:'Md. Arman Hossain',auth:'KDA',n:2,crore:143.8,share:100,sup:'Ataur Rahman Khan Ltd'},
+    {off:'Md. Arman Hossain',auth:'KDA',n:2,crore:143.8,share:100,sup:'Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV'},
     {off:'Rajib Das',auth:'CDA',n:3,crore:891.3,share:99,sup:'Spectra Engineers Ltd.'},
     {off:'Asad Bin Anwar',auth:'CDA',n:2,crore:84.3,share:94,sup:'Spectra Engineers Ltd.'},
     {off:'Md. Julfiker Ali Khan',auth:'RAJUK',n:3,crore:0.6,share:92,sup:'M/S Sunny Construction'},
-    {off:'Md. Anwar Hussain',auth:'RDA',n:6,crore:33.6,share:87,sup:'The Engineers & Architects'},
+    {off:'Md. Anwar Hussain',auth:'RDA',n:6,crore:33.6,share:87,sup:'The Engineers & Architects Limited'},
     {off:'Mohammad Abu Issa Anshary',auth:'CDA',n:2,crore:1.2,share:87,sup:'The Decode Ltd.'},
-    {off:'A. A. M. Habibur Rahman',auth:'CDA',n:4,crore:57.5,share:86,sup:'The Engineers & Architects'},
+    {off:'A. A. M. Habibur Rahman',auth:'CDA',n:4,crore:57.5,share:86,sup:'The Engineers & Architects Limited'},
     {off:'Kazi Hasan Bin Shams',auth:'CDA',n:2,crore:112.2,share:86,sup:'Spectra Engineers Ltd.'}
   ],
   offpairs:[
@@ -1252,6 +1252,11 @@ function idLinks(ids){
   }).join(' ');
 }
 /* ---- contractor × office heatmap ---- */
+/* Not currently mounted. §07 renders the matrix through ntrg('matrix') from the
+   graphics bundle instead, so this native table is a second, unrendered copy of the
+   same figure. It is kept because it is the accessible table view of the heatmap and
+   is the fallback if the bundle is ever dropped — but nothing here reaches the page,
+   so do not treat editing it as editing §07. Verified unreferenced 2026-08-30. */
 function heatmap(){
   var m=D.matrix, max=m.max;
   var head='<tr><th></th>'+m.cols.map(function(c){
