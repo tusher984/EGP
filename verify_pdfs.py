@@ -23,11 +23,14 @@ import sys
 from datetime import datetime
 
 import pdf_text
+from verify_figures import off_block
 
 AWARD_DIR = "Contract_Awards_PDFs"
 NOTICE_DIR = "Tender Notice_PDFs"
 DB = "Procurement_Database.json"
 ART = "article_data.json"
+STORY = "story.html"
+DERIVED = "pdf_derived.json"
 
 
 def lab(s):
@@ -163,6 +166,15 @@ def norm(s):
     s = re.sub(r"\b(LTD|LIMITED|PVT|PRIVATE|CO)\b", " ", s)
     s = re.sub(r"[^A-Z0-9]+", " ", s)
     return " ".join(s.split())
+
+
+def pnorm(s):
+    """Officer-name normalisation, the other half of the published method note:
+    lower-cased, punctuation dropped, whitespace collapsed, so "Md. Anwar
+    Hossain" and "Md Anwar Hossain" are one official. Without it the PDF side
+    counts spellings (79) where the article counts people (73), and every
+    officer-level figure looks like a disagreement when it is not."""
+    return " ".join(re.sub(r"[^a-z0-9ঀ-৿ ]+", " ", (s or "").lower()).split())
 
 
 def scan(directory, fields, tag):
@@ -351,7 +363,8 @@ def findings(awards, notices):
          "value_crore": round(total / 1e7, 1),
          "suppliers_as_filed": len({r["sup"].strip() for r in valued if r["sup"]}),
          "suppliers_merged": len({norm(r["sup"]) for r in valued if r["sup"]}),
-         "officers": len({r["off"].strip() for r in rows if r["off"].strip()}),
+         "officers": len({pnorm(r["off"]) for r in rows if r["off"].strip()}),
+         "officers_as_filed": len({r["off"].strip() for r in rows if r["off"].strip()}),
          "orgs": len({r["org"].strip() for r in rows if r["org"].strip()}),
          "pes": len({r["pe"].strip() for r in rows if r["pe"].strip()})}
 
@@ -366,6 +379,15 @@ def findings(awards, notices):
     f["top4"] = round(sum(v for _, v in ranked[:4]) / total * 100, 1)
     f["top10"] = round(sum(v for _, v in ranked[:10]) / total * 100, 1)
     f["hhi"] = round(sum((v / total * 100) ** 2 for _, v in ranked), 1)
+    # The published HHI sits beside "310 contractors", i.e. it is computed on
+    # names as filed, not on the 308 merged firms. Same definition here, or the
+    # two disagree by 0.1 for no reason.
+    as_filed = collections.Counter()
+    for r in valued:
+        if r["sup"].strip():
+            as_filed[r["sup"].strip()] += r["val"]
+    ft = sum(as_filed.values())
+    f["hhi_as_filed"] = round(sum((v / ft * 100) ** 2 for v in as_filed.values()), 1)
 
     lags = [(r["sign"] - r["noa"]).days for r in rows if r["noa"] and r["sign"]]
     f["lags"] = len(lags)
@@ -392,7 +414,7 @@ def findings(awards, notices):
     f["pairs_pe_ge2"] = sum(1 for n in pe_pairs.values() if n >= 2)
     f["pairs_pe_ge3"] = sum(1 for n in pe_pairs.values() if n >= 3)
     f["pairs_pe_max"] = max(pe_pairs.values()) if pe_pairs else 0
-    off_pairs = collections.Counter((norm(r["sup"]), r["off"].strip())
+    off_pairs = collections.Counter((norm(r["sup"]), pnorm(r["off"]))
                                     for r in valued if r["sup"] and r["off"].strip())
     f["pairs_off_ge2"] = sum(1 for n in off_pairs.values() if n >= 2)
     f["pairs_off_ge3"] = sum(1 for n in off_pairs.values() if n >= 3)
@@ -401,7 +423,7 @@ def findings(awards, notices):
     byoff = collections.defaultdict(list)
     for r in valued:
         if r["off"].strip():
-            byoff[r["off"].strip()].append(r)
+            byoff[pnorm(r["off"])].append(r)
     for off, rs in byoff.items():
         if len(rs) < 2:
             continue
@@ -410,18 +432,34 @@ def findings(awards, notices):
         for x in rs:
             top[norm(x["sup"])] += x["val"]
         name, share = top.most_common(1)[0]
-        cap.append((off, len(rs), round(tot / 1e7, 1),
+        cap.append((max((x["off"].strip() for x in rs), key=len),
+                    len(rs), round(tot / 1e7, 1),
                     round(share / tot * 100), max((x["sup"] for x in rs
                           if norm(x["sup"]) == name), key=len)))
     f["officer_capture"] = sorted(cap, key=lambda c: (-c[3], -c[2]))[:12]
 
-    prices = [num(n.get("doc_price")) for n in notices.values()]
-    prices = [p for p in prices if p is not None]
+    # The register's Document_Price_BDT column is unusable (it stores the
+    # day-of-month of Security_Valid_Up_To), so the price is taken off the
+    # notice PDFs. Keep the per-tender table: it is what lets verify_figures.py
+    # recompute the published aggregate instead of trusting it.
+    by_id = {}
+    for tid, n in notices.items():
+        p = num(n.get("doc_price"))
+        if p is not None:
+            by_id[tid] = p
+    f["doc_price_by_id"] = by_id
+    prices = sorted(by_id.values())
     f["doc_prices"] = len(prices)
+    f["doc_price_min"] = min(prices) if prices else None
     f["doc_price_median"] = statistics.median(prices) if prices else None
     f["doc_price_max"] = max(prices) if prices else None
     f["doc_price_mean"] = round(statistics.fmean(prices), 1) if prices else None
+    f["doc_price_distinct"] = len(set(prices))
     f["doc_price_zero"] = sum(1 for p in prices if p == 0)
+    f["doc_price_mode"] = f["doc_price_mode_n"] = None
+    if prices:
+        mode, mode_n = collections.Counter(prices).most_common(1)[0]
+        f["doc_price_mode"], f["doc_price_mode_n"] = mode, mode_n
     f["doc_price_hist"] = [
         ["≤1k", sum(1 for p in prices if p <= 1000)],
         ["1–2k", sum(1 for p in prices if 1000 < p <= 2000)],
@@ -539,22 +577,27 @@ def main():
     f = findings(awards, notices)
     h, c, cl, e = art["headline"], art["concentration"], art["cliff"], art["elimination"]
     dl = art["delay"]
+    # The officer-level constants live in story.html's OFF block rather than in
+    # article_data.json, so they are read back out of the page instead of being
+    # repeated here — a constant typed twice is a constant that drifts.
+    OFF = off_block(open(STORY, encoding="utf-8").read())
     checks = [
         ("tenders (rows carrying a tender id)", len(real), h["tenders"]),
         ("awarded contracts", f["awards"], h["awarded"]),
         ("total award value (crore)", f["value_crore"], h["value_crore"]),
         ("contractors, as filed", f["suppliers_as_filed"], h["suppliers"]),
-        ("authorising officers", f["officers"], 73),
-        ("organisational units", f["pes"], 11),
+        ("contractors, variants merged", f["suppliers_merged"], OFF["n_suppliers_dedup"]),
+        ("authorising officers", f["officers"], OFF["n_officers"]),
+        ("organisational units", f["orgs"], OFF["n_units"]),
         ("awards with bid data", f["with_bid_data"], h["with_bid_data"]),
         ("one responsive bid", f["single_resp"], h["single_resp"]),
         ("one-responsive share (%)", f["single_resp_pct"], h["single_resp_pct"]),
-        ("contested yet single-responsive", f["contested_single"], 149),
+        ("contested yet single-responsive", f["contested_single"], OFF["strict_n"]),
         ("3+ received then 1 responsive", f["elim3"], e["n"]),
         ("5+ received then 1 responsive", f["elim5"], e["n5"]),
         ("largest contractor share (%)", f["top1"], c["top1_pct"]),
         ("top 10 share (%)", f["top10"], c["top10_pct"]),
-        ("HHI", f["hhi"], c["hhi"]),
+        ("HHI", f["hhi_as_filed"], c["hhi"]),
         ("largest contractor (crore)", f["top1_crore"],
          art["top_by_value"][0]["crore"]),
         ("signing lags measured", f["lags"], dl["n"]),
@@ -565,14 +608,20 @@ def main():
         ("longest lag (days)", f["max_lag"], dl["max"]),
         ("days 29-37 with any signing", f["days_29_37"], cl["void_n"]),
         ("signed in the day 24-28 window", f["window_24_28"], cl["win24_28"]),
-        ("office-contractor pairs 2+", f["pairs_pe_ge2"], 98),
-        ("office-contractor pairs 3+", f["pairs_pe_ge3"], 40),
-        ("largest office-contractor pair", f["pairs_pe_max"], 14),
-        ("officer-contractor pairs 2+", f["pairs_off_ge2"], 93),
-        ("officer-contractor pairs 3+", f["pairs_off_ge3"], 36),
+        ("office-contractor pairs 2+", f["pairs_pe_ge2"], OFF["pairs_pe_ge2"]),
+        ("office-contractor pairs 3+", f["pairs_pe_ge3"], OFF["pairs_pe_ge3"]),
+        ("largest office-contractor pair", f["pairs_pe_max"],
+         max(p["n"] for p in art["repeat_pairs"])),
+        ("officer-contractor pairs 2+", f["pairs_off_ge2"], OFF["pairs_of_ge2"]),
+        ("officer-contractor pairs 3+", f["pairs_off_ge3"], OFF["pairs_of_ge3"]),
         ("document prices present", f["doc_prices"], art["docprice"]["n"]),
+        ("cheapest document price", f["doc_price_min"], art["docprice"]["min"]),
         ("median document price", f["doc_price_median"], art["docprice"]["median"]),
+        ("mean document price", f["doc_price_mean"], art["docprice"]["mean"]),
         ("highest document price", f["doc_price_max"], art["docprice"]["max"]),
+        ("commonest document price", f["doc_price_mode"], art["docprice"]["mode"]),
+        ("  tenders at that price", f["doc_price_mode_n"], art["docprice"]["mode_n"]),
+        ("distinct document prices", f["doc_price_distinct"], art["docprice"]["distinct"]),
     ]
     bad = 0
     for name, got, pub in checks:
@@ -601,6 +650,95 @@ def main():
                   open(args.json, "w", encoding="utf-8"),
                   ensure_ascii=False, indent=1, default=str)
         print("wrote %s" % args.json)
+
+    # The committed artifact. Small on purpose: only the facts that exist in the
+    # PDFs and nowhere else, so verify_figures.py can check the published
+    # document-price figures against a per-tender table rather than against an
+    # aggregate that was computed by the same pass that published it.
+    def one(rec, key):
+        return " ".join((rec.get(key) or "").split())
+
+    # How badly the register's ~40-character storage limit distorts each text
+    # column: rows whose stored value is shorter than the PDF's, and — the part
+    # that changes published numbers — truncated values standing for more than
+    # one real name.
+    trunc = {}
+    for col, key in (("Procuring_Entity_Name", "pe"), ("Supplier_Name", "supplier"),
+                     ("Organization_Agency", "org"),
+                     ("Authorised_Officer", "officer"),
+                     ("Authorised_Officer_Designation", "officer_desig")):
+        seen, differ = collections.defaultdict(set), 0
+        for r in recs:
+            a = awards.get(str(r.get("Tender_Proposal_ID") or "").strip())
+            if not a:
+                continue
+            rv, pv = " ".join((r.get(col) or "").split()), one(a, key)
+            if not rv or not pv:
+                continue
+            seen[rv].add(pv)
+            differ += rv != pv
+        trunc[col] = {"rows": differ,
+                      "conflated": {k: sorted(v) for k, v in seen.items()
+                                    if len(v) > 1}}
+    print("\nTHE REGISTER'S 40-CHARACTER STORAGE LIMIT")
+    for col, d in trunc.items():
+        print("  %-32s %3d rows cut short, %d truncated value(s) standing for "
+              "more than one office" % (col, d["rows"], len(d["conflated"])))
+        for k, v in d["conflated"].items():
+            print("      %r  ->  %s" % (k, v))
+
+    derived = {
+        "_source": "written by verify_pdfs.py from the %d notice and %d award "
+                   "PDFs in this repository; regenerate with "
+                   "'python3 verify_pdfs.py'" % (len(notices), len(awards)),
+        "coverage": {
+            "register_rows": len(recs),
+            "rows_with_tender_id": len(real),
+            "distinct_tender_ids": len({str(r["Tender_Proposal_ID"]).strip()
+                                        for r in real}),
+            "notice_pdfs_read": len(notices),
+            "award_pdfs_read": len(awards),
+            "empty_rows": sorted(r.get("Source_File") or "" for r in empty),
+            "withheld": [{"file": n, "why": w} for n, w in nbroken + abroken],
+        },
+        "award_template": dict(tmpl),
+        "truncation": {
+            "_note": "the register stores several text columns cut to about 40 "
+                     "characters; the PDF carries the whole string. Where one "
+                     "truncated value stands for more than one real name, any "
+                     "figure grouped on that column merges offices that are not "
+                     "the same office.",
+            "columns": {col: {"rows_differing": d["rows"],
+                              "keys_covering_more_than_one_name": d["conflated"]}
+                        for col, d in trunc.items()},
+        },
+        "award_rows": [
+            {"id": t,
+             "org": one(a, "org"), "pe": one(a, "pe"),
+             "district": one(a, "district"),
+             "sup": one(a, "supplier"), "off": one(a, "officer"),
+             "off_desig": one(a, "officer_desig"),
+             "value": num(a.get("value")), "sold": num(a.get("sold")),
+             "recv": num(a.get("received")), "resp": num(a.get("responsive")),
+             "noa": str(date(a.get("noa")) or ""),
+             "sign": str(date(a.get("signed")) or ""),
+             "template": a.get("_template", "")}
+            for t, a in sorted(awards.items())
+        ],
+        "doc_price": {
+            "n": f["doc_prices"], "min": f["doc_price_min"],
+            "median": f["doc_price_median"], "mean": f["doc_price_mean"],
+            "max": f["doc_price_max"], "mode": f["doc_price_mode"],
+            "mode_n": f["doc_price_mode_n"], "distinct": f["doc_price_distinct"],
+            "schedule": sorted(collections.Counter(
+                f["doc_price_by_id"].values()).items()),
+            "by_tender": f["doc_price_by_id"],
+        },
+    }
+    json.dump(derived, open(DERIVED, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=1, sort_keys=False)
+    print("\nwrote %s (%d award rows, %d document prices, %d withheld PDFs)"
+          % (DERIVED, len(awards), f["doc_prices"], len(nbroken) + len(abroken)))
     return 0
 
 

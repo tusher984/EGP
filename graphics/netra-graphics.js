@@ -191,11 +191,18 @@
   }
 
   /* ============================================================ source line
-     Every figure ends with the same provenance, plus any figure-specific caveat. */
+     Every figure ends with the same provenance, plus any figure-specific caveat.
+     The verification date comes from the data bundle, not from here, so a rebuild
+     cannot leave the figures claiming a date the numbers no longer come from. */
   function srcLine(lang, note) {
+    var d = String((D.meta && D.meta.verified) || '').split('-');
     var base = t('Source: ', 'সূত্র: ', lang) +
-      t(D.meta.source.en, D.meta.source.bn, lang) + '. ' +
-      t('Verified ', 'যাচাই ', lang) + nf(2026, lang).replace(/,/g, '') + (lang === 'bn' ? '-০৮-২৩।' : '-08-23.');
+      t(D.meta.source.en, D.meta.source.bn, lang) + '. ';
+    if (d.length === 3) {
+      base += t('Verified ', 'যাচাই ', lang) +
+        nf(Number(d[0]), lang).replace(/,/g, '') + '-' +
+        (lang === 'bn' ? bnDigits(d[1]) + '-' + bnDigits(d[2]) + '।' : d[1] + '-' + d[2] + '.');
+    }
     return note ? base + ' ' + note : base;
   }
 

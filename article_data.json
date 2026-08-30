@@ -1,6 +1,7 @@
 {
  "headline": {
-  "tenders": 1158,
+  "tenders": 1151,
+  "tender_rows": 1158,
   "awarded": 645,
   "value_bdt": 37236845973.48,
   "value_crore": 3723.7,
@@ -164,7 +165,7 @@
    "crore": 1067.95
   },
   {
-   "name": "Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV ( JVCA Partners [Business Share]: MAHABUB",
+   "name": "Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV",
    "contracts": 1,
    "crore": 143.46
   },
@@ -204,12 +205,12 @@
    "crore": 83.42
   },
   {
-   "name": "National Development Engineers Ltd. - M/S. Niaz Traders JV (NDE-NT JV) ( JVCA Partners [Business Share]: NATIONAL",
+   "name": "National Development Engineers Ltd. - M/S. Niaz Traders JV (NDE-NT JV)",
    "contracts": 1,
    "crore": 83.14
   },
   {
-   "name": "DIENCO-MIR AKHTER JV ( JVCA Partners [Business Share]: DIENCO LIMITED [50.000%] , MIR AKHTER HOSSAIN",
+   "name": "DIENCO-MIR AKHTER JV",
    "contracts": 1,
    "crore": 80.62
   },
@@ -224,7 +225,7 @@
    "crore": 67.08
   },
   {
-   "name": "IH-RSE-SHJ (JV) ( JVCA Partners [Business Share]: M/S Saiful Hasan Joarder [25.000%] , M/S R. S. Enterprise",
+   "name": "IH-RSE-SHJ (JV)",
    "contracts": 1,
    "crore": 62.33
   },
@@ -236,45 +237,31 @@
  ],
  "repeat_pairs": [
   {
+   "pe": "office of the Chief Engineer ( Project & Design)",
+   "supplier": "M/S. Sany Construction",
+   "n": 15,
+   "crore": 6.26,
+   "ids": [
+    "162060",
+    "199368",
+    "236242",
+    "248616",
+    "248617",
+    "248618"
+   ]
+  },
+  {
    "pe": "Cox's Bazar Development Authority",
    "supplier": "Nahar Construction",
    "n": 14,
    "crore": 1.08,
    "ids": [
+    "1163354",
     "1184470",
     "1172101",
-    "1160337",
-    "1163354",
-    "1150459",
-    "1150442"
-   ]
-  },
-  {
-   "pe": "office of the Chief Engineer ( Project &",
-   "supplier": "M/S. Sany Construction",
-   "n": 14,
-   "crore": 6.11,
-   "ids": [
-    "236241",
-    "236242",
-    "248616",
-    "248617",
-    "248618",
-    "248619"
-   ]
-  },
-  {
-   "pe": "Office of the Superintending Engineer",
-   "supplier": "Aliza Enterprise",
-   "n": 11,
-   "crore": 2.37,
-   "ids": [
-    "1097226",
-    "1097756",
-    "1146510",
-    "1146511",
-    "1083760",
-    "1001460"
+    "978265",
+    "1024517",
+    "1148941"
    ]
   },
   {
@@ -283,58 +270,30 @@
    "n": 10,
    "crore": 0.49,
    "ids": [
-    "1258384",
-    "1207915",
-    "1211856",
+    "1183822",
     "1199127",
     "1184463",
-    "1184466"
+    "1211856",
+    "1173102",
+    "1172974"
    ]
   },
   {
-   "pe": "Office of the Superintending Engineer",
-   "supplier": "T.S Enterprise",
-   "n": 8,
-   "crore": 1.65,
-   "ids": [
-    "1272697",
-    "1189629",
-    "1205162",
-    "1186179",
-    "1059690",
-    "1008472"
-   ]
-  },
-  {
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "supplier": "M/S Sunny Construction",
    "n": 8,
    "crore": 3.58,
    "ids": [
-    "1146506",
-    "1147755",
     "1074002",
     "980099",
+    "517916",
+    "1146506",
     "948446",
-    "685885"
+    "1147755"
    ]
   },
   {
-   "pe": "Office of the Superintending Engineer",
-   "supplier": "M/S TANIN ENTERPRISE",
-   "n": 7,
-   "crore": 2.09,
-   "ids": [
-    "1030720",
-    "936225",
-    "948435",
-    "891746",
-    "828053",
-    "622539"
-   ]
-  },
-  {
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "supplier": "Sherpa Power Engineering Ltd.",
    "n": 7,
    "crore": 3.75,
@@ -348,56 +307,59 @@
    ]
   },
   {
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Office of the Superintending Engineer (Electrical)",
+   "supplier": "M/S TANIN ENTERPRISE",
+   "n": 7,
+   "crore": 2.09,
+   "ids": [
+    "828053",
+    "622539",
+    "1030720",
+    "936225",
+    "891746",
+    "948435"
+   ]
+  },
+  {
+   "pe": "Office of the Superintending Engineer (Electrical)",
+   "supplier": "Aliza Enterprise",
+   "n": 7,
+   "crore": 1.96,
+   "ids": [
+    "1083760",
+    "980096",
+    "1097226",
+    "1146510",
+    "1146511",
+    "980158"
+   ]
+  },
+  {
+   "pe": "Office of the Superintending Engineer (Electrical)",
+   "supplier": "T.S Enterprise",
+   "n": 7,
+   "crore": 1.58,
+   "ids": [
+    "1186179",
+    "1008472",
+    "1272697",
+    "1189629",
+    "755274",
+    "536842"
+   ]
+  },
+  {
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "supplier": "Concept Elevators & Engineering Ltd.",
    "n": 6,
    "crore": 6.74,
    "ids": [
-    "1082896",
     "1062494",
     "737121",
-    "614373",
+    "1082896",
     "591591",
+    "614373",
     "592175"
-   ]
-  },
-  {
-   "pe": "Project Director(M.Uddin), Chittagong",
-   "supplier": "M/S. Gulzar Trading",
-   "n": 5,
-   "crore": 1.25,
-   "ids": [
-    "945416",
-    "669414",
-    "644083",
-    "616340",
-    "598954"
-   ]
-  },
-  {
-   "pe": "Project Director(M.Uddin)",
-   "supplier": "M/S. Gulzar Trading",
-   "n": 5,
-   "crore": 0.95,
-   "ids": [
-    "523954",
-    "427246",
-    "360423",
-    "309557",
-    "234888"
-   ]
-  },
-  {
-   "pe": "Cox's Bazar Development Authority",
-   "supplier": "Bangla Trac Limited",
-   "n": 5,
-   "crore": 8.21,
-   "ids": [
-    "1163187",
-    "461085",
-    "461209",
-    "418364",
-    "276338"
    ]
   },
   {
@@ -406,84 +368,74 @@
    "n": 5,
    "crore": 10.12,
    "ids": [
-    "1069558",
-    "1069559",
     "1008543",
     "789918",
-    "601519"
+    "601519",
+    "1069559",
+    "1069558"
    ]
   },
   {
-   "pe": "Office of the Superintending Engineer",
-   "supplier": "MULTITRADE INTERNATIONAL",
+   "pe": "Cox's Bazar Development Authority",
+   "supplier": "Bangla Trac Limited",
    "n": 5,
-   "crore": 1.18,
+   "crore": 8.21,
    "ids": [
-    "1031800",
-    "936227",
-    "938968",
-    "887588",
-    "747343"
+    "276338",
+    "418364",
+    "461085",
+    "461209",
+    "1163187"
    ]
   },
   {
-   "pe": "CoxDA Master Plan",
-   "supplier": "Smart Technologies (BD) Ltd.",
-   "n": 4,
-   "crore": 4.09,
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
+   "supplier": "M/S. Gulzar Trading",
+   "n": 5,
+   "crore": 1.25,
    "ids": [
-    "975403",
-    "837644",
-    "837643",
-    "834339"
+    "616340",
+    "669414",
+    "644083",
+    "598954",
+    "945416"
    ]
   },
   {
-   "pe": "Cox's Bazar Development Authority",
-   "supplier": "H.A Enterprise",
-   "n": 4,
-   "crore": 2.97,
+   "pe": "Project Director(M.Uddin)",
+   "supplier": "M/S. Gulzar Trading",
+   "n": 5,
+   "crore": 0.95,
    "ids": [
-    "963987",
-    "925988",
-    "808097",
-    "681465"
+    "360423",
+    "309557",
+    "234888",
+    "427246",
+    "523954"
    ]
   },
   {
-   "pe": "Cox's Bazar Development Authority",
-   "supplier": "M/S. T.J Construction",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "supplier": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation JV",
    "n": 4,
-   "crore": 1.67,
+   "crore": 26.73,
    "ids": [
-    "669151",
-    "550266",
-    "550267",
-    "471795"
+    "80585",
+    "79395",
+    "80586",
+    "98112"
    ]
   },
   {
-   "pe": "Superintending Engineer (Civil Circle-4)",
-   "supplier": "M/S. A. R. Enterprise",
+   "pe": "Purbachal New Town Project",
+   "supplier": "M/S. Sharif & Sons",
    "n": 4,
-   "crore": 5.03,
+   "crore": 13.89,
    "ids": [
-    "1082496",
-    "1013268",
-    "870260",
-    "661661"
-   ]
-  },
-  {
-   "pe": "Uttara Apartment Project",
-   "supplier": "Gess Bangladesh",
-   "n": 4,
-   "crore": 10.85,
-   "ids": [
-    "1023060",
-    "1003623",
-    "962656",
-    "959288"
+    "920946",
+    "957254",
+    "1008544",
+    "616293"
    ]
   },
   {
@@ -492,10 +444,58 @@
    "n": 4,
    "crore": 12.92,
    "ids": [
-    "1071058",
-    "1008547",
     "957252",
-    "827548"
+    "827548",
+    "1071058",
+    "1008547"
+   ]
+  },
+  {
+   "pe": "Uttara Apartment Project",
+   "supplier": "Gess Bangladesh",
+   "n": 4,
+   "crore": 10.85,
+   "ids": [
+    "1003623",
+    "1023060",
+    "959288",
+    "962656"
+   ]
+  },
+  {
+   "pe": "Uttara 3rd Phase Project",
+   "supplier": "Momotaj Engineers Ltd.",
+   "n": 4,
+   "crore": 9.39,
+   "ids": [
+    "431697",
+    "431689",
+    "431708",
+    "431707"
+   ]
+  },
+  {
+   "pe": "Superintending Engineer (Civil Circle-4)",
+   "supplier": "M/S. A. R. Enterprise",
+   "n": 4,
+   "crore": 5.03,
+   "ids": [
+    "1013268",
+    "1082496",
+    "870260",
+    "661661"
+   ]
+  },
+  {
+   "pe": "office of the Chief Engineer ( Project & Design)",
+   "supplier": "Dulal Enterprise (Pvt) Ltd.",
+   "n": 4,
+   "crore": 4.59,
+   "ids": [
+    "146376",
+    "146377",
+    "146380",
+    "146381"
    ]
   }
  ],
@@ -4832,7 +4832,7 @@
     "org": "RAJUK",
     "recv": 11.0,
     "sold": 11.0,
-    "sup": "SS-RI JV ( JVCA Partners [Business Share]: M/S. Raju International [49.000%] , M/S. Sharif & Sons [51.000%] )",
+    "sup": "SS-RI JV",
     "crore": 4.39,
     "pkg": "Construction of Remaining Internal Road and Surface Drain at Sector-17(Part) of Purbachal New Town Project (RDC-17, Lot-",
     "pe": "Purbachal New Town Project",
@@ -4952,7 +4952,7 @@
     "org": "RAJUK",
     "recv": 5.0,
     "sold": 6.0,
-    "sup": "Rana Builders (Pvt.) Ltd. - M/s. Shafique and Sons (JV) ( JVCA Partners [Business Share]: Rana Builders (Pvt.) Ltd.",
+    "sup": "Rana Builders (Pvt.) Ltd. - M/s. Shafique and Sons (JV)",
     "crore": 10.58,
     "pkg": "Construction of Remaining Road & Surface Drain work at Sector-04 (Part) of Purbachal New Town Project (Package No- PNTP/",
     "pe": "Purbachal New Town Project",
@@ -5037,24 +5037,31 @@
  ],
  "docprice": {
   "n": 1128,
-  "median": 16.0,
-  "max": 4000.0,
+  "min": 100.0,
+  "median": 1500.0,
+  "mean": 1916.8,
+  "max": 10000.0,
+  "mode": 1000.0,
+  "mode_n": 518,
+  "distinct": 11,
+  "ge4k": 222,
+  "source": "read from the 1,155 tender-notice PDFs by verify_pdfs.py; the register's Document_Price_BDT column is discarded because it stores the day-of-month of Security_Valid_Up_To, not a price (1 of 1128 values agrees with the PDF)",
   "hist": [
    {
     "bin": "≤1k",
-    "n": 1126
+    "n": 551
    },
    {
     "bin": "1–2k",
-    "n": 0
+    "n": 316
    },
    {
     "bin": "2–5k",
-    "n": 2
+    "n": 257
    },
    {
     "bin": "5–10k",
-    "n": 0
+    "n": 4
    },
    {
     "bin": "10k+",
@@ -7302,7 +7309,7 @@
     "contracts": 4
    },
    {
-    "name": "Ataur Rahman Khan Ltd & Mahabub Brothers",
+    "name": "Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV",
     "crore": 143.46,
     "contracts": 1
    },
@@ -7342,12 +7349,12 @@
     "contracts": 1
    },
    {
-    "name": "National Development Engineers Ltd. - M/",
+    "name": "National Development Engineers Ltd. - M/S. Niaz Traders JV (NDE-NT JV)",
     "crore": 83.14,
     "contracts": 1
    },
    {
-    "name": "DIENCO-MIR AKHTER JV ( JVCA Partners [Bu",
+    "name": "DIENCO-MIR AKHTER JV",
     "crore": 80.62,
     "contracts": 1
    },
@@ -7362,7 +7369,7 @@
     "contracts": 4
    },
    {
-    "name": "IH-RSE-SHJ (JV) ( JVCA Partners [Busines",
+    "name": "IH-RSE-SHJ (JV)",
     "crore": 62.33,
     "contracts": 1
    },
@@ -7448,19 +7455,19 @@
     "total": 86
    },
    {
-    "pe": "Office of the Superintending Engineer",
-    "total": 76
+    "pe": "Office of the Superintending Engineer (Electrical)",
+    "total": 58
    },
    {
-    "pe": "office of the Chief Engineer ( Project &",
-    "total": 52
+    "pe": "office of the Chief Engineer ( Project & Design)",
+    "total": 53
    },
    {
     "pe": "Purbachal New Town Project",
     "total": 51
    },
    {
-    "pe": "Office of the Chief Engineer",
+    "pe": "Office of the Chief Engineer (Implementation)",
     "total": 36
    },
    {
@@ -7468,7 +7475,7 @@
     "total": 31
    },
    {
-    "pe": "Construction of multi-storied apartment",
+    "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
     "total": 24
    },
    {
@@ -7482,15 +7489,11 @@
   ],
   "cols": [
    {
-    "sup": "Nahar Construction",
-    "total": 14
-   },
-   {
     "sup": "M/S. Sany Construction",
     "total": 15
    },
    {
-    "sup": "Aliza Enterprise",
+    "sup": "Nahar Construction",
     "total": 14
    },
    {
@@ -7498,11 +7501,11 @@
     "total": 15
    },
    {
-    "sup": "T.S Enterprise",
+    "sup": "Concept Elevators & Engineering Ltd.",
     "total": 12
    },
    {
-    "sup": "Concept Elevators & Engineering Lt",
+    "sup": "T.S Enterprise",
     "total": 12
    },
    {
@@ -7518,12 +7521,16 @@
     "total": 9
    },
    {
-    "sup": "M/S. Maliha Enterprise",
-    "total": 9
+    "sup": "Aliza Enterprise",
+    "total": 14
    },
    {
     "sup": "Sherpa Power Engineering Ltd.",
     "total": 7
+   },
+   {
+    "sup": "M/S. Maliha Enterprise",
+    "total": 9
    }
   ],
   "grid": [
@@ -7532,16 +7539,12 @@
     "pe_total": 86,
     "cells": [
      {
+      "n": 0,
+      "crore": 0.0
+     },
+     {
       "n": 14,
       "crore": 1.08
-     },
-     {
-      "n": 0,
-      "crore": 0.0
-     },
-     {
-      "n": 0,
-      "crore": 0.0
      },
      {
       "n": 0,
@@ -7574,12 +7577,16 @@
      {
       "n": 0,
       "crore": 0.0
+     },
+     {
+      "n": 0,
+      "crore": 0.0
      }
     ]
    },
    {
-    "pe": "Office of the Superintending Engineer",
-    "pe_total": 76,
+    "pe": "Office of the Superintending Engineer (Electrical)",
+    "pe_total": 58,
     "cells": [
      {
       "n": 0,
@@ -7590,20 +7597,16 @@
       "crore": 0.0
      },
      {
-      "n": 11,
-      "crore": 2.37
-     },
-     {
       "n": 0,
       "crore": 0.0
      },
      {
-      "n": 8,
-      "crore": 1.65
-     },
-     {
       "n": 3,
       "crore": 5.21
+     },
+     {
+      "n": 7,
+      "crore": 1.58
      },
      {
       "n": 8,
@@ -7618,26 +7621,30 @@
       "crore": 2.09
      },
      {
-      "n": 3,
-      "crore": 0.4
+      "n": 7,
+      "crore": 1.96
      },
      {
       "n": 0,
       "crore": 0.0
+     },
+     {
+      "n": 1,
+      "crore": 0.25
      }
     ]
    },
    {
-    "pe": "office of the Chief Engineer ( Project &",
-    "pe_total": 52,
+    "pe": "office of the Chief Engineer ( Project & Design)",
+    "pe_total": 53,
     "cells": [
+     {
+      "n": 15,
+      "crore": 6.26
+     },
      {
       "n": 0,
       "crore": 0.0
-     },
-     {
-      "n": 14,
-      "crore": 6.11
      },
      {
       "n": 0,
@@ -7660,20 +7667,20 @@
       "crore": 0.0
      },
      {
-      "n": 0,
-      "crore": 0.0
-     },
-     {
       "n": 2,
       "crore": 0.14
      },
      {
-      "n": 1,
-      "crore": 0.08
+      "n": 0,
+      "crore": 0.0
      },
      {
       "n": 7,
       "crore": 3.75
+     },
+     {
+      "n": 1,
+      "crore": 0.08
      }
     ]
    },
@@ -7690,20 +7697,16 @@
       "crore": 0.0
      },
      {
-      "n": 1,
-      "crore": 1.29
-     },
-     {
       "n": 5,
       "crore": 10.12
      },
      {
-      "n": 0,
-      "crore": 0.0
-     },
-     {
       "n": 1,
       "crore": 2.03
+     },
+     {
+      "n": 0,
+      "crore": 0.0
      },
      {
       "n": 1,
@@ -7718,17 +7721,21 @@
       "crore": 0.0
      },
      {
-      "n": 2,
-      "crore": 3.38
+      "n": 1,
+      "crore": 1.29
      },
      {
       "n": 0,
       "crore": 0.0
+     },
+     {
+      "n": 2,
+      "crore": 3.38
      }
     ]
    },
    {
-    "pe": "Office of the Chief Engineer",
+    "pe": "Office of the Chief Engineer (Implementation)",
     "pe_total": 36,
     "cells": [
      {
@@ -7740,12 +7747,12 @@
       "crore": 0.0
      },
      {
-      "n": 0,
-      "crore": 0.0
-     },
-     {
       "n": 4,
       "crore": 3.24
+     },
+     {
+      "n": 0,
+      "crore": 0.0
      },
      {
       "n": 0,
@@ -7794,16 +7801,12 @@
       "crore": 0.0
      },
      {
-      "n": 0,
-      "crore": 0.0
+      "n": 2,
+      "crore": 2.56
      },
      {
       "n": 2,
       "crore": 0.26
-     },
-     {
-      "n": 2,
-      "crore": 2.56
      },
      {
       "n": 2,
@@ -7824,11 +7827,15 @@
      {
       "n": 0,
       "crore": 0.0
+     },
+     {
+      "n": 0,
+      "crore": 0.0
      }
     ]
    },
    {
-    "pe": "Construction of multi-storied apartment",
+    "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
     "pe_total": 24,
     "cells": [
      {
@@ -7844,16 +7851,16 @@
       "crore": 0.0
      },
      {
-      "n": 0,
-      "crore": 0.0
+      "n": 6,
+      "crore": 6.74
      },
      {
       "n": 1,
       "crore": 0.61
      },
      {
-      "n": 6,
-      "crore": 6.74
+      "n": 0,
+      "crore": 0.0
      },
      {
       "n": 0,
@@ -7940,10 +7947,6 @@
       "crore": 0.0
      },
      {
-      "n": 1,
-      "crore": 0.35
-     },
-     {
       "n": 4,
       "crore": 5.03
      },
@@ -7968,17 +7971,21 @@
       "crore": 0.0
      },
      {
-      "n": 2,
-      "crore": 1.8
+      "n": 1,
+      "crore": 0.35
      },
      {
       "n": 0,
       "crore": 0.0
+     },
+     {
+      "n": 2,
+      "crore": 1.8
      }
     ]
    }
   ],
-  "max": 14
+  "max": 15
  },
  "pe_capture": [
   {
@@ -7989,21 +7996,21 @@
    "pct": 30.8
   },
   {
-   "pe": "office of the Chief Engineer ( Project &",
-   "total": 52,
+   "pe": "office of the Chief Engineer ( Project & Design)",
+   "total": 53,
    "topsup": "M/S. Sany Construction",
-   "n": 14,
-   "pct": 26.9
+   "n": 15,
+   "pct": 28.3
   },
   {
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "total": 19,
    "topsup": "M/S. Gulzar Trading",
    "n": 5,
    "pct": 26.3
   },
   {
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "total": 24,
    "topsup": "Concept Elevators & Engineering Ltd.",
    "n": 6,
@@ -8017,6 +8024,13 @@
    "pct": 23.5
   },
   {
+   "pe": "Office of the Superintending Engineer (Mechanical)",
+   "total": 18,
+   "topsup": "Aliza Enterprise",
+   "n": 4,
+   "pct": 22.2
+  },
+  {
    "pe": "Superintending Engineer (Civil Circle-4)",
    "total": 20,
    "topsup": "M/S. A. R. Enterprise",
@@ -8026,7 +8040,7 @@
   {
    "pe": "Superintending Engineer (Civil Circle-1)",
    "total": 12,
-   "topsup": "M/S. AMIN TRADING CORPORATION",
+   "topsup": "M/S. A. R. Enterprise",
    "n": 2,
    "pct": 16.7
   },
@@ -8038,11 +8052,11 @@
    "pct": 16.3
   },
   {
-   "pe": "Office of the Superintending Engineer",
-   "total": 76,
-   "topsup": "Aliza Enterprise",
-   "n": 11,
-   "pct": 14.5
+   "pe": "Office of the Superintending Engineer (Electrical)",
+   "total": 58,
+   "topsup": "M/S Sunny Construction",
+   "n": 8,
+   "pct": 13.8
   },
   {
    "pe": "Uttara Apartment Project",
@@ -8052,14 +8066,14 @@
    "pct": 12.9
   },
   {
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "total": 17,
-   "topsup": "SUNTECH ENERGY LTD.",
+   "topsup": "Gess Bangladesh",
    "n": 2,
    "pct": 11.8
   },
   {
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "total": 36,
    "topsup": "M/S. A. R. Enterprise",
    "n": 4,
@@ -8100,7 +8114,7 @@
    "id": "581310",
    "org": "KDA",
    "pe": "Office of Exen (works)",
-   "sup": "Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV ( JVCA",
+   "sup": "Ataur Rahman Khan Ltd & Mahabub Brothers (Pvt) Ltd JV",
    "pkg": "",
    "crore": 143.458,
    "recv": 2,
@@ -8114,7 +8128,7 @@
   {
    "id": "783087",
    "org": "KDA",
-   "pe": "Office of the Project Director (KDA Bipone",
+   "pe": "Office of the Project Director (KDA Bipone Bitan)",
    "sup": "MAHABUB BROTHERS(PVT)LIMITED",
    "pkg": "",
    "crore": 96.515,
@@ -8144,7 +8158,7 @@
   {
    "id": "209736",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "The United Construction Co.",
    "pkg": "",
    "crore": 93.32,
@@ -8204,8 +8218,8 @@
   {
    "id": "857646",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
-   "sup": "National Development Engineers Ltd. - M/S. Niaz Traders JV (",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
+   "sup": "National Development Engineers Ltd. - M/S. Niaz Traders JV (NDE-NT JV)",
    "pkg": "",
    "crore": 83.142,
    "recv": 4,
@@ -8220,7 +8234,7 @@
    "id": "941420",
    "org": "KDA",
    "pe": "Office of the Project Director (3Link Road)",
-   "sup": "DIENCO-MIR AKHTER JV ( JVCA Partners [Business Share]: DIENC",
+   "sup": "DIENCO-MIR AKHTER JV",
    "pkg": "",
    "crore": 80.624,
    "recv": 2,
@@ -8265,7 +8279,7 @@
    "id": "975516",
    "org": "KDA",
    "pe": "Office of the Project Director (3Link Road)",
-   "sup": "IH-RSE-SHJ (JV) ( JVCA Partners [Business Share]: M/S Saiful",
+   "sup": "IH-RSE-SHJ (JV)",
    "pkg": "",
    "crore": 62.325,
    "recv": 3,
@@ -8310,7 +8324,7 @@
    "id": "752801",
    "org": "RAJUK",
    "pe": "Uttara Lake Development Project",
-   "sup": "M/s. Udayan Builders (JV) ( JVCA Partners [Business Share]: ",
+   "sup": "M/s. Udayan Builders (JV)",
    "pkg": "",
    "crore": 45.299,
    "recv": 6,
@@ -8325,7 +8339,7 @@
    "id": "860503",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "SS-RC (JV) ( JVCA Partners [Business Share]: Rafiq Construct",
+   "sup": "SS-RC (JV)",
    "pkg": "",
    "crore": 44.69,
    "recv": 4,
@@ -8340,7 +8354,7 @@
    "id": "671805",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "M/s. SS & MT (JV) ( JVCA Partners [Business Share]: M/S. Mon",
+   "sup": "M/s. SS & MT (JV)",
    "pkg": "",
    "crore": 44.499,
    "recv": 4,
@@ -8355,7 +8369,7 @@
    "id": "991635",
    "org": "KDA",
    "pe": "Office of the Project Director (3Link Road)",
-   "sup": "IH-RSE (JV) ( JVCA Partners [Business Share]: M/S R. S. Ente",
+   "sup": "IH-RSE (JV)",
    "pkg": "",
    "crore": 44.245,
    "recv": 3,
@@ -8384,8 +8398,8 @@
   {
    "id": "447380",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
-   "sup": "HSL-RE JV. ( JVCA Partners [Business Share]: Hasan & Sons Lt",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
+   "sup": "HSL-RE JV.",
    "pkg": "",
    "crore": 35.352,
    "recv": 2,
@@ -8399,7 +8413,7 @@
   {
    "id": "948434",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "Momotaj Engineers Ltd.",
    "pkg": "",
    "crore": 34.52,
@@ -8429,8 +8443,8 @@
   {
    "id": "926607",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "Anik Trading and Construction-Fastbuild JV ( JVCA Partners [",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "Anik Trading and Construction-Fastbuild JV",
    "pkg": "",
    "crore": 25.084,
    "recv": 5,
@@ -8474,8 +8488,8 @@
   {
    "id": "292111",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "NIAZ-NOONA JV. ( JVCA Partners [Business Share]: Noona Trade",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "NIAZ-NOONA JV.",
    "pkg": "",
    "crore": 21.782,
    "recv": 8,
@@ -8519,7 +8533,7 @@
   {
    "id": "971720",
    "org": "CoxDA",
-   "pe": "Office of the Project Director, CoxDA",
+   "pe": "Office of the Project Director, CoxDA Residential Flat Project-1",
    "sup": "M/S Quashem Construction",
    "pkg": "",
    "crore": 17.497,
@@ -8564,7 +8578,7 @@
   {
    "id": "209939",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Toma Construction & Co. Limited",
    "pkg": "",
    "crore": 16.688,
@@ -8594,7 +8608,7 @@
   {
    "id": "311188",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "MAHABUB BROTHERS(PVT)LIMITED",
    "pkg": "",
    "crore": 16.241,
@@ -8610,7 +8624,7 @@
    "id": "917088",
    "org": "CDA",
    "pe": "Project Director (CCORRP)",
-   "sup": "RNYB Ltd - A.T Construction JV. JV. ( JVCA Partners [Busines",
+   "sup": "RNYB Ltd - A.T Construction JV. JV.",
    "pkg": "",
    "crore": 16.16,
    "recv": 1,
@@ -8624,7 +8638,7 @@
   {
    "id": "322658",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "UCCL The United Construction Company Limited",
    "pkg": "",
    "crore": 15.987,
@@ -8639,7 +8653,7 @@
   {
    "id": "199891",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Momotaj Engineers Ltd.",
    "pkg": "",
    "crore": 15.515,
@@ -8684,7 +8698,7 @@
   {
    "id": "1134396",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Sohel Engineering & Construction Ltd.",
    "pkg": "",
    "crore": 14.71,
@@ -8699,8 +8713,8 @@
   {
    "id": "119326",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "NIAZ-NOONA-KTA JV ( JVCA Partners [Business Share]: KHOKAN T",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "NIAZ-NOONA-KTA JV",
    "pkg": "",
    "crore": 13.59,
    "recv": 3,
@@ -8715,7 +8729,7 @@
    "id": "935093",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "NDE-UCC-SC JV ( JVCA Partners [Business Share]: M/S Sunny Co",
+   "sup": "NDE-UCC-SC JV",
    "pkg": "",
    "crore": 13.46,
    "recv": 3,
@@ -8729,8 +8743,8 @@
   {
    "id": "89106",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "Starlite Services Ltd & Convoy Service JV ( JVCA Partners [B",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "Starlite Services Ltd & Convoy Service JV",
    "pkg": "",
    "crore": 12.619,
    "recv": 5,
@@ -8759,8 +8773,8 @@
   {
    "id": "479604",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
-   "sup": "Udayan-Starlite-Convoy JV ( JVCA Partners [Business Share]: ",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
+   "sup": "Udayan-Starlite-Convoy JV",
    "pkg": "",
    "crore": 12.271,
    "recv": 5,
@@ -8789,7 +8803,7 @@
   {
    "id": "1060379",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "Starlite Services Limited",
    "pkg": "",
    "crore": 11.827,
@@ -8804,7 +8818,7 @@
   {
    "id": "209938",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Toma Construction & Co. Limited",
    "pkg": "",
    "crore": 11.543,
@@ -8819,7 +8833,7 @@
   {
    "id": "735107",
    "org": "CDA",
-   "pe": "Project Director(KK Newaz), Chittagong",
+   "pe": "Project Director(KK Newaz), Chittagong Development Authority",
    "sup": "Spectra Engineers Ltd.",
    "pkg": "",
    "crore": 11.518,
@@ -8834,8 +8848,8 @@
   {
    "id": "476405",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "M/s. Udyan Builders-Starlite Services Ltd-Convoy Service JV ",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "M/s. Udyan Builders-Starlite Services Ltd-Convoy Service JV",
    "pkg": "",
    "crore": 11.34,
    "recv": 9,
@@ -8850,7 +8864,7 @@
    "id": "535709",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "Udayan-Convoy JV ( JVCA Partners [Business Share]: M/S Udaya",
+   "sup": "Udayan-Convoy JV",
    "pkg": "",
    "crore": 11.262,
    "recv": 17,
@@ -8880,7 +8894,7 @@
    "id": "1060895",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "TCEL TE JV ( JVCA Partners [Business Share]: THE CIVIL ENGIN",
+   "sup": "TCEL TE JV",
    "pkg": "",
    "crore": 11.11,
    "recv": 8,
@@ -8894,7 +8908,7 @@
   {
    "id": "867256",
    "org": "KDA",
-   "pe": "Office of the Project Director (KDA Bus",
+   "pe": "Office of the Project Director (KDA Bus Terminal)",
    "sup": "M/S RAFID TRADERS",
    "pkg": "",
    "crore": 10.73,
@@ -8910,7 +8924,7 @@
    "id": "902293",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "Rana Builders (Pvt.) Ltd. - M/s. Shafique and Sons (JV) ( JV",
+   "sup": "Rana Builders (Pvt.) Ltd. - M/s. Shafique and Sons (JV)",
    "pkg": "",
    "crore": 10.582,
    "recv": 5,
@@ -8940,7 +8954,7 @@
    "id": "207700",
    "org": "RDA",
    "pe": "Office of the Chairman",
-   "sup": "Rithin Enterprise and Kohinoor Enterprise J.V ( JVCA Partner",
+   "sup": "Rithin Enterprise and Kohinoor Enterprise J.V",
    "pkg": "",
    "crore": 10.099,
    "recv": 3,
@@ -8955,7 +8969,7 @@
    "id": "959962",
    "org": "CDA",
    "pe": "Construction Division-2",
-   "sup": "RNYB Ltd. - EBL - Alif JV. ( JVCA Partners [Business Share]:",
+   "sup": "RNYB Ltd. - EBL - Alif JV.",
    "pkg": "",
    "crore": 10.079,
    "recv": 2,
@@ -9000,7 +9014,7 @@
    "id": "618898",
    "org": "CoxDA",
    "pe": "Cox's Bazar Development Authority",
-   "sup": "Hassan Techno Builders Ltd. - Taher Brothers Ltd. JV. ( JVCA",
+   "sup": "Hassan Techno Builders Ltd. - Taher Brothers Ltd. JV.",
    "pkg": "",
    "crore": 9.459,
    "recv": 6,
@@ -9014,7 +9028,7 @@
   {
    "id": "1000945",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Momotaj Engineers Ltd.",
    "pkg": "",
    "crore": 9.145,
@@ -9030,7 +9044,7 @@
    "id": "859008",
    "org": "RDA",
    "pe": "Office of the Chairman",
-   "sup": "Noor Hossain Ltd. (JV) ( JVCA Partners [Business Share]: MD.",
+   "sup": "Noor Hossain Ltd. (JV)",
    "pkg": "",
    "crore": 9.047,
    "recv": 2,
@@ -9044,7 +9058,7 @@
   {
    "id": "596661",
    "org": "CDA",
-   "pe": "Project Director(KK Newaz), Chittagong",
+   "pe": "Project Director(KK Newaz), Chittagong Development Authority",
    "sup": "M/S. Jashim & Sons",
    "pkg": "",
    "crore": 8.862,
@@ -9119,8 +9133,8 @@
   {
    "id": "80585",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation J",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation JV",
    "pkg": "",
    "crore": 8.388,
    "recv": 12,
@@ -9134,7 +9148,7 @@
   {
    "id": "1225896",
    "org": "RAJUK",
-   "pe": "Gulshan-Banani-Baridhara Lake",
+   "pe": "Gulshan-Banani-Baridhara Lake Development Project",
    "sup": "M/S. Dawn Corporation",
    "pkg": "",
    "crore": 8.387,
@@ -9149,8 +9163,8 @@
   {
    "id": "1225895",
    "org": "RAJUK",
-   "pe": "Gulshan-Banani-Baridhara Lake",
-   "sup": "CONVOY SERVICE Joint Venture Share: 49.00%",
+   "pe": "Gulshan-Banani-Baridhara Lake Development Project",
+   "sup": "SSL- Convoy JV (Joint Venture)",
    "pkg": "",
    "crore": 8.254,
    "recv": null,
@@ -9164,8 +9178,8 @@
   {
    "id": "476406",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "MEPL-RE JV. ( JVCA Partners [Business Share]: M/S REZA ENTER",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "MEPL-RE JV.",
    "pkg": "",
    "crore": 8.023,
    "recv": 10,
@@ -9179,8 +9193,8 @@
   {
    "id": "79395",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation J",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation JV",
    "pkg": "",
    "crore": 7.98,
    "recv": 14,
@@ -9195,7 +9209,7 @@
    "id": "189944",
    "org": "CDA",
    "pe": "Project Director (Muradpur Flyover)",
-   "sup": "M/S. AS - RAS Trading (JV) ( JVCA Partners [Business Share]:",
+   "sup": "M/S. AS - RAS Trading (JV)",
    "pkg": "",
    "crore": 7.954,
    "recv": 1,
@@ -9210,7 +9224,7 @@
    "id": "732686",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "M/S. Udayan Builders - M/S. Tanni Enterprise JV ( JVCA Partn",
+   "sup": "M/S. Udayan Builders - M/S. Tanni Enterprise JV",
    "pkg": "",
    "crore": 7.867,
    "recv": 5,
@@ -9224,8 +9238,8 @@
   {
    "id": "125874",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "Mir Habibul Alam & Starlite Services Ltd & M/s. Udayn Builde",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "Mir Habibul Alam & Starlite Services Ltd & M/s. Udayn Builders JV",
    "pkg": "",
    "crore": 7.865,
    "recv": 11,
@@ -9255,7 +9269,7 @@
    "id": "1069564",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "SSL- CONVOY JV ( JVCA Partners [Business Share]: CONVOY SERV",
+   "sup": "SSL- CONVOY JV",
    "pkg": "",
    "crore": 7.716,
    "recv": 4,
@@ -9270,7 +9284,7 @@
    "id": "617807",
    "org": "CoxDA",
    "pe": "Cox's Bazar Development Authority",
-   "sup": "SCL-LB-KEC JV ( JVCA Partners [Business Share]: M/S. KARIM E",
+   "sup": "SCL-LB-KEC JV",
    "pkg": "",
    "crore": 7.598,
    "recv": 6,
@@ -9329,8 +9343,8 @@
   {
    "id": "80586",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation J",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation JV",
    "pkg": "",
    "crore": 7.198,
    "recv": 7,
@@ -9344,8 +9358,8 @@
   {
    "id": "312476",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "MRC-Techbay-JV ( JVCA Partners [Business Share]: M/s. M.R. C",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "MRC-Techbay-JV",
    "pkg": "",
    "crore": 7.133,
    "recv": 8,
@@ -9360,7 +9374,7 @@
    "id": "342502",
    "org": "CDA",
    "pe": "Project Director(Rajib Das)",
-   "sup": "S. Ananta - Abdus Salam (JV) ( JVCA Partners [Business Share",
+   "sup": "S. Ananta - Abdus Salam (JV)",
    "pkg": "",
    "crore": 7.066,
    "recv": 8,
@@ -9374,7 +9388,7 @@
   {
    "id": "312479",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "MAHABUB BROTHERS(PVT)LIMITED",
    "pkg": "",
    "crore": 6.968,
@@ -9390,7 +9404,7 @@
    "id": "535712",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "Rana Builders (Pvt.) Ltd. - M/s Shafique and Sons (JV) ( JVC",
+   "sup": "Rana Builders (Pvt.) Ltd. - M/s Shafique and Sons (JV)",
    "pkg": "",
    "crore": 6.884,
    "recv": 17,
@@ -9404,8 +9418,8 @@
   {
    "id": "446869",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
-   "sup": "HSL-RE JV. ( JVCA Partners [Business Share]: Hasan & Sons Lt",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
+   "sup": "HSL-RE JV.",
    "pkg": "",
    "crore": 6.873,
    "recv": 3,
@@ -9419,8 +9433,8 @@
   {
    "id": "1060380",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "Convoy Service JV ( JVCA Partners [Business Share]: CONVOY S",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "Convoy Service JV",
    "pkg": "",
    "crore": 6.801,
    "recv": 5,
@@ -9464,8 +9478,8 @@
   {
    "id": "476403",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "Rafiq Construction Co. (Pvt.) Ltd. - Haider & Co-Momotaj Eng",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "Rafiq Construction Co. (Pvt.) Ltd. - Haider & Co-Momotaj Engineers Ltd (JV)",
    "pkg": "",
    "crore": 6.462,
    "recv": 9,
@@ -9479,8 +9493,8 @@
   {
    "id": "125877",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "Convoy Service-M/S Paradise Traders-Moshiur Rahman Chowdhury",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "Convoy Service-M/S Paradise Traders-Moshiur Rahman Chowdhury JV",
    "pkg": "",
    "crore": 5.675,
    "recv": 11,
@@ -9510,7 +9524,7 @@
    "id": "528758",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "SC & ARE JV ( JVCA Partners [Business Share]: M/S. A. R. Ent",
+   "sup": "SC & ARE JV",
    "pkg": "",
    "crore": 5.49,
    "recv": 16,
@@ -9539,8 +9553,8 @@
   {
    "id": "293004",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "Rafiq Construction Co. (Pvt.) Ltd and M/S Shafique & Sons Co",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "Rafiq Construction Co. (Pvt.) Ltd and M/S Shafique & Sons Consortium",
    "pkg": "",
    "crore": 5.461,
    "recv": 10,
@@ -9555,7 +9569,7 @@
    "id": "775307",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "SSL-CONVOY JV ( JVCA Partners [Business Share]: CONVOY SERVI",
+   "sup": "SSL-CONVOY JV",
    "pkg": "",
    "crore": 5.391,
    "recv": 2,
@@ -9615,7 +9629,7 @@
    "id": "528756",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "SS-RI JV ( JVCA Partners [Business Share]: M/S. Raju Interna",
+   "sup": "SS-RI JV",
    "pkg": "",
    "crore": 5.262,
    "recv": 18,
@@ -9629,8 +9643,8 @@
   {
    "id": "124055",
    "org": "KDA",
-   "pe": "Office of the Project Director (KDA Rest",
-   "sup": "MSE-KCL (JV) ( JVCA Partners [Business Share]: M/S. SUMA ENG",
+   "pe": "Office of the Project Director (KDA Rest House Project-Khulna)",
+   "sup": "MSE-KCL (JV)",
    "pkg": "",
    "crore": 5.253,
    "recv": 3,
@@ -9675,7 +9689,7 @@
    "id": "848555",
    "org": "CDA",
    "pe": "Project Director (Loop Road)",
-   "sup": "SUNNY-RS-TML JV ( JVCA Partners [Business Share]: M/S Sunny ",
+   "sup": "SUNNY-RS-TML JV",
    "pkg": "",
    "crore": 5.113,
    "recv": 3,
@@ -9704,7 +9718,7 @@
   {
    "id": "146449",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sohel Engineering & Construction Ltd.",
    "pkg": "",
    "crore": 4.85,
@@ -9719,7 +9733,7 @@
   {
    "id": "174037",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Pacific Motors Limited",
    "pkg": "",
    "crore": 4.835,
@@ -9749,7 +9763,7 @@
   {
    "id": "125042",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Daffodil Electric Company",
    "pkg": "",
    "crore": 4.766,
@@ -9764,7 +9778,7 @@
   {
    "id": "125294",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Daffodil Electric Company",
    "pkg": "",
    "crore": 4.766,
@@ -9810,7 +9824,7 @@
    "id": "901824",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "SS-RI JV ( JVCA Partners [Business Share]: M/S. Raju Interna",
+   "sup": "SS-RI JV",
    "pkg": "",
    "crore": 4.394,
    "recv": 11,
@@ -9840,7 +9854,7 @@
    "id": "1069562",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "M/s. SS & MT (JV) ( JVCA Partners [Business Share]: Monir En",
+   "sup": "M/s. SS & MT (JV)",
    "pkg": "",
    "crore": 4.262,
    "recv": 3,
@@ -9854,8 +9868,8 @@
   {
    "id": "476407",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
-   "sup": "SA-TANNI-DAWN-JV ( JVCA Partners [Business Share]: M/S. Dawn",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
+   "sup": "SA-TANNI-DAWN-JV",
    "pkg": "",
    "crore": 4.244,
    "recv": 11,
@@ -9869,7 +9883,7 @@
   {
    "id": "1207634",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "SUNTECH ENERGY LTD.",
    "pkg": "",
    "crore": 4.239,
@@ -9885,7 +9899,7 @@
    "id": "935084",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "UCC-SC JV ( JVCA Partners [Business Share]: M/S Sunny Constr",
+   "sup": "UCC-SC JV",
    "pkg": "",
    "crore": 4.216,
    "recv": 3,
@@ -9899,7 +9913,7 @@
   {
    "id": "1152766",
    "org": "CoxDA",
-   "pe": "Office of the Project Director, CoxDA",
+   "pe": "Office of the Project Director, CoxDA Residential Flat Project-1",
    "sup": "M/S. Prominent Engineers",
    "pkg": "",
    "crore": 4.191,
@@ -9929,7 +9943,7 @@
   {
    "id": "1207636",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "HTMS Limited",
    "pkg": "",
    "crore": 4.149,
@@ -9945,7 +9959,7 @@
    "id": "935090",
    "org": "RAJUK",
    "pe": "Uttara Apartment Project",
-   "sup": "Nur Enterprise-Amin Trading Corporation JV ( JVCA Partners [",
+   "sup": "Nur Enterprise-Amin Trading Corporation JV",
    "pkg": "",
    "crore": 4.048,
    "recv": 3,
@@ -10019,7 +10033,7 @@
   {
    "id": "1207635",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "SUNTECH ENERGY LTD.",
    "pkg": "",
    "crore": 3.905,
@@ -10035,7 +10049,7 @@
    "id": "427863",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "MOZAHAR ENTERPRISE (PVT.) LTD. & M/S REZA ENTERPRISE-JV ( JV",
+   "sup": "MOZAHAR ENTERPRISE (PVT.) LTD. & M/S REZA ENTERPRISE-JV",
    "pkg": "",
    "crore": 3.899,
    "recv": 5,
@@ -10080,7 +10094,7 @@
    "id": "807903",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "M/S RAHMAN ENGINEERING - M/S TANNI ENTERPRISE (JV) ( JVCA Pa",
+   "sup": "M/S RAHMAN ENGINEERING - M/S TANNI ENTERPRISE (JV)",
    "pkg": "",
    "crore": 3.67,
    "recv": 8,
@@ -10124,7 +10138,7 @@
   {
    "id": "1044320",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "M/S. Niaz Traders",
    "pkg": "",
    "crore": 3.344,
@@ -10139,7 +10153,7 @@
   {
    "id": "1207637",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 3.316,
@@ -10169,7 +10183,7 @@
   {
    "id": "164878",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Pacific Motors Limited",
    "pkg": "",
    "crore": 3.284,
@@ -10199,8 +10213,8 @@
   {
    "id": "98112",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
-   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation J",
+   "pe": "Office of the Chief Engineer (Implementation)",
+   "sup": "M.A.H Construction Ltd,RAB-RC(PVT)Ltd and Dawn Corporation JV",
    "pkg": "",
    "crore": 3.169,
    "recv": 14,
@@ -10214,7 +10228,7 @@
   {
    "id": "936248",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 3.13,
@@ -10230,7 +10244,7 @@
    "id": "943936",
    "org": "CDA",
    "pe": "Project Director(CRBKRKBC)",
-   "sup": "RNYB Ltd. - Alif Enterprise JV. ( JVCA Partners [Business Sh",
+   "sup": "RNYB Ltd. - Alif Enterprise JV.",
    "pkg": "",
    "crore": 3.019,
    "recv": 1,
@@ -10244,7 +10258,7 @@
   {
    "id": "162060",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 2.937,
@@ -10260,7 +10274,7 @@
    "id": "615572",
    "org": "RAJUK",
    "pe": "Uttara 3rd Phase Project",
-   "sup": "M/S SHAFIQUE AND SONS - M/S. AMIN TRADING CORPORATION JV ( J",
+   "sup": "M/S SHAFIQUE AND SONS - M/S. AMIN TRADING CORPORATION JV",
    "pkg": "",
    "crore": 2.922,
    "recv": 8,
@@ -10275,7 +10289,7 @@
    "id": "505037",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "Mazid Sons - Sunny Construction JV ( JVCA Partners [Business",
+   "sup": "Mazid Sons - Sunny Construction JV",
    "pkg": "",
    "crore": 2.876,
    "recv": 8,
@@ -10319,7 +10333,7 @@
   {
    "id": "1062494",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 2.75,
@@ -10409,7 +10423,7 @@
   {
    "id": "149105",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Quality Powertec Engineering Ltd.",
    "pkg": "",
    "crore": 2.647,
@@ -10454,7 +10468,7 @@
   {
    "id": "667693",
    "org": "RAJUK",
-   "pe": "Gulshan-Banani-Baridhara Lake",
+   "pe": "Gulshan-Banani-Baridhara Lake Development Project",
    "sup": "Starlite Services Limited",
    "pkg": "",
    "crore": 2.597,
@@ -10484,7 +10498,7 @@
   {
    "id": "98617",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/s Manik & Brothers",
    "pkg": "",
    "crore": 2.59,
@@ -10634,7 +10648,7 @@
   {
    "id": "293018",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. Niaz Traders",
    "pkg": "",
    "crore": 2.528,
@@ -11039,7 +11053,7 @@
   {
    "id": "251224",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/s Shafique and Sons",
    "pkg": "",
    "crore": 1.846,
@@ -11069,7 +11083,7 @@
   {
    "id": "146376",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Dulal Enterprise (Pvt) Ltd.",
    "pkg": "",
    "crore": 1.831,
@@ -11085,7 +11099,7 @@
    "id": "1060890",
    "org": "RAJUK",
    "pe": "Purbachal New Town Project",
-   "sup": "KSBL-TSE JOINT VENTURE ( JVCA Partners [Business Share]: Kha",
+   "sup": "KSBL-TSE JOINT VENTURE",
    "pkg": "",
    "crore": 1.818,
    "recv": 10,
@@ -11114,7 +11128,7 @@
   {
    "id": "888738",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 1.788,
@@ -11189,7 +11203,7 @@
   {
    "id": "174720",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. A. R. Enterprise",
    "pkg": "",
    "crore": 1.663,
@@ -11204,7 +11218,7 @@
   {
    "id": "174705",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S Razin International",
    "pkg": "",
    "crore": 1.66,
@@ -11384,7 +11398,7 @@
   {
    "id": "1074002",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 1.42,
@@ -11399,7 +11413,7 @@
   {
    "id": "879523",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Rangpur Metal Industries Limited",
    "pkg": "",
    "crore": 1.406,
@@ -11414,7 +11428,7 @@
   {
    "id": "737121",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 1.405,
@@ -11429,7 +11443,7 @@
   {
    "id": "174700",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Domestic Power & Engineering",
    "pkg": "",
    "crore": 1.395,
@@ -11444,7 +11458,7 @@
   {
    "id": "174710",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S Britto Construction",
    "pkg": "",
    "crore": 1.386,
@@ -11489,7 +11503,7 @@
   {
    "id": "1058291",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "WALTON HI-TECH INDUSTRIES PLC.",
    "pkg": "",
    "crore": 1.335,
@@ -11504,7 +11518,7 @@
   {
    "id": "149115",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Brothers Construction",
    "pkg": "",
    "crore": 1.328,
@@ -11519,7 +11533,7 @@
   {
    "id": "149117",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Brothers Construction",
    "pkg": "",
    "crore": 1.328,
@@ -11534,7 +11548,7 @@
   {
    "id": "149118",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Brothers Construction",
    "pkg": "",
    "crore": 1.328,
@@ -11549,7 +11563,7 @@
   {
    "id": "178196",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Smart Technologies (BD) Ltd.",
    "pkg": "",
    "crore": 1.325,
@@ -11624,7 +11638,7 @@
   {
    "id": "851865",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "M/S. Shah Jabbaria Construction & Co.",
    "pkg": "",
    "crore": 1.281,
@@ -11669,7 +11683,7 @@
   {
    "id": "151177",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Rafiq Construction Co. (Pvt.) Ltd.",
    "pkg": "",
    "crore": 1.256,
@@ -11684,7 +11698,7 @@
   {
    "id": "851864",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "M/S. Nice Enterprise",
    "pkg": "",
    "crore": 1.24,
@@ -11699,8 +11713,8 @@
   {
    "id": "162590",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
-   "sup": "Fire Trade - M/s Khandaker Shahin Ahmed JV ( JVCA Partners [",
+   "pe": "office of the Chief Engineer ( Project & Design)",
+   "sup": "Fire Trade - M/s Khandaker Shahin Ahmed JV",
    "pkg": "",
    "crore": 1.229,
    "recv": 3,
@@ -11729,7 +11743,7 @@
   {
    "id": "1023333",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "M/S. Amanat Enterprise",
    "pkg": "",
    "crore": 1.173,
@@ -11759,7 +11773,7 @@
   {
    "id": "969450",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "MEP ENGINEERING POINT",
    "pkg": "",
    "crore": 1.139,
@@ -11789,7 +11803,7 @@
   {
    "id": "251227",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. A. R. Enterprise",
    "pkg": "",
    "crore": 1.106,
@@ -11804,7 +11818,7 @@
   {
    "id": "1083760",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 1.091,
@@ -11819,7 +11833,7 @@
   {
    "id": "1152671",
    "org": "CoxDA",
-   "pe": "Office of the Project Director, CoxDA",
+   "pe": "Office of the Project Director, CoxDA Residential Flat Project-1",
    "sup": "Sumon Enterprise",
    "pkg": "",
    "crore": 1.071,
@@ -11834,7 +11848,7 @@
   {
    "id": "1152584",
    "org": "CoxDA",
-   "pe": "Office of the Project Director, CoxDA",
+   "pe": "Office of the Project Director, CoxDA Residential Flat Project-1",
    "sup": "Charm Limited",
    "pkg": "",
    "crore": 1.065,
@@ -11864,7 +11878,7 @@
   {
    "id": "832064",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Star Tech & Engineering Ltd.",
    "pkg": "",
    "crore": 1.054,
@@ -11954,7 +11968,7 @@
   {
    "id": "969481",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Creatus Computer",
    "pkg": "",
    "crore": 0.986,
@@ -11969,7 +11983,7 @@
   {
    "id": "339042",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S Razin International",
    "pkg": "",
    "crore": 0.963,
@@ -12014,7 +12028,7 @@
   {
    "id": "199942",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Hatil Complex Ltd",
    "pkg": "",
    "crore": 0.927,
@@ -12029,7 +12043,7 @@
   {
    "id": "146377",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Dulal Enterprise (Pvt) Ltd.",
    "pkg": "",
    "crore": 0.922,
@@ -12044,7 +12058,7 @@
   {
    "id": "146380",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Dulal Enterprise (Pvt) Ltd.",
    "pkg": "",
    "crore": 0.922,
@@ -12074,7 +12088,7 @@
   {
    "id": "146381",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Dulal Enterprise (Pvt) Ltd.",
    "pkg": "",
    "crore": 0.916,
@@ -12089,7 +12103,7 @@
   {
    "id": "237820",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "MEP ENGINEERING POINT",
    "pkg": "",
    "crore": 0.912,
@@ -12119,7 +12133,7 @@
   {
    "id": "1117569",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "KHAN BROTHERS ENERGY CONSORTIUM",
    "pkg": "",
    "crore": 0.897,
@@ -12134,7 +12148,7 @@
   {
    "id": "647622",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "Volume - 11",
    "pkg": "",
    "crore": 0.896,
@@ -12149,7 +12163,7 @@
   {
    "id": "948448",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "S.M.S. SYSTEMS",
    "pkg": "",
    "crore": 0.887,
@@ -12164,7 +12178,7 @@
   {
    "id": "1186178",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S. Sharif & Sons",
    "pkg": "",
    "crore": 0.884,
@@ -12194,7 +12208,7 @@
   {
    "id": "971997",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "Icon Developments & Holdings Ltd",
    "pkg": "",
    "crore": 0.874,
@@ -12209,7 +12223,7 @@
   {
    "id": "1082896",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 0.873,
@@ -12254,7 +12268,7 @@
   {
    "id": "174712",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "MOZAHAR ENTERPRISE (PVT.) LTD.",
    "pkg": "",
    "crore": 0.853,
@@ -12269,7 +12283,7 @@
   {
    "id": "591374",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/S Mirza Construction",
    "pkg": "",
    "crore": 0.846,
@@ -12284,7 +12298,7 @@
   {
    "id": "591591",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 0.839,
@@ -12344,7 +12358,7 @@
   {
    "id": "202993",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S Udayan Builders",
    "pkg": "",
    "crore": 0.815,
@@ -12374,7 +12388,7 @@
   {
    "id": "969489",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Creatus Computer",
    "pkg": "",
    "crore": 0.748,
@@ -12389,7 +12403,7 @@
   {
    "id": "591741",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/S Mirza Construction",
    "pkg": "",
    "crore": 0.748,
@@ -12404,7 +12418,7 @@
   {
    "id": "494177",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "M/S. FORMILA AKTER",
    "pkg": "",
    "crore": 0.741,
@@ -12449,7 +12463,7 @@
   {
    "id": "828053",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.72,
@@ -12479,7 +12493,7 @@
   {
    "id": "1058290",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "Gess Bangladesh",
    "pkg": "",
    "crore": 0.705,
@@ -12539,7 +12553,7 @@
   {
    "id": "1058292",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "Gess Bangladesh",
    "pkg": "",
    "crore": 0.659,
@@ -12554,7 +12568,7 @@
   {
    "id": "980099",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.656,
@@ -12569,7 +12583,7 @@
   {
    "id": "1186179",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.649,
@@ -12584,7 +12598,7 @@
   {
    "id": "427350",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Optimal Technology (Pvt. ) Ltd.",
    "pkg": "",
    "crore": 0.649,
@@ -12599,7 +12613,7 @@
   {
    "id": "1058293",
    "org": "RAJUK",
-   "pe": "Development of Residential and",
+   "pe": "Development of Residential and commercial Infrastructure at Jhilmil Residential Project Area",
    "sup": "WALTON HI-TECH INDUSTRIES PLC.",
    "pkg": "",
    "crore": 0.635,
@@ -12614,7 +12628,7 @@
   {
    "id": "736874",
    "org": "CDA",
-   "pe": "Project Director(KK Newaz), Chittagong",
+   "pe": "Project Director(KK Newaz), Chittagong Development Authority",
    "sup": "Power Net Enterprise",
    "pkg": "",
    "crore": 0.63,
@@ -12644,7 +12658,7 @@
   {
    "id": "639927",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.613,
@@ -12659,7 +12673,7 @@
   {
    "id": "1014738",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Raj Development Construction",
    "pkg": "",
    "crore": 0.601,
@@ -12689,7 +12703,7 @@
   {
    "id": "214275",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "CONVOY SERVICE",
    "pkg": "",
    "crore": 0.591,
@@ -12704,7 +12718,7 @@
   {
    "id": "909196",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "MS TECHNOLOGIES LIMITED",
    "pkg": "",
    "crore": 0.59,
@@ -12719,7 +12733,7 @@
   {
    "id": "614376",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/s J S Enterprise",
    "pkg": "",
    "crore": 0.582,
@@ -12734,7 +12748,7 @@
   {
    "id": "174670",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.577,
@@ -12749,7 +12763,7 @@
   {
    "id": "174671",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.577,
@@ -12764,7 +12778,7 @@
   {
    "id": "174673",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.577,
@@ -12779,7 +12793,7 @@
   {
    "id": "174674",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.577,
@@ -12794,7 +12808,7 @@
   {
    "id": "174678",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.577,
@@ -12809,7 +12823,7 @@
   {
    "id": "174680",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.576,
@@ -12959,7 +12973,7 @@
   {
    "id": "1008472",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.526,
@@ -12974,7 +12988,7 @@
   {
    "id": "1205157",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Hazi Traders",
    "pkg": "",
    "crore": 0.518,
@@ -12989,7 +13003,7 @@
   {
    "id": "1056195",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Sohel Engineering & Construction Ltd.",
    "pkg": "",
    "crore": 0.51,
@@ -13019,7 +13033,7 @@
   {
    "id": "174677",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Superstar Renweable Energy Ltd (SSG Solar)",
    "pkg": "",
    "crore": 0.506,
@@ -13034,7 +13048,7 @@
   {
    "id": "936227",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 0.496,
@@ -13124,7 +13138,7 @@
   {
    "id": "398199",
    "org": "CDA",
-   "pe": "Electrical & Mechanical Engineering",
+   "pe": "Electrical & Mechanical Engineering (EME)",
    "sup": "M/s Anas Trading International",
    "pkg": "",
    "crore": 0.479,
@@ -13154,7 +13168,7 @@
   {
    "id": "583663",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "MECO INTERNATIONAL",
    "pkg": "",
    "crore": 0.471,
@@ -13184,7 +13198,7 @@
   {
    "id": "1037582",
    "org": "KDA",
-   "pe": "Office of the Project Director (KDA Bus",
+   "pe": "Office of the Project Director (KDA Bus Terminal)",
    "sup": "S.A Enterprise",
    "pkg": "",
    "crore": 0.47,
@@ -13214,7 +13228,7 @@
   {
    "id": "113428",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "GUARD FORCE SERVICES & HUMAN RESOURCE",
    "pkg": "",
    "crore": 0.458,
@@ -13229,7 +13243,7 @@
   {
    "id": "1135936",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "TECHNO SOLUTION",
    "pkg": "",
    "crore": 0.452,
@@ -13244,7 +13258,7 @@
   {
    "id": "189828",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. Alam & Co.",
    "pkg": "",
    "crore": 0.451,
@@ -13274,7 +13288,7 @@
   {
    "id": "614373",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 0.45,
@@ -13319,7 +13333,7 @@
   {
    "id": "1140010",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "M/S. Mehezabin Enterprise",
    "pkg": "",
    "crore": 0.447,
@@ -13334,7 +13348,7 @@
   {
    "id": "1031800",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 0.447,
@@ -13349,7 +13363,7 @@
   {
    "id": "865569",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/s. Bhuiyan Traders",
    "pkg": "",
    "crore": 0.44,
@@ -13364,7 +13378,7 @@
   {
    "id": "409461",
    "org": "CDA",
-   "pe": "Electrical & Mechanical Engineering",
+   "pe": "Electrical & Mechanical Engineering (EME)",
    "sup": "Dulal Enterprise (Pvt) Ltd.",
    "pkg": "",
    "crore": 0.44,
@@ -13394,7 +13408,7 @@
   {
    "id": "1081271",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "PROPERTY DEVELOPMENT LIMITED",
    "pkg": "",
    "crore": 0.432,
@@ -13409,7 +13423,7 @@
   {
    "id": "1109365",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Sohel Engineering & Construction Ltd.",
    "pkg": "",
    "crore": 0.43,
@@ -13454,7 +13468,7 @@
   {
    "id": "683811",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S Hasan & Brothers",
    "pkg": "",
    "crore": 0.428,
@@ -13469,7 +13483,7 @@
   {
    "id": "517916",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.427,
@@ -13499,7 +13513,7 @@
   {
    "id": "592175",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 0.42,
@@ -13529,7 +13543,7 @@
   {
    "id": "174717",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "Unity Builders & Engineering",
    "pkg": "",
    "crore": 0.418,
@@ -13559,7 +13573,7 @@
   {
    "id": "936176",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Optimal Technology (Pvt. ) Ltd.",
    "pkg": "",
    "crore": 0.416,
@@ -13574,7 +13588,7 @@
   {
    "id": "564502",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "Smart Technologies (BD) Ltd.",
    "pkg": "",
    "crore": 0.409,
@@ -13619,7 +13633,7 @@
   {
    "id": "42800",
    "org": "Local Governme",
-   "pe": "Office of the Executive Engineer, LGED,",
+   "pe": "Office of the Executive Engineer, LGED, Chittagong",
    "sup": "M/S. Al-Arif Enterprise",
    "pkg": "",
    "crore": 0.392,
@@ -13679,7 +13693,7 @@
   {
    "id": "980083",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Mirza Construction",
    "pkg": "",
    "crore": 0.372,
@@ -13694,7 +13708,7 @@
   {
    "id": "616340",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Gulzar Trading",
    "pkg": "",
    "crore": 0.365,
@@ -13739,7 +13753,7 @@
   {
    "id": "1205116",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Furniture Concept & Interior Ltd.",
    "pkg": "",
    "crore": 0.36,
@@ -13769,7 +13783,7 @@
   {
    "id": "111480",
    "org": "Local Governme",
-   "pe": "Office of the Executive Engineer, LGED,",
+   "pe": "Office of the Executive Engineer, LGED, Satkhira",
    "sup": "Md Rafiqul Islam.",
    "pkg": "",
    "crore": 0.356,
@@ -13874,7 +13888,7 @@
   {
    "id": "824096",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "M/s.Suraim Enterprise",
    "pkg": "",
    "crore": 0.339,
@@ -13889,7 +13903,7 @@
   {
    "id": "199368",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.335,
@@ -13904,7 +13918,7 @@
   {
    "id": "631780",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Nice Enterprise",
    "pkg": "",
    "crore": 0.33,
@@ -13919,7 +13933,7 @@
   {
    "id": "144571",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/s. Halim Enterprise.",
    "pkg": "",
    "crore": 0.324,
@@ -13934,7 +13948,7 @@
   {
    "id": "1215675",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Cooltech Corporation",
    "pkg": "",
    "crore": 0.315,
@@ -13964,7 +13978,7 @@
   {
    "id": "622539",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.31,
@@ -14039,7 +14053,7 @@
   {
    "id": "667218",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. A. F. C.",
    "pkg": "",
    "crore": 0.302,
@@ -14054,7 +14068,7 @@
   {
    "id": "1146506",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.3,
@@ -14084,7 +14098,7 @@
   {
    "id": "236242",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14099,7 +14113,7 @@
   {
    "id": "248616",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14114,7 +14128,7 @@
   {
    "id": "248617",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14129,7 +14143,7 @@
   {
    "id": "248618",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14144,7 +14158,7 @@
   {
    "id": "248619",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14159,7 +14173,7 @@
   {
    "id": "248621",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14174,7 +14188,7 @@
   {
    "id": "248622",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.299,
@@ -14204,7 +14218,7 @@
   {
    "id": "637086",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "Trade Spin",
    "pkg": "",
    "crore": 0.293,
@@ -14219,7 +14233,7 @@
   {
    "id": "1031714",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Concept Elevators & Engineering Ltd.",
    "pkg": "",
    "crore": 0.29,
@@ -14234,7 +14248,7 @@
   {
    "id": "948446",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.29,
@@ -14249,7 +14263,7 @@
   {
    "id": "198193",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Sherpa Power Engineering Ltd.",
    "pkg": "",
    "crore": 0.29,
@@ -14294,7 +14308,7 @@
   {
    "id": "670154",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Nice Enterprise",
    "pkg": "",
    "crore": 0.278,
@@ -14309,7 +14323,7 @@
   {
    "id": "89768",
    "org": "Department of ",
-   "pe": "Office of the Executive Engineer DPHE,",
+   "pe": "Office of the Executive Engineer DPHE, Lakshmipur",
    "sup": "M/S. Mukta Enterprise",
    "pkg": "",
    "crore": 0.273,
@@ -14324,7 +14338,7 @@
   {
    "id": "851863",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "M/S. Khan Corporation",
    "pkg": "",
    "crore": 0.271,
@@ -14339,7 +14353,7 @@
   {
    "id": "1074661",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "NATIONAL DEVELOPMENT ENGINEERS LTD.",
    "pkg": "",
    "crore": 0.269,
@@ -14369,7 +14383,7 @@
   {
    "id": "640368",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S Hasan & Brothers",
    "pkg": "",
    "crore": 0.268,
@@ -14429,7 +14443,7 @@
   {
    "id": "909179",
    "org": "CDA",
-   "pe": "Construction Division-1, Chattogram",
+   "pe": "Construction Division-1, Chattogram Development Authority",
    "sup": "MS TECHNOLOGIES LIMITED",
    "pkg": "",
    "crore": 0.264,
@@ -14459,7 +14473,7 @@
   {
    "id": "669414",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Gulzar Trading",
    "pkg": "",
    "crore": 0.261,
@@ -14504,7 +14518,7 @@
   {
    "id": "159826",
    "org": "Local Governme",
-   "pe": "Office of the Executive Engineer, LGED,",
+   "pe": "Office of the Executive Engineer, LGED, Pabna",
    "sup": "M/S. SHAFIQUE TRADERS",
    "pkg": "",
    "crore": 0.258,
@@ -14519,7 +14533,7 @@
   {
    "id": "1140011",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "M/S. Mehezabin Enterprise",
    "pkg": "",
    "crore": 0.254,
@@ -14534,7 +14548,7 @@
   {
    "id": "1030720",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.254,
@@ -14549,7 +14563,7 @@
   {
    "id": "969822",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S. Maliha Enterprise",
    "pkg": "",
    "crore": 0.253,
@@ -14564,7 +14578,7 @@
   {
    "id": "936225",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.252,
@@ -14594,7 +14608,7 @@
   {
    "id": "980096",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.25,
@@ -14624,7 +14638,7 @@
   {
    "id": "214247",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. A. R. Enterprise",
    "pkg": "",
    "crore": 0.244,
@@ -14654,7 +14668,7 @@
   {
    "id": "475789",
    "org": "RAJUK",
-   "pe": "Office of the Project Director, Urban",
+   "pe": "Office of the Project Director, Urban Resilience Project-RAJUK Part,RAJUK,Dhaka",
    "sup": "RANCON MOTOR BIKES LIMITED",
    "pkg": "",
    "crore": 0.24,
@@ -14684,7 +14698,7 @@
   {
    "id": "891746",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.239,
@@ -14699,7 +14713,7 @@
   {
    "id": "644083",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Gulzar Trading",
    "pkg": "",
    "crore": 0.238,
@@ -14714,7 +14728,7 @@
   {
    "id": "840372",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. J.J. Traders",
    "pkg": "",
    "crore": 0.232,
@@ -14759,7 +14773,7 @@
   {
    "id": "1251756",
    "org": "Gazipur Develo",
-   "pe": "Office of the Chief Engineer, Gazipur",
+   "pe": "Office of the Chief Engineer, Gazipur Development Authority",
    "sup": "CAR RENT. COM BD",
    "pkg": "",
    "crore": 0.229,
@@ -14774,7 +14788,7 @@
   {
    "id": "171570",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S Nur Enterprise",
    "pkg": "",
    "crore": 0.228,
@@ -14894,7 +14908,7 @@
   {
    "id": "119545",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S. A. R. Enterprise",
    "pkg": "",
    "crore": 0.224,
@@ -14909,7 +14923,7 @@
   {
    "id": "629331",
    "org": "CDA",
-   "pe": "Electrical & Mechanical Engineering",
+   "pe": "Electrical & Mechanical Engineering (EME)",
    "sup": "Power Net Enterprise",
    "pkg": "",
    "crore": 0.223,
@@ -14924,7 +14938,7 @@
   {
    "id": "1097226",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.223,
@@ -14939,7 +14953,7 @@
   {
    "id": "1253316",
    "org": "Gazipur Develo",
-   "pe": "Planning Section, Gazipur Development",
+   "pe": "Planning Section, Gazipur Development Authority",
    "sup": "Creative Engineering & Technology",
    "pkg": "",
    "crore": 0.215,
@@ -14969,7 +14983,7 @@
   {
    "id": "888828",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Daffodil Electric Company",
    "pkg": "",
    "crore": 0.213,
@@ -15044,7 +15058,7 @@
   {
    "id": "598954",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Gulzar Trading",
    "pkg": "",
    "crore": 0.2,
@@ -15149,7 +15163,7 @@
   {
    "id": "1147755",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.191,
@@ -15194,7 +15208,7 @@
   {
    "id": "1128572",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Haroon & Brothers",
    "pkg": "",
    "crore": 0.188,
@@ -15224,7 +15238,7 @@
   {
    "id": "948435",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.188,
@@ -15239,7 +15253,7 @@
   {
    "id": "945416",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Gulzar Trading",
    "pkg": "",
    "crore": 0.187,
@@ -15254,7 +15268,7 @@
   {
    "id": "842165",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "Gess Bangladesh",
    "pkg": "",
    "crore": 0.184,
@@ -15359,7 +15373,7 @@
   {
    "id": "1215677",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "AAYAT ENTERPRISE",
    "pkg": "",
    "crore": 0.174,
@@ -15434,7 +15448,7 @@
   {
    "id": "1002854",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "PROPERTY DEVELOPMENT LIMITED",
    "pkg": "",
    "crore": 0.17,
@@ -15494,7 +15508,7 @@
   {
    "id": "536846",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.163,
@@ -15509,7 +15523,7 @@
   {
    "id": "1173557",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/S. Alam & Co.",
    "pkg": "",
    "crore": 0.162,
@@ -15539,7 +15553,7 @@
   {
    "id": "1251766",
    "org": "Gazipur Develo",
-   "pe": "Office of the Chief Engineer, Gazipur",
+   "pe": "Office of the Chief Engineer, Gazipur Development Authority",
    "sup": "GREONY CORPORATION",
    "pkg": "",
    "crore": 0.159,
@@ -15554,7 +15568,7 @@
   {
    "id": "276518",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Mitu Printing Press & Packaging",
    "pkg": "",
    "crore": 0.159,
@@ -15614,7 +15628,7 @@
   {
    "id": "706666",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S. Bangladesh Computer Land",
    "pkg": "",
    "crore": 0.152,
@@ -15629,7 +15643,7 @@
   {
    "id": "18994",
    "org": "RAJUK",
-   "pe": "office of Chief Engineer ( Project &",
+   "pe": "office of Chief Engineer ( Project & Design)",
    "sup": "ConnectBD Limited",
    "pkg": "",
    "crore": 0.151,
@@ -15659,7 +15673,7 @@
   {
    "id": "236241",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.149,
@@ -15674,7 +15688,7 @@
   {
    "id": "248623",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.149,
@@ -15689,7 +15703,7 @@
   {
    "id": "248625",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.149,
@@ -15704,7 +15718,7 @@
   {
    "id": "248631",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.149,
@@ -15719,7 +15733,7 @@
   {
    "id": "248633",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Sany Construction",
    "pkg": "",
    "crore": 0.149,
@@ -15764,7 +15778,7 @@
   {
    "id": "1253428",
    "org": "Gazipur Develo",
-   "pe": "Office of the Member,Administration and",
+   "pe": "Office of the Member,Administration and Finance Department, Gazipur Development Authority",
    "sup": "Creative Engineering & Technology",
    "pkg": "",
    "crore": 0.147,
@@ -15779,7 +15793,7 @@
   {
    "id": "1138415",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/S MEHNUR TRADERS",
    "pkg": "",
    "crore": 0.146,
@@ -15884,7 +15898,7 @@
   {
    "id": "169223",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Silver Sun Electronics",
    "pkg": "",
    "crore": 0.143,
@@ -15914,7 +15928,7 @@
   {
    "id": "119636",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Chanderima Refrigeration",
    "pkg": "",
    "crore": 0.138,
@@ -15959,7 +15973,7 @@
   {
    "id": "1077063",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Otobi Limited",
    "pkg": "",
    "crore": 0.137,
@@ -15974,7 +15988,7 @@
   {
    "id": "168749",
    "org": "Local Governme",
-   "pe": "Office of the Executive Engineer, LGED,",
+   "pe": "Office of the Executive Engineer, LGED, Barisal",
    "sup": "M/S Oshin Enterprise",
    "pkg": "",
    "crore": 0.137,
@@ -16064,7 +16078,7 @@
   {
    "id": "685885",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S Sunny Construction",
    "pkg": "",
    "crore": 0.132,
@@ -16079,7 +16093,7 @@
   {
    "id": "1146509",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Optimal Technology (Pvt. ) Ltd.",
    "pkg": "",
    "crore": 0.131,
@@ -16094,7 +16108,7 @@
   {
    "id": "1146510",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.13,
@@ -16109,7 +16123,7 @@
   {
    "id": "1001461",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.13,
@@ -16124,7 +16138,7 @@
   {
    "id": "622586",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.128,
@@ -16154,7 +16168,7 @@
   {
    "id": "945875",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "The Gausia Metalic Products",
    "pkg": "",
    "crore": 0.126,
@@ -16214,7 +16228,7 @@
   {
    "id": "329552",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S Techno Trade International",
    "pkg": "",
    "crore": 0.125,
@@ -16229,7 +16243,7 @@
   {
    "id": "329553",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S Techno Trade International",
    "pkg": "",
    "crore": 0.125,
@@ -16289,7 +16303,7 @@
   {
    "id": "1272697",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.117,
@@ -16334,7 +16348,7 @@
   {
    "id": "1189629",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.115,
@@ -16349,7 +16363,7 @@
   {
    "id": "329556",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S Techno Trade International",
    "pkg": "",
    "crore": 0.115,
@@ -16364,7 +16378,7 @@
   {
    "id": "1146511",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.112,
@@ -16394,7 +16408,7 @@
   {
    "id": "329551",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/s. Halim Enterprise.",
    "pkg": "",
    "crore": 0.111,
@@ -16409,7 +16423,7 @@
   {
    "id": "214561",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/s. Halim Enterprise.",
    "pkg": "",
    "crore": 0.11,
@@ -16439,7 +16453,7 @@
   {
    "id": "1001460",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.106,
@@ -16544,7 +16558,7 @@
   {
    "id": "622637",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Silver Sun Electronics",
    "pkg": "",
    "crore": 0.097,
@@ -16589,7 +16603,7 @@
   {
    "id": "609656",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/s Anas Trading International",
    "pkg": "",
    "crore": 0.095,
@@ -16664,7 +16678,7 @@
   {
    "id": "1002814",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Powercell Engineering Ltd",
    "pkg": "",
    "crore": 0.091,
@@ -16724,7 +16738,7 @@
   {
    "id": "376450",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.087,
@@ -16754,7 +16768,7 @@
   {
    "id": "887587",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.084,
@@ -16769,7 +16783,7 @@
   {
    "id": "887589",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "M/S. Maliha Enterprise",
    "pkg": "",
    "crore": 0.084,
@@ -16784,7 +16798,7 @@
   {
    "id": "608964",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/s Anas Trading International",
    "pkg": "",
    "crore": 0.084,
@@ -16814,7 +16828,7 @@
   {
    "id": "887588",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 0.083,
@@ -16829,7 +16843,7 @@
   {
    "id": "756104",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.083,
@@ -16844,7 +16858,7 @@
   {
    "id": "980158",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.082,
@@ -16859,7 +16873,7 @@
   {
    "id": "134910",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S. Maliha Enterprise",
    "pkg": "",
    "crore": 0.081,
@@ -16889,7 +16903,7 @@
   {
    "id": "747343",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 0.08,
@@ -16919,7 +16933,7 @@
   {
    "id": "773275",
    "org": "CDA",
-   "pe": "Project Director(M.Uddin), Chittagong",
+   "pe": "Project Director(M.Uddin), Chittagong Development Authority",
    "sup": "M/S. Nice Enterprise",
    "pkg": "",
    "crore": 0.078,
@@ -16949,7 +16963,7 @@
   {
    "id": "1261854",
    "org": "Gazipur Develo",
-   "pe": "Office of the Chief Engineer, Gazipur",
+   "pe": "Office of the Chief Engineer, Gazipur Development Authority",
    "sup": "BROTHER'S SECURITY & SUPPLY CHAIN",
    "pkg": "",
    "crore": 0.078,
@@ -16994,7 +17008,7 @@
   {
    "id": "755274",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.075,
@@ -17009,7 +17023,7 @@
   {
    "id": "1097756",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "Aliza Enterprise",
    "pkg": "",
    "crore": 0.074,
@@ -17024,7 +17038,7 @@
   {
    "id": "251218",
    "org": "RAJUK",
-   "pe": "Office of the Chief Engineer",
+   "pe": "Office of the Chief Engineer (Implementation)",
    "sup": "M/S Techno Trade International",
    "pkg": "",
    "crore": 0.074,
@@ -17039,7 +17053,7 @@
   {
    "id": "1261983",
    "org": "Gazipur Develo",
-   "pe": "Planning Section, Gazipur Development",
+   "pe": "Planning Section, Gazipur Development Authority",
    "sup": "BROTHER'S SECURITY & SUPPLY CHAIN",
    "pkg": "",
    "crore": 0.073,
@@ -17054,7 +17068,7 @@
   {
    "id": "938968",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "MULTITRADE INTERNATIONAL",
    "pkg": "",
    "crore": 0.073,
@@ -17084,7 +17098,7 @@
   {
    "id": "1059690",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.07,
@@ -17114,7 +17128,7 @@
   {
    "id": "1205153",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "M/S. Bangladesh Computer Land",
    "pkg": "",
    "crore": 0.068,
@@ -17144,7 +17158,7 @@
   {
    "id": "755479",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Mechanical)",
    "sup": "M/S. Maliha Enterprise",
    "pkg": "",
    "crore": 0.065,
@@ -17174,7 +17188,7 @@
   {
    "id": "1262256",
    "org": "Gazipur Develo",
-   "pe": "Office of the Member,Administration and",
+   "pe": "Office of the Member,Administration and Finance Department, Gazipur Development Authority",
    "sup": "BROTHER'S SECURITY & SUPPLY CHAIN",
    "pkg": "",
    "crore": 0.061,
@@ -17234,7 +17248,7 @@
   {
    "id": "316510",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S TANIN ENTERPRISE",
    "pkg": "",
    "crore": 0.057,
@@ -17249,7 +17263,7 @@
   {
    "id": "536842",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.052,
@@ -17264,7 +17278,7 @@
   {
    "id": "294444",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "M/S Howlader Trading International",
    "pkg": "",
    "crore": 0.05,
@@ -17279,7 +17293,7 @@
   {
    "id": "1205162",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.049,
@@ -17384,7 +17398,7 @@
   {
    "id": "294388",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "T.S Enterprise",
    "pkg": "",
    "crore": 0.043,
@@ -17399,7 +17413,7 @@
   {
    "id": "1205154",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "MAAN BANGLADESH LTD.",
    "pkg": "",
    "crore": 0.041,
@@ -17414,7 +17428,7 @@
   {
    "id": "1083479",
    "org": "RAJUK",
-   "pe": "Office of the Superintending Engineer",
+   "pe": "Office of the Superintending Engineer (Electrical)",
    "sup": "DAFFODIL ELECTRIC COMPANY LIMITED",
    "pkg": "",
    "crore": 0.04,
@@ -17444,7 +17458,7 @@
   {
    "id": "260513",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Silver Sun Electronics",
    "pkg": "",
    "crore": 0.038,
@@ -17459,7 +17473,7 @@
   {
    "id": "590111",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/s Anas Trading International",
    "pkg": "",
    "crore": 0.037,
@@ -17489,7 +17503,7 @@
   {
    "id": "1257073",
    "org": "Gazipur Develo",
-   "pe": "Admin and Finance Section, Gazipur",
+   "pe": "Admin and Finance Section, Gazipur Development Authority",
    "sup": "FURNITURE SOLUTION & INTERIOR",
    "pkg": "",
    "crore": 0.031,
@@ -17504,7 +17518,7 @@
   {
    "id": "615021",
    "org": "RAJUK",
-   "pe": "Construction of multi-storied apartment",
+   "pe": "Construction of multi-storied apartment Buildings on 9(Nine) nos abandoned plot at Gulshan,Mohammadpur, Lalmatia & Dhanmondi, Dhaka.",
    "sup": "M/s Anas Trading International",
    "pkg": "",
    "crore": 0.03,
@@ -17609,7 +17623,7 @@
   {
    "id": "260451",
    "org": "RAJUK",
-   "pe": "office of the Chief Engineer ( Project &",
+   "pe": "office of the Chief Engineer ( Project & Design)",
    "sup": "Silver Sun Electronics",
    "pkg": "",
    "crore": 0.02,
@@ -17780,5 +17794,6 @@
    "a": "DAFFODIL ELECTRIC COMPANY LIMITED",
    "b": "Daffodil Electric Company"
   }
- ]
+ ],
+ "names_repaired_from": "pdf_derived.json — the register truncates Procuring_Entity_Name (271 rows), Supplier_Name (49), Organization_Agency (7) and the officer designation (3) at about 40 characters; every name here is the one printed on the government's own notice, and §07's office-level figures are grouped on those full names. See repair_names.py."
 }
