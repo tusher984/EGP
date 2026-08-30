@@ -1267,6 +1267,11 @@ function idLinks(ids){
   }).join(' ');
 }
 /* ---- contractor × office heatmap ---- */
+/* Not currently mounted. §07 renders the matrix through ntrg('matrix') from the
+   graphics bundle instead, so this native table is a second, unrendered copy of the
+   same figure. It is kept because it is the accessible table view of the heatmap and
+   is the fallback if the bundle is ever dropped — but nothing here reaches the page,
+   so do not treat editing it as editing §07. Verified unreferenced 2026-08-30. */
 function heatmap(){
   var m=D.matrix, max=m.max;
   var head='<tr><th></th>'+m.cols.map(function(c){

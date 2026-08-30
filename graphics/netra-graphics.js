@@ -234,8 +234,12 @@
     'contractor-value': {
       title: T('Award value concentrates in a handful of firms',
         'কার্যাদেশের অর্থমূল্য কয়েকটি প্রতিষ্ঠানে কেন্দ্রীভূত'),
-      dek: T('The fourteen firms with the largest award value, against every other supplier combined.',
-        'সর্বোচ্চ কার্যাদেশ-মূল্যের চৌদ্দটি প্রতিষ্ঠান, বাকি সব সরবরাহকারীর সম্মিলিত মূল্যের বিপরীতে।')
+      /* How many firms get named is build_graphics_data.py's decision, so the count is
+         read off the payload rather than spelled out here — a word cannot follow a slice. */
+      dek: T('The ' + D.contractorValue.named.length +
+          ' firms with the largest award value, against every other supplier combined.',
+        'সর্বোচ্চ কার্যাদেশ-মূল্যের ' + bnDigits(D.contractorValue.named.length) +
+          'টি প্রতিষ্ঠান, বাকি সব সরবরাহকারীর সম্মিলিত মূল্যের বিপরীতে।')
     },
     'contractor-count': {
       title: T('The most frequent award winners',
