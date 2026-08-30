@@ -138,7 +138,7 @@
                         <span class="bg-red-900/40 text-red-400 border border-red-800 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black"><i class="fa-solid fa-cloud-arrow-down"></i> Auto-Save Active</span>
                     </h1>
                     <p class="text-[11px] text-slate-400 mt-1 flex items-center gap-2">
-                        ১৮টি ফরেনসিক রুলস দিয়ে জালিয়াতি শনাক্তকরণ 
+                        ১৮টি ফরেনসিক রুলস দিয়ে সন্দেহজনক লক্ষণ শনাক্তকরণ 
                         <span class="text-emerald-400 font-bold ml-2">● <span id="headerTenderCount">0</span> টি দরপত্র লোড হয়েছে</span>
                     </p>
                 </div>
@@ -478,7 +478,7 @@
                                     <i class="fa-solid fa-shield-check text-emerald-400"></i> ক্লিন সেভ করুন
                                 </button>
                                 <button onclick="saveAuditLog('Verified - Fraud Risk')" class="flex-1 bg-red-600/20 border border-red-500/50 hover:bg-red-600 hover:text-white text-red-400 font-black py-3 rounded-lg shadow-lg transition text-xs flex justify-center items-center gap-2 cursor-pointer">
-                                    <i class="fa-solid fa-triangle-exclamation"></i> জালিয়াতি নিশ্চিত করুন
+                                    <i class="fa-solid fa-triangle-exclamation"></i> ঝুঁকি চিহ্নিত করে সেভ করুন
                                 </button>
                             </div>
                         </div>
@@ -769,6 +769,7 @@
             db: 'Procurement_Database.json',
             text: 'pdf_text_cache.json',       // 1,800 pre-extracted PDF texts
             manifest: 'pdf_manifest.json',     // a static host has no directory listing
+            ledger: 'audit_ledger.json',       // the completed audit: a verdict on every flag
             noticeDir: 'Tender Notice_PDFs',
             awardDir: 'Contract_Awards_PDFs'
         };
@@ -785,6 +786,10 @@
         
         // Auto-load previously saved data from LocalStorage
         let auditLogs = JSON.parse(localStorage.getItem(AUTO_SAVE_KEY)) || {};
+        /* How many audits this browser itself holds, before the shipped ledger is
+           merged in — the greeting below reports the reader's own work, not ours. */
+        const ownAuditCount = Object.keys(auditLogs).length;
+        let ledgerMeta = null;
         
         let currentTenderId = null;
         let currentRecord = null;
@@ -794,7 +799,7 @@
 
         // Greet user if auto-save data exists
         window.onload = () => {
-            if(Object.keys(auditLogs).length > 0) {
+            if(ownAuditCount > 0) {
                 showToast("অটো-সেভ সিস্টেম", `আপনার আগের ${Object.keys(auditLogs).length} টি কাজের রেকর্ড মেমোরিতে সেভ আছে!`);
             }
         };
@@ -960,11 +965,13 @@
                     });
                 };
                 const loaded = await Promise.all([
-                    grab(REPO.db, true), grab(REPO.text, false), grab(REPO.manifest, false)
+                    grab(REPO.db, true), grab(REPO.text, false), grab(REPO.manifest, false),
+                    grab(REPO.ledger, false)
                 ]);
                 step('দরপত্রের মূল PDF তালিকা তৈরি হচ্ছে...', 40);
                 registerRepoFiles(loaded[2], loaded[1]);
                 repoMode = true;
+                applyAuditLedger(loaded[3]);
                 step('রুলস এনালাইসিস শুরু হচ্ছে...', 45);
                 await loadParsedData(loaded[0]);
             } catch (err) {
@@ -1000,6 +1007,25 @@
                     add(/^Tender_\d+\.pdf$/i.test(name) ? REPO.awardDir : REPO.noticeDir, name);
                 });
             }
+        }
+
+        /* ---------- the completed audit ----------
+           Every red flag in this corpus has already been checked against the
+           government's own notice and contract-award PDF, and the verdict on each one
+           ships with the repository as audit_ledger.json: a status, an overall
+           justification, and a per-flag OK / NOT_OK with the note that decided it.
+           It is a base layer, not a lock — anything this reader has saved in their own
+           browser overrides the shipped verdict for that tender, and pressing either
+           audit button still writes to localStorage as before. Offline (folder-picker)
+           mode has nothing to fetch, so it simply keeps the reader's own logs. */
+        function applyAuditLedger(ledger) {
+            if (!ledger || !ledger.logs) return;
+            ledgerMeta = ledger.meta || null;
+            const own = auditLogs;
+            const merged = {};
+            Object.keys(ledger.logs).forEach(function (k) { merged[k] = ledger.logs[k]; });
+            Object.keys(own).forEach(function (k) { merged[k] = own[k]; });
+            auditLogs = merged;
         }
 
         function handleFolderUpload(event) {
@@ -1577,11 +1603,11 @@
 
             let okClass = status === 'OK' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
             let notOkClass = status === 'NOT_OK' ? 'bg-red-600 text-white border-red-500' : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-700';
-            let cardOp = status === 'OK' ? 'opacity-50' : 'opacity-100';
+            let cardOp = status === 'OK' ? 'opacity-75' : 'opacity-100';
             let reviewedRing = status ? (status === 'NOT_OK' ? 'ring-1 ring-red-500/40' : 'ring-1 ring-emerald-500/40') : '';
 
             let statusPill = status
-                ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ${status === 'NOT_OK' ? 'bg-red-900/40 text-red-400' : 'bg-emerald-900/40 text-emerald-400'}">${status === 'NOT_OK' ? 'নিশ্চিত জালিয়াতি' : 'যাচাই: ঠিক আছে'}</span>`
+                ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded ${status === 'NOT_OK' ? 'bg-red-900/40 text-red-400' : 'bg-emerald-900/40 text-emerald-400'}">${status === 'NOT_OK' ? 'নথিতে নিশ্চিত' : 'যাচাই: লঙ্ঘন প্রমাণিত নয়'}</span>`
                 : `<span class="text-[9px] font-bold px-2 py-0.5 rounded bg-indigo-900/40 text-indigo-300">যাচাই বাকি</span>`;
 
             let searchTerm = extractSearchTerm(f.evidence);
@@ -1617,10 +1643,9 @@
                         <div class="bg-[#0b1120] p-3 rounded border border-slate-800"><span class="text-slate-500 block mb-1 uppercase font-bold text-[9px]">প্রমাণ (Evidence):</span> <span class="text-red-400 font-mono">${f.evidence}</span></div>
                         ${ruleBlock}
                         <div class="border-t border-slate-700/50 pt-3 mt-3">
-                            <input type="text" placeholder="এই ফ্ল্যাগটির জন্য স্পেসিফিক নোট বা কারণ লিখুন..."
-                                   value="${escapeHtml(fNote)}"
+                            <textarea rows="3" placeholder="এই ফ্ল্যাগটির যাচাই-নোট — নথির নিজের প্রমাণ..."
                                    onchange="${noteFn}(${index}, this.value)"
-                                   class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300 focus:border-blue-500 outline-none">
+                                   class="w-full bg-[#0b1120] border border-slate-600 rounded px-3 py-2 text-xs text-slate-300 leading-relaxed focus:border-blue-500 outline-none custom-scroll">${escapeHtml(fNote)}</textarea>
                         </div>
                     </div>
                 </div>`;
@@ -1810,7 +1835,7 @@
                     auditBadge.innerHTML = `<i class="fa-solid fa-check-circle"></i> সম্পন্ন (ক্লিন)`;
                 } else {
                     auditBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-900/40 text-red-400 border border-red-500/50 ml-2";
-                    auditBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> সম্পন্ন (জালিয়াতি)`;
+                    auditBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> সম্পন্ন (ঝুঁকি চিহ্নিত)`;
                 }
             } else {
                 auditBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-indigo-900/40 text-indigo-400 border border-indigo-500/50 ml-2";
@@ -1872,7 +1897,7 @@
                 suggEl.innerHTML = `<i class="fa-solid fa-shield-check"></i> কোনো ফ্ল্যাগ নেই — ক্লিন সেভ করা নিরাপদ।`;
             } else if (prog.notOk > 0) {
                 suggEl.className = 'text-[10px] font-bold leading-tight text-red-400';
-                suggEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> সাজেশন: জালিয়াতি (${prog.notOk}টি NOT OK চিহ্নিত)।`;
+                suggEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> সাজেশন: ঝুঁকি চিহ্নিত (${prog.notOk}টি NOT OK)`;
             } else if (prog.pending === 0) {
                 suggEl.className = 'text-[10px] font-bold leading-tight text-emerald-400';
                 suggEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> সাজেশন: ক্লিন (সব ফ্ল্যাগ যাচাই হয়েছে, সমস্যা নেই)।`;
@@ -1896,7 +1921,7 @@
             let htmlStr = '';
 
             if (allFlags.length === 0 && customFlags.length === 0) {
-                htmlStr = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-shield-check"></i> কোনো জালিয়াতি পাওয়া যায়নি।</div>`;
+                htmlStr = `<div class="p-5 bg-emerald-900/20 text-emerald-400 text-sm font-bold rounded-xl border border-emerald-800"><i class="fa-solid fa-shield-check"></i> কোনো সন্দেহজনক লক্ষণ পাওয়া যায়নি।</div>`;
             } else {
                 let shown = 0;
                 let autoStatuses = log.flagStatuses || {};
@@ -1921,7 +1946,7 @@
                 <div class="mt-6 p-4 border border-dashed border-slate-600 rounded-xl bg-[#0b1120]">
                     <h4 class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-500"></i> ম্যানুয়ালি নতুন জালিয়াতি যোগ করুন</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                        <input type="text" id="customFlagTitle" placeholder="জালিয়াতির নাম (যেমন: অতিরিক্ত টার্নওভার)" class="bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white col-span-1 md:col-span-2">
+                        <input type="text" id="customFlagTitle" placeholder="সন্দেহজনক লক্ষণের নাম" class="bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white col-span-1 md:col-span-2">
                         <select id="customFlagRisk" class="bg-slate-900 border border-slate-700 text-xs rounded px-3 py-2 text-white col-span-1">
                             <option value="Critical">Critical Risk</option>
                             <option value="High">High Risk</option>
@@ -1975,7 +2000,7 @@
             // Warn if flags are still unreviewed before committing a verdict.
             let prog = getVerificationProgress(tid);
             if (prog.pending > 0) {
-                let verdict = statusLabel.includes('Clean') ? 'ক্লিন' : 'জালিয়াতি';
+                let verdict = statusLabel.includes('Clean') ? 'ক্লিন' : 'ঝুঁকি চিহ্নিত';
                 if (!confirm(`⚠ ${prog.pending}টি ফ্ল্যাগ এখনো যাচাই (OK/NOT OK) করা হয়নি।\n\nতবুও "${verdict}" হিসেবে সেভ করবেন?`)) return;
             }
 
@@ -2068,7 +2093,7 @@
             });
 
             if (totalRiskyTenders === 0) {
-                alert("ড্রাফট তৈরি করার মতো কোনো ঝুঁকিপূর্ণ/জালিয়াতি যুক্ত টেন্ডার পাওয়া যায়নি!");
+                alert("ড্রাফট তৈরি করার মতো ঝুঁকিপূর্ণ কোনো দরপত্র পাওয়া যায়নি!");
                 return;
             }
 
@@ -2080,7 +2105,7 @@
             if (agencies.size > 3) agencyStr += " সহ আরও কয়েকটি সংস্থার";
             else agencyStr += " এর";
 
-            let draft = `দেশের সরকারি ক্রয় ব্যবস্থায় (e-GP) ভয়ংকর অনিয়ম ও দুর্নীতির প্রমাণ পাওয়া গেছে। আমাদের সাম্প্রতিক ডেটা অনুসন্ধানে ${totalRiskyTenders} টি দরপত্রে ${valStr} কাজে এই জালিয়াতি ধরা পড়েছে।\n\nবিশেষ করে, ${agencyStr} দরপত্রগুলোতে "${topViolsText}" এর মতো গুরুতর অনিয়ম করা হয়েছে। সরকারি ক্রয় আইন (PPA 2008) এবং আন্তর্জাতিক দাতা সংস্থার (World Bank/JICA) গাইডলাইনকে বৃদ্ধাঙ্গুলি দেখিয়ে পছন্দের ঠিকাদারদের কাজ পাইয়ে দিতেই এমন অভিনব জালিয়াতির আশ্রয় নেওয়া হয়েছে বলে বিশেষজ্ঞরা মনে করছেন।\n\nনিচে প্রতিটি টেন্ডারের বিশ্লেষণ, সরকারি নিয়ম এবং বাস্তবে কী জালিয়াতি হয়েছে, তার বিস্তারিত প্রমাণ তুলে ধরা হলো:`;
+            let draft = `সরকারি ক্রয়ের নিজস্ব নথিতেই এমন লক্ষণ পাওয়া গেছে, যা খতিয়ে দেখা প্রয়োজন। e-GP-র প্রকাশিত রেকর্ড বিশ্লেষণে ${totalRiskyTenders} টি দরপত্রে — মোট ${valStr} কাজে — এক বা একাধিক লাল পতাকা (red flag) উঠে এসেছে।\n\n${agencyStr} দরপত্রে সবচেয়ে বেশি দেখা গেছে "${topViolsText}"। প্রতিটি লক্ষণ সরকারি ক্রয় আইন (PPA 2008), e-PG3A এবং দাতা সংস্থার (World Bank/JICA) নির্দেশিকার নির্দিষ্ট ধারার সঙ্গে মিলিয়ে দেখা হয়েছে এবং সংশ্লিষ্ট দরপত্র নোটিশ বা চুক্তি-প্রদান নোটিশ থেকেই উদ্ধৃত হয়েছে।\n\nএগুলো তদন্তযোগ্য লক্ষণ — কোনো ব্যক্তি বা প্রতিষ্ঠানের বিরুদ্ধে অভিযোগ বা দোষ প্রমাণ নয়। সংশ্লিষ্ট সংস্থার ব্যাখ্যা নেওয়া প্রয়োজন। নিচে প্রতিটি দরপত্রের বিশ্লেষণ, প্রযোজ্য বিধি এবং নথির নিজের প্রমাণ তুলে ধরা হলো:`;
 
             document.getElementById('storyIntro').value = draft;
             showToast("অটো ড্রাফট সম্পন্ন", "প্রাপ্ত ডেটার ওপর ভিত্তি করে খবরের ভূমিকা লেখা হয়েছে।");
@@ -2404,7 +2429,7 @@
                     html += `
                         <div class="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-6 text-center print:bg-emerald-50 print:border-emerald-200">
                             <i class="fa-solid fa-shield-check text-4xl text-emerald-400 mb-3 print:text-emerald-500"></i>
-                            <p class="text-emerald-400 font-bold text-sm print:text-emerald-700">এই টেন্ডারে কোনো জালিয়াতি বা নিয়ম লঙ্ঘন পাওয়া যায়নি।</p>
+                            <p class="text-emerald-400 font-bold text-sm print:text-emerald-700">এই দরপত্রে খতিয়ে দেখার মতো কোনো লক্ষণ পাওয়া যায়নি।</p>
                         </div>
                     `;
                 }
@@ -2430,7 +2455,7 @@
                             <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
                                 <i class="fa-solid fa-scale-balanced text-emerald-400 text-2xl mb-3"></i>
                                 <h5 class="text-white font-bold text-sm mb-2 print:text-gray-900">২. সরকারি আইনের সাথে তুলনা</h5>
-                                <p class="text-xs text-slate-400 leading-relaxed print:text-gray-600">PPA-2008, e-PG3A এবং দাতা সংস্থার আইনের সাথে পিডিএফ-এর শর্তগুলো মিলিয়ে জালিয়াতি শনাক্ত করা হয়েছে।</p>
+                                <p class="text-xs text-slate-400 leading-relaxed print:text-gray-600">PPA-2008, e-PG3A এবং দাতা সংস্থার নির্দেশিকার সঙ্গে পিডিএফের শর্ত মিলিয়ে সন্দেহজনক লক্ষণ শনাক্ত করা হয়েছে।</p>
                             </div>
                             <div class="bg-slate-800 p-5 rounded-lg border border-slate-700 print:bg-slate-50 print:border-slate-200">
                                 <i class="fa-solid fa-chart-line text-blue-400 text-2xl mb-3"></i>
