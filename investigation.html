@@ -53,6 +53,10 @@
     backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)}
   .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:52px}
   .brand{font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+  /* the wordmark doubles as the way back to the top of the story */
+  a.brand{color:var(--ink);text-decoration:none;cursor:pointer}
+  a.brand:hover span{text-decoration:underline;text-underline-offset:3px}
+  a.brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
   .brand span{color:var(--accent)}
   .topnav{display:flex;gap:20px;font-size:13px}
   .topnav a{color:var(--secondary);text-decoration:none}
@@ -180,7 +184,11 @@
 
 <div class="topbar">
   <div class="wrap">
-    <div class="brand">e-GP <span>WATCH</span></div>
+    <!-- href="#top" with no element of that id: HTML defines the "top" fragment as
+         the top of the document, and html{scroll-behavior:smooth} animates the trip.
+         Do not move id="top" onto the sticky masthead — a sticky bar already sits at
+         the viewport top at every offset, so the jump would have nothing to scroll. -->
+    <a class="brand" href="#top" aria-label="e-GP WATCH — back to the top of the story / শুরুতে ফিরুন">e-GP <span>WATCH</span></a>
     <nav class="topnav">
       <a href="#competition">Competition</a>
       <a href="#concentration">Concentration</a>
