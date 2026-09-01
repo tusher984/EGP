@@ -18,9 +18,16 @@
    A word with no exact match is retried two ways: against an OCR-loose spelling
    map (0 for o, 1 and i for l, 5 for s, 8 for b, 2 for z), and against every token
    in the index within a bounded edit distance. Both are reported to the reader as
-   what they are, so nobody mistakes a near miss for a hit. */
+   what they are, so nobody mistakes a near miss for a hit.
+
+   Those reports are the only sentences this file prints, and they come from the
+   language pack. What they quote back — the word typed, the words the index does hold,
+   the name of a scope — is left exactly as it is: a spelling is the subject of the
+   sentence, and a translated spelling would be a different word. */
 
 import { records, postings, texts, pageShard } from "../app/data.js";
+import { t } from "../i18n/i18n.js";
+import { num } from "../components/ui.js";
 
 const TOK = /[ঀ-৿]+|[a-z0-9]+/g;
 export const tokens = (s) => String(s || "").toLowerCase().match(TOK) || [];
@@ -210,8 +217,8 @@ async function build() {
         bump(ids(post.strong, strongCache, p), W_STRONG * .8, p);
         bump(ids(post.body, bodyCache, p), W_BODY * .8, p);
       }
-      notes.push(`“${word}” was read as the start of a word: ${pre.slice(0, 6).join(", ")}`
-        + (pre.length > 6 ? ` and ${pre.length - 6} more` : ""));
+      notes.push(t("find.prefix", { word, words: pre.slice(0, 6).join(", ") })
+        + (pre.length > 6 ? t("find.andMore", { n: num(pre.length - 6) }) : ""));
       return hits;
     }
 
@@ -222,7 +229,7 @@ async function build() {
         bump(ids(post.strong, strongCache, a), W_STRONG * W_LOOSE, a);
         bump(ids(post.body, bodyCache, a), W_BODY * W_LOOSE, a);
       }
-      notes.push(`“${word}” shares an OCR-loose spelling with ${alt.join(", ")}`);
+      notes.push(t("find.loose", { word, words: alt.join(", ") }));
       return hits;
     }
 
@@ -232,13 +239,11 @@ async function build() {
         bump(ids(post.strong, strongCache, n), W_STRONG * W_FUZZY, n);
         bump(ids(post.body, bodyCache, n), W_BODY * W_FUZZY, n);
       }
-      notes.push(`“${word}” is not in the index; the closest words that are: `
-        + near.slice(0, 6).join(", "));
+      notes.push(t("find.near", { word, words: near.slice(0, 6).join(", ") }));
       return hits;
     }
-    notes.push(`“${word}” appears nowhere in the `
-      + `${((rec.kinds || {}).document || 0).toLocaleString("en-GB")} documents `
-      + "or the dataset built from them");
+    notes.push(t("find.nowhere", { word,
+      documents: num((rec.kinds || {}).document || 0) }));
     return hits;
   }
 
@@ -252,7 +257,7 @@ async function build() {
       if (s === want) hits.set(r.i, W_FIELD * 1.6);
       else if (s.includes(want)) hits.set(r.i, W_FIELD);
     }
-    if (!hits.size) notes.push(`no record has ${name} matching “${value}”`);
+    if (!hits.size) notes.push(t("find.noField", { name, value }));
     return hits;
   }
 
@@ -262,7 +267,7 @@ async function build() {
     const a = numeric ? (lo === "" || lo === "*" ? -Infinity : +lo) : lo;
     const b = numeric ? (hi === "" || hi === "*" ? Infinity : +hi) : hi;
     if (numeric && (Number.isNaN(a) || Number.isNaN(b))) {
-      notes.push(`${name}:${lo}..${hi} is not a pair of numbers`);
+      notes.push(t("find.badRange", { name, lo, hi }));
       return hits;
     }
     for (const r of rec.records) {
@@ -271,7 +276,7 @@ async function build() {
       const ok = numeric ? (+v >= a && +v <= b) : (String(v) >= a && String(v) <= b);
       if (ok) hits.set(r.i, W_RANGE);
     }
-    if (!hits.size) notes.push(`nothing in the dataset has ${name} between ${lo} and ${hi}`);
+    if (!hits.size) notes.push(t("find.emptyRange", { name, lo, hi }));
     return hits;
   }
 
@@ -376,13 +381,11 @@ async function build() {
       } catch { /* a page file that will not load is reported below, not guessed at */ }
     }));
     if (docs.length > PAGE_LIMIT) {
-      notes.push(`“${node.raw}”: ${docs.length - PAGE_LIMIT} more documents hold all `
-        + `of these words somewhere; only the first ${PAGE_LIMIT} were opened to check `
-        + `whether the words sit together`);
+      notes.push(t("find.pagesCapped", { phrase: node.raw,
+        more: num(docs.length - PAGE_LIMIT), limit: num(PAGE_LIMIT) }));
     }
     if (droppedRecords) {
-      notes.push(`“${node.raw}”: ${droppedRecords} records hold all of these words but `
-        + `not in this order, and are left out`);
+      notes.push(t("find.wrongOrder", { phrase: node.raw, n: num(droppedRecords) }));
     }
   }
 
@@ -419,7 +422,7 @@ async function build() {
       const all = new Map(rec.records.map((r) => [r.i, 1]));
       for (const k of map.keys()) all.delete(k);
       map = all;
-      notes.push("this query only says what to leave out, so everything else is listed");
+      notes.push(t("find.onlyExclusions"));
     }
     const words = [];
     (function terms(n) {

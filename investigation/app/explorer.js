@@ -8,8 +8,9 @@
 import {
   el, num, clear, dataTable, chip, cite, PDF_BASE,
 } from "../components/ui.js";
+import { t, word } from "../i18n/i18n.js";
 import {
-  TABLES, table, tableHref, dataHref, siteHref, summary,
+  TABLES, tableAbout, table, tableHref, dataHref, siteHref, summary,
 } from "./data.js";
 
 /* Which columns carry a file name and a page, per table, so the explorer can turn
@@ -30,27 +31,31 @@ function sourcePair(columns) {
 }
 
 export function tableExplorer() {
-  const pick = el("select", { "aria-label": "which table to open" });
+  const pick = el("select", { "aria-label": t("tab.pickAria") });
   const about = el("p", { class: "note" });
   const host = el("div");
   let counts = {};
 
+  /* A column heading is the CSV's own header with the underscores taken out, unless the
+     pack names it. csvcol.* is a namespace of its own rather than the col.* the figures
+     use, because a figure's "Page" heading and a CSV's page column are not the same
+     thing and must be free to read differently. The English pack names none of them:
+     word() then prints the header as the file itself carries it. */
   const build = (name) => {
-    const meta = TABLES.find((t) => t[0] === name);
     const c = counts[`${name}.csv`];
-    about.textContent = `${meta ? meta[1] : name}`
-      + (c ? ` — ${num(c.rows)} rows, ${num(c.columns)} columns.` : ".");
+    about.textContent = tableAbout(name)
+      + (c ? t("tab.rowsCols", { rows: num(c.rows), cols: num(c.columns) }) : ".");
     clear(host);
-    host.append(el("p", { class: "loading" }, `Reading ${name}.csv`));
-    table(name).then((t) => {
+    host.append(el("p", { class: "loading" }, t("tab.reading", { name })));
+    table(name).then((parsed) => {
       clear(host);
-      const [fileCol, pageCol] = sourcePair(t.columns);
+      const [fileCol, pageCol] = sourcePair(parsed.columns);
       host.append(dataTable({
-        columns: t.columns.map((k) => ({
+        columns: parsed.columns.map((k) => ({
           key: k,
-          label: k.replace(/_/g, " "),
-          num: t.rows.length > 0 && t.rows.some((r) => r[k] !== "")
-            && t.rows.every((r) => r[k] === "" || !Number.isNaN(+r[k])),
+          label: word(`csvcol.${k}`, k.replace(/_/g, " ")),
+          num: parsed.rows.length > 0 && parsed.rows.some((r) => r[k] !== "")
+            && parsed.rows.every((r) => r[k] === "" || !Number.isNaN(+r[k])),
           wrap: k === "text" || k.endsWith("_text") || k.includes("name")
             || k.includes("detail") || k.includes("reason"),
           cell: k === fileCol
@@ -59,31 +64,27 @@ export function tableExplorer() {
               ? (r) => (r[k] ? chip(r[k]) : "")
               : undefined),
         })),
-        rows: t.rows, per: 25, filename: `${name}_filtered.csv`,
-        caption: `${name}.csv, exactly as the pipeline wrote it. Filtering and sorting `
-          + "happen in your browser; the download button hands back the rows you can see.",
+        rows: parsed.rows, per: 25, filename: `${name}_filtered.csv`,
+        caption: t("tab.caption", { name }),
       }));
     }).catch((e) => { clear(host); host.append(el("p", { class: "warn" }, e.message)); });
   };
 
-  for (const [name] of TABLES) pick.append(el("option", { value: name }, `${name}.csv`));
+  for (const name of TABLES) pick.append(el("option", { value: name }, `${name}.csv`));
   pick.addEventListener("change", () => build(pick.value));
   summary().then((s) => {
-    counts = Object.fromEntries((s.counts.tables || []).map((t) => [t.table, t]));
+    counts = Object.fromEntries((s.counts.tables || []).map((r) => [r.table, r]));
     build(pick.value);
   }).catch(() => build(pick.value));
 
   return el("section", { class: "band", id: "tables" },
     el("div", { class: "wrap" },
-      el("p", { class: "kicker" }, "The dataset itself"),
-      el("h2", "Every table, open to read"),
-      el("div", { class: "prose" },
-        el("p", "These eighteen files are the whole dataset this investigation was "
-          + "written from. Nothing on this site is calculated from anything that is not "
-          + "in them, and every one of them was written by the parser out of the PDFs. "
-          + "Columns that name a document open that document at the page in question.")),
+      el("p", { class: "kicker" }, t("tab.kicker")),
+      el("h2", t("tab.title")),
+      el("div", { class: "prose" }, el("p", t("tab.p1"))),
       el("div", { class: "tablebar" },
-        el("label", { class: "field" }, el("span", { class: "sr" }, "Choose a table"), pick),
+        el("label", { class: "field" },
+          el("span", { class: "sr" }, t("tab.chooseLabel")), pick),
         about),
       host));
 }
@@ -98,22 +99,23 @@ export function tableExplorer() {
    file, because a rebuilt dataset would leave a written-down size quietly wrong. */
 
 const bytes = (n) => {
-  if (n >= 1048576) return `${(n / 1048576).toFixed(1)} MB`;
-  if (n >= 1024) return `${Math.round(n / 1024)} KB`;
-  return `${n} bytes`;
+  if (n >= 1048576) return t("down.mb", { n: num(Math.round(n / 104857.6) / 10) });
+  if (n >= 1024) return t("down.kb", { n: num(Math.round(n / 1024)) });
+  return t("down.bytes", { n: num(n) });
 };
 
 function sized(href, note) {
   const span = el("span", { class: "note" }, note || "");
   fetch(href, { method: "HEAD", cache: "no-store" }).then((r) => {
     if (!r.ok) {
-      span.textContent = note ? `${note} — not on this server` : "not on this server";
+      span.textContent = note
+        ? t("down.missingWith", { note }) : t("down.missing");
       span.classList.add("warn");
       return;
     }
     const n = +r.headers.get("content-length");
     if (!n) return;
-    span.textContent = note ? `${bytes(n)} — ${note}` : bytes(n);
+    span.textContent = note ? t("down.sizeWith", { size: bytes(n), note }) : bytes(n);
   }).catch(() => {});
   return span;
 }
@@ -126,136 +128,107 @@ function fileRow(href, name, note) {
     sized(href, note));
 }
 
-function group(title, blurb, items) {
+function group(key, items) {
   return el("div", { class: "downgroup" },
-    el("h3", title),
-    el("p", { class: "note" }, blurb),
+    el("h3", t(`down.${key}.title`)),
+    el("p", { class: "note" }, t(`down.${key}.blurb`)),
     el("ul", { class: "files" }, ...items));
 }
+
+/* Every row below names a file and says what is in it. The filename is the file's own
+   name and is never translated; the sentence beside it is. down.f.<slug> keeps the two
+   apart, so a translated note can never be mistaken for the name to download. */
+const note = (slug) => t(`down.f.${slug}`);
+
 export function downloads() {
   const tables = el("ul", { class: "files" },
-    ...TABLES.map(([name, about]) =>
-      fileRow(tableHref(name), `${name}.csv`, about)));
+    ...TABLES.map((name) => fileRow(tableHref(name), `${name}.csv`, tableAbout(name))));
 
-  /* The three rows whose note is a count, rather than a description of the file. No
-     count is written into this file: a rebuilt dataset would leave a written-down
-     number quietly wrong, and a wrong number in the download section is worse than
-     none at all. */
+  /* The rows whose note is a count, rather than a description of the file. No count is
+     written into this file: a rebuilt dataset would leave a written-down number quietly
+     wrong, and a wrong number in the download section is worse than none at all. */
   const masterCsv = fileRow(dataHref("master_dataset.csv"), "master_dataset.csv",
-    "one row per procurement, notice joined to award");
+    note("masterCsv"));
   const eligJson = fileRow(dataHref("eligibility_rows.json"), "eligibility_rows.json",
-    "every condition of entry, with the text it is printed in");
+    note("eligRows"));
 
   /* Row and column counts come from dataset_summary.json, which the pipeline writes
      by counting the files it has just written. */
   summary().then((s) => {
-    const by = Object.fromEntries((s.counts.tables || []).map((t) => [t.table, t]));
+    const by = Object.fromEntries((s.counts.tables || []).map((r) => [r.table, r]));
     [...tables.children].forEach((li, i) => {
-      const c = by[`${TABLES[i][0]}.csv`];
+      const c = by[`${TABLES[i]}.csv`];
       if (!c) return;
       li.append(el("span", { class: "note" },
-        `${num(c.rows)} rows × ${num(c.columns)} columns`));
+        t("down.shape", { rows: num(c.rows), cols: num(c.columns) })));
     });
     const m = by["master_dataset.csv"];
     if (m) {
       masterCsv.append(el("span", { class: "note" },
-        `${num(m.rows)} rows × ${num(m.columns)} columns`));
+        t("down.shape", { rows: num(m.rows), cols: num(m.columns) })));
     }
     const e = by["eligibility_criteria.csv"];
-    if (e) eligJson.append(el("span", { class: "note" }, `${num(e.rows)} rows`));
+    if (e) eligJson.append(el("span", { class: "note" }, t("down.rows", { rows: num(e.rows) })));
   }).catch(() => {});
 
   const groups = el("div", { class: "downloads" },
     el("div", { class: "downgroup" },
-      el("h3", "The eighteen tables"),
-      el("p", { class: "note" }, "One row per thing counted. These are the files the "
-        + "explorer above reads."),
+      el("h3", t("down.tables.title")),
+      el("p", { class: "note" }, t("down.tables.blurb")),
       tables),
-    group("The whole archive in one row per tender",
-      "Every notice joined to its award, its lots, its bid count and its eligibility "
-      + "clauses, so one row is one procurement from start to finish.", [
-        masterCsv,
-        fileRow(dataHref("master_dataset.json"), "master_dataset.json",
-          "the same rows, nested rather than flattened"),
-      ]),
-    group("What the analysis worked out",
-      "Every number on this site is in one of these files. story.json is what the "
-      + "article loads; analysis.json is the same thing with the two long row lists "
-      + "left in place.", [
-        fileRow(dataHref("analysis.json"), "analysis.json",
-          "every finding and every aggregate, complete"),
-        fileRow(dataHref("story.json"), "story.json",
-          "analysis.json without the two long lists"),
-        eligJson,
-        fileRow(dataHref("signals_rows.json"), "signals_rows.json",
-          "the per-tender ledger, one row per tender"),
-        fileRow(dataHref("dataset_summary.json"), "dataset_summary.json",
-          "what was written, counted after writing it"),
-        fileRow(dataHref("audit_report.json"), "audit_report.json",
-          "the pipeline checking its own work"),
-      ]),
-    group("The evidence trail",
-      "The matrix is the editor's file: one row per finding, with the page it rests on "
-      + "and the arithmetic that produced it.", [
-        fileRow(`${PDF_BASE}EVIDENCE_MATRIX.csv`, "EVIDENCE_MATRIX.csv",
-          "finding, type, source PDF, page, quoted evidence, calculation, confidence"),
-        fileRow(`${PDF_BASE}EDITOR_QA_REPORT.md`, "EDITOR_QA_REPORT.md",
-          "what was checked, what failed, what remains open"),
-        fileRow(siteHref("evidence/evidence_index.json"), "evidence_index.json",
-          "every citation on this site, keyed file#page"),
-      ]),
-    group("The extraction, before any analysis touched it",
-      "If you want to start where this investigation started, start here: what was "
-      + "found in the folder, and what was read off each page.", [
-        fileRow(dataHref("inventory.json"), "inventory.json",
-          "every PDF found, with its hash, size and page count"),
-        fileRow(dataHref("extracted.json"), "extracted.json",
-          "every field read out of every document, each with its page"),
-        fileRow(dataHref("raw_pages.json"), "raw_pages.json",
-          "the text layer of every page, as extracted"),
-      ]),
-    group("How to read all of it",
-      "What every column of every table holds, what the search box accepts, and how the "
-      + "whole thing is rebuilt. The first two are written out of the built dataset "
-      + "itself, so they cannot drift from the files above.", [
-        fileRow(siteHref("documentation/data_dictionary.md"), "data_dictionary.md",
-          "every column of all eighteen tables: kind, how often filled, an example"),
-        fileRow(siteHref("documentation/search_reference.md"), "search_reference.md",
-          "the query grammar, the scopes, the numeric and date fields"),
-        fileRow(siteHref("documentation/pipeline.md"), "pipeline.md",
-          "what each stage reads and writes, and what to re-run after a change"),
-      ]),
-    group("The search index",
-      "The search box on this site is these three files and search.js. Nothing is "
-      + "queried over the network.", [
-        fileRow(siteHref("search/records.json"), "records.json",
-          "one record per searchable thing, repeated values interned"),
-        fileRow(siteHref("search/postings.json"), "postings.json",
-          "token to record lists, delta encoded"),
-        fileRow(siteHref("search/text.json"), "text.json",
-          "the snippet each result shows"),
-      ]));
+    group("master", [
+      masterCsv,
+      fileRow(dataHref("master_dataset.json"), "master_dataset.json", note("masterJson")),
+    ]),
+    group("analysis", [
+      fileRow(dataHref("analysis.json"), "analysis.json", note("analysis")),
+      fileRow(dataHref("story.json"), "story.json", note("story")),
+      eligJson,
+      fileRow(dataHref("signals_rows.json"), "signals_rows.json", note("signalRows")),
+      fileRow(dataHref("dataset_summary.json"), "dataset_summary.json", note("summary")),
+      fileRow(dataHref("audit_report.json"), "audit_report.json", note("audit")),
+    ]),
+    group("evidence", [
+      fileRow(`${PDF_BASE}EVIDENCE_MATRIX.csv`, "EVIDENCE_MATRIX.csv", note("matrix")),
+      fileRow(`${PDF_BASE}EDITOR_QA_REPORT.md`, "EDITOR_QA_REPORT.md", note("qa")),
+      fileRow(siteHref("evidence/evidence_index.json"), "evidence_index.json",
+        note("evidenceIndex")),
+    ]),
+    group("extraction", [
+      fileRow(dataHref("inventory.json"), "inventory.json", note("inventory")),
+      fileRow(dataHref("extracted.json"), "extracted.json", note("extracted")),
+      fileRow(dataHref("raw_pages.json"), "raw_pages.json", note("rawPages")),
+    ]),
+    group("docs", [
+      fileRow(siteHref("documentation/data_dictionary.md"), "data_dictionary.md",
+        note("dictionary")),
+      fileRow(siteHref("documentation/search_reference.md"), "search_reference.md",
+        note("searchRef")),
+      fileRow(siteHref("documentation/pipeline.md"), "pipeline.md", note("pipeline")),
+    ]),
+    group("index", [
+      fileRow(siteHref("search/records.json"), "records.json", note("records")),
+      fileRow(siteHref("search/postings.json"), "postings.json", note("postings")),
+      fileRow(siteHref("search/text.json"), "text.json", note("text")),
+    ]));
 
   /* The count of PDFs is asked of dataset_summary.json for the same reason the file
      sizes are asked of the server: a number written into this file would survive a
-     rebuilt dataset and be quietly wrong. */
-  const howMany = el("span", "they");
+     rebuilt dataset and be quietly wrong. Until it arrives the sentence reads without
+     a count rather than with a wrong one. */
+  const howMany = el("span", t("down.themBare"));
   summary().then((s) => {
-    if (s.counts.documents) howMany.textContent = `there are ${num(s.counts.documents)} of them and they`;
+    if (s.counts.documents) {
+      howMany.textContent = t("down.themCounted", { n: num(s.counts.documents) });
+    }
   }).catch(() => {});
 
   return el("section", { class: "band alt", id: "downloads" },
     el("div", { class: "wrap" },
-      el("p", { class: "kicker" }, "Take it away"),
-      el("h2", "Every file this investigation was built from"),
+      el("p", { class: "kicker" }, t("down.kicker")),
+      el("h2", t("down.title")),
       el("div", { class: "prose" },
-        el("p", "These are not exports. They are the files the site itself fetched "
-          + "while you read it, handed over unchanged, so anything checked in a "
-          + "spreadsheet is checked against what the article was written from."),
-        el("p", "The PDFs are not listed here, because ", howMany,
-          " sit in the same folder as this site. Every citation, every row in "
-          + "the document browser and every document column in the tables above "
-          + "opens the PDF itself at the page in question. The page-by-page text of "
-          + "each one is in investigation/public/pages/, one small file per document.")),
+        el("p", t("down.p1")),
+        el("p", t("down.p2a"), howMany, t("down.p2b"))),
       groups));
 }

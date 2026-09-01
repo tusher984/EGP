@@ -70,6 +70,21 @@
   --gap: 1.5rem;
 }
 
+/* The Bangla edition prefixes the Bengali family onto the existing stacks rather
+   than replacing them, and this is the whole trick: the @font-face rules below
+   declare a unicode-range of U+0980-09FF, so the browser only reaches for that face
+   when it meets a Bengali codepoint. Everything else — a firm's name, a tender
+   number, a PDF filename, a figure — falls straight through to the same serif and
+   sans faces the English edition uses. So one rule gets Bengali prose in Bengali
+   type without turning the Latin evidence beside it into a different font, which is
+   what would happen if --font-bn simply took over. */
+html:lang(bn) {
+  --font-body: "Li Ador Noirrit", "Iowan Old Style", "Palatino Linotype", Palatino,
+    Georgia, "Times New Roman", serif;
+  --font-head: "Li Ador Noirrit", "Helvetica Neue", Helvetica, "Segoe UI", Roboto,
+    Arial, sans-serif;
+}
+
 html.night {
   color-scheme: dark;
   --paper: #17161a;
