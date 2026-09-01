@@ -1,0 +1,165 @@
+{
+ "counts": {
+  "generated": "2026-09-01T13:09:04",
+  "seconds": 0.5,
+  "tables": [
+   {
+    "table": "documents.csv",
+    "rows": 1805,
+    "columns": 31
+   },
+   {
+    "table": "tenders.csv",
+    "rows": 1150,
+    "columns": 64
+   },
+   {
+    "table": "contracts.csv",
+    "rows": 645,
+    "columns": 46
+   },
+   {
+    "table": "bids.csv",
+    "rows": 645,
+    "columns": 20
+   },
+   {
+    "table": "eligibility_criteria.csv",
+    "rows": 3239,
+    "columns": 19
+   },
+   {
+    "table": "lots.csv",
+    "rows": 1152,
+    "columns": 11
+   },
+   {
+    "table": "amendments.csv",
+    "rows": 160,
+    "columns": 10
+   },
+   {
+    "table": "amendment_changes.csv",
+    "rows": 735,
+    "columns": 10
+   },
+   {
+    "table": "beneficial_owners.csv",
+    "rows": 77,
+    "columns": 11
+   },
+   {
+    "table": "companies.csv",
+    "rows": 309,
+    "columns": 23
+   },
+   {
+    "table": "people.csv",
+    "rows": 137,
+    "columns": 17
+   },
+   {
+    "table": "organizations.csv",
+    "rows": 110,
+    "columns": 19
+   },
+   {
+    "table": "projects.csv",
+    "rows": 108,
+    "columns": 16
+   },
+   {
+    "table": "locations.csv",
+    "rows": 607,
+    "columns": 7
+   },
+   {
+    "table": "relationships.csv",
+    "rows": 9694,
+    "columns": 8
+   },
+   {
+    "table": "timeline.csv",
+    "rows": 13411,
+    "columns": 7
+   },
+   {
+    "table": "normalization.csv",
+    "rows": 245,
+    "columns": 6
+   },
+   {
+    "table": "name_candidate_pairs.csv",
+    "rows": 219,
+    "columns": 12
+   },
+   {
+    "table": "master_dataset.csv",
+    "rows": 1151,
+    "columns": 112
+   }
+  ],
+  "documents": 1805,
+  "tenders": 1150,
+  "contracts": 645,
+  "master_rows": 1151,
+  "master_with_notice_and_award": 644,
+  "master_notice_only": 506,
+  "master_award_only": 1,
+  "companies": 309,
+  "people": 137,
+  "organizations": 110,
+  "projects": 108,
+  "eligibility_criteria": 3239,
+  "eligibility_criteria_deferred": 615,
+  "lots": 1152,
+  "amendments": 160,
+  "amendment_changes": 735,
+  "amendment_changes_with_a_real_change": 519,
+  "beneficial_owners": 77,
+  "locations": 607,
+  "relationships": 9694,
+  "timeline_events": 13411,
+  "normalisations_logged": 245,
+  "normalisations_applied": 473,
+  "normalisation_rules": [
+   "id-from-filename",
+   "leading-serial-number",
+   "leading-status-term",
+   "same-key"
+  ],
+  "name_candidate_pairs": 219,
+  "names_merged_on_resemblance": 0,
+  "bid_rows": 645,
+  "bid_rows_with_counts": 591,
+  "bid_count_anomalies": 1,
+  "bidder_level_records_in_archive": 0,
+  "contract_value_total_taka": 37236845973.56,
+  "contracts_without_a_printed_value": 0,
+  "documents_with_interleaved_layout_warnings": 1
+ },
+ "criterion_labels": {
+  "experience_general": "General experience (years in the trade)",
+  "experience_similar": "Similar-work experience",
+  "experience_count": "Number of past contracts required",
+  "financial_turnover": "Annual turnover threshold",
+  "financial_liquid": "Liquid assets / working capital threshold",
+  "financial_credit": "Credit line or bank commitment",
+  "equipment": "Equipment or machinery required",
+  "personnel": "Personnel or staffing required",
+  "cert_trade_licence": "Valid trade licence",
+  "cert_vat": "VAT registration",
+  "cert_tin": "Income tax / TIN",
+  "cert_bin": "Business identification number",
+  "cert_other": "Other certificate demanded",
+  "jv": "Joint venture rule",
+  "subcontract": "Subcontracting rule",
+  "brand_model": "Named brand, model or origin",
+  "manufacturer_auth": "Manufacturer's authorisation",
+  "price_band": "Rate must fall inside a band around the estimate",
+  "geographic": "Geographic or client restriction",
+  "deferred": "No criteria published - deferred to the purchased document",
+  "cert_licence_class": "Licence of a named class or category",
+  "tax_deduction": "Tax and VAT deducted at source"
+ }
+}

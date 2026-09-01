@@ -1,0 +1,19 @@
+{
+  "name": "egp-watch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An investigation built only from 1,805 tender notices, amendments and contract-award notices published on Bangladesh's e-Procurement portal. A static site: no bundler, no framework, no dependencies, and nothing fetched from another host.",
+  "keywords": ["investigation", "public-procurement", "open-data", "static-site"],
+  "license": "UNLICENSED",
+  "scripts": {
+    "serve": "python3 -m http.server 8123 --directory ..",
+    "pipeline": "python3 -P scripts/run_pipeline.py",
+    "pipeline:plan": "python3 -P scripts/run_pipeline.py --dry-run",
+    "audit": "python3 -P scripts/run_pipeline.py --only 4",
+    "docs": "python3 -P scripts/run_pipeline.py --only 9",
+    "palette": "python3 -P scripts/validate_palette.py \"#2f5c8f,#b0521f,#3f7368\" \"#f8f7f4\"",
+    "palette:night": "python3 -P scripts/validate_palette.py \"#2f5c8f,#b0521f,#3f7368\" \"#17161a\" --dark --restep 0.74 1.05",
+    "check": "for f in app/*.js charts/*.js search/*.js; do node --check \"$f\" || exit 1; done && echo 'every module parses'"
+  }
+}

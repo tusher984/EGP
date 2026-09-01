@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>e-GP Watch — who was allowed to bid, who bid, and who won</title>
+<meta name="description" content="An investigation built only from the tender notices,
+  amendments and contract-award notices published on Bangladesh's e-Procurement portal:
+  who could enter each tender, who entered, who was rejected, who won, and how much
+  money changed hands. Every figure links to the page it was read from.">
+<meta name="robots" content="index, follow">
+<meta name="color-scheme" content="light dark">
+
+<!-- Two stylesheets and no third: tokens.css holds the validated palette and the
+     type scale, site.css holds the page. Both are in this repository, as is the one
+     embedded typeface. Nothing is fetched from another host, here or anywhere in
+     this build. -->
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/site.css">
+
+<!-- One icon, drawn in this repository, in the same two colours as the charts. -->
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+<!-- The palette is chosen before the first paint, so a reader who has asked their
+     system for a dark screen never gets a white flash. A remembered choice beats the
+     system setting; this is the only inline script on the page. -->
+<script>
+  (function () {
+    try {
+      var kept = localStorage.getItem("egp-watch-night");
+      var dark = kept === null
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        : kept === "1";
+      if (dark) document.documentElement.classList.add("night");
+    } catch (e) { /* private browsing: fall through to the light palette */ }
+  }());
+</script>
+</head>
+<body>
+
+<a class="skip" href="#summary">Skip to the story</a>
+
+<header class="masthead" id="bar"></header>
+
+<main id="app">
+  <div class="wrap">
+    <p class="loading">Reading what the analysis wrote</p>
+  </div>
+</main>
+
+<footer class="foot" id="foot"></footer>
+
+<noscript>
+  <div class="wrap" style="padding-block:3rem;max-width:34rem">
+    <h2>This page assembles itself in your browser</h2>
+    <p>There is no server behind this site and no pre-rendered article: the pages you
+      would read are built out of the dataset by JavaScript running on your own
+      machine. With JavaScript switched off, the dataset is still yours to read, and
+      it is the same dataset the article is written from.</p>
+    <ul>
+      <li><a href="../data/tables/">The eighteen tables</a>, one CSV per thing counted</li>
+      <li><a href="../data/master_dataset.csv">master_dataset.csv</a> — one row per
+        tender, from notice to award</li>
+      <li><a href="../data/analysis.json">analysis.json</a> — every finding and every
+        aggregate the article prints</li>
+      <li><a href="../../EVIDENCE_MATRIX.csv">EVIDENCE_MATRIX.csv</a> — one row per
+        finding, with the document and page it rests on</li>
+      <li><a href="pages/">The extracted text</a> of every document, one file
+        each</li>
+    </ul>
+    <p>The PDFs themselves sit in the folders beside this one.</p>
+  </div>
+</noscript>
+
+<script type="module" src="../app/main.js"></script>
+</body>
+</html>

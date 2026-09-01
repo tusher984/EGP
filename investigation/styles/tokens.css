@@ -1,0 +1,129 @@
+/* Design tokens for the investigation.
+   ------------------------------------------------------------------
+   The three chart hues, the sequential ramp and the diverging poles below were
+   not chosen by eye. They are the output of investigation/scripts/validate_palette.py,
+   which checks each set for a narrow OKLab lightness band, a chroma floor, a
+   contrast floor against the page it is drawn on, and separation between
+   neighbouring hues under protanopia, deuteranopia and tritanopia (Machado 2009,
+   severity 1.0). Both modes pass. Re-run it before changing a value:
+
+     python3 -P investigation/scripts/validate_palette.py "#2f5c8f,#b0521f,#3f7368" "#f8f7f4"
+     python3 -P investigation/scripts/validate_palette.py "#2f5c8f,#b0521f,#3f7368" "#17161a" --dark --restep 0.74 1.05
+
+   There are only three categorical hues because a fourth could not be told from
+   the third under deuteranopia at either lightness. Anything with more than three
+   parts is drawn with the sequential ramp, which is ordered by lightness and so
+   survives any colour vision, and is labelled in words. */
+
+:root {
+  color-scheme: light;
+
+  /* paper and ink */
+  --paper: #f8f7f4;
+  --paper-raised: #fffefb;
+  --paper-sunken: #f1efea;
+  --rule: rgba(24, 22, 18, .14);
+  --rule-soft: rgba(24, 22, 18, .08);
+  --ink: #191713;
+  --ink-body: #2c2924;
+  --ink-muted: #6a655c;
+  --ink-faint: #8d887e;
+  --on-hue: #ffffff;
+
+  /* three categorical hues, in fixed order. Never cycled, never reordered. */
+  --hue-1: #2f5c8f;
+  --hue-2: #b0521f;
+  --hue-3: #3f7368;
+
+  /* one hue, light to dark, for magnitude */
+  --seq-1: #d7e8fd;
+  --seq-2: #b4cfef;
+  --seq-3: #87adda;
+  --seq-4: #5583b9;
+  --seq-5: #2f5c8f;
+  --seq-6: #133e6c;
+
+  /* two hues and a neutral middle, for direction */
+  --div-low: #b0521f;
+  --div-mid: #b6b2ab;
+  --div-high: #2f5c8f;
+
+  /* the four evidence labels. Always printed with their words beside them, so
+     the colour is a second cue and never the only one. */
+  --label-fact: #3f7368;
+  --label-derived: #2f5c8f;
+  --label-possible: #8a6d1f;
+  --label-unresolved: #6f6b64;
+
+  --focus: #b0521f;
+  --shade: rgba(24, 22, 18, .05);
+
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --font-head: "Helvetica Neue", Helvetica, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --font-bn: "Li Ador Noirrit", var(--font-head);
+
+  --measure: 34rem;
+  --wide: 76rem;
+  --gap: 1.5rem;
+}
+
+html.night {
+  color-scheme: dark;
+  --paper: #17161a;
+  --paper-raised: #1f1e23;
+  --paper-sunken: #121114;
+  --rule: rgba(240, 238, 233, .16);
+  --rule-soft: rgba(240, 238, 233, .09);
+  --ink: #f2efe9;
+  --ink-body: #ddd9d1;
+  --ink-muted: #a29d94;
+  --ink-faint: #837e76;
+  --on-hue: #17161a;
+
+  --hue-1: #7caeea;
+  --hue-2: #f48b58;
+  --hue-3: #80b8ab;
+
+  --seq-1: #192f48;
+  --seq-2: #2a496e;
+  --seq-3: #406b9d;
+  --seq-4: #618fc6;
+  --seq-5: #83b3ec;
+  --seq-6: #abd5ff;
+
+  --div-low: #f48b58;
+  --div-mid: #5c5952;
+  --div-high: #7caeea;
+
+  --label-fact: #80b8ab;
+  --label-derived: #7caeea;
+  --label-possible: #c7a758;
+  --label-unresolved: #9a958c;
+
+  --focus: #f48b58;
+  --shade: rgba(240, 238, 233, .06);
+}
+
+/* The one embedded face, and it is local: the Bengali family that ships in the
+   repository. Nothing here is fetched from a font service, a CDN or any other
+   host — the whole site is meant to open from a folder with no network. */
+@font-face {
+  font-family: "Li Ador Noirrit";
+  src: url("../../fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20A-V1%20Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0980-09FF, U+200C-200D, U+25CC;
+}
+
+@font-face {
+  font-family: "Li Ador Noirrit";
+  src: url("../../fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20A-V1%20Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0980-09FF, U+200C-200D, U+25CC;
+}
