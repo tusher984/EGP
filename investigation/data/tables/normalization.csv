@@ -1,0 +1,246 @@
+﻿field,original,normalized,rule,reason,confidence
+pp,A H M Mesbah Uddin,A. H. M. Mesbah Uddin,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,Md. Mostafa Jamal,Md Mostafa Jamal,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pr,"Construction of Flyover at Muradpur, 2 No. Gate, GEC Junction .","Construction of Flyover at Muradpur, 2 No. Gate, GEC Junction",same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,Lt Col Anwar Ul Islam,Lt. Col Anwar Ul Islam,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,Md. Saiful Islam,Md Saiful Islam,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,mohammad nazmus sakib jamali,MOHAMMAD NAZMUS SAKIB JAMALI,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,saber ahmed,Saber Ahmed,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+co,"Rana Builders (Pvt.) Ltd. - M/s. Shafique and Sons (JV) ( JVCA Partners [Business Share]: Rana Builders (Pvt.) Ltd. [51.000%] , M/s Shafique and Sons [49.000%] )","Rana Builders (Pvt.) Ltd. - M/s Shafique and Sons (JV) ( JVCA Partners [Business Share]: Rana Builders (Pvt.) Ltd. [51.000%] , M/s Shafique and Sons [49.000%] )",same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+pp,A A M Habibur Rahman,A. A. M. Habibur Rahman,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+tender_id,1028832 Re-Tendered ID : 1023323,1028832,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+pr,Widening and Development of Important Roads of Chattogram City Cluster Project- 1,Widening and Development of Important Roads of Chattogram City Cluster Project-1,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+tender_id,1049598 Re-Tendered ID : 1006947,1049598,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,110297 Re-Tendered ID : 99744,110297,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Rejected PURCHASE/H.W. PURCHASE/2018/84,Rejected,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+pp,A. H. M. MESBAH UDDIN,A. H. M. Mesbah Uddin,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+amendment_no,"1 It is hereby notified to all concern that the following amendment have been made to the invitation of work Tender Invitation ID No.- 133881, due to unavoidable circumstances and the amendments shall be as follows: 1. Tender Closing Date and Time will be 05/09/2018 at 01.00 P.M instead of Tender Closing Date and Time: 19/08/2018 at 01.00 P.M.",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Contract Awarded 24/11/14,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Room/Ha:kroi:/2018/84/32,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 5805/RE-TENDER.,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,223246 Re-Tendered ID : 133881,223246,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Corrigendum Last Date and Time For Tender/proposal closing and openning Date and Time,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,303865 Re-Tendered ID : 281992,303865,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,"1 e-GP Tender Notice Corrigendum It is hereby notified to all concern that the following amendment have been made to the invitation of eGP Tender ID: 342502 of this office Reference No.- PD/anyanna/Est/127 dated: 08/08/2019. ITT Clause no. 16.1(a) :- Average Annual Construction Turnover Over 11 Crore BOQ- (Item no- 01, 02, 03, 04, 05, 06) Details of amendment is stated in Revised BOQ .",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,395550 Re-Tendered ID : 363990,395550,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,"3 Section Name: -Tender Document- Section 6. Bill of Quantities Old Value: SL: 1- Field name: Description: Maintenance work of all the Hardware & Network< LAN, WAN, Software related to PC, related jobs including data entry, Maintain all data backup etc with 6 maintenance person in 6 different dept. Field name: Quantity -06 SL: 2- Field name: Description",3,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,436738 Re-Tendered ID : 425270,436738,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,"1 Amendment in Eligibility: Previous Value: 10. Suppliers shall be a registered (Ltd.) company of Bangladesh with proper documents of Trade License, Valid TIN",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Amended as follows,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,657600 Re-Tendered ID : 644697,657600,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,670297 Re-Tendered ID : 655654,670297,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Amendment in Tender Documents in Section No. -05 Price and Delivery Schedule for Goods (Form e-PG3-3A) – Item specification – 1 and 2,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,745109 Re-Tendered ID : 733123,745109,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,773275 Re-Tendered ID : 731173,773275,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 2)/52/50,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,781266 Re-Tendered ID : 755321,781266,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,814522 Re-Tendered ID : 782755,814522,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,836329 Re-Tendered ID : 809857,836329,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,944909 Re-Tendered ID : 909308,944909,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded date:15/05/2017,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 25,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Equipment,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 25/OTM/Goods/Furniture,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Item,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 25/OTM/Goods/Stationery,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1039767 Re-Tendered ID : 1024741,1039767,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded BoundaryWall,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 03,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 26/OTM/Goods/Furniture,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 26/OTM/Goods/Light_Vehicle,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Rejected 26/Computer_Consumables/GR-04,Rejected,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 05/1,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 07(1),Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 2Add.,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 26/Computer_Maintenance/WR-03,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 26,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered 26,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1199127 Re-Tendered ID : 1189962,1199127,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1207915 Re-Tendered ID : 1184467,1207915,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1265472 Re-Tendered ID : 1257433,1265472,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,509251 Re-Tendered ID : 448434,509251,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Re-Tendered Bldng/Arboriculture,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Bldng/Acoustic,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Bldng/Furniture,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,563563 Re-Tendered ID : 547875,563563,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Re-Tendered Bldng/Arboriculture-Reten,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,577378 Re-Tendered ID : 563563,577378,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded Bldng/Arboriculture-2nd R,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered Light,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 03/Beautification,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Over Bridge,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,647467 Re-Tendered ID : 617449,647467,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded Light,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 22/Works/OTM/Sculpture/DN-HC,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Light-05/1,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 22OTM/Works/Sculpture/06,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Rejected 22OTM/Works/StreetLight/07,Rejected,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Cancelled 22OTM/Goods/SpareParts/08,Cancelled,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Being processed 23/OTM/Goods/Advertisement-Publicity,Being processed,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered Items,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 23/OTM/Goods/Advertisement-Publicity,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,808075 Re-Tendered ID : 781008,808075,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 23/Works/OTM/Sculpture/MOH,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,"1 In order to ensure more competition in tender,TDS Clause 9.1 needs to be changed as follows",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Contract Awarded Eqpmnt,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered Sculpture,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,916128 Re-Tendered ID : 891971,916128,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded Sculpture,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 24/Works/OTM/Sculpture/MOH,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Item Purchase,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 24/Goods/OTM/Cleaning Items,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Generator,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,951146 Re-Tendered ID : 935974,951146,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded Day24,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered 24/Goods/OTM/Seminar,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Works,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded Project-1/Lot-11,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded 24/Goods/OTM/Computer Items,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,978265 Re-Tendered ID : 963968,978265,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 24/Goods/OTM/Seminar,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,"1 the newspaper advertisement was delayed, leaving an insufficient amount of time between the publication date and the tender opening.",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,1261854 Re-Tendered ID : 1251658,1261854,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1261983 Re-Tendered ID : 1253318,1261983,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1262256 Re-Tendered ID : 1253425,1262256,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1020481 Re-Tendered ID : 1007160,1020481,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1173472 Re-Tendered ID : 1132951,1173472,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1229751 Re-Tendered ID : 1146762,1229751,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 02/10/2017,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,292378 Re-Tendered ID : 277366,292378,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,292379 Re-Tendered ID : 277367,292379,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,326787 Re-Tendered ID : 292378,326787,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,326788 Re-Tendered ID : 292379,326788,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,581310 Re-Tendered ID : 502973,581310,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Terminated Tender),Contract Terminated,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,991635 Re-Tendered ID : 932066,991635,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 13/P-1,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1001461 Re-Tendered ID : 938969,1001461,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 13/P-2,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1003623 Re-Tendered ID : 982350,1003623,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1008266 Re-Tendered ID : 1000530,1008266,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Correction of ITT Clause 21.2,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Contract Awarded Station/Generator/So,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1017448 Re-Tendered ID : 1008266,1017448,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,101974 Re-Tendered ID : 72156,101974,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 13,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered 27,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1062494 Re-Tendered ID : 1018667,1062494,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded Tender),Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded IMP6/RoadRepair/SurfaceDrain-1,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded IMP6/RoadRepair/SurfaceDrain-2,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,"1 1) Due to browser catche memory a mistake occured, actual site location will be Sector-04, Uttara Residential Area. 2) Correction of Specific experience: 9.1(b) The minimum specific experience in different type of construction work (R.C.C,Brickwork,Painting) of at least 1(One) contract",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,1094618 Re-Tendered ID : 1023059,1094618,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 27(R),Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,1109349 Re-Tendered ID : 1031801,1109349,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1117569 Re-Tendered ID : 1082915,1117569,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1129777 Re-Tendered ID : 1077511,1129777,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1134392 Re-Tendered ID : 1056194,1134392,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1134396 Re-Tendered ID : 1062628,1134396,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1167810 Re-Tendered ID : 1109349,1167810,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Correction of ITT Clause 34.1,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"1 Correction of ITT Clause 23.1 (j). Tenderer shall submit with its Tender, the following additional documents:- i) Valid and Updated Trade License; (2025-2026) ii) VAT/BIN registration Certificate; iii) Income Tax Clearance Certificate;(2023-2024)",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"1 Correction of Experience Criteria 13.1 (a), 13.1 (b) (a) Reputed Bonafide Firm / Organization/ Manufacturer/ Authorized Agent having minimum 05 ( Five) years experience of Operation & Maintenance of (Delfar Brand) Lift. ( years counting backward from the date of Publication of IFT in the",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Due to National Perlament Election-2026. The Intended Tenderers request us to extend the tender submission time. &,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,1225895 Re-Tendered ID : 1170765,1225895,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,1225896 Re-Tendered ID : 1170766,1225896,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Correction of 20.1 (k) any other document as specified in the TDS.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 For Smooth functioning of the Tendering process the following changes has done on “Terms and Conditions of Lift & Escalator” in Sl.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Amendment/Corrigendum issued : 2,Amendment/Corrigendum issued,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,2 Correction of ITT 20.1 (k),2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Amendment/Corrigendum issued : 1,Amendment/Corrigendum issued,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,1 Correction of ITT Clause 13.1 (b) specific experience: The Tenderer shall have successfully completed 1 (One) No. Sub-Station and 1 (One) No. Generator Supply works of amounts,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,141649 Re-Tendered ID : 72166,141649,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,144571 Re-Tendered ID : 101974,144571,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,150704 Re-Tendered ID : 125298,150704,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 The Corrigendum is issued as to add additional features in the technical specification as such PE will enjoy additional services which is,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Due to unavoidable circumstances the Tender has been rescheduled.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,182856 Re-Tendered ID : 168193,182856,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,199891 Re-Tendered ID : 182856,199891,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,2 # Specifications are made more focused according the actual need of the procuring entity,2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Due to Changes of Qualification Criteria (General Experience) & document selling & closing date and time has been modified As mentioned in original tender To be replaced as,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Amendment / Due to Changes of Qualification Criteria (General Experience) & document selling & closing date and time has been modified Corrigendum As mentioned in original tender To be replaced as Text : (a) Minimum 10 (Ten) years experience in civil construction work. (But it (a) Minimum 5 (Five) years experience in civil construction work. (But it should should be minimum 05 (five) years for non-lead partner of JVCA). be minimum 03 (Three) years for non-lead partner of JVCA).,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Amendment / Due to Changes of Qualification Criteria (General Experience) & document selling & closing date and time has been modified Corrigendum Text : As mentioned in original tender To be replaced as (a) The minimum number of years of general experience of the Tenderer in (a) The minimum number of years of general experience of the Tenderer in the construction works as Prime Contractor or Subcontractor or Management the construction works as Prime Contractor or Subcontractor or Management Contractor shall be 10 (Ten) years in Civil Construction works. Contractor shall be 5 (Five) years in Civil Construction works.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,214561 Re-Tendered ID : 134917,214561,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,"1 Correction for quantity of Item No. 9a (Installation of Imported Part, a) Installation of ODU) of Price and Delivery Schedule of Goods",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,287329 Re-Tendered ID : 199306,287329,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287337 Re-Tendered ID : 199307,287337,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287341 Re-Tendered ID : 174666,287341,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287345 Re-Tendered ID : 174667,287345,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287350 Re-Tendered ID : 174668,287350,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287352 Re-Tendered ID : 174669,287352,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287354 Re-Tendered ID : 174661,287354,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287356 Re-Tendered ID : 174662,287356,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287357 Re-Tendered ID : 174664,287357,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287358 Re-Tendered ID : 174665,287358,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,287360 Re-Tendered ID : 174658,287360,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,329551 Re-Tendered ID : 236033,329551,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,329552 Re-Tendered ID : 236045,329552,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,329553 Re-Tendered ID : 236043,329553,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,329556 Re-Tendered ID : 236048,329556,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,339042 Re-Tendered ID : 301503,339042,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,427350 Re-Tendered ID : 376977,427350,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 WHO declared the Corona Virus COVID 19 is a Pandemic.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"2 Date & Time of On-line Tender Closing, Opening, Selling/Downloading e-Tender Document, Tender Security Submission",2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"2 As the Government has extended office closure up to 5 May/2020. Tender Opening, Selling, Closing and Performance security",2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"1 Due to unavoidable circumstances, Following changes are proposed as corrigendum in tender notice: Tender Opening, Submission,",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,475789 Re-Tendered ID : 389133,475789,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,475801 Re-Tendered ID : 437635,475801,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Eligibility of Tenderer of IFT Sl No. (b) & ITT Clause 9.1 of TDS- The Tenderer shall have successfully completed SRH (China) AND OR Masiba (Malaysia) Brand Lift Servicing and Maintenance Works in 3(Three) Contracts with a Contract value of total Tk.14 (Fourteen) Lac OR 2(Two) Contracts having same brands Lift Servicing and Maintenance Works with a Contract value of total Tk.11 (Eleven) Lac OR Single Contract having,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Eligibility of Tenderer of IFT Sl No. (b) & ITT Clause 9.1 of TDS -The Tenderer shall have successfully completed XIZI Unite (China) Brand Lift Servicing and Maintenance Works in 3(Three) Contracts with a value of total Tk.31 (Thirty one) Lac OR 2(Two) Contracts having same brand Lift Servicing and Maintenance Works with a value of total Tk.24 (Twenty four) Lac OR Single Contract having same brand Lift Servicing,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Eligibility of Tenderer of IFT Sl No. (b) & ITT Clause 9.1 of TDS -The Tenderer shall have successfully completed Schindler (China) Brand Lift Servicing and Maintenance Works in 3(Three) Contracts with a value of total Tk.23 (Twenty three)Lac OR 2(Two) Contracts having same brand Lift Servicing and Maintenance Works with a value of total Tk.18 (Eighteen) Lac OR Single Contract having same brand Lift Servicing and Maintenance Works with a value of Tk.15 (Fifteen) Lac within last 05 (Five) years under in Govt./ Semi Govt./ Autonomous body. The,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Eligibility of Tenderer of IFT Sl No. (b) & ITT Clause 9.1 of TDS -The Tenderer shall have successfully completed Fuji HD (China) Brand Lift Servicing and Maintenance Works in 3(Three) Contracts with a Contract value of total Tk. 35 (Thirty five) Lac OR 2(Two) Contracts having same brand Lift Servicing and Maintenance Works with a Contract value of total Tk.28 (Twenty eight) Lac OR Single Contract having same brand Lift Servicing and Maintenance Works with a Contract value of Tk.23 (Twenty three) Lac within last 05 (Five) years under in Govt./ Semi,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,2 Correction of TDS ITT Clause 9.1.,2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,583196 Re-Tendered ID : 480550,583196,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,583212 Re-Tendered ID : 480572,583212,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,583276 Re-Tendered ID : 480539,583276,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,699109 Re-Tendered ID : 637168,699109,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,699111 Re-Tendered ID : 637171,699111,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,"1 Re-uploading of Detailed Specification of Lift (Annexure A), Terms and conditions of Lift and Letter of Commitment for Bank",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,737121 Re-Tendered ID : 702345,737121,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+pp,Md. Mobarak Hossain,Md Mobarak Hossain,same-key,"identical after case, punctuation and the M/S. prefix are set aside",high
+tender_id,796189 Re-Tendered ID : 745254,796189,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,813704 Re-Tendered ID : 800104,813704,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,826146 Re-Tendered ID : 788086,826146,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 05/R-04,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,829141 Re-Tendered ID : 775169,829141,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded tender),Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,"1 The Description of the Item no, 14 and 19 (a) in Price and Delivery Schedule for Goods (Form e-PG3-3A) has been",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,"1 This Tender Required The minimum amount of liquid assets or working capital or credit facilities of the Tenderer shall be Tk.70,00,000/- (Seventy Lac ) only. But Inadvertently this Tender id 870260 The minimum amount of liquid assets or working capital or credit facilities of the Tenderer wsa written Tk.70,000/- (Seventy Thousand) only.",1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,879523 Re-Tendered ID : 840299,879523,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,1 Qualification Criteria-Updated Required- (a) The minimum number of years of general experience of the Tenderer shall be 05(five) years.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,888738 Re-Tendered ID : 832070,888738,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,888828 Re-Tendered ID : 825901,888828,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+amendment_no,2 Due to Technicl Falt at the tender submission on bidder site.,2,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+status,Contract Awarded Dated:31/01/17,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+amendment_no,1 Due to Technicl Falt at the tender submission on bidder site.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Tender Submission time is extended for 7(Seven) days due to request of some potential Bidder for the following reasons:- • Manufacturer Authorization is required from abroad.,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+amendment_no,1 Correction ITT Clause of 21.2 regarding Tender Security,1,leading-serial-number,"the amendment cell prints the serial number and then the narrative of the change, with no label between them",high
+tender_id,98617 Re-Tendered ID : 86290,98617,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded date:24.06.2024,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded date:14/08/2025,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded date:20/08/2025,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded date:22/02/2026,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,638918 Re-Tendered ID : 627115,638918,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,638921 Re-Tendered ID : 627116,638921,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,680144 Re-Tendered ID : 638921,680144,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,699958 Re-Tendered ID : 591949,699958,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,745614 Re-Tendered ID : 731597,745614,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 08-2023.,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,To be Re-Tendered 09-2023.,To be Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered 12-2023.,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Cancelled date:10.01.2024,Cancelled,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded date:10.01.2024,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,941511 Re-Tendered ID : 929618,941511,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded 2024,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Contract Awarded date:25.01.2024,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Re-Tendered date:13.03.2024,Re-Tendered,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,976553 Re-Tendered ID : 961984,976553,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+status,Contract Awarded date:23.04.2024,Contract Awarded,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+status,Being processed 05-2024,Being processed,leading-status-term,the status cell is followed by the wrapped tail of the invitation reference number,high
+tender_id,,1100000,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,130206,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,95841,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,97791,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,672890,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,2026,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium
+tender_id,,23110,id-from-filename,the field was empty or unparseable; the portal names the file after the tender id,medium

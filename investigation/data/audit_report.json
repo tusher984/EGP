@@ -1,0 +1,545 @@
+{
+ "generated": "2026-09-01T13:09:04",
+ "checks_run": 26,
+ "checks_failed": [],
+ "award_cells_compared_with_the_earlier_parser": 8223,
+ "blank_reasons": {
+  "amendment_changes": {
+   "field": {
+    "blank_cells": 13,
+    "reason": "the row of the change table printed no field name"
+   },
+   "new_value": {
+    "blank_cells": 1,
+    "reason": "the change table printed an empty new value"
+   }
+  },
+  "amendments": {
+   "changed_fields": {
+    "blank_cells": 49,
+    "reason": "the amendment reprinted no table of changes, or no row of that table names a field whose value differs from the one first published"
+   },
+   "notice_text": {
+    "blank_cells": 2,
+    "reason": "the amendment block printed a table of changes and no narrative"
+   }
+  },
+  "beneficial_owners": {
+   "country": {
+    "blank_cells": 45,
+    "reason": "the ownership block left this column empty for this owner"
+   },
+   "designation": {
+    "blank_cells": 58,
+    "reason": "the ownership block left this column empty for this owner"
+   }
+  },
+  "bids": {
+   "all_received_were_responsive": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "bids_received": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "bids_responsive": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "bought_but_did_not_bid": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "count_anomaly": {
+    "blank_cells": 644,
+    "reason": "blank where the three counts and the winner are consistent"
+   },
+   "documents_sold": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "received_but_not_responsive": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "responsive_but_not_awarded": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "single_bid_received": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   },
+   "single_bid_responsive": {
+    "blank_cells": 54,
+    "reason": "the award notice printed no bid counts, so no stage count can be given"
+   }
+  },
+  "companies": {
+   "name_read_from_interleaved_layout": {
+    "blank_cells": 309,
+    "reason": "blank where the name was not read from a two-column page"
+   },
+   "other_printed_names": {
+    "blank_cells": 308,
+    "reason": "the name is printed one way only"
+   },
+   "tenderer_ids_printed": {
+    "blank_cells": 277,
+    "reason": "no award naming this company printed a tenderer id"
+   }
+  },
+  "contracts": {
+   "award_procuring_entity_code": {
+    "blank_cells": 535,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "contract_description": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "contract_no": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "contract_signed_on_time": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "performance_security_on_time": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "tenders_received": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "tenders_responsive": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "tenders_sold": {
+    "blank_cells": 54,
+    "reason": "the newer award template prints none of these"
+   },
+   "winner_tenderer_id": {
+    "blank_cells": 591,
+    "reason": "the older award template prints no tenderer id"
+   }
+  },
+  "documents": {
+   "creator": {
+    "blank_cells": 1,
+    "reason": "the PDF's own metadata dictionary prints no such key"
+   },
+   "duplicate_text_of": {
+    "blank_cells": 1801,
+    "reason": "blank where no other document has identical text"
+   },
+   "interleaved_layout_detail": {
+    "blank_cells": 1804,
+    "reason": "blank where no field value contained another field's label"
+   },
+   "pdf_modified": {
+    "blank_cells": 1,
+    "reason": "the PDF's own metadata dictionary prints no such key"
+   },
+   "read_error": {
+    "blank_cells": 1805,
+    "reason": "blank because the PDF was read without error"
+   },
+   "tender_id": {
+    "blank_cells": 3,
+    "reason": "a reference rulebook carries no tender number"
+   }
+  },
+  "eligibility_criteria": {
+   "contract_counts": {
+    "blank_cells": 2941,
+    "reason": "the clause names no number of contracts"
+   },
+   "money_original": {
+    "blank_cells": 2106,
+    "reason": "the clause names no sum of money"
+   },
+   "money_reading": {
+    "blank_cells": 2106,
+    "reason": "the clause names no sum of money"
+   },
+   "money_scale_words": {
+    "blank_cells": 2106,
+    "reason": "the clause names no sum of money"
+   },
+   "money_taka": {
+    "blank_cells": 2114,
+    "reason": "the clause names no sum of money, or the sums it names could not be read from the page with certainty"
+   },
+   "money_unresolved": {
+    "blank_cells": 3219,
+    "reason": "no figure of money in the clause was left unread"
+   },
+   "money_words": {
+    "blank_cells": 2147,
+    "reason": "no sum of money in the clause prints its amount in words beside the digits"
+   },
+   "percentages": {
+    "blank_cells": 3177,
+    "reason": "the clause names no percentage"
+   },
+   "years": {
+    "blank_cells": 2116,
+    "reason": "the clause names no number of years"
+   }
+  },
+  "lots": {
+   "completion_date": {
+    "blank_cells": 2,
+    "reason": "the lot table printed no such date for this lot"
+   },
+   "security_amount_original": {
+    "blank_cells": 42,
+    "reason": "the lot table printed no security amount for this lot"
+   },
+   "security_amount_taka": {
+    "blank_cells": 42,
+    "reason": "the lot table printed no security amount for this lot"
+   },
+   "start_date": {
+    "blank_cells": 12,
+    "reason": "the lot table printed no such date for this lot"
+   }
+  },
+  "name_candidate_pairs": {
+   "measure": {
+    "blank_cells": 164,
+    "reason": "only the edit-distance test yields a number to record"
+   }
+  },
+  "normalization": {
+   "original": {
+    "blank_cells": 7,
+    "reason": "the printed field was empty, which is what the rule repaired"
+   }
+  },
+  "organizations": {
+   "districts": {
+    "blank_cells": 2,
+    "reason": "the only document naming this office is the one two-column notice whose layout is flagged in documents.csv"
+   },
+   "name_read_from_interleaved_layout": {
+    "blank_cells": 109,
+    "reason": "blank where the name was not read from a two-column page"
+   },
+   "other_printed_names": {
+    "blank_cells": 110,
+    "reason": "the name is printed one way only"
+   },
+   "parent_named": {
+    "blank_cells": 8,
+    "reason": "a ministry is the top level: no organisation is printed above it"
+   },
+   "winners": {
+    "blank_cells": 26,
+    "reason": "this office published no contract award in the archive"
+   }
+  },
+  "people": {
+   "declared_owner_of": {
+    "blank_cells": 87,
+    "reason": "this person is not named as the beneficial owner of anything"
+   },
+   "declared_ownership": {
+    "blank_cells": 87,
+    "reason": "this person is not named as the beneficial owner of anything"
+   },
+   "designations_printed": {
+    "blank_cells": 36,
+    "reason": "no document printed a designation beside this name"
+   },
+   "name_read_from_interleaved_layout": {
+    "blank_cells": 137,
+    "reason": "blank where the name was not read from a two-column page"
+   },
+   "organizations": {
+    "blank_cells": 49,
+    "reason": "a declared beneficial owner is named in an ownership block, which names no organisation and no tender"
+   },
+   "other_printed_names": {
+    "blank_cells": 129,
+    "reason": "the name is printed one way only"
+   },
+   "tender_ids": {
+    "blank_cells": 49,
+    "reason": "a declared beneficial owner is named in an ownership block, which names no organisation and no tender"
+   }
+  },
+  "projects": {
+   "name_read_from_interleaved_layout": {
+    "blank_cells": 108,
+    "reason": "blank where the name was not read from a two-column page"
+   },
+   "other_printed_names": {
+    "blank_cells": 106,
+    "reason": "the name is printed one way only"
+   },
+   "procuring_entities": {
+    "blank_cells": 1,
+    "reason": "the document naming this project named no procuring entity"
+   },
+   "project_codes_printed": {
+    "blank_cells": 6,
+    "reason": "no document printed a code beside this project name"
+   }
+  },
+  "relationships": {
+   "detail": {
+    "blank_cells": 6537,
+    "reason": "the relation needs no qualifier"
+   }
+  },
+  "tenders": {
+   "amendment_changed_fields": {
+    "blank_cells": 1039,
+    "reason": "the notice is not amended, or its amendment reprinted no table of changes, or no row of that table names a field whose value differs"
+   },
+   "amendment_no": {
+    "blank_cells": 990,
+    "reason": "the notice is not an amended one"
+   },
+   "amendment_no_printed": {
+    "blank_cells": 990,
+    "reason": "the notice is not an amended one"
+   },
+   "city": {
+    "blank_cells": 17,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "closing_date": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "country": {
+    "blank_cells": 17,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "development_partner": {
+    "blank_cells": 1135,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "district": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "district_original": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "document_price_original": {
+    "blank_cells": 22,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "document_price_taka": {
+    "blank_cells": 22,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "invitation_for": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "invitation_ref": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "inviting_officer": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "inviting_officer_designation": {
+    "blank_cells": 4,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "inviting_officer_id": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "last_selling_date": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "opening_date": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "package_description": {
+    "blank_cells": 2,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "package_no": {
+    "blank_cells": 5,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "payment_mode": {
+    "blank_cells": 5,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "phone": {
+    "blank_cells": 17,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "premeeting_end": {
+    "blank_cells": 5,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "premeeting_start": {
+    "blank_cells": 5,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "procuring_entity": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "procuring_entity_code": {
+    "blank_cells": 894,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "procuring_entity_id": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "project_code": {
+    "blank_cells": 1,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "published_date": {
+    "blank_cells": 21,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "security_last_date": {
+    "blank_cells": 6,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "security_valid_until": {
+    "blank_cells": 32,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "status": {
+    "blank_cells": 183,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "status_original": {
+    "blank_cells": 183,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "tender_valid_until": {
+    "blank_cells": 32,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   },
+   "thana": {
+    "blank_cells": 17,
+    "reason": "the document printed nothing under this label, proved against the extraction record"
+   }
+  }
+ },
+ "distributions": {
+  "contract_value_total_taka": 37236845973.56,
+  "status_counts": {
+   "Contract Awarded": 700,
+   "(no status printed)": 183,
+   "Re-Tendered": 114,
+   "Rejected": 46,
+   "Being processed": 49,
+   "Cancelled": 26,
+   "Live": 7,
+   "To be Re-Tendered": 21,
+   "Contract Terminated": 2,
+   "Amendment/Corrigendum issued": 2
+  },
+  "timeline_first": "2014-12-01",
+  "timeline_last": "2029-02-28",
+  "count_anomalies": [
+   "95841: a winner is named although the responsive count is zero"
+  ]
+ },
+ "district_spelling_evidence": {
+  "district_spellings": {
+   "Chattogram": 229,
+   "Chittagong": 45,
+   "Comilla": 2,
+   "Dinajpur": 3,
+   "Cox's Bazar": 243,
+   "Gazipur": 28,
+   "Khulna": 101,
+   "Dhaka": 1056,
+   "Satkhira": 2,
+   "Pabna": 2,
+   "Barisal": 2,
+   "Laksmipur": 2,
+   "Rajshahi": 78,
+   "Sirajganj": 1
+  },
+  "offices_printing_more_than_one": [
+   {
+    "office": "Management Information System (MIS)",
+    "spellings": {
+     "Chattogram": 23,
+     "Chittagong": 4
+    },
+    "example_files": {
+     "Chattogram": "Tender Notice_PDFs/CDA_Tender_1048608.pdf",
+     "Chittagong": "Tender Notice_PDFs/CDA_Tender_147563.pdf"
+    }
+   },
+   {
+    "office": "Project Director (CDA Square)",
+    "spellings": {
+     "Chattogram": 21,
+     "Chittagong": 3
+    },
+    "example_files": {
+     "Chattogram": "Tender Notice_PDFs/CDA_Tender_1001782.pdf",
+     "Chittagong": "Tender Notice_PDFs/CDA_Tender_133881.pdf"
+    }
+   },
+   {
+    "office": "Project Director (Dewanhat)",
+    "spellings": {
+     "Chattogram": 6,
+     "Chittagong": 2
+    },
+    "example_files": {
+     "Chattogram": "Tender Notice_PDFs/CDA_Tender_728810.pdf",
+     "Chittagong": "Tender Notice_PDFs/CDA_Tender_99692.pdf"
+    }
+   },
+   {
+    "office": "Project Director (Saltgola)",
+    "spellings": {
+     "Chattogram": 3,
+     "Chittagong": 3
+    },
+    "example_files": {
+     "Chattogram": "Tender Notice_PDFs/CDA_Tender_425270.pdf",
+     "Chittagong": "Tender Notice_PDFs/CDA_Tender_110297.pdf"
+    }
+   },
+   {
+    "office": "Project Director(M.Uddin)",
+    "spellings": {
+     "Chattogram": 22,
+     "Chittagong": 6
+    },
+    "example_files": {
+     "Chattogram": "Tender Notice_PDFs/CDA_Tender_287442.pdf",
+     "Chittagong": "Tender Notice_PDFs/CDA_Tender_234888.pdf"
+    }
+   }
+  ]
+ },
+ "notes": [
+  "bid count anomaly, printed as the document prints it - 95841: a winner is named although the responsive count is zero",
+  "timeline spans 2014-12-01 to 2029-02-28; busiest year 2024 with 2376 events",
+  "645 awards to 310 distinct printed winners; the most frequent won 15",
+  "5 offices print more than one district spelling; the archive itself is the only evidence permitted for treating two spellings as one place, and nothing has been merged"
+ ]
+}

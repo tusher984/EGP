@@ -6,6 +6,15 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8123"],
       "port": 8123
+    },
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/alamintusher/Documents/GitHub/Tusher-Portfolio && exec python3 -m http.server 8124"
+      ],
+      "port": 8124
     }
   ]
 }
