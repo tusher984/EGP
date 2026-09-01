@@ -116,8 +116,9 @@ def main():
     print("\n\033[1mAll %d steps finished in %.0f s.\033[0m" % (len(plan),
                                                                time.time() - started))
     if plan[-1][0] >= 8:
-        print("Serve the repository root and open "
-              "investigation/public/index.html:\n\n    python3 -m http.server 8123\n")
+        print("Serve the repository root and open http://localhost:8123/ — the entry "
+              "document is index.html beside this folder:\n\n"
+              "    python3 -m http.server 8123\n")
     else:
         print("Steps %d..%d were not run. Anything reading what they write is now "
               "older than what you just built." % (plan[-1][0] + 1, len(STEPS)))

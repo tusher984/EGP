@@ -96,15 +96,21 @@ regression is visible without opening the file.
 
 ## Serving the site
 
-The site is static files and needs no build step. Any static server will do; the
-entry document is `investigation/public/index.html`, and the paths inside it resolve
-relative to that, so the server's root must be the **repository root**.
+The site is static files and needs no build step. Any static server will do; the entry
+document is `index.html` at the **repository root**, which is also what the published
+site opens on. Serve the repository root:
 
 ```bash
 python3 -m http.server 8123
 ```
 
-Then open `http://localhost:8123/investigation/public/index.html`.
+Then open `http://localhost:8123/`.
+
+The modules address their own files relative to themselves — `data.js` resolves
+`new URL("../", import.meta.url)` to `investigation/`, and `components/ui.js` resolves
+`../../` to the repository root, where the PDF folders sit. So no path inside the site
+depends on how deep the entry document happens to sit. `investigation/public/index.html`
+is a redirect to the root, kept because earlier documentation published that path.
 
 Opening `index.html` from the filesystem will not work: the site is ES modules and
 `fetch`, both of which a browser refuses over `file://`.

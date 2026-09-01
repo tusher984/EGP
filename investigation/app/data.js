@@ -5,7 +5,11 @@
    something that needs them, and kept after that. A reader who only reads the
    article never downloads the nine megabytes behind the search box. */
 
-const BASE = "../";
+/* Every file below is addressed relative to this module rather than to the page that
+   loaded it, so the entry document can sit at the repository root and the paths still
+   resolve. import.meta.url is this file's own URL; "../" from investigation/app/ is
+   investigation/. Nothing here depends on where index.html lives. */
+const BASE = new URL("../", import.meta.url).href;
 const cache = new Map();
 const inflight = new Map();
 
@@ -126,3 +130,7 @@ export const table = (name) => once(`table:${name}`, async () => {
 
 export const tableHref = (name) => `${BASE}data/tables/${name}.csv`;
 export const dataHref = (file) => `${BASE}data/${file}`;
+/* Anything else inside investigation/ — the search index, the evidence index, the
+   generated documentation. Same reason as BASE: the caller must not have to know how
+   deep the page that loaded it happens to sit. */
+export const siteHref = (path) => `${BASE}${path}`;

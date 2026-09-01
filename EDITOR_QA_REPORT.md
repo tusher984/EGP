@@ -1,7 +1,7 @@
 # Editor's QA report
 
-What was checked, what failed, and what remains open, for the investigation published
-at `investigation/public/index.html`.
+What was checked, what failed, and what remains open, for the investigation published at
+`index.html` in the repository root.
 
 Every number below was read out of the pipeline's own output files —
 `investigation/data/dataset_summary.json`, `audit_report.json`, `analysis.json` — or
@@ -255,8 +255,8 @@ Contradictions found and published as contradictions:
 ## 6. Website QA
 
 **The application was run, not read.** Everything below was measured in a browser at
-`http://localhost:8123/investigation/public/index.html`, with all six lazily-built tools
-forced to build, not inferred from the source.
+`http://localhost:8123/`, the repository root served as a static folder, with all six
+lazily-built tools forced to build, not inferred from the source.
 
 Structure and load:
 
