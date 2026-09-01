@@ -4,7 +4,7 @@ Every column of every table in the dataset, with how often it is filled, what ki
 
 This file is written by `investigation/scripts/build_documentation.py` from the CSVs themselves. Nothing in it is typed by hand except the last column of each table and the notes above it, so a rebuilt dataset cannot leave a count here quietly wrong.
 
-Generated 2026-09-01 07:09 UTC.
+Generated 2026-09-01 09:30 UTC.
 
 **A blank cell is never a zero and never a guess.** Where a document does not print a field, the cell is empty and `master_dataset.csv` carries the reason in `blank_reasons`. Where a value was changed, the original survives — either in a `_original` column beside it or as a row in `normalization.csv`.
 

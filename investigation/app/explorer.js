@@ -9,7 +9,7 @@ import {
   el, num, clear, dataTable, chip, cite, PDF_BASE,
 } from "../components/ui.js";
 import {
-  TABLES, table, tableHref, dataHref, summary,
+  TABLES, table, tableHref, dataHref, siteHref, summary,
 } from "./data.js";
 
 /* Which columns carry a file name and a page, per table, so the explorer can turn
@@ -201,7 +201,7 @@ export function downloads() {
           "finding, type, source PDF, page, quoted evidence, calculation, confidence"),
         fileRow(`${PDF_BASE}EDITOR_QA_REPORT.md`, "EDITOR_QA_REPORT.md",
           "what was checked, what failed, what remains open"),
-        fileRow("../evidence/evidence_index.json", "evidence_index.json",
+        fileRow(siteHref("evidence/evidence_index.json"), "evidence_index.json",
           "every citation on this site, keyed file#page"),
       ]),
     group("The extraction, before any analysis touched it",
@@ -218,21 +218,21 @@ export function downloads() {
       "What every column of every table holds, what the search box accepts, and how the "
       + "whole thing is rebuilt. The first two are written out of the built dataset "
       + "itself, so they cannot drift from the files above.", [
-        fileRow("../documentation/data_dictionary.md", "data_dictionary.md",
+        fileRow(siteHref("documentation/data_dictionary.md"), "data_dictionary.md",
           "every column of all eighteen tables: kind, how often filled, an example"),
-        fileRow("../documentation/search_reference.md", "search_reference.md",
+        fileRow(siteHref("documentation/search_reference.md"), "search_reference.md",
           "the query grammar, the scopes, the numeric and date fields"),
-        fileRow("../documentation/pipeline.md", "pipeline.md",
+        fileRow(siteHref("documentation/pipeline.md"), "pipeline.md",
           "what each stage reads and writes, and what to re-run after a change"),
       ]),
     group("The search index",
       "The search box on this site is these three files and search.js. Nothing is "
       + "queried over the network.", [
-        fileRow("../search/records.json", "records.json",
+        fileRow(siteHref("search/records.json"), "records.json",
           "one record per searchable thing, repeated values interned"),
-        fileRow("../search/postings.json", "postings.json",
+        fileRow(siteHref("search/postings.json"), "postings.json",
           "token to record lists, delta encoded"),
-        fileRow("../search/text.json", "text.json",
+        fileRow(siteHref("search/text.json"), "text.json",
           "the snippet each result shows"),
       ]));
 

@@ -34,14 +34,15 @@ typed into the site by hand.
 ## Running it
 
 The site needs a server only because browsers refuse ES modules and `fetch` over
-`file://`. The server's root must be the **repository root**, one level above this
-folder.
+`file://`. Its entry document is `index.html` at the **repository root**, one level above
+this folder — the same file the published site opens on — so the server's root must be
+the repository root. `npm run serve` does that from here.
 
 ```bash
 npm run serve
 ```
 
-Then open `http://localhost:8123/investigation/public/index.html`.
+Then open `http://localhost:8123/`.
 
 To rebuild everything from the PDFs — nine stages, in order, stopping at the first
 failure and refusing to continue past a failed audit:
@@ -77,7 +78,7 @@ which stages to re-run after which kind of change.
 | `evidence/` | for every cited figure, the page it was found on and what that page prints |
 | `search/` | the index: records, a delta-encoded postings list, and page text. Three static files; nothing is queried over a network |
 | `app/`, `charts/`, `components/`, `styles/` | the site — plain ES modules, hand-drawn SVG charts, and a palette validated for three kinds of colour blindness in both light and dark |
-| `public/` | `index.html` and one small JSON file per document, so any phrase can be checked against the page it sits on |
+| `public/` | one small JSON file per document, so any phrase can be checked against the page it sits on. `index.html` here is a redirect: the real entry document is at the repository root |
 | `documentation/` | the data dictionary (every column of every table), the search reference, and the pipeline |
 | `scripts/` | the runner, the payload splitter, the documentation generator, the palette validator |
 | `assets/` | the one icon |

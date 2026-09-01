@@ -65,10 +65,12 @@ export function chip(label, opts = {}) {
 }
 
 /* ---- the link back to the page it was printed on ----
-   Every number, name and quote on this site reaches the PDF it came from. The
-   folder of PDFs sits two levels up from investigation/public/, and the page
-   fragment is what the browser's own viewer understands. */
-export const PDF_BASE = "../../";
+   Every number, name and quote on this site reaches the PDF it came from. The folders
+   of PDFs sit at the repository root, which is two levels up from this module, and the
+   page fragment is what the browser's own viewer understands. Resolving against this
+   module's URL rather than the page's means a citation points at the same PDF whether
+   the reader opened the site from the root index.html or from anywhere else. */
+export const PDF_BASE = new URL("../../", import.meta.url).href;
 export function pdfHref(file, page) {
   const parts = String(file).split("/").map(encodeURIComponent).join("/");
   return PDF_BASE + parts + (page ? `#page=${page}` : "");

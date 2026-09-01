@@ -2,7 +2,7 @@
 
 What can be typed into the search box on the site, and every field the built index advertises. Written by `investigation/scripts/build_documentation.py` out of `investigation/search/records.json`, so this list and the index cannot drift apart.
 
-Generated 2026-09-01 07:09 UTC.
+Generated 2026-09-01 09:30 UTC.
 
 The whole index is three files — `records.json`, `postings.json`, `text.json` — fetched once and searched in the browser. **No query leaves the machine**, and there is no server to query: the site is static files.
 
