@@ -1,6 +1,8 @@
 /* The pieces every section is built from. Plain DOM, no framework, no build step:
    the site has to open from a folder with no network and no toolchain. */
 
+import { LANG, t, word } from "../i18n/i18n.js";
+
 export function el(tag, attrs, ...kids) {
   const n = document.createElement(tag);
   if (attrs && (attrs.nodeType || typeof attrs === "string" || Array.isArray(attrs))) {
@@ -40,28 +42,45 @@ export function svgEl(tag, attrs) {
 
 export function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); return n; }
 
-/* ---- numbers, written the way the story writes them ---- */
-const NF = new Intl.NumberFormat("en-GB");
+/* ---- numbers, written the way the story writes them ----
+   The Bangla edition writes its numbers in Bengali digits and groups them the way
+   Bengali groups them — ৩৭,২০,০০,০০,০০০, not 37,200,000,000 — because a page that
+   spells its sentences in one script and its quantities in another is harder to read
+   than either. Intl does the grouping; nothing here reimplements it. The exact figure
+   in Latin digits stays reachable in the title attribute on every rounded value, and
+   the CSV downloads are unaffected: those carry raw values for a spreadsheet. */
+const NF = new Intl.NumberFormat(LANG === "bn" ? "bn-BD" : "en-GB");
 export const num = (v) => (v === null || v === undefined || v === "" || Number.isNaN(+v)
-  ? "not documented" : NF.format(Math.round(+v * 100) / 100));
-export const pct = (v) => `${Math.round(+v * 10) / 10}%`;
+  ? t("num.none") : NF.format(Math.round(+v * 100) / 100));
+export const pct = (v) => t("num.pct", { n: NF.format(Math.round(+v * 10) / 10) });
+
+/* A p-value keeps the precision it was calculated to. num() rounds to two decimals,
+   which would print p = 0.683 as 0.68 and coarsen a statistic the reader is being asked
+   to judge the strength of, so this one formats to three places — in the reader's own
+   digits, like every other number on the page. */
+const NF3 = new Intl.NumberFormat(LANG === "bn" ? "bn-BD" : "en-GB",
+  { maximumFractionDigits: 3 });
+export const decimal = (v) => (Number.isFinite(+v) ? NF3.format(+v) : t("num.none"));
 
 /* Taka are written in crore above a crore and in lakh above a lakh, because that
    is how the documents themselves print them. The exact figure stays available in
    the title attribute rather than being rounded away. */
 export function taka(v, opts = {}) {
   const n = +v;
-  if (!Number.isFinite(n)) return "not documented";
-  if (Math.abs(n) >= 1e7) return `${NF.format(Math.round(n / 1e5) / 100)} crore`;
-  if (Math.abs(n) >= 1e5) return `${NF.format(Math.round(n / 1e3) / 100)} lakh`;
-  return opts.bare ? NF.format(n) : `Tk ${NF.format(Math.round(n))}`;
+  if (!Number.isFinite(n)) return t("num.none");
+  if (Math.abs(n) >= 1e7) return t("num.crore", { n: NF.format(Math.round(n / 1e5) / 100) });
+  if (Math.abs(n) >= 1e5) return t("num.lakh", { n: NF.format(Math.round(n / 1e3) / 100) });
+  return opts.bare ? NF.format(n) : t("num.taka", { n: NF.format(Math.round(n)) });
 }
-export const exact = (v) => (Number.isFinite(+v) ? `Tk ${NF.format(+v)}` : "");
+export const exact = (v) => (Number.isFinite(+v) ? t("num.taka", { n: NF.format(+v) }) : "");
 
-/* ---- labels ---- */
+/* ---- labels ----
+   The label's own words are translated; the data-label attribute keeps the English
+   token, because that is what the stylesheet matches on to give each label its colour,
+   and because it is the label as the analysis wrote it. */
 export function chip(label, opts = {}) {
   return el("span", { class: "chip" + (opts.square ? " sq" : ""), "data-label": label },
-    opts.short || label);
+    opts.short || word(`label.${label}`, label));
 }
 
 /* ---- the link back to the page it was printed on ----
@@ -80,7 +99,7 @@ export function cite(file, page, opts = {}) {
   const name = String(file).split("/").pop();
   return el("a", {
     class: "cite", href: pdfHref(file, page), target: "_blank", rel: "noopener",
-    title: `Open ${file}${page ? ` at page ${page}` : ""} in a new tab`,
+    title: page ? t("cite.openAt", { file, page }) : t("cite.open", { file }),
   }, opts.label || name, page ? el("span", { class: "pg" }, `p${page}`) : null);
 }
 
@@ -98,19 +117,31 @@ export function citeList(refs) {
   return el("ul", { class: "cites" }, items);
 }
 
+/* The filename, the page marker and the quoted words are never translated. They are
+   the evidence: a reader checking this sentence against the page has to find the same
+   characters here as there, and "p3" is what a PDF viewer's page box takes. */
 export function quote(text, file, page) {
   return el("blockquote", { class: "quote" },
     el("span", { html: `&ldquo;${escapeHtml(text)}&rdquo;` }),
-    el("span", { class: "src" }, "Printed in ", cite(file, page)));
+    el("span", { class: "src" }, t("cite.printedIn"), " ", cite(file, page)));
 }
 
 export const escapeHtml = (s) => String(s).replace(/[&<>"']/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-/* ---- containers ---- */
+/* ---- containers ----
+   A tile whose number is explained somewhere further down carries a link to that
+   place, because a reader who has just been handed "997 bids set aside" wants the
+   chapter that says what happened, not a scroll hunt. A tile with no href is a plain
+   figure, as before. */
 export function tiles(items) {
-  return el("div", { class: "tiles" }, items.map((t) => el("div", { class: "tile" },
-    el("b", { title: t.title || "" }, t.value), el("span", t.label))));
+  return el("div", { class: "tiles" }, items.map((tile) => {
+    const inner = [el("b", { title: tile.title || "" }, tile.value),
+      el("span", tile.label)];
+    return tile.href
+      ? el("a", { class: "tile", href: tile.href }, inner)
+      : el("div", { class: "tile" }, inner);
+  }));
 }
 
 /* A disclosure that builds its contents the first time it is opened, so a section
@@ -195,13 +226,13 @@ export function dataTable(opts) {
     if (!c) return 0;
     const x = a[c.key], y = b[c.key];
     if (c.num) return dir * ((+x || 0) - (+y || 0));
-    return dir * String(x ?? "").localeCompare(String(y ?? ""), "en");
+    return dir * String(x ?? "").localeCompare(String(y ?? ""), LANG);
   };
 
   function apply() {
-    const t = q.trim().toLowerCase();
-    rows = !t ? all.slice() : all.filter((r) => cols.some((c) =>
-      String(r[c.key] ?? "").toLowerCase().includes(t)));
+    const needle = q.trim().toLowerCase();
+    rows = !needle ? all.slice() : all.filter((r) => cols.some((c) =>
+      String(r[c.key] ?? "").toLowerCase().includes(needle)));
     if (sortKey) rows.sort(cmp);
     at = 0;
     draw();
@@ -215,17 +246,19 @@ export function dataTable(opts) {
         { class: (c.num ? "num" : "") + (c.wrap ? " wrapcell" : "") }, value(r, c)))));
     }
     count.textContent = rows.length === all.length
-      ? `${num(all.length)} rows`
-      : `${num(rows.length)} of ${num(all.length)} rows`;
+      ? t("table.rows", { n: num(all.length) })
+      : t("table.rowsOf", { shown: num(rows.length), all: num(all.length) });
     clear(pager);
     if (rows.length > per) {
       pager.append(
         el("button", { class: "act ghost", type: "button", disabled: at === 0,
-          onclick: () => { at = Math.max(0, at - per); draw(); } }, "Previous"),
-        el("span", `${num(at + 1)}–${num(Math.min(at + per, rows.length))}`),
+          onclick: () => { at = Math.max(0, at - per); draw(); } }, t("table.prev")),
+        el("span", t("table.range", { from: num(at + 1),
+          to: num(Math.min(at + per, rows.length)) })),
         el("button", { class: "act ghost", type: "button",
           disabled: at + per >= rows.length,
-          onclick: () => { at = Math.min(rows.length - 1, at + per); draw(); } }, "Next"));
+          onclick: () => { at = Math.min(rows.length - 1, at + per); draw(); } },
+        t("table.next")));
     }
   }
 
@@ -245,14 +278,14 @@ export function dataTable(opts) {
   const bar = el("div", { class: "tablebar" });
   if (opts.filter !== false) {
     bar.append(el("div", { class: "grow" }, el("label", { class: "field" },
-      el("span", { class: "sr" }, "Filter these rows"),
-      el("input", { type: "search", placeholder: "Filter these rows…",
+      el("span", { class: "sr" }, t("table.filterLabel")),
+      el("input", { type: "search", placeholder: t("table.filterHint"),
         oninput: (e) => { q = e.target.value; apply(); } }))));
   }
   bar.append(count);
   if (opts.filename) {
     bar.append(el("button", { class: "act ghost", type: "button", onclick: () =>
-      downloadCsv(opts.filename, cols, rows) }, "Download these rows (CSV)"));
+      downloadCsv(opts.filename, cols, rows) }, t("table.csv")));
   }
 
   if (opts.caption) cap.textContent = opts.caption;

@@ -14,6 +14,8 @@
     "docs": "python3 -P scripts/run_pipeline.py --only 9",
     "palette": "python3 -P scripts/validate_palette.py \"#2f5c8f,#b0521f,#3f7368\" \"#f8f7f4\"",
     "palette:night": "python3 -P scripts/validate_palette.py \"#2f5c8f,#b0521f,#3f7368\" \"#17161a\" --dark --restep 0.74 1.05",
-    "check": "for f in app/*.js charts/*.js search/*.js; do node --check \"$f\" || exit 1; done && echo 'every module parses'"
+    "check": "npm run check:parse && npm run check:i18n",
+    "check:parse": "for f in app/*.js charts/*.js components/*.js evidence/*.js i18n/*.js search/*.js scripts/*.js; do node --check \"$f\" || exit 1; done && echo 'every module parses'",
+    "check:i18n": "node scripts/check_i18n.js"
   }
 }

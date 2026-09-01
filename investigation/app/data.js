@@ -5,6 +5,8 @@
    something that needs them, and kept after that. A reader who only reads the
    article never downloads the nine megabytes behind the search box. */
 
+import { t } from "../i18n/i18n.js";
+
 /* Every file below is addressed relative to this module rather than to the page that
    loaded it, so the entry document can sit at the repository root and the paths still
    resolve. import.meta.url is this file's own URL; "../" from investigation/app/ is
@@ -21,9 +23,11 @@ function once(key, make) {
   return p;
 }
 
+/* A failed fetch is the one message from this module a reader ever sees, so it is a
+   sentence from the pack. The path inside it is not: it is the file that is missing. */
 async function json(path) {
   const r = await fetch(BASE + path, { cache: "force-cache" });
-  if (!r.ok) throw new Error(`${path} did not load (${r.status})`);
+  if (!r.ok) throw new Error(t("err.file", { path, status: r.status }));
   return r.json();
 }
 
@@ -67,27 +71,19 @@ export const pageShard = (documentId) =>
 /* ---- the tables ----
    The eighteen CSVs the parser writes are the dataset. They are parsed here rather
    than converted to JSON at build time so that the file a reader downloads from the
-   downloads section is byte for byte the file the site itself read. */
+   downloads section is byte for byte the file the site itself read.
+
+   The names are the filenames the parser wrote and are never translated — a reader
+   who downloads companies.csv and a reader who opens it here are looking at the same
+   file. What each one holds is a sentence, so it lives in the language pack under
+   tbl.<name> and is fetched with tableAbout(). */
 export const TABLES = [
-  ["documents", "one row per PDF in the folder, with what was read out of it"],
-  ["tenders", "one row per tender notice"],
-  ["lots", "one row per lot inside a tender"],
-  ["contracts", "one row per award notice"],
-  ["bids", "the bid counts an award notice prints, one row per award"],
-  ["eligibility_criteria", "every requirement to enter, one row per clause"],
-  ["amendments", "one row per amendment notice"],
-  ["amendment_changes", "one row per line of a change table"],
-  ["companies", "every firm named in the archive"],
-  ["people", "every person named, with the role they are named in"],
-  ["organizations", "ministries, agencies and procuring entities"],
-  ["projects", "the projects contracts are charged to"],
-  ["beneficial_owners", "the owners a document declares"],
-  ["locations", "the places the documents name"],
-  ["relationships", "every link between two records, with the page it came from"],
-  ["timeline", "every dated event, one row per date"],
-  ["normalization", "every value this pipeline changed, and why"],
-  ["name_candidate_pairs", "names that resemble each other, none of them merged"],
+  "documents", "tenders", "lots", "contracts", "bids", "eligibility_criteria",
+  "amendments", "amendment_changes", "companies", "people", "organizations",
+  "projects", "beneficial_owners", "locations", "relationships", "timeline",
+  "normalization", "name_candidate_pairs",
 ];
+export const tableAbout = (name) => t(`tbl.${name}`);
 
 /* RFC 4180: quoted fields may hold commas, quotes and newlines, and several of
    these columns do. A split on commas would quietly corrupt the clause text. */
@@ -124,7 +120,7 @@ export function parseCsv(text) {
 
 export const table = (name) => once(`table:${name}`, async () => {
   const r = await fetch(`${BASE}data/tables/${name}.csv`, { cache: "force-cache" });
-  if (!r.ok) throw new Error(`${name}.csv did not load (${r.status})`);
+  if (!r.ok) throw new Error(t("err.file", { path: `${name}.csv`, status: r.status }));
   return parseCsv(await r.text());
 });
 

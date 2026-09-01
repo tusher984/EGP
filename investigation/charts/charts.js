@@ -6,9 +6,14 @@
    zero, a 2px gap of page colour between neighbouring fills, one axis and never
    two, a recessive grid, direct labels only where they earn their place, and a
    hover layer with a tooltip on every mark. Colour comes from the tokens in
-   styles/tokens.css, which are the validated palette. */
+   styles/tokens.css, which are the validated palette.
 
-import { el, svgEl, clear, num } from "../components/ui.js";
+   Every word these primitives print of their own accord — the fallback name of an axis,
+   the reading under a funnel step, the label on a shaded band — comes from the language
+   pack. A caller that passes a label passes one it got from the pack too. */
+
+import { el, svgEl, clear, num, pct, decimal } from "../components/ui.js";
+import { t } from "../i18n/i18n.js";
 
 const W = 760;               // one coordinate space, scaled by the viewBox
 const HUE = ["var(--hue-1)", "var(--hue-2)", "var(--hue-3)"];
@@ -113,7 +118,7 @@ export function barsH(plot, o) {
     g.append(svgEl("rect", { x: 0, y, width: W, height: rowH, fill: "transparent" }));
     svg.append(g);
     hover(plot, tip, g, () => tipBody(r.label,
-      [[o.valueLabel || "value", o.fmt ? o.fmt(r.value) : num(r.value)],
+      [[o.valueLabel || t("chart.value"), o.fmt ? o.fmt(r.value) : num(r.value)],
         ...(r.note ? [["", r.note]] : [])]));
   });
   return svg;
@@ -158,7 +163,8 @@ export function barsV(plot, o) {
       fill: "transparent" }));
     svg.append(g);
     hover(plot, tip, g, () => tipBody(o.labelPrefix ? `${o.labelPrefix} ${r.label}` : r.label,
-      [[o.valueLabel || "tenders", num(r.value)], ...(r.note ? [["", r.note]] : [])]));
+      [[o.valueLabel || t("chart.tenders"), num(r.value)],
+        ...(r.note ? [["", r.note]] : [])]));
   });
   if (o.axisLabel) {
     svg.append(svgEl("text", { x: padL + plotW / 2, y: h - 3, "text-anchor": "middle",
@@ -193,15 +199,15 @@ export function funnel(plot, o) {
       const lost = rows[i - 1].value - r.value;
       const share = (lost / rows[i - 1].value) * 100;
       g.append(svgEl("text", { x: x0, y: y - 12, class: "mark-label",
-        text: `${num(lost)} fewer than the step above (${Math.round(share * 10) / 10}%)` }));
+        text: t("chart.fewerThanAbove", { n: num(lost), share: pct(share) }) }));
       g.append(svgEl("line", { class: "gridline", x1: x0 - 4, y1: y - 30, x2: x0 - 4,
         y2: y, stroke: "var(--rule)" }));
     }
     g.append(svgEl("rect", { x: 0, y: y - 8, width: W, height: rowH, fill: "transparent" }));
     svg.append(g);
     hover(plot, tip, g, () => tipBody(r.label, [
-      [o.valueLabel || "count", num(r.value)],
-      ["share of the first step", `${Math.round((r.value / max) * 1000) / 10}%`],
+      [o.valueLabel || t("chart.count"), num(r.value)],
+      [t("chart.shareOfFirst"), pct((r.value / max) * 100)],
       ...(r.note ? [["", r.note]] : [])]));
   });
   return svg;
@@ -280,7 +286,7 @@ export function bandStrip(plot, o) {
     fill: "var(--seq-1)", stroke: "var(--seq-3)", "stroke-dasharray": "3 3" }));
   svg.append(svgEl("text", { x: (x(o.bandLow) + x(o.bandHigh)) / 2, y: padT - 12,
     "text-anchor": "middle", class: "mark-label",
-    text: `${o.bandLabel || "the band the document recommends"}` }));
+    text: o.bandLabel || t("chart.bandDefault") }));
 
   const axis = svgEl("g", { class: "axis" });
   const ticks = Math.round(cap / 0.25);
@@ -288,7 +294,7 @@ export function bandStrip(plot, o) {
     const v = i * 0.25;
     axis.append(svgEl("line", { class: "gridline", x1: x(v), y1: padT - 6, x2: x(v), y2: base }));
     axis.append(svgEl("text", { x: x(v), y: base + 18, "text-anchor": "middle",
-      text: `${v}×` + (v === cap ? "+" : "") }));
+      text: t("num.times", { n: decimal(v) }) + (v === cap ? "+" : "") }));
   }
   axis.append(svgEl("line", { x1: padL, y1: base, x2: W - 26, y2: base }));
   svg.append(axis);
@@ -303,19 +309,23 @@ export function bandStrip(plot, o) {
     });
     const hit = svgEl("rect", { x: cx - (dot + gap), y: padT - 6, width: dot * 2 + gap * 2,
       height: base - padT + 6, fill: "transparent", tabindex: "0",
-      "aria-label": `${num(vals.length)} tenders at ${Math.round(k * bin * 100) / 100} times` });
+      "aria-label": t("chart.dotsAt", { n: num(vals.length),
+        at: decimal(Math.round(k * bin * 100) / 100) }) });
     svg.append(hit);
     hover(plot, tip, hit, () => tipBody(
-      over ? `${cap}× and above` : `${Math.round(k * bin * 100) / 100}–${Math.round((k + 1) * bin * 100) / 100}×`,
-      [["tenders", num(vals.length)],
-        ["outside the band", num(vals.filter((v) => v > o.bandHigh || v < o.bandLow).length)]]));
+      over ? t("chart.capAndAbove", { n: decimal(cap) })
+        : t("chart.binRange", { from: decimal(Math.round(k * bin * 100) / 100),
+          to: decimal(Math.round((k + 1) * bin * 100) / 100) }),
+      [[t("chart.tenders"), num(vals.length)],
+        [t("chart.outsideBand"),
+          num(vals.filter((v) => v > o.bandHigh || v < o.bandLow).length)]]));
   }
   if (Number.isFinite(o.median)) {
     svg.append(svgEl("line", { x1: x(o.median), y1: padT - 6, x2: x(o.median), y2: base,
       stroke: "var(--ink)", "stroke-width": 2 }));
     svg.append(svgEl("text", { x: x(o.median), y: base + 34, "text-anchor": "middle",
       class: "mark-label", style: "fill:var(--ink)",
-      text: `median ${Math.round(o.median * 1000) / 1000}×` }));
+      text: t("chart.medianTimes", { n: decimal(o.median) }) }));
   }
   return svg;
 }
@@ -389,21 +399,22 @@ export function egoGraph(plot, o) {
       }
       svg.append(g);
       hover(plot, tip, g, () => tipBody(n.label, [
-        ["relation", lane.relation],
-        ...(n.detail ? [["what the page prints", n.detail]] : []),
-        ...(o.onPick ? [["click", "centre the picture on this one"]] : []),
+        [t("chart.relation"), lane.relation],
+        ...(n.detail ? [[t("chart.pagePrints"), n.detail]] : []),
+        ...(o.onPick ? [[t("chart.click"), t("chart.recentre")]] : []),
       ]));
       y = top + nodeH + nodeGap;
     });
     if (lane.nodes.length > cap) {
       svg.append(svgEl("text", { x: nx + 12, y: y + 12, class: "mark-label",
-        text: `and ${num(lane.nodes.length - cap)} more, all of them in the table below` }));
+        text: t("chart.andMore", { n: num(lane.nodes.length - cap) }) }));
       y += 18;
     }
     y += lanePad;
   });
-  svg.setAttribute("aria-label", `${o.centre.label}: ${num(o.lanes.reduce((s, l) =>
-    s + l.nodes.length, 0))} links the documents print, in ${num(lanes.length)} kinds`);
+  svg.setAttribute("aria-label", t("chart.egoAria", { name: o.centre.label,
+    links: num(o.lanes.reduce((s, l) => s + l.nodes.length, 0)),
+    kinds: num(lanes.length) }));
   return svg;
 }
 

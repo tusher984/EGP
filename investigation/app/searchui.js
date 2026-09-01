@@ -7,11 +7,17 @@
    carries the page it was printed on, so a hit is never the end of the trail.
 
    Nine million characters of index sit behind this box. None of it is fetched until
-   a reader searches for the first time. */
+   a reader searches for the first time.
+
+   The examples in the help table are queries, not sentences: what to type stays in
+   Latin script in both editions, because it is what the index is keyed on and typing
+   the translation would find nothing. What each one does is a sentence, and is
+   translated. */
 
 import {
   el, num, clear, chip, cite, disclosure, downloadCsv,
 } from "../components/ui.js";
+import { t, word } from "../i18n/i18n.js";
 import { engine } from "../search/search.js";
 import { showEntity } from "./entities.js";
 
@@ -23,23 +29,27 @@ const KIND_ORDER = ["finding", "tender", "contract", "clause", "company", "perso
 
 const ENTITY_KIND = { company: 1, person: 1, organisation: 1, project: 1 };
 
-/* What a reader may type. Each row is [what to type, what it does] and every one of
-   them is answered by the parser in search.js. */
+/* What a reader may type. The left column is the query itself; the right is the key
+   of the sentence explaining it. Every one of them is answered by the parser in
+   search.js. */
 const HELP = [
-  ["lift maintenance", "both words, anywhere in a record"],
-  ['"single largest contract"', "those words in that order, checked against the text"],
-  ["rajuk OR cda", "either one"],
-  ["lift -tender", "the first, without the second"],
-  ["(lift OR escalator) rajuk", "grouped"],
-  ["company:niaz", "a named field; the whole list of them is below"],
-  ["tender:1001782", "everything the archive holds on one tender"],
-  ["amount:10000000..50000000", "a number between two bounds"],
-  ["closing:2024-01-01..2024-06-30", "a date between two bounds"],
-  ["label:UNUSUAL", "the label the analysis gave a record"],
-  ["kind:clause", "one kind of record only"],
-  ["ra1uk", "a misreading: the box retries it against OCR-style confusions"],
+  ["lift maintenance", "help.bothWords"],
+  ['"single largest contract"', "help.phrase"],
+  ["rajuk OR cda", "help.either"],
+  ["lift -tender", "help.without"],
+  ["(lift OR escalator) rajuk", "help.grouped"],
+  ["company:niaz", "help.scope"],
+  ["tender:1001782", "help.tender"],
+  ["amount:10000000..50000000", "help.numRange"],
+  ["closing:2024-01-01..2024-06-30", "help.dateRange"],
+  ["label:UNUSUAL", "help.label"],
+  ["kind:clause", "help.kind"],
+  ["ra1uk", "help.ocr"],
 ];
 
+/* The CSV a reader takes away carries the raw values, so its headers are the field
+   names rather than translated captions — a spreadsheet formula written against one
+   edition has to work against the other. */
 const flat = (r) => ({
   kind: r.k, name: r.t, line: r.s,
   file: r.r && r.r.file ? r.r.file : "",
@@ -66,6 +76,8 @@ function hitNode(hit) {
   if (hit.snippet) li.append(el("p", { class: "snip", html: hit.snippet }));
   else if (r.s) li.append(el("p", { class: "snip" }, r.s));
 
+  /* A tag is a query as much as a label: it reads scope:value because clicking it
+     runs exactly that. The scope keeps its indexed name; the value is the record's. */
   const foot = el("p", { class: "hitfoot" });
   for (const k of ["tender", "company", "person", "agency", "district", "label",
     "status", "finding", "rule"]) {
@@ -75,8 +87,7 @@ function hitNode(hit) {
       href: `#q=${encodeURIComponent(`${k}:${v}`)}` }, `${k}: ${v}`), " ");
   }
   if (r.r && r.r.file) foot.append(cite(r.r.file, r.r.page || null));
-  else foot.append(el("span", { class: "note" },
-    "worked out from the dataset, not printed on a page"));
+  else foot.append(el("span", { class: "note" }, t("srch.notOnAPage")));
   li.append(foot);
   return li;
 }
@@ -86,21 +97,22 @@ function helpPanel(eng) {
   const group = (kind) => scopes.filter(([, k]) => k === kind).map(([n]) => n).sort();
   return el("div", { class: "helpgrid" },
     el("table", { class: "grid" },
-      el("caption", "Everything this box understands"),
-      el("thead", el("tr", el("th", { scope: "col" }, "type this"),
-        el("th", { scope: "col" }, "and it means"))),
-      el("tbody", HELP.map(([a, b]) =>
-        el("tr", el("td", el("code", a)), el("td", b))))),
+      el("caption", t("srch.helpCaption")),
+      el("thead", el("tr", el("th", { scope: "col" }, t("srch.typeThis")),
+        el("th", { scope: "col" }, t("srch.andItMeans")))),
+      el("tbody", HELP.map(([q, key]) =>
+        el("tr", el("td", el("code", q)), el("td", t(key)))))),
     el("dl", { class: "fields" },
-      el("dt", "named fields"),
+      el("dt", t("srch.namedFields")),
       el("dd", group("scope").join(", ")),
-      el("dt", "fields that take a number range"),
+      el("dt", t("srch.numFields")),
       el("dd", group("num").join(", ")),
-      el("dt", "fields that take a date range"),
+      el("dt", t("srch.dateFields")),
       el("dd", group("date").join(", ")),
-      el("dt", "kinds of record"),
+      el("dt", t("srch.recordKinds")),
       el("dd", Object.entries(eng.kinds || {})
-        .map(([k, n]) => `${k} (${num(n)})`).join(", "))));
+        .map(([k, n]) => t("srch.kindCount",
+          { kind: word(`label.${k}`, k), n: num(n) })).join(", "))));
 }
 
 /* The router hands queries in here. One panel exists per page, so one reference is
@@ -110,12 +122,11 @@ export function runQuery(q) { if (RUN) return RUN(q); return null; }
 
 export function searchPanel() {
   const input = el("input", { type: "search", class: "bigsearch", autocomplete: "off",
-    placeholder: "A firm, a tender number, a phrase in quotes, company:niaz…",
-    "aria-label": "search every word in the archive" });
-  const kindSel = el("select", { "aria-label": "narrow to one kind of record" },
-    el("option", { value: "" }, "every kind of record"));
+    placeholder: t("srch.placeholder"), "aria-label": t("srch.boxAria") });
+  const kindSel = el("select", { "aria-label": t("srch.kindAria") },
+    el("option", { value: "" }, t("srch.everyKind")));
   const status = el("p", { class: "note", role: "status", "aria-live": "polite" },
-    "The index is fetched the first time you search, and not before.");
+    t("srch.idle"));
   const notes = el("ul", { class: "searchnotes" });
   const out = el("ol", { class: "hits" });
   const actions = el("div", { class: "tablebar" });
@@ -129,13 +140,12 @@ export function searchPanel() {
     clear(notes);
     if (!q.trim()) {
       clear(out); clear(actions); clear(facets);
-      status.textContent = "Type anything above. Everything this box understands is "
-        + "listed under the box.";
+      status.textContent = t("srch.emptyQuery");
       return;
     }
     if (running) return;
     running = true;
-    status.textContent = built ? `Searching for ${q}` : "Fetching the index, once";
+    status.textContent = built ? t("srch.searching", { q }) : t("srch.fetching");
     let eng;
     try {
       eng = await engine();
@@ -143,7 +153,8 @@ export function searchPanel() {
       running = false;
       status.textContent = "";
       clear(out);
-      out.append(el("li", { class: "warn" }, `The index did not load: ${e.message}`));
+      out.append(el("li", { class: "warn" },
+        t("srch.indexFailed", { message: e.message })));
       return;
     }
     if (!built) {
@@ -152,10 +163,9 @@ export function searchPanel() {
       for (const k of [...Object.keys(eng.kinds || {})].sort((a, b) =>
         KIND_ORDER.indexOf(a) - KIND_ORDER.indexOf(b))) {
         kindSel.append(el("option", { value: k },
-          `${k} · ${num(eng.kinds[k])} records`));
+          t("srch.kindOption", { kind: word(`label.${k}`, k), n: num(eng.kinds[k]) })));
       }
-      helpHost.append(disclosure("How to search this archive",
-        () => helpPanel(eng)));
+      helpHost.append(disclosure(t("srch.howTo"), () => helpPanel(eng)));
     }
     const res = await eng.search(q, { limit, kind: kindSel.value || undefined });
     running = false;
@@ -167,13 +177,10 @@ export function searchPanel() {
     clear(out); clear(actions); clear(facets); clear(notes);
     const shown = res.results.length;
     status.textContent = res.total
-      ? `${num(res.total)} records match, showing ${num(shown)}`
-      : "Nothing in the archive matches that.";
+      ? t("srch.matchCount", { n: num(res.total), shown: num(shown) })
+      : t("srch.noMatch");
     for (const n of res.notes) notes.append(el("li", n));
-    if (!res.total) {
-      notes.append(el("li", "A word the archive does not print is not a finding about "
-        + `the world. It means these ${num(docs)} documents do not use it.`));
-    }
+    if (!res.total) notes.append(el("li", t("srch.notPrinted", { documents: num(docs) })));
 
     /* the kinds the whole match set falls into, as a way to narrow it */
     const byKind = Object.entries(res.kinds || {})
@@ -181,13 +188,13 @@ export function searchPanel() {
     if (kindSel.value) {
       facets.append(el("button", { class: "linky", type: "button", onclick: () => {
         kindSel.value = ""; limit = 40; run(last);
-      } }, `showing ${kindSel.value} records only — show every kind again`));
+      } }, t("srch.onlyKind", { kind: word(`label.${kindSel.value}`, kindSel.value) })));
     } else if (byKind.length > 1) {
-      facets.append(el("span", { class: "note" }, "narrow to: "));
+      facets.append(el("span", { class: "note" }, t("srch.narrowTo")));
       for (const [k, n] of byKind) {
         facets.append(el("button", { class: "linky", type: "button", onclick: () => {
           kindSel.value = k; limit = 40; run(last);
-        } }, `${k} (${num(n)})`));
+        } }, t("srch.kindCount", { kind: word(`label.${k}`, k), n: num(n) })));
       }
     }
     for (const hit of res.results) out.append(hitNode(hit));
@@ -195,8 +202,10 @@ export function searchPanel() {
     if (res.total > shown) {
       actions.append(el("button", { class: "act", type: "button", onclick: () => {
         limit = shown + 40; run(last);
-      } }, `Show the next ${num(Math.min(40, res.total - shown))}`));
+      } }, t("srch.showNext", { n: num(Math.min(40, res.total - shown)) })));
     }
+    /* The column headings of the file a reader takes away are the dataset's own field
+       names, in both editions, for the reason given at flat() above. */
     if (shown) {
       actions.append(el("button", { class: "act ghost", type: "button", onclick: () =>
         downloadCsv("search_results.csv", [
@@ -205,7 +214,7 @@ export function searchPanel() {
           { key: "fields", label: "fields" },
           { key: "file", label: "source file" }, { key: "page", label: "page" },
         ], res.results.map((h) => flat(h.r))) },
-      "Download these results (CSV)"));
+      t("srch.downloadCsv")));
     }
   }
 
@@ -230,22 +239,15 @@ export function searchPanel() {
 
   return el("section", { class: "band", id: "search" },
     el("div", { class: "wrap" },
-      el("p", { class: "kicker" }, "Look for anything yourself"),
-      el("h2", "Search every word the archive prints"),
+      el("p", { class: "kicker" }, t("srch.kicker")),
+      el("h2", t("srch.title")),
       el("div", { class: "prose" },
-        el("p", "This box reads an index built from the documents themselves: every "
-          + "field the parser lifted, every clause of every condition of entry, every "
-          + "name, and the text of every page. It runs entirely in your browser. "
-          + "Nothing you type is sent anywhere, because there is nowhere for it to go "
-          + "— the site has no server behind it."),
-        el("p", "A word the documents do not use returns nothing, and says so. Where "
-          + "an exact match fails, the box retries the word as a prefix, then against "
-          + "the confusions a scanner makes, then within one or two letters, and it "
-          + "tells you which of those it did. A near miss is never presented as a hit.")),
+        el("p", t("srch.p1")),
+        el("p", t("srch.p2"))),
       el("div", { class: "searchbar" },
         el("label", { class: "field grow" },
-          el("span", { class: "sr" }, "Search the archive"), input),
+          el("span", { class: "sr" }, t("srch.srBox")), input),
         el("label", { class: "field" },
-          el("span", { class: "sr" }, "Narrow to one kind"), kindSel)),
+          el("span", { class: "sr" }, t("srch.srKind")), kindSel)),
       status, facets, notes, out, actions, helpHost));
 }

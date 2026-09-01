@@ -11,7 +11,8 @@
    URL someone shared — builds it at once. */
 
 import { el, clear } from "../components/ui.js";
-import { renderStory, renderTail } from "./story.js";
+import { LANG, loadStrings, t, langButton } from "../i18n/i18n.js";
+import { renderStory, renderTail, BYLINE } from "./story.js";
 import { searchPanel, runQuery } from "./searchui.js";
 import { entityExplorer, networkExplorer, showEntity } from "./entities.js";
 import { documentSection } from "../evidence/evidence.js";
@@ -31,10 +32,9 @@ const kept = () => { try { return localStorage.getItem(KEY); } catch { return nu
 
 function apply(on, btn) {
   document.documentElement.classList.toggle("night", on);
-  btn.textContent = on ? "Day" : "Night";
+  btn.textContent = on ? t("mode.day") : t("mode.night");
   btn.setAttribute("aria-pressed", on ? "true" : "false");
-  btn.setAttribute("aria-label", on
-    ? "switch to the light palette" : "switch to the dark palette");
+  btn.setAttribute("aria-label", on ? t("mode.toLight") : t("mode.toDark"));
 }
 
 function modeButton() {
@@ -55,27 +55,29 @@ function modeButton() {
 /* ---- the masthead ----
    The wordmark is the way back to the top of the story, on every screen, at every
    depth. The nav is the same list twice over — it repeats what the contents block
-   under the headline says, for a reader who is already halfway down. */
+   under the headline says, for a reader who is already halfway down. The language
+   button comes before the palette button because it changes more: it reloads the page,
+   and a reader reaching for it is usually reaching for it first. */
 
 const NAV = [
-  ["summary", "The story"],
-  ["search", "Search"],
-  ["entities", "Names"],
-  ["network", "Connections"],
-  ["documents", "Documents"],
-  ["tables", "Tables"],
-  ["downloads", "Data"],
-  ["methodology", "Method"],
+  ["summary", "nav.story"],
+  ["search", "nav.search"],
+  ["entities", "nav.names"],
+  ["network", "nav.connections"],
+  ["documents", "nav.documents"],
+  ["tables", "nav.tables"],
+  ["downloads", "nav.data"],
+  ["methodology", "nav.method"],
 ];
 
 function masthead(bar) {
-  const nav = el("nav", { "aria-label": "sections of this investigation" },
-    NAV.map(([id, label]) => el("a", { href: `#${id}` }, label)));
+  const nav = el("nav", { "aria-label": t("nav.aria") },
+    NAV.map(([id, key]) => el("a", { href: `#${id}` }, t(key))));
   bar.append(
-    el("a", { href: "#top", class: "wordmark",
-      "aria-label": "e-GP Watch — back to the top of the story" },
-    "e-GP ", el("span", "Watch")),
-    nav, modeButton());
+    el("a", { href: "#top", class: "wordmark", "aria-label": t("wordmark.aria") },
+      "e-GP ", el("span", "Watch")),
+    nav,
+    el("div", { class: "modes" }, langButton(), modeButton()));
   return nav;
 }
 
@@ -85,12 +87,12 @@ function masthead(bar) {
    exists and the reader lands on a line saying what is being built. */
 
 const TOOLS = [
-  ["search", "Building the search box", searchPanel],
-  ["entities", "Reading the four tables that name things", entityExplorer],
-  ["network", "Reading the printed links between names", networkExplorer],
-  ["documents", "Reading the document list", documentSection],
-  ["tables", "Opening the eighteen tables", tableExplorer],
-  ["downloads", "Asking the server what each file weighs", downloads],
+  ["search", "loading.search", searchPanel],
+  ["entities", "loading.entities", entityExplorer],
+  ["network", "loading.network", networkExplorer],
+  ["documents", "loading.documents", documentSection],
+  ["tables", "loading.tables", tableExplorer],
+  ["downloads", "loading.downloads", downloads],
 ];
 
 const SLOTS = new Map();
@@ -98,7 +100,7 @@ let watcher = null;
 
 function slot(id, hint, make) {
   const node = el("section", { class: "band", id, style: "min-height:50vh" },
-    el("div", { class: "wrap" }, el("p", { class: "loading" }, hint)));
+    el("div", { class: "wrap" }, el("p", { class: "loading" }, t(hint))));
   SLOTS.set(id, { node, make, done: false });
   return node;
 }
@@ -113,7 +115,7 @@ function build(id) {
     real = s.make();
   } catch (e) {
     real = el("section", { class: "band", id }, el("div", { class: "wrap" },
-      el("p", { class: "warn" }, `This tool did not open: ${e.message}`)));
+      el("p", { class: "warn" }, t("err.tool", { message: e.message }))));
   }
   s.node.replaceWith(real);
   s.node = real;
@@ -138,8 +140,8 @@ function watch() {
    what makes a result shareable. */
 
 function goTo(id) {
-  const t = document.getElementById(id);
-  if (t) t.scrollIntoView({ block: "start" });
+  const target = document.getElementById(id);
+  if (target) target.scrollIntoView({ block: "start" });
 }
 
 function route() {
@@ -171,8 +173,8 @@ function spy(nav) {
     const line = window.scrollY + 140;
     let now = null;
     for (const a of links) {
-      const t = document.getElementById(a.hash.slice(1));
-      if (t && t.getBoundingClientRect().top + window.scrollY <= line) now = a;
+      const target = document.getElementById(a.hash.slice(1));
+      if (target && target.getBoundingClientRect().top + window.scrollY <= line) now = a;
     }
     for (const a of links) {
       if (a === now) a.setAttribute("aria-current", "true");
@@ -190,37 +192,36 @@ function spy(nav) {
 
 /* ---- the footer: what this is, and what it is not ---- */
 
+const FOOT_LINKS = [
+  ["how-to-read", "foot.howToRead"],
+  ["methodology", "foot.method"],
+  ["limits", "foot.limits"],
+  ["downloads", "foot.files"],
+];
+
 function footer(foot) {
   foot.append(el("div", { class: "wrap" },
     el("p", el("a", { href: "#top", class: "wordmark" }, "e-GP ", el("span", "Watch"))),
     el("div", { class: "prose left" },
-      el("p", { class: "note" }, "Every number, name, date and quotation on this page "
-        + "was read out of the PDF documents in this folder — the tender notices, "
-        + "amendments and contract-award notices published on the government's own "
-        + "e-Procurement portal — and out of nothing else. No figure here comes from a "
-        + "news report, an outside database, a website or anyone's recollection. Where "
-        + "the documents do not answer a question, this investigation says so instead "
-        + "of filling the gap."),
-      el("p", { class: "note" }, "There is no server behind this page. It is a folder "
-        + "of files: the article is assembled in your browser out of the same CSV and "
-        + "JSON files the download section hands you, and the PDFs sit beside them. "
-        + "Nothing you type or click is sent anywhere, because there is nowhere for it "
-        + "to go."),
-      el("p", { class: "note" }, "The firms, officials and offices named here are named "
-        + "because the government's own published record names them. Naming is not an "
-        + "accusation: a pattern in these pages is something to look into, and this "
-        + "site is built so that looking into it does not require taking anyone's word "
-        + "for anything."),
+      el("p", { class: "note" }, t("foot.sources")),
+      el("p", { class: "note" }, t("foot.noServer")),
+      el("p", { class: "note" }, t("foot.naming")),
+      el("p", { class: "note" }, t("foot.byline", { name: BYLINE })),
       el("ul", { class: "cont-tools" },
-        el("li", el("a", { href: "#how-to-read" }, "How to read this investigation")),
-        el("li", el("a", { href: "#methodology" }, "How this was made")),
-        el("li", el("a", { href: "#limits" }, "What this cannot tell you")),
-        el("li", el("a", { href: "#downloads" }, "Every file it was built from"))))));
+        FOOT_LINKS.map(([id, key]) => el("li", el("a", { href: `#${id}` }, t(key))))))));
 }
 
-/* ---- boot ---- */
+/* ---- boot ----
+
+   The language pack is fetched before anything is built, because every label on the
+   page comes out of it. It is one module of a few tens of kilobytes and only the
+   reader's own language is fetched. Nothing renders in one language and re-labels
+   itself in the other. */
 
 async function boot() {
+  document.documentElement.lang = LANG;
+  await loadStrings();
+
   const app = document.getElementById("app");
   const nav = masthead(document.getElementById("bar"));
   const story = el("div");
@@ -234,9 +235,7 @@ async function boot() {
     ctx = await renderStory(story);
   } catch (e) {
     story.append(el("section", { class: "band" }, el("div", { class: "wrap" },
-      el("p", { class: "warn" }, `The story did not load: ${e.message}. The files it `
-        + "reads are listed in the download section below, and each one opens on its "
-        + "own."))));
+      el("p", { class: "warn" }, t("err.story", { message: e.message })))));
   }
   if (ctx) renderTail(tail, ctx.a, ctx.audit);
   footer(document.getElementById("foot"));

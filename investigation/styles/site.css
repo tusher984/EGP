@@ -22,7 +22,27 @@ h2 { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem); }
 h3 { font-size: 1.14rem; letter-spacing: .006em; }
 h4 { font-size: .95rem; }
 p { margin: 0 0 1.05em; }
-:lang(bn), .bn { font-family: var(--font-bn); }
+
+/* A Bengali word inside an otherwise English page — the language button's own label
+   is the only one a reader sees — reaches for the shipped Bengali family explicitly,
+   because the English stacks do not contain it and a machine with no Bengali system
+   font would otherwise draw boxes. Scoped to the English edition on purpose: in the
+   Bangla edition tokens.css has already prefixed that family onto --font-body and
+   --font-head, so body copy stays serif and headings stay sans, and this rule would
+   only drag whole paragraphs onto the heading stack. */
+html:lang(en) [lang="bn"], .bn { font-family: var(--font-bn); }
+
+/* index.html is the one file here that cannot import a language pack — the tab needs
+   a title before any module runs — so it carries both languages and hides the one the
+   reader did not ask for. Nothing else on the page works this way. */
+html:lang(en) [data-lang="bn"], html:lang(bn) [data-lang="en"] { display: none; }
+
+/* Bengali carries marks above and below the letter, so the same leading that reads
+   comfortably in Latin closes up. These two numbers are the only typographic
+   difference between the editions. */
+html:lang(bn) body { line-height: 1.8; }
+html:lang(bn) h1, html:lang(bn) h2, html:lang(bn) h3, html:lang(bn) h4 {
+  line-height: 1.32; letter-spacing: 0; }
 
 .skip { position: absolute; left: -9999px; top: 0; background: var(--ink);
   color: var(--paper); padding: .6rem 1rem; z-index: 90; }
@@ -45,21 +65,27 @@ p { margin: 0 0 1.05em; }
   padding: .5rem .5rem; border-radius: 3px; white-space: nowrap; }
 .masthead nav a:hover, .masthead nav a[aria-current="true"] {
   color: var(--ink); background: var(--shade); }
+.modes { display: flex; gap: .4rem; flex: none; }
 .mode { border: 1px solid var(--rule); background: transparent; color: var(--ink-muted);
   font: 600 .7rem/1 var(--font-head); letter-spacing: .07em; text-transform: uppercase;
   padding: .45rem .6rem; border-radius: 3px; cursor: pointer; }
 .mode:hover { color: var(--ink); border-color: var(--ink-faint); }
+/* The language name is set in its own language and its own script, so it is not
+   uppercased — Bengali has no case, and the letter-spacing that suits small caps
+   pulls a Bengali word apart at its conjuncts. */
+.mode.lang { text-transform: none; letter-spacing: .02em; font-size: .78rem; }
 
 /* On a phone the eight section links and the wordmark cannot share one line: the nav
    ends up a 136px scroller showing a link and a half. Below this width the nav takes
    a row of its own, full width, and still scrolls sideways if the labels need it. The
    bar is then two rows tall, so scroll-padding-top grows to match and an anchored
-   section does not land underneath it. */
+   section does not land underneath it. The two buttons travel as one block, which is
+   why they share a wrapper rather than being two flex children of the bar. */
 @media (max-width: 46rem) {
   .masthead { flex-wrap: wrap; row-gap: .25rem; gap: .6rem; }
   .masthead nav { order: 3; flex-basis: 100%; margin-inline-start: 0; }
   .masthead nav a { padding: .4rem .45rem; }
-  .mode { order: 2; margin-inline-start: auto; }
+  .modes { order: 2; margin-inline-start: auto; }
   html { scroll-padding-top: 6.2rem; }
 }
 
@@ -87,11 +113,20 @@ p { margin: 0 0 1.05em; }
 .byline { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin-top: 1.6rem;
   font: 600 .74rem/1.4 var(--font-head); letter-spacing: .08em; text-transform: uppercase;
   color: var(--ink-faint); }
+/* The reporter's name is the one part of the byline that is a name rather than a
+   qualification, so it is the one part in full ink. */
+.byline .who { color: var(--ink); }
 
 .tiles { display: grid; gap: 1px; margin-top: 2.4rem;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   background: var(--rule); border: 1px solid var(--rule); }
 .tile { background: var(--paper); padding: 1.1rem 1.1rem 1.2rem; }
+/* Each headline figure is explained in a chapter, so each tile opens that chapter.
+   The arrow says so without a hover, which is the only cue a touch screen has. */
+a.tile { display: block; text-decoration: none; }
+a.tile:hover, a.tile:focus-visible { background: var(--paper-raised); }
+a.tile span::after { content: " →"; color: var(--hue-2); white-space: nowrap; }
+a.tile:hover span { color: var(--ink-body); }
 .tile b { display: block; font: 700 clamp(1.7rem, 1.3rem + 1.5vw, 2.4rem)/1 var(--font-head);
   color: var(--ink); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .tile span { display: block; margin-top: .45rem; font-size: .88rem; color: var(--ink-muted); }
@@ -304,16 +339,46 @@ li.filerow .note { font-size: .78rem; }
 li.filerow .warn { border: 0; background: none; padding: 0; font-size: .78rem;
   color: var(--hue-2); }
 
-/* ---------- the contents block, and the list of tools in the footer ---------- */
-.contents ol { margin: 0 0 1.5rem; padding: 0; list-style: none; display: grid; gap: 1px;
-  background: var(--rule); border: 1px solid var(--rule);
+/* ---------- the contents block, and the list of tools in the footer ----------
+   Every line in one of these lists opens something, and each now carries a line of
+   blurb under its title, so what a pointer lands on is the whole cell rather than the
+   link text alone: the hover sits on the li, and title and blurb light together. The
+   anchor's horizontal padding is repeated on the blurb, which is what keeps the two
+   lines on one left edge.
+
+   Both list elements are laid out here, because the list that opens files rather than
+   sections is a ul. The footer carries the same class outside .contents with no blurbs
+   under it, and stays the flat row of links it was — which is why every rule below is
+   scoped to .contents and the flex row is left alone at the end. */
+.contents ol, .contents ul.cont-tools { margin: 0 0 1.4rem; padding: 0; list-style: none;
+  display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule);
   grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
-.contents ol:last-child { margin-bottom: 0; }
+.contents ul.cont-tools.files { margin-bottom: .9rem; }
 .contents li { background: var(--paper); }
-.contents a { display: block; padding: .6rem .8rem; text-decoration: none;
+.contents li:hover, .contents li:focus-within { background: var(--paper-raised); }
+.contents a { display: block; padding: .6rem .8rem .2rem; text-decoration: none;
   font: 600 .84rem/1.35 var(--font-head); color: var(--ink-body); }
-.contents a:hover { background: var(--shade); color: var(--ink); }
+.contents li:hover a, .contents li:focus-within a { color: var(--ink); }
+.contents li > a:only-child { padding-bottom: .6rem; }
 .contents ol.cont-tools a { font: 400 .95rem/1.35 var(--font-body); }
+.contents li > .note { display: block; padding: 0 .8rem .55rem; font-size: .78rem;
+  line-height: 1.45; }
+/* A file opens in a new tab, and the arrow says so before the click. It is the → the
+   tiles already use, turned a quarter of the way out of the page, because that glyph
+   is one the shipped faces are known to draw. */
+.contents .files a::after { content: "→"; display: inline-block; transform: rotate(-45deg);
+  margin-inline-start: .35em; color: var(--hue-2); }
+
+/* Under the methodology the same block is set into the page rather than banded off it:
+   a paragraph's worth of doors inside a section, not a new section. Wider than the
+   reading measure on purpose, so the tools sit two to a row instead of running the
+   length of a column of prose. */
+.contents.inset { max-width: min(48rem, 100%); margin: 2rem auto 0;
+  padding: 1.1rem 1.2rem 1.2rem; background: var(--paper-sunken);
+  border: 1px solid var(--rule-soft); }
+.contents.inset .kicker { margin-bottom: .6rem; }
+.contents.inset > .note:last-child { margin-bottom: 0; }
+
 ul.cont-tools { display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: 1.3rem 0 0;
   padding: 0; list-style: none; font: 600 .8rem/1.6 var(--font-head); }
 
