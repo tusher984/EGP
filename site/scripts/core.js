@@ -12,6 +12,11 @@
    2. NOTHING IS FETCHED FROM A NETWORK HOST. Every load() path is relative to
       this repository, so the site opens from a folder with no connection. */
 
+/* NAMES is the one thing core.js reads from the writing: the Bangla form of a
+   name the documents file in English. content.js imports nothing, so this edge
+   runs one way only. */
+import { NAMES } from "./content.js";
+
 export const DATA = "site/data/";
 
 /* ------------------------------------------------------------------ elements */
@@ -161,6 +166,44 @@ export function ratio(x, dp) {
 
 export function dash() { return t({ en: "not documented", bn: "নথিভুক্ত নয়" }); }
 
+/* --------------------------------------------------------------- proper names
+   A name the documents file in English, printed in the language the reader is
+   reading. NAMES lives in content.js with the rest of the writing; these four
+   are the lookups, and each falls back to the printed string, so a value the
+   maps have never seen appears as itself rather than disappearing.
+
+   Company names and quoted passages deliberately do not pass through here. See
+   the note above NAMES. */
+
+function named(map, s) {
+  if (!s) return s;
+  const pair = map[s];
+  return pair ? t(pair) : s;
+}
+
+/** An authority in its short form, as a source line prints it: CDA, সিডিএ. */
+export function agencyName(s) { return named(NAMES.agency, s); }
+
+/** An authority as a sentence names it. */
+export function bodyName(s) { return named(NAMES.org, s); }
+
+/** A district. */
+export function placeName(s) { return named(NAMES.place, s); }
+
+/** A company, where a sentence names one. Falls back to the printed spelling, so
+    the 304 firms nobody has written a Bangla name for appear as the notices
+    print them rather than not at all. */
+export function firmName(s) { return termName("firm", s); }
+
+/** How a tender was run, or whose money paid for it. Both are printed in the
+    notices with capitalisation that drifts between offices, so the key is
+    lower-cased before the lookup and the map holds one spelling of each. */
+export function termName(kind, s) {
+  if (!s) return s;
+  const pair = (NAMES[kind] || {})[String(s).toLowerCase().trim()];
+  return pair ? t(pair) : s;
+}
+
 /** The sentence terminator. Bangla closes a sentence with the danda, not a full
     stop, and a page that mixes the two reads like machine translation. Sentences
     assembled in code — a count and the noun it counts, most often — cannot carry
@@ -277,6 +320,28 @@ export function date(s) {
   return digits(String(+m[3])) + " " + mon + " " + digits(m[1]);
 }
 
+/* A month and a year, with no day — the form a rule's commencement is written in
+   rather than a date the portal stamped. Spelled out, because this one appears
+   inside a sentence rather than in a record strip, and a Bangla sentence should
+   not have to say "December". */
+
+const FULL_EN = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"];
+
+const FULL_BN = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+
+/** "December 2025" → "ডিসেম্বর ২০২৫". A value in any other shape is passed
+    through with its digits converted and nothing else assumed about it. */
+export function month(s) {
+  if (!s) return dash();
+  const m = /^\s*([A-Za-z]+)\s+(\d{4})\s*$/.exec(String(s));
+  if (!m) return digits(String(s));
+  const i = FULL_EN.findIndex((x) => x.toLowerCase().startsWith(m[1].slice(0, 3).toLowerCase()));
+  if (i < 0) return digits(String(s));
+  return (state.lang === "bn" ? FULL_BN[i] : FULL_EN[i]) + " " + digits(m[2]);
+}
+
 /* A machine token from the CSVs — SINGLE_BID, NOT_PUBLISHED_IN_NOTICE — turned
    into something readable when no hand-written label exists for it. The value
    is never altered, only its presentation. */
@@ -344,14 +409,34 @@ const FILTERS = {
   pct: (v) => pct(v), pct0: (v) => pct(v, 0),
   cr: (v) => cr(v), cr0: (v) => cr(v, 0), taka: (v) => taka(v),
   x: (v) => ratio(v), x2: (v) => ratio(v, 2), x3: (v) => ratio(v, 3),
-  date: (v) => date(v), human: (v) => human(v),
+  date: (v) => date(v), human: (v) => human(v), month: (v) => month(v),
   r: (v) => digits((+v >= 0 ? "+" : "−") + Math.abs(+v).toFixed(3)),
   raw: (v) => String(v),
 };
 
+/* The filters that resolve a name rather than a figure. A sentence in the Bangla
+   edition asks for the authority or the road by token, the same way it asks for
+   a count, and gets it in Bangla — an English name dropped into a Bangla
+   paragraph reads as an untranslated hole. Each falls back to the printed
+   spelling, so a value the maps have not seen appears as itself.
+
+   They are kept apart from FILTERS because the wrapper differs: a figure is
+   marked as a figure, a name as a name. Both are emphasised; only one gets the
+   tabular numerals and the sans face. */
+const NAME_FILTERS = {
+  agency: (v) => agencyName(v),
+  org: (v) => bodyName(v),
+  place: (v) => placeName(v),
+  method: (v) => termName("method", v),
+  funds: (v) => termName("funds", v),
+  work: (v) => termName("work", v),
+  firm: (v) => termName("firm", v),
+};
+
 /** Resolve {{path}} and {{path|filter}} against the corpus. Wraps each result
-    in <span class="num"> so a figure is visibly a figure, and renders a loud
-    marker if the path is absent — silence would be a lie. */
+    in <span class="num"> so a figure is visibly a figure — or in
+    <span class="name"> where the filter resolves a name — and renders a loud
+    marker if the path is absent, since silence would be a lie. */
 export function fill(str, corpus) {
   return String(str).replace(/\{\{([^}]+)\}\}/g, (_, spec) => {
     const bar = spec.indexOf("|");
@@ -359,6 +444,7 @@ export function fill(str, corpus) {
     const f = bar < 0 ? "n" : spec.slice(bar + 1).trim();
     const v = dig(corpus, path);
     if (v === undefined || v === null) return '<span class="unresolved">[missing: ' + path + "]</span>";
+    if (NAME_FILTERS[f]) return '<span class="name">' + NAME_FILTERS[f](v) + "</span>";
     const fn = FILTERS[f] || FILTERS.raw;
     return '<span class="num">' + fn(v) + "</span>";
   });

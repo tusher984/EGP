@@ -205,9 +205,12 @@ img, svg { max-width: 100%; }
   margin: 0 0 1.1rem;
 }
 
-/* The headline is set in the serif and the deck in the sans — the way a
-   newspaper does it, and the reverse of the way a dashboard does. Weight 700
-   at this size gives the thick-to-thin contrast the type was drawn for. */
+/* The headline and the deck are both set in the text face, and the article's
+   subheads with them: one voice from the top of the page to the bottom, with the
+   sans left to the furniture. The deck drops to weight 400 and a muted ink
+   instead of changing typeface, which is how a newspaper separates a standfirst
+   from the headline above it. Weight 700 at headline size gives the
+   thick-to-thin contrast the type was drawn for. */
 .hed {
   font-family: var(--font-serif);
   font-weight: 700;
@@ -219,10 +222,10 @@ img, svg { max-width: 100%; }
 }
 
 .dek {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-weight: 400;
-  font-size: clamp(1.08rem, 2vw, 1.28rem);
-  line-height: 1.5;
+  font-size: clamp(1.1rem, 2vw, 1.32rem);
+  line-height: 1.55;
   color: var(--ntr-home-muted-strong);
   max-width: 38rem;
   margin: 0 0 1.6rem;
@@ -322,15 +325,22 @@ img, svg { max-width: 100%; }
 .prose > * + * { margin-top: 1.15rem; }
 .prose p { margin: 0; }
 
+/* The subheads take the text face, like the headline and the deck above them.
+   A section head in the sans announces a dashboard panel; a section head in the
+   same face as the paragraph under it reads as part of the article. The hairline
+   and the space above it are what separate the sections, not a change of type. */
 .prose h2 {
+  font-family: var(--font-serif);
   font-size: clamp(1.42rem, 3vw, 1.85rem);
+  letter-spacing: -0.014em;
   margin-top: 2.9rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--ntr-home-line);
 }
 
 .prose h3 {
-  font-size: 1.13rem;
+  font-family: var(--font-serif);
+  font-size: 1.16rem;
   margin-top: 2rem;
   letter-spacing: 0;
 }
@@ -358,6 +368,15 @@ img, svg { max-width: 100%; }
   font-family: var(--font-heading);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+
+/* A name lifted out of the data the same way — an authority, a road, a firm.
+   Emphasised, because the reader's eye should find who and what; but in the text
+   face and without the tabular figures, because it is a name and not a count and
+   the two should not look alike. */
+.name {
+  font-weight: 600;
   color: var(--text-strong);
 }
 
@@ -412,11 +431,19 @@ img, svg { max-width: 100%; }
 .finding p:first-of-type { margin-top: 0; }
 
 /* The source line that closes a finding, an exhibit, a chart or a table. Same
-   component everywhere, so a reader learns it once. */
+   component everywhere, so a reader learns it once.
+
+   It is set in the text face, not the sans: a source line is the last sentence
+   of the figure above it — the same voice, quieter — and a caption in a second
+   typeface reads like a caption bolted on by a different hand. The sans is kept
+   for the machine furniture around the figure (the eyebrow label, the column
+   heads, the tags), which is not something anybody reads as prose. Serif at a
+   given size reads smaller than sans, so the size goes up a step to hold the
+   same apparent scale. */
 .src {
-  font-family: var(--font-heading);
-  font-size: 0.74rem;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.55;
   color: var(--text-muted);
   margin: 0.85rem 0 0;
 }
@@ -461,6 +488,110 @@ img, svg { max-width: 100%; }
 }
 
 .exhibit-read { margin: 0.8rem 0 0; color: var(--text-default); }
+
+/* -------------------------------------------------------------- the case study
+   The article opens on one tender, and the scene needs no box: it is the first
+   thing in .prose, so it inherits the measure, the drop cap and the exhibit and
+   source components already defined above. Only three pieces are its own — the
+   dateline, the four figures the scene turns on, and the selection rule. */
+
+/* Where and what, above the first line, the way a report opens on a place. Set
+   tight to the paragraph it introduces — it is a dateline, not its own beat. */
+.case-where {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.case-where + p { margin-top: 0.7rem; }
+
+/* A transition scene arrives in the middle of the article, where the reader is
+   already moving, so it needs one signal that the page has changed footing and
+   nothing more: a hairline above the dateline, the same rule the section heads
+   use. No box, no tint, no label. The dateline is also the only part of the
+   scene that gets it, because the paragraphs under it are ordinary article
+   paragraphs and should look like it. */
+.case-turn {
+  margin-top: 2.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--ntr-home-line);
+}
+
+/* The marked words inside a quotation. The wash token is the palette's own
+   flattest tint, so the mark reads as a highlighter laid over the page rather
+   than as a second colour of ink, and the text keeps the strong ink it had. The
+   0.1em of side padding is what stops the tint ending mid-letterform.
+
+   --color-wash has no dark-mode value, so the dark edition takes --accent-fill,
+   the one filled surface the palette does define for it. Both pairs clear 7:1
+   against the strong ink, which a highlight has to: the whole point of it is
+   that the marked words are the easiest thing on the page to find. */
+.exhibit blockquote mark {
+  background: var(--color-wash);
+  color: var(--text-strong);
+  padding: 0 0.1em;
+}
+
+html.dark-mode .exhibit blockquote mark,
+html.dark-mode .hit-snip mark { background: var(--accent-fill); }
+
+/* "Quoted from the page as published; the highlight is ours." The one line that
+   makes the marking honest, so it sits in the source register with the citation
+   and the selection rule rather than in the prose. */
+.case-note {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-faint);
+  margin: 0.5rem 0 0;
+}
+
+/* The record strip. A row of counts, so it is built like the stat tiles: cells
+   held apart by 1px of the page's own rule colour, no borders and no box.
+   auto-fit means the four cells become two and two on a phone without a
+   breakpoint of their own. */
+.case-rec {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 1px;
+  background: var(--ntr-home-line);
+  margin: 1.4rem 0 0;
+}
+
+.case-rec > div { background: var(--surface-page); padding: 0.7rem 0.8rem; }
+
+.case-rec dt {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.case-rec dd {
+  font-family: var(--font-heading);
+  font-size: 1.06rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+  margin: 0.2rem 0 0;
+}
+
+/* The rule the tender was selected by, printed in the source register directly
+   under the source line — one note about the documents, not two paragraphs, so
+   it is pulled tight against the line above it. */
+.case-rule {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin: 0.35rem 0 0;
+}
+
+.case-rule b { color: var(--text-default); font-weight: 600; }
 
 /* ---------------------------------------------------------------- disclosure
    "if any one wants to see then open type" — the detail of this investigation
@@ -515,10 +646,15 @@ img, svg { max-width: 100%; }
 .fig { margin: 2.2rem 0 0; max-width: 54rem; }
 .fig-wide { max-width: none; }
 
+/* Title, deck and source line all take the text face, so the three lines of
+   words wrapped around a chart read as one caption in the article's own voice.
+   The sans stays inside the plot, on the axis ticks and the legend, where it is
+   labelling a drawing rather than addressing a reader. */
 .fig-title {
-  font-family: var(--font-heading);
-  font-size: 1.04rem;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
   margin: 0 0 0.3rem;
 }
@@ -607,8 +743,9 @@ img, svg { max-width: 100%; }
    reusable SVG <pattern> in the chart layer; this is only the print fallback. */
 .fig .tex { fill: none; }
 
-/* Stat tiles — a hero number is a form, not a chart, when there is one figure
-   to carry. Separated by surface, not by borders. */
+/* Stat tiles — a row of counts is a form, not a chart, when each number stands
+   alone and there is nothing to compare along an axis. Separated by surface,
+   not by borders. */
 .tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
@@ -638,17 +775,6 @@ img, svg { max-width: 100%; }
   line-height: 1.4;
   color: var(--text-muted);
   margin: 0.4rem 0 0;
-}
-
-.hero-n {
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 9vw, 5.6rem);
-  font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.035em;
-  color: var(--text-strong);
-  font-variant-numeric: tabular-nums;
-  margin: 0;
 }
 
 /* -------------------------------------------------------------------- tables
@@ -1027,12 +1153,20 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
   .section > summary { flex-wrap: wrap; padding: 0.95rem 0.75rem; }
   .section > summary .open-note { margin-left: 0; flex-basis: 100%; }
   .section > .open-body { padding: 0 0.75rem 1.6rem; }
+  /* A chart is drawn on a canvas 820 units wide and then scaled to fit, so on a
+     narrow screen its 11-unit text lands at well under 11 real pixels. These two
+     steps put it back. They stay modest on purpose: the label gutter on a bar
+     chart is a fixed number of units, and text that grows past it would collide
+     with the bars. Where the plot is still tight, the table under every figure
+     carries the same numbers at body size. */
+  .fig text { font-size: 13px; }
 }
 
 @media (max-width: 34rem) {
   .tile-n { font-size: 1.5rem; }
   .finding, .note, .record, .controls { padding-left: 1rem; padding-right: 1rem; }
   .exhibit blockquote { font-size: 0.98rem; }
+  .fig text { font-size: 14px; }
 }
 
 /* Anyone who has asked for less motion gets none. Opening a section and the

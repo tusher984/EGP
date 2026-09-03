@@ -14,7 +14,7 @@
    takes the deviation counts as breaches of law has been misled, so the tab
    says it before it says anything else. */
 
-import { el, t, n, digits, dash, takaFull, href, fill, fillText, cite } from "./core.js";
+import { el, t, n, digits, dash, takaFull, href, fill, fillText, cite, agencyName } from "./core.js";
 import { figure, table } from "./charts.js";
 import { UI, LABELS } from "./content.js";
 
@@ -237,7 +237,7 @@ function citation(corpus) {
     kids.push(el("div", { class: "exhibit" }, [
       el("p", { class: "exhibit-label", text: t(W.citeWorked) }),
       el("p", { class: "src" }, cite({
-        entity: x.agency, tender: x.tender_id, pkg: x.package, page: x.page,
+        entity: agencyName(x.agency), tender: x.tender_id, pkg: x.package, page: x.page,
         file: x.notice && x.notice.file ? x.notice.file : null, column: x.column,
         links: x.notice && x.notice.file
           ? [el("a", { href: href(x.notice.dir, x.notice.file), text: t(UI.words.open) })]
@@ -288,7 +288,7 @@ function corrections(corpus) {
     el("p", { class: "note-title", text: t(W.qaHead) }),
     table(
       [UI.words.tender, { en: "Column", bn: "কলাম" }, W.before, W.after, W.because],
-      rows.map((c) => [digits(c.tender_id) + " (" + c.agency + ")", c.column,
+      rows.map((c) => [digits(c.tender_id) + " (" + agencyName(c.agency) + ")", c.column,
         takaFull(c.before), takaFull(c.after), c.quote]),
       { textCols: true }
     ),
@@ -391,8 +391,8 @@ function confidence(corpus) {
       { textCols: true }
     ),
     source: {
-      en: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, column <code>extraction_confidence</code>.",
-      bn: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, <code>extraction_confidence</code> কলাম।",
+      en: t(UI.words.source) + ": e-GP portal data analysis — tender notices and contract award notices, column <code>extraction_confidence</code>.",
+      bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — দরপত্র ও চুক্তি বিজ্ঞপ্তি, <code>extraction_confidence</code> কলাম।",
     },
   });
 }

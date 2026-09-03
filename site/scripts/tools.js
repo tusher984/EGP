@@ -19,7 +19,7 @@
 
 import {
   el, t, n, pct, cr, taka, takaBoth, ratio, digits, date, dash, fill, fillText, href, human, clear,
-  stop, ofTotal,
+  stop, ofTotal, agencyName, bodyName, placeName, firmName, termName,
 } from "./core.js";
 import { figure, table, barsH, hue } from "./charts.js";
 import { UI, LABELS } from "./content.js";
@@ -174,15 +174,15 @@ function recNotice(r) {
     el("dl", { class: "kv" }, [
       ...kv({ en: "Tender number", bn: "দরপত্র নম্বর" }, digits(r.tender_id)),
       ...kv({ en: "Reference", bn: "রেফারেন্স" }, r.tender_reference),
-      ...kv(UI.words.agency, r.organization || r.agency),
+      ...kv(UI.words.agency, bodyName(r.organization) || agencyName(r.agency)),
       ...kv({ en: "Procuring entity", bn: "ক্রয়কারী কর্তৃপক্ষ" }, r.procuring_entity),
-      ...kv({ en: "District", bn: "জেলা" }, r.pe_district),
-      ...kv({ en: "Project", bn: "প্রকল্প" }, r.project_name),
-      ...kv({ en: "Package", bn: "প্যাকেজ" }, r.package_description),
+      ...kv({ en: "District", bn: "জেলা" }, placeName(r.pe_district)),
+      ...kv({ en: "Project", bn: "প্রকল্প" }, termName("work", r.project_name)),
+      ...kv({ en: "Package", bn: "প্যাকেজ" }, termName("work", r.package_description)),
       ...kv({ en: "Kind of procurement", bn: "ক্রয়ের ধরন" }, r.procurement_nature),
-      ...kv({ en: "Method", bn: "পদ্ধতি" }, r.procurement_method),
+      ...kv({ en: "Method", bn: "পদ্ধতি" }, termName("method", r.procurement_method)),
       ...kv({ en: "Evaluation", bn: "মূল্যায়ন" }, r.evaluation_type),
-      ...kv({ en: "Source of funds", bn: "অর্থের উৎস" }, r.source_of_funds),
+      ...kv({ en: "Source of funds", bn: "অর্থের উৎস" }, termName("funds", r.source_of_funds)),
       ...kv({ en: "Status", bn: "অবস্থা" }, r.tender_status),
       ...kv({ en: "Reading order", bn: "পড়ার ক্রম" }, lab("priority", r.investigative_priority_band)),
     ]),
@@ -257,7 +257,7 @@ function recAward(r) {
   return [
     el("h4", { text: t(W.awardHead) }),
     el("dl", { class: "kv" }, [
-      ...kv(UI.words.winner, r.winner_name),
+      ...kv(UI.words.winner, firmName(r.winner_name)),
       ...kvIf({ en: "Name as this notice spells it", bn: "এই বিজ্ঞপ্তিতে ছাপা নাম" }, r.winner_printed),
       ...kv({ en: "Joint venture", bn: "যৌথ উদ্যোগ" }, r.winner_is_joint_venture ? lab("yesno", r.winner_is_joint_venture) : null),
       ...kv({ en: "Address as printed", bn: "ছাপা ঠিকানা" }, r.winner_location),
@@ -391,7 +391,7 @@ export function tenderRecord(r, ctx) {
     numbers, and a disclosure that builds the record the first time it opens. */
 function tenderItem(r, ctx, extra) {
   const meta = [
-    r.agency,
+    agencyName(r.agency),
     r.contract_value_bdt ? taka(r.contract_value_bdt) : t({ en: "no award record", bn: "চুক্তির নথি নেই" }),
     r.total_bids_received === null || r.total_bids_received === undefined
       ? t({ en: "bid count not published", bn: "দরের সংখ্যা প্রকাশিত নয়" })
@@ -411,7 +411,8 @@ function tenderItem(r, ctx, extra) {
   }, { once: false });
 
   return el("li", { class: "hit-item" }, [
-    el("p", { class: "hit-title", text: digits(r.tender_id) + " — " + (r.package_description || r.project_name || dash()) }),
+    el("p", { class: "hit-title", text: digits(r.tender_id) + " — " +
+      (termName("work", r.package_description) || termName("work", r.project_name) || dash()) }),
     el("p", { class: "hit-meta", text: meta }),
     extra || null,
     disc,
@@ -828,7 +829,11 @@ function optionsFor(rows, col, map, blankLabel) {
   const out = [{ value: "", label: t(UI.words.all) + " (" + n(rows.length) + ")" }];
   const keys = [...tally.keys()].sort((a, b) => tally.get(b) - tally.get(a));
   for (const key of keys) {
-    const words = key === "" ? t(blankLabel || UI.words.none) : (map ? lab(map, key) : key);
+    /* `map` is the name of a LABELS map, or a function for a value that is a
+       name rather than a machine token — an authority, a district. */
+    const words = key === "" ? t(blankLabel || UI.words.none)
+      : typeof map === "function" ? map(key)
+        : map ? lab(map, key) : key;
     out.push({ value: key === "" ? " " : key, label: words + " (" + n(tally.get(key)) + ")" });
   }
   return out;
@@ -860,7 +865,7 @@ function toggleChip(labelPair) {
 
 function explorerTool(ctx) {
   const rows = ctx.tenders;
-  const agency = pick("x-agency", UI.words.agency, optionsFor(rows, "agency"));
+  const agency = pick("x-agency", UI.words.agency, optionsFor(rows, "agency", agencyName));
   const comp = pick("x-comp", { en: "Competition", bn: "প্রতিযোগিতা" },
     optionsFor(rows, "competition_level", "competition"));
   const restr = pick("x-restr", { en: "How the criteria read", bn: "শর্ত কেমন" },
@@ -950,17 +955,17 @@ function firmFigure(ctx) {
         "টি চুক্তি পেয়েছে। সবচেয়ে বড়টি " + n(con.top1.contracts) + "টি চুক্তিতে অর্থের " +
         pct(con.top1.share) + " পেয়েছে।",
     },
-    plot: barsH(top.map((firm) => ({ label: firm.name, value: firm.crore })), {
+    plot: barsH(top.map((firm) => ({ label: firmName(firm.name), value: firm.crore })), {
       labelW: 250, valueW: 96, rowH: 26, color: hue(0), fmt: (v) => cr(v, 0),
       alt: t({ en: "The fifteen largest winning firms by money.", bn: "অর্থ অনুসারে সবচেয়ে বড় পনেরোটি বিজয়ী প্রতিষ্ঠান।" }),
     }),
     table: table(
       [{ en: "Firm", bn: "প্রতিষ্ঠান" }, UI.words.contracts, UI.words.money, UI.words.share],
-      top.map((firm) => [firm.name, n(firm.contracts), cr(firm.crore), pct(firm.share)])
+      top.map((firm) => [firmName(firm.name), n(firm.contracts), cr(firm.crore), pct(firm.share)])
     ),
     source: {
-      en: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, grouped on <code>winner_name_normalised</code> and shown under a spelling the award notices print.",
-      bn: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, <code>winner_name_normalised</code> অনুসারে দলবদ্ধ, আর চুক্তি-বিজ্ঞপ্তিতে ছাপা বানানে দেখানো।",
+      en: t(UI.words.source) + ": e-GP portal data analysis — contract award notices, grouped on <code>winner_name_normalised</code> and shown under a spelling the award notices print.",
+      bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — চুক্তি বিজ্ঞপ্তি, <code>winner_name_normalised</code> অনুসারে দলবদ্ধ, আর চুক্তি-বিজ্ঞপ্তিতে ছাপা বানানে দেখানো।",
     },
   });
 }
@@ -1015,7 +1020,7 @@ function firmRecord(firm, ctx) {
       ...kv(UI.words.contracts, n(firm.contracts)),
       ...kv(UI.words.money, takaBoth(firm.taka)),
       ...kv(UI.words.share, pct(firm.share)),
-      ...kv({ en: "Authorities", bn: "সংস্থা" }, (firm.agencies || []).join(", ")),
+      ...kv({ en: "Authorities", bn: "সংস্থা" }, (firm.agencies || []).map(agencyName).join(", ")),
       ...kv({ en: "Districts as printed", bn: "ছাপা জেলা" }, (firm.districts || []).join(", ")),
       ...kv({ en: "Won where the field was thin", bn: "কম প্রতিযোগিতায় জিতেছে" }, n(firm.thin_wins)),
       ...kv({ en: "Won as a joint venture", bn: "যৌথ উদ্যোগে জিতেছে" }, n(firm.jv_awards)),
@@ -1069,7 +1074,7 @@ function firmItem(firm, ctx) {
   });
 
   return el("li", { class: "hit-item" }, [
-    el("p", { class: "hit-title", text: firm.name }),
+    el("p", { class: "hit-title", text: firmName(firm.name) }),
     el("p", { class: "hit-meta", text: meta }),
     disc,
   ]);
@@ -1184,7 +1189,7 @@ function clauseItem(group, ctx) {
   });
 
   const agencies = [...new Set(group.ids
-    .map((id) => (ctx.byId[id] || {}).agency).filter(Boolean))].sort();
+    .map((id) => (ctx.byId[id] || {}).agency).filter(Boolean))].sort().map(agencyName);
 
   return el("li", { class: "hit-item" }, [
     el("p", { class: "hit-title", text: unit(group.ids.length, UI.words.tender1, UI.words.tenders) +
@@ -1311,10 +1316,10 @@ export function renderTools(root, corpus, data) {
     toolBlock("clauses", W.clauseTool, W.clauseNote, () => clauseTool(ctx), false, corpus),
   ]));
 
-  root.appendChild(el("p", { class: "src", html: t({
-    en: "Everything in these four tools is read from the files the analysis wrote: <code>master_tender_investigation.csv</code>, <code>bidder_detail.csv</code>, <code>rule_deviations.csv</code>, the extracted document text and the per-tender notes. No value on this page is computed from anything outside the supplied PDFs.",
-    bn: "এই চারটি টুলের সবকিছু বিশ্লেষণে তৈরি ফাইল থেকে পড়া: <code>master_tender_investigation.csv</code>, <code>bidder_detail.csv</code>, <code>rule_deviations.csv</code>, নথি থেকে তোলা লেখা, এবং দরপত্রপ্রতি টীকা। এই পাতার কোনো সংখ্যা সরবরাহ করা পিডিএফের বাইরের কিছু থেকে গোনা হয়নি।",
-  }) }));
+  root.appendChild(el("p", { class: "src", html: fill(t({
+    en: t(UI.words.source) + ": e-GP portal data analysis — the {{counts.pdfs}} tender and award documents in this folder, read page by page. The four tools query the tables that analysis wrote and nothing else; no value on this page is computed from anything outside the supplied PDFs.",
+    bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — এই ফোল্ডারের {{counts.pdfs}}টি দরপত্র ও চুক্তি নথি, পৃষ্ঠা ধরে ধরে পড়া। চারটি টুল কেবল ওই বিশ্লেষণে তৈরি তালিকাগুলোই খোঁজে, আর কিছু নয়; এই পাতার কোনো সংখ্যা সরবরাহ করা পিডিএফের বাইরের কিছু থেকে গোনা হয়নি।",
+  }), corpus) }));
 
   return root;
 }
