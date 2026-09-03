@@ -19,10 +19,17 @@ answer from the CSVs themselves or from the PDFs on disk:
   G. the data dictionary covers every column of every other file
 """
 import csv, os, re, subprocess, collections
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-REPO = "/sessions/exciting-laughing-curie/mnt/EGP-CDA"
+REPO = _p.REPO
 OUT = os.path.join(REPO, "investigation_output")
-CACHE = "/tmp/vpg"
+CACHE = _p.CACHE
 MASTER, DEV = "master_tender_investigation.csv", "rule_deviations.csv"
 BROKEN, BID, DICT = ("rules_broken_line_by_line.csv", "bidder_detail.csv",
                      "data_dictionary.csv")
@@ -39,19 +46,10 @@ def load(name):
 
 
 def pages(d, f):
-    if not f:
-        return []
-    os.makedirs(CACHE, exist_ok=True)
-    cp = os.path.join(CACHE, re.sub(r"[^A-Za-z0-9._-]", "_", d + "__" + f) + ".txt")
-    if not os.path.exists(cp):
-        p = os.path.join(REPO, d, f)
-        if not os.path.exists(p):
-            return []
-        subprocess.run(["pdftotext", "-layout", p, cp],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if not os.path.exists(cp):
-        return []
-    return open(cp, encoding="utf-8", errors="replace").read().split("\f")
+    """The pages of one cited PDF. Read with pdftotext where it is installed and
+       from the extraction cache in the repository where it is not; which one
+       answered is printed at the end of the run."""
+    return _p.page_text(d, f)
 
 
 def flat(s):
@@ -238,6 +236,7 @@ def check_g_dictionary(data):
 
 
 def main():
+    _p.check()
     data = {n: load(n) for n in (MASTER, DEV, BROKEN, BID)}
     check_a_shape(data)
     check_b_sentinels(dict(list(data.items()) + [(DICT, load(DICT))]))
@@ -247,6 +246,7 @@ def main():
     check_f_keys(data)
     check_g_dictionary(data)
     print("\n" + "=" * 78)
+    print(_p.page_source_line())
     if FAILURES:
         print("VERIFICATION FAILED: %d problem(s)" % len(FAILURES))
         for f in FAILURES:

@@ -33,10 +33,17 @@ notice's own liquid-asset sentence, which is preserved verbatim in
 evidence_excerpt_liquid_assets on the same row.
 """
 import csv, os, shutil
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 MASTER = os.path.join(OUT, "master_tender_investigation.csv")
-BACKUP165 = "/tmp/master_backup_165col.csv"
+BACKUP165 = os.path.join(_p.CACHE, "master_backup_165col.csv")
 
 FIX = {
     "119545": dict(ratio="0.37", bar=825000.0,

@@ -306,8 +306,8 @@ const FIGS = {
         [{ en: "Firms", bn: "প্রতিষ্ঠান" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         parts.map((p) => [t(p.label), pct(p.value)])
       ),
-      source: src(F.master + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Names are normalised for spelling only; two firms are never merged on a resemblance.",
-        F.master + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। নাম কেবল বানানের জন্য সমন্বিত; মিল দেখে দুটি প্রতিষ্ঠানকে কখনো এক করা হয়নি।"),
+      source: src(F.master + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Firms are grouped on that column and never merged on a resemblance; the name shown is a spelling the award notices print.",
+        F.master + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। প্রতিষ্ঠানগুলো ওই কলাম ধরে দলবদ্ধ, মিল দেখে কখনো এক করা হয়নি; যে নাম দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে ছাপা বানান।"),
     });
   },
   /* Eight outcomes over one set of tests, one unit. The ramp is ordered by
@@ -453,6 +453,27 @@ function block(b, corpus) {
   }
 }
 
+/** The byline portrait: the photograph, with the reporter's initials behind it
+    as the fallback if the file is ever missing. Hidden from assistive software
+    because the name is set in text immediately beside it — a portrait carries
+    nothing a screen reader can read out. */
+function bylineMark() {
+  const mark = el("span", { class: "byline-mark", "aria-hidden": "true" }, [
+    el("span", { class: "byline-initials", text: HEAD.initials }),
+  ]);
+  const photo = el("img", {
+    class: "byline-photo",
+    src: HEAD.portrait,
+    alt: "",
+    width: "320",
+    height: "320",
+    decoding: "async",
+    on: { error: () => photo.remove() },
+  });
+  mark.appendChild(photo);
+  return mark;
+}
+
 /** Build the header and the article into `root`. Called once, on first paint of
     the story tab, and again whenever the language changes. */
 export function renderStory(root, corpus) {
@@ -461,7 +482,7 @@ export function renderStory(root, corpus) {
     el("h1", { class: "hed", html: T(HEAD.hed, corpus) }),
     el("p", { class: "dek", html: T(HEAD.dek, corpus) }),
     el("div", { class: "byline" }, [
-      el("span", { class: "byline-mark", text: HEAD.initials }),
+      bylineMark(),
       el("span", null, [
         el("span", { class: "byline-who", text: t(HEAD.byline) }),
         el("span", { class: "byline-what", html: T(HEAD.role, corpus) }),

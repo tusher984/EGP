@@ -238,7 +238,9 @@ img, svg { max-width: 100%; }
 }
 
 /* The one round thing on the site: a byline portrait is round everywhere, and
-   the avatar tokens exist for a photograph. */
+   the avatar tokens exist for a photograph. The photograph and the initials
+   share a single grid cell, so the initials sit behind the picture and show
+   through only if it fails to load. */
 .byline-mark {
   width: var(--ntr-byline-avatar);
   height: var(--ntr-byline-avatar);
@@ -254,6 +256,21 @@ img, svg { max-width: 100%; }
   letter-spacing: 0.04em;
 }
 
+.byline-mark > * {
+  grid-area: 1 / 1;
+}
+
+/* The crop is already made in the file, so the picture only has to fill the
+   circle. The focus token nudges the framing up or down as a percentage of the
+   frame; at 0 it is dead centre, which is what this portrait wants. */
+.byline-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% calc(50% + var(--ntr-byline-avatar-focus) * 1%);
+}
+
 .byline-who {
   display: block;
   font-family: var(--font-heading);
@@ -267,16 +284,6 @@ img, svg { max-width: 100%; }
   display: block;
   font-family: var(--font-heading);
   font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-/* The build date arrives through fill(), which wraps every resolved figure in
-   .num — so the date sets itself in the monospace face without content.js
-   knowing anything about how it looks. */
-.byline-what .num {
-  font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: 0.95em;
   color: var(--text-muted);
 }
 
@@ -793,6 +800,12 @@ html.dark-mode .btn-quiet { background: var(--surface-raised); }
   padding: 0.32rem 0;
   overflow-wrap: anywhere;
 }
+
+/* A value that is a list of records rather than one string: the owners an award
+   notice discloses for a firm, each with the office they hold. */
+.plain-list { list-style: none; margin: 0; padding: 0; }
+.plain-list li + li { margin-top: 0.2rem; }
+.owner-role { color: var(--text-muted); }
 
 .quote-cell {
   font-family: var(--font-caption);

@@ -133,6 +133,27 @@ export function taka(x) {
   return "৳" + digits(group(v, 0, 0));
 }
 
+/** The same figure with every digit, grouped the way the notices group it, and
+    the paisa only when the notice carried paisa. This is the form an editor
+    checking a record against a PDF needs: "৳5.39 crore" cannot be matched
+    against a page that prints 53908596.90. */
+export function takaFull(x) {
+  if (x === null || x === undefined || x === "" || Number.isNaN(+x)) return dash();
+  const v = +x;
+  const dp = Math.round(v * 100) % 100 === 0 ? 0 : 2;
+  return "৳" + digits(group(v, dp, dp));
+}
+
+/** The reading first, then the exact figure — for record surfaces, where one
+    number is being checked against one page. Tables and charts keep the scaled
+    reading alone, because a column of nine-digit figures is unreadable. Below a
+    lakh the two forms are the same string, so only one is printed. */
+export function takaBoth(x) {
+  if (x === null || x === undefined || x === "" || Number.isNaN(+x)) return dash();
+  if (Math.abs(+x) < 1e5) return takaFull(x);
+  return taka(x) + " (" + takaFull(x) + ")";
+}
+
 export function ratio(x, dp) {
   if (x === null || x === undefined || x === "" || Number.isNaN(+x)) return dash();
   return digits(group(+x, dp === undefined ? 2 : dp, dp === undefined ? 2 : dp)) + "×";

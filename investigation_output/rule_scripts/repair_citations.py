@@ -22,8 +22,15 @@ citation in the two rule CSVs has a quoted fragment that is findable on a cited
 page, and every evidence_page is a bare integer.
 """
 import csv, os, re
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 FILES = [os.path.join(OUT, "rules_broken_line_by_line.csv"),
          os.path.join(OUT, "rule_deviations.csv")]
 

@@ -20,10 +20,17 @@ Both are cosmetic in effect and neither moves a rule verdict, but a page number 
 reader cannot open is the kind of thing that gets a story killed.
 """
 import csv, os, re, subprocess
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-REPO = "/sessions/exciting-laughing-curie/mnt/EGP-CDA"
+REPO = _p.REPO
 OUT = os.path.join(REPO, "investigation_output")
-CACHE = "/tmp/vpg"
+CACHE = _p.CACHE
 FILES = [os.path.join(OUT, "rules_broken_line_by_line.csv"),
          os.path.join(OUT, "rule_deviations.csv")]
 

@@ -38,6 +38,7 @@ NA = {"", "NOT_AVAILABLE", "NOT_APPLICABLE", "NOT_PUBLISHED", "NONE", "N/A",
       "NOT_AVAILABLE_NO_ESTIMATE_PUBLISHED",
       "NOT_AVAILABLE_IDENTITIES_NEVER_PUBLISHED",
       "NOT_APPLICABLE_SHARE_NOT_PUBLISHED",
+      "none_detected",
       "not_applicable_won_the_contract"}
 
 
@@ -60,9 +61,146 @@ LIQUID_FIX = {
 
 # ---------------------------------------------------------------- primitives
 
+# Some notices reached the CSVs with their punctuation mis-decoded: a curly
+# apostrophe printed as "Bankâ??s", a non-breaking space printed as "Â ". The
+# damage is in the extraction, not in the notice - a reader diffing "Bankâ??s
+# Undertaking" against the PDF sees "Bank's Undertaking" and thinks the quote is
+# wrong. It is repaired here, on the way into the site, so the CSVs stay exactly
+# as the investigation's own scripts verified them, and the count is published on
+# the method page rather than the repair being made silently.
+DAMAGE = re.compile(r"[ÂÃ]|â\?\?|â\?�|�")
+LOSSY = [("Ã¯Â¿Â½", "�"), ("â?�", '"'),
+         ("â€™", "'"), ("â€˜", "'"), ("â€œ", '"'), ("â€\x9d", '"')]
+RESIDUE = re.compile(r"\s*(?:[ÃÂ][ÃÂ?�¢¯¿½€]*\s*)+")
+MENDED = collections.Counter()
+
+
+def undouble(s):
+    """Undo UTF-8 that was read as Latin-1, as many times as it round-trips.
+
+    This is the recoverable class: "Â " is the two bytes of a non-breaking space
+    read one byte at a time, "Â±" the two bytes of a plus-minus sign. Decoding
+    them back is exact, which is why it is done by round-trip and not by a
+    substitution table - a table would have to guess, and would turn "Â±" into a
+    dropped character instead of "±".
+    """
+    for _ in range(3):
+        if not any(c in s for c in "ÂÃ"):
+            return s
+        try:
+            t = s.encode("latin-1").decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            return s
+        if t == s:
+            return s
+        s = t
+    return s
+
+
+def close_up(m):
+    """Drop an unrecoverable run when it was glued to a word or sits in front of
+    sentence punctuation; leave one space where it already had whitespace beside
+    it. So "form<run> of" reads "form of", "Crore. <run> i)" reads "Crore. i)"
+    and "Authority <run>." reads "Authority.".
+    """
+    if m.string[m.end():m.end() + 1] in ("", ".", ",", ";", ":", ")"):
+        return ""
+    return " " if any(c.isspace() for c in m.group(0)) else ""
+
+
+def mend(s):
+    if not s or not DAMAGE.search(s):
+        return s
+    was = s
+    s = undouble(s)
+    for a, b in LOSSY:
+        s = s.replace(a, b)
+    # "â??" is U+2018/2019/201C with its two trailing bytes replaced by "?".
+    # Which one it was is settled by what sits before it: after a letter or digit
+    # it closed a possessive (Bank's, goods'), otherwise it opened a quotation.
+    s = re.sub(r"(?<=[0-9A-Za-z])â\?\?", "'", s)
+    s = s.replace("â??", '"')
+    s = s.replace("\xa0", " ").replace("\xad", "")
+    if RESIDUE.search(s):
+        # Doubly mangled and a byte short of recoverable: the two bytes of a
+        # Latin-1 character were re-encoded and then one was replaced by "?".
+        # The character cannot be recovered, so the run is closed up rather than
+        # guessed at, and both the run and the cell it sat in are counted.
+        MENDED["unrecoverable_runs"] += len(RESIDUE.findall(s))
+        MENDED["cells_with_unrecoverable_run"] += 1
+        s = RESIDUE.sub(close_up, s).strip()
+    if s != was:
+        MENDED["cells"] += 1
+    return s
+
+
 def load(name):
     with open(os.path.join(SRC, name), encoding="utf-8-sig") as fh:
-        return list(csv.DictReader(fh))
+        rows = list(csv.DictReader(fh))
+    for r in rows:
+        for k, v in r.items():
+            if v and DAMAGE.search(v):
+                r[k] = mend(v)
+    MENDED["files"] += 1
+    return rows
+
+
+# ------------------------------------------------------- names, for a reader
+# The master carries three forms of a winner's name: winner_name as the notice
+# printed it, winner_name_verbatim with the joint-venture partner block attached,
+# and winner_name_normalised, an upper-cased key with the punctuation stripped so
+# that "M/S. Gulzar Trading" and "M/s Gulzar Trading" land in one group. The key
+# is the right thing to group on and the wrong thing to read: it sets every firm
+# in the story in capitals and loses "(Pvt.)". So grouping still runs on the key
+# and the name shown to a reader is a spelling the documents actually print.
+
+KEEP_DOT = {"ltd", "co", "corp", "pvt", "inc", "bros", "no", "dept", "eng", "mfg", "jv"}
+NORM = collections.Counter()
+
+
+def tidy_name(s):
+    """Spacing and punctuation only. No word is added, dropped or re-cased."""
+    was = s = re.sub(r"\s+", " ", (s or "").strip())
+    s = re.sub(r"(?i)\b(m/s)\.?(?=[A-Za-z])", r"\1. ", s)   # M/s.Suraim -> M/s. Suraim
+    s = re.sub(r"(?<=[A-Za-z])\(", " (", s)                  # BROTHERS(PVT) -> BROTHERS (PVT)
+    s = re.sub(r"\)(?=[A-Za-z])", ") ", s)                   # (PVT)LIMITED -> (PVT) LIMITED
+    s = re.sub(r"\(\s+", "(", s)
+    s = re.sub(r"\s+\)", ")", s)                             # (Pvt. ) -> (Pvt.)
+    s = re.sub(r"\s+([,;])", r"\1", s)
+    s = re.sub(r"\s{2,}", " ", s)
+    last = s.rsplit(" ", 1)[-1]
+    if last.endswith(".") and last[:-1].replace(".", "").lower() not in KEEP_DOT \
+            and len(re.sub(r"[^A-Za-z]", "", last)) >= 2:
+        s = s[:-1]                                           # Halim Enterprise. -> ...
+    s = s.strip()
+    if s != was:
+        NORM["respaced"] += 1
+    return s
+
+
+def display_name(spellings):
+    """One spelling to print for a group, chosen from the spellings on the
+    notices: the commonest, then the one without a parenthetical, then the
+    shortest, then alphabetical. Deterministic, and never a form the documents
+    do not carry."""
+    c = collections.Counter(tidy_name(s) for s in spellings if (s or "").strip())
+    if not c:
+        return ""
+    return sorted(c, key=lambda s: (-c[s], s.count("("), len(s), s))[0]
+
+
+def person(s):
+    """A name printed in one table column and a role in the next arrive glued
+    together by a run of spaces - "MD. ABDUL BARI      Proprietor". Split them
+    back apart; a name with no role attached is returned unchanged."""
+    s = re.sub(r"[\s ]+", " ", (s or "").strip()) if "  " not in (s or "") \
+        else (s or "").strip()
+    parts = re.split(r"\s{2,}", s, maxsplit=1)
+    name = re.sub(r"\s+", " ", parts[0]).strip(" ,;")
+    role = re.sub(r"\s+", " ", parts[1]).strip(" ,;") if len(parts) > 1 else ""
+    if role:
+        NORM["owner_role_split"] += 1
+    return name, role
 
 
 def txt(row, col):
@@ -243,6 +381,24 @@ BY_ID = {r["tender_id"]: r for r in MASTER}
 AWARDED = [r for r in MASTER if num(r, "contract_value_bdt") is not None]
 WITHBIDS = [r for r in MASTER if num(r, "total_bids_received") is not None]
 
+# One spelling per firm, so that a firm named in the article, in a table and in a
+# tender record is the same string in all three. Grouping is still the master's
+# own upper-case key; only what is shown changes.
+_spellings = collections.defaultdict(list)
+for _r in AWARDED:
+    _k = txt(_r, "winner_name_normalised") or txt(_r, "winner_name")
+    if _k and txt(_r, "winner_name"):
+        _spellings[_k].append(txt(_r, "winner_name"))
+NAME_OF = {k: display_name(v) for k, v in _spellings.items()}
+print("  firm names   %d groups, one printed spelling each" % len(NAME_OF))
+
+
+def winner_of(row):
+    """The firm name to show for a tender: the group's chosen spelling, falling
+    back to whatever this notice printed."""
+    k = txt(row, "winner_name_normalised") or txt(row, "winner_name")
+    return NAME_OF.get(k) or tidy_name(txt(row, "winner_name"))
+
 
 # -------------------------------------------------------------- the documents
 
@@ -393,8 +549,9 @@ def build_winners():
             continue
         key = txt(row, "winner_name_normalised") or txt(row, "winner_name")
         if key in ent and txt(b, "beneficial_owner_name"):
+            who, role = person(txt(b, "beneficial_owner_name"))
             ent[key]["owners"].append({
-                "name": txt(b, "beneficial_owner_name"),
+                "name": who, "role": role,
                 "share": txt(b, "ownership_percentage"),
                 "country": txt(b, "owner_country"),
                 "tender_id": b["tender_id"]})
@@ -406,7 +563,8 @@ def build_winners():
         owners = [o for o in e["owners"]
                   if not (o["name"].upper() in seen or seen.add(o["name"].upper()))]
         out.append({
-            "name": k, "contracts": e["contracts"], "crore": cr(e["value"]),
+            "name": NAME_OF.get(k) or tidy_name(k), "key": k,
+            "contracts": e["contracts"], "crore": cr(e["value"]),
             "taka": round(e["value"], 2), "share": pct(e["value"], total, 2),
             "agencies": sorted(e["agencies"]), "thin_wins": e["thin_wins"],
             "tenders": e["tenders"], "jv_awards": e["jv"],
@@ -546,6 +704,13 @@ def build_tenders():
             o[c] = num(r, c) if c in NUMERIC else txt(r, c)
         o["flags"] = [c for c in FLAGS if yes(r, c)
                       or (r.get(c) or "").strip() == c.upper()]
+        # The firm reads the same on every surface of the site; where this notice
+        # spelled it differently, that spelling is kept beside it.
+        if txt(r, "winner_name"):
+            shown = winner_of(r)
+            if shown != txt(r, "winner_name"):
+                o["winner_printed"] = txt(r, "winner_name")
+            o["winner_name"] = shown
         o["pub"] = iso(txt(r, "publication_date"))
         o["close"] = iso(txt(r, "closing_date"))
         o["sign"] = iso(txt(r, "signing_date"))
@@ -642,22 +807,27 @@ def build_deviations():
 def build_bidders():
     out = []
     for b in BID:
-        out.append({
+        who, role = person(txt(b, "beneficial_owner_name"))
+        shown = tidy_name(txt(b, "bidder_name"))
+        o = {
             "tender_id": b["tender_id"], "agency": b["agency"],
             "record_type": b["record_type"],
-            "name": txt(b, "bidder_name"),
+            "name": shown,
             "normalised": txt(b, "bidder_name_normalised"),
             "amount": num(b, "bid_amount"),
             "responsive": txt(b, "responsive_status"),
             "qualified": txt(b, "qualified_status"),
             "rejection_reason": txt(b, "rejection_reason"),
             "rejected_requirement": txt(b, "rejected_requirement"),
-            "owner": txt(b, "beneficial_owner_name"),
+            "owner": who, "owner_role": role,
             "share": txt(b, "ownership_percentage"),
             "country": txt(b, "owner_country"),
             "file": txt(b, "source_file"), "page": txt(b, "page_number"),
             "excerpt": txt(b, "evidence_excerpt"), "note": txt(b, "note"),
-        })
+        }
+        if shown != txt(b, "bidder_name"):
+            o["printed"] = txt(b, "bidder_name")
+        out.append(o)
     return out
 
 
@@ -749,7 +919,7 @@ def build_exhibits():
             "notice": docref("notice", txt(r, "notice_source_file"), txt(r, "notice_pages")),
             "award": docref("award", txt(r, "award_source_file"), txt(r, "award_pages")),
             "bids": num(r, "total_bids_received"), "responsive": num(r, "responsive_bids"),
-            "value": num(r, "contract_value_bdt"), "winner": txt(r, "winner_name"),
+            "value": num(r, "contract_value_bdt"), "winner": winner_of(r),
             "score": num(r, "investigative_priority_score"),
         })
     return out
@@ -854,7 +1024,7 @@ def main():
             "responsive": num(r, "responsive_bids"),
             "value": num(r, "contract_value_bdt"),
             "crore": cr(num(r, "contract_value_bdt")),
-            "winner": txt(r, "winner_name"),
+            "winner": winner_of(r),
             "restriction": txt(r, "eligibility_restriction_level"),
             "deviations": num(r, "rule_deviation_count"),
             "codes": txt(r, "rule_deviation_codes"),
@@ -956,11 +1126,27 @@ def main():
         src.append({"name": name, "bytes": len(raw), "rows": rows, "cols": cols,
                     "sha256": hashlib.sha256(raw).hexdigest()[:16]})
 
+    # What this layer changed on the way from the audited CSVs to the page, so a
+    # reader diffing a name or a quote against a PDF knows what to expect.
+    repairs = {
+        "files_read": MENDED["files"],
+        "cells_mended": MENDED["cells"],
+        "unrecoverable_runs": MENDED["unrecoverable_runs"],
+        "cells_with_unrecoverable_run": MENDED["cells_with_unrecoverable_run"],
+        "firm_groups": len(NAME_OF),
+        "firms_shown_as_printed": sum(1 for w in winners if w["name"] != w["key"]),
+        "firm_groups_multi_spelling": sum(
+            1 for k, v in _spellings.items() if len(set(tidy_name(x) for x in v)) > 1),
+        "names_respaced": NORM["respaced"],
+        "owner_roles_split": NORM["owner_role_split"],
+    }
+
     corpus = {
         "meta": {
             "built": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             "byline": "AL AMIN TUSHER",
             "sources": src,
+            "repairs": repairs,
             "rule_catalogue": {"rules": len(RULES),
                                "instrument_note": RC.INSTRUMENT_NOTE,
                                "quote_note": RC.QUOTE_REPRODUCTION_NOTE},

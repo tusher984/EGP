@@ -394,10 +394,13 @@ export const HEAD = {
     bn: "বাংলাদেশের ছয়টি নগর উন্নয়ন সংস্থার {{counts.pdfs|n}}টি ক্রয়-নথির প্রতিটি পৃষ্ঠা আমরা পড়েছি — {{counts.notices|n}}টি দরপত্র বিজ্ঞপ্তি ও {{counts.awards|n}}টি চুক্তির নথি, মোট {{money.crore|cr}} টাকার কাজ। বিজ্ঞপ্তিতে বিজয়ীর নাম আছে। কিন্তু এই নথিগুলোর কোথাও একজন পরাজিত দরদাতার নাম নেই, একটিও পরাজিত দর নেই, বাতিলের একটিও কারণ নেই।",
   },
   byline: { en: "AL AMIN TUSHER", bn: "আল আমিন তুষার" },
+  /* The portrait is a file in this repository; the initials sit behind it and
+     show only if that file ever goes missing. */
+  portrait: "site/assets/reporter.jpg",
   initials: "AT",
   role: {
-    en: "Reporting, data and analysis · built {{meta.built|raw}}",
-    bn: "প্রতিবেদন, ডেটা ও বিশ্লেষণ · তৈরি {{meta.built|raw}}",
+    en: "Reporting, data and analysis",
+    bn: "প্রতিবেদন, ডেটা ও বিশ্লেষণ",
   },
 };
 

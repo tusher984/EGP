@@ -31,15 +31,22 @@ Three gaps are closed here.
    violation would fail the same citation test applied everywhere else.
 """
 import csv, os, re, subprocess, collections, datetime
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-REPO = "/sessions/exciting-laughing-curie/mnt/EGP-CDA"
+REPO = _p.REPO
 OUT = os.path.join(REPO, "investigation_output")
 AWARD_DIR = os.path.join(REPO, "Contract_Awards_PDFs")
 NOTICE_DIR = os.path.join(REPO, "Tender Notice_PDFs")
 BROKEN = os.path.join(OUT, "rules_broken_line_by_line.csv")
 DEV = os.path.join(OUT, "rule_deviations.csv")
 MASTER = os.path.join(OUT, "master_tender_investigation.csv")
-CACHE = "/tmp/pagetxt"
+CACHE = _p.CACHE
 
 
 def pages(pdf_dir, fname):
