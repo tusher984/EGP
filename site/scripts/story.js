@@ -453,6 +453,27 @@ function block(b, corpus) {
   }
 }
 
+/** The byline portrait: the photograph, with the reporter's initials behind it
+    as the fallback if the file is ever missing. Hidden from assistive software
+    because the name is set in text immediately beside it — a portrait carries
+    nothing a screen reader can read out. */
+function bylineMark() {
+  const mark = el("span", { class: "byline-mark", "aria-hidden": "true" }, [
+    el("span", { class: "byline-initials", text: HEAD.initials }),
+  ]);
+  const photo = el("img", {
+    class: "byline-photo",
+    src: HEAD.portrait,
+    alt: "",
+    width: "320",
+    height: "320",
+    decoding: "async",
+    on: { error: () => photo.remove() },
+  });
+  mark.appendChild(photo);
+  return mark;
+}
+
 /** Build the header and the article into `root`. Called once, on first paint of
     the story tab, and again whenever the language changes. */
 export function renderStory(root, corpus) {
@@ -461,7 +482,7 @@ export function renderStory(root, corpus) {
     el("h1", { class: "hed", html: T(HEAD.hed, corpus) }),
     el("p", { class: "dek", html: T(HEAD.dek, corpus) }),
     el("div", { class: "byline" }, [
-      el("span", { class: "byline-mark", text: HEAD.initials }),
+      bylineMark(),
       el("span", null, [
         el("span", { class: "byline-who", text: t(HEAD.byline) }),
         el("span", { class: "byline-what", html: T(HEAD.role, corpus) }),

@@ -14,7 +14,7 @@
    takes the deviation counts as breaches of law has been misled, so the tab
    says it before it says anything else. */
 
-import { el, t, n, digits, date, dash, taka, href, fill, fillText, cite } from "./core.js";
+import { el, t, n, digits, dash, taka, href, fill, fillText, cite } from "./core.js";
 import { figure, table } from "./charts.js";
 import { UI, LABELS } from "./content.js";
 
@@ -57,7 +57,6 @@ const W = {
   instead: { en: "This site prints instead", bn: "এই সাইট বদলে যা ছাপে" },
   rows: { en: "rows", bn: "সারি" },
   cols: { en: "columns", bn: "কলাম" },
-  built: { en: "Built", bn: "তৈরি" },
   byline: { en: "Reporting and analysis", bn: "প্রতিবেদন ও বিশ্লেষণ" },
 };
 
@@ -433,10 +432,8 @@ export function renderMethod(root, corpus) {
   root.appendChild(toolLinks(corpus));
 
   const meta = corpus.meta || {};
-  root.appendChild(el("p", { class: "src", text: [
-    t(W.byline) + ": " + (meta.byline || dash()),
-    t(W.built) + ": " + (meta.built ? date(String(meta.built).slice(0, 10)) : dash()),
-  ].join("  ·  ") }));
+  root.appendChild(el("p", { class: "src",
+    text: t(W.byline) + ": " + (meta.byline || dash()) }));
 
   root.appendChild(el("p", { class: "src measure", text: t({
     en: "This site loads nothing from outside this folder: no map service, no font service, no analytics, no external dataset. Every figure, every quote and every link resolves to a file listed on this page.",
