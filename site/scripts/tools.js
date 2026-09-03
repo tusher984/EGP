@@ -18,7 +18,7 @@
    says what is missing, never zero. */
 
 import {
-  el, t, n, pct, cr, taka, ratio, digits, date, dash, fill, fillText, href, human, clear,
+  el, t, n, pct, cr, taka, takaBoth, ratio, digits, date, dash, fill, fillText, href, human, clear,
   stop, ofTotal,
 } from "./core.js";
 import { figure, table, barsH, hue } from "./charts.js";
@@ -98,6 +98,14 @@ function lab(map, key) {
 /** A key-value row. Absent values print what is missing, never a zero. */
 function kv(k, v) {
   return [el("dt", { text: t(k) }), el("dd", null, v === null || v === undefined || v === "" ? dash() : v)];
+}
+
+/** A row that is omitted rather than dashed when there is nothing to say. Used
+    where the absence is not itself the point — the notice's own spelling of a
+    firm is worth showing when it differs from the one on the rest of the site,
+    and worth no row at all when it does not. */
+function kvIf(k, v) {
+  return v === null || v === undefined || v === "" ? [] : kv(k, v);
 }
 
 function pill(text, kind) {
@@ -220,7 +228,10 @@ function recBids(r, d) {
   return out;
 }
 function recAsked(r) {
-  const num = (v) => (v === null || v === undefined || v === "" ? null : taka(v));
+  /* Record surface: the reading and the exact figure, because these are the
+     numbers the eligibility findings rest on and each one is checked against a
+     sentence on a page that prints all of its digits. */
+  const num = (v) => (v === null || v === undefined || v === "" ? null : takaBoth(v));
   const rel = (v) => (v === null || v === undefined || v === "" ? null : ratio(v));
   return [
     el("h4", { text: t(W.askedHead) }),
@@ -247,10 +258,11 @@ function recAward(r) {
     el("h4", { text: t(W.awardHead) }),
     el("dl", { class: "kv" }, [
       ...kv(UI.words.winner, r.winner_name),
+      ...kvIf({ en: "Name as this notice spells it", bn: "এই বিজ্ঞপ্তিতে ছাপা নাম" }, r.winner_printed),
       ...kv({ en: "Joint venture", bn: "যৌথ উদ্যোগ" }, r.winner_is_joint_venture ? lab("yesno", r.winner_is_joint_venture) : null),
       ...kv({ en: "Address as printed", bn: "ছাপা ঠিকানা" }, r.winner_location),
-      ...kv(UI.words.value, r.contract_value_bdt === null ? null : taka(r.contract_value_bdt)),
-      ...kv({ en: "Tender security", bn: "দরপত্র জামানত" }, r.tender_security_bdt === null ? null : taka(r.tender_security_bdt)),
+      ...kv(UI.words.value, r.contract_value_bdt === null ? null : takaBoth(r.contract_value_bdt)),
+      ...kv({ en: "Tender security", bn: "দরপত্র জামানত" }, r.tender_security_bdt === null ? null : takaBoth(r.tender_security_bdt)),
       ...kv({ en: "Owner named on the notice", bn: "বিজ্ঞপ্তিতে মালিকের নাম" },
         r.beneficial_ownership_disclosed ? lab("yesno", r.beneficial_ownership_disclosed) : null),
       ...kv({ en: "This winner elsewhere", bn: "এই বিজয়ী অন্যত্র" }, r.repeated_winner_pattern ? lab("repeat", r.repeated_winner_pattern) : null),
@@ -516,11 +528,7 @@ function nearWords(term, vocab, limit) {
 function buildIndex(ctx) {
   if (ctx.index) return ctx.index;
   const vocab = new Set();
-  const byTender = new Map();
-  for (const b of ctx.bidders) {
-    if (!byTender.has(b.tender_id)) byTender.set(b.tender_id, []);
-    byTender.get(b.tender_id).push(b);
-  }
+  const byTender = biddersByTender(ctx);
 
   const rows = ctx.tenders.map((r) => {
     const parts = [];
@@ -530,10 +538,12 @@ function buildIndex(ctx) {
       r.ministry, r.procurement_nature, r.procurement_method, r.tender_status]
       .filter(Boolean).join(" · ")]);
     if (r.winner_name) {
-      parts.push(["winner", [r.winner_name, r.winner_location].filter(Boolean).join(" — ")]);
+      parts.push(["winner", [r.winner_name, r.winner_printed, r.winner_location]
+        .filter(Boolean).join(" — ")]);
     }
     for (const b of byTender.get(r.tender_id) || []) {
-      parts.push(["bidder", [b.name, b.owner, b.country, b.excerpt].filter(Boolean).join(" · ")]);
+      parts.push(["bidder", [b.name, b.printed, b.owner, b.owner_role, b.country, b.excerpt]
+        .filter(Boolean).join(" · ")]);
     }
     for (const pair of ctx.doctext[r.tender_id] || []) parts.push(pair);
     const dev = devRows(ctx, r.tender_id)
@@ -949,24 +959,75 @@ function firmFigure(ctx) {
       top.map((firm) => [firm.name, n(firm.contracts), cr(firm.crore), pct(firm.share)])
     ),
     source: {
-      en: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, grouped on <code>winner_name_normalised</code>.",
-      bn: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, <code>winner_name_normalised</code> অনুসারে দলবদ্ধ।",
+      en: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, grouped on <code>winner_name_normalised</code> and shown under a spelling the award notices print.",
+      bn: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, <code>winner_name_normalised</code> অনুসারে দলবদ্ধ, আর চুক্তি-বিজ্ঞপ্তিতে ছাপা বানানে দেখানো।",
     },
   });
 }
 
+/** Bidder rows grouped by tender, built once per session. Several surfaces need
+    the same grouping, so it is memoised on the context rather than rebuilt. */
+function biddersByTender(ctx) {
+  if (!ctx.byBidder) {
+    ctx.byBidder = new Map();
+    for (const b of ctx.bidders) {
+      if (!ctx.byBidder.has(b.tender_id)) ctx.byBidder.set(b.tender_id, []);
+      ctx.byBidder.get(b.tender_id).push(b);
+    }
+  }
+  return ctx.byBidder;
+}
+
+/** The owners an award notice discloses for a winning firm. Each is a record —
+    a person, the office they hold, the share and the country — so it is listed
+    as one, not flattened into a string. The share and the country are printed
+    only when the notice printed them. */
+function ownerList(owners) {
+  const rows = (owners || []).filter((o) => o && o.name);
+  if (!rows.length) return null;
+  const ul = el("ul", { class: "plain-list" });
+  for (const o of rows) {
+    const tail = [o.role, o.share ? pct(parseFloat(o.share)) : null, o.country]
+      .filter(Boolean).join(" · ");
+    ul.appendChild(el("li", null, [
+      el("span", { class: "owner-name", text: o.name }),
+      tail ? el("span", { class: "owner-role", text: " — " + tail }) : null,
+    ].filter(Boolean)));
+  }
+  return ul;
+}
+
 function firmRecord(firm, ctx) {
+  /* The supplier field of the award notice, quoted. It is here because the name
+     on this record is a spelling chosen from several, and because on a handful of
+     notices the field does not hold a company name at all — the reader should be
+     able to see what the government printed without opening the PDF. */
+  const byT = biddersByTender(ctx);
+  const printed = [];
+  for (const id of firm.tenders || []) {
+    for (const b of byT.get(id) || []) {
+      if (b.record_type === "AWARDED_BIDDER" && b.excerpt &&
+          printed.indexOf(b.excerpt) < 0) printed.push(b.excerpt);
+    }
+  }
   const body = [
     el("dl", { class: "kv" }, [
       ...kv(UI.words.contracts, n(firm.contracts)),
-      ...kv(UI.words.money, cr(firm.crore) + " (" + taka(firm.taka) + ")"),
+      ...kv(UI.words.money, takaBoth(firm.taka)),
       ...kv(UI.words.share, pct(firm.share)),
       ...kv({ en: "Authorities", bn: "সংস্থা" }, (firm.agencies || []).join(", ")),
       ...kv({ en: "Districts as printed", bn: "ছাপা জেলা" }, (firm.districts || []).join(", ")),
       ...kv({ en: "Won where the field was thin", bn: "কম প্রতিযোগিতায় জিতেছে" }, n(firm.thin_wins)),
       ...kv({ en: "Won as a joint venture", bn: "যৌথ উদ্যোগে জিতেছে" }, n(firm.jv_awards)),
-      ...kv(W.owners, (firm.owners || []).length ? firm.owners.join("; ") : null),
+      ...kv(W.owners, ownerList(firm.owners)),
       ...kv(W.spellings, (firm.verbatim || []).join(" · ")),
+      ...kvIf({ en: "Grouping key", bn: "দলবদ্ধ করার সূত্র" },
+        firm.key && firm.key !== firm.name ? el("code", { text: firm.key }) : null),
+      ...kvIf({ en: "The supplier field, as printed", bn: "সরবরাহকারীর ঘর, যেভাবে ছাপা" },
+        printed.length
+          ? el("div", null, printed.slice(0, 4).map(
+              (x) => el("p", { class: "quote-cell", text: x })))
+          : null),
       ...kv({ en: "Name-variant check", bn: "নামের রূপভেদ পরীক্ষা" },
         (firm.variants || []).map(human).join(", ")),
     ]),
@@ -1042,7 +1103,11 @@ function firmsTool(ctx) {
     kept = ctx.winners.filter((firm) => {
       if (firm.contracts < min) return false;
       if (!q) return true;
+      /* Searchable by the name shown, by the grouping key the CSVs use, by every
+         spelling a notice printed, and by a disclosed owner. */
       if (normalise(firm.name).indexOf(q) >= 0) return true;
+      if (firm.key && normalise(firm.key).indexOf(q) >= 0) return true;
+      if ((firm.owners || []).some((o) => normalise(o.name || "").indexOf(q) >= 0)) return true;
       return (firm.verbatim || []).some((v) => normalise(v).indexOf(q) >= 0);
     });
     const sorter = FIRM_SORTS.find((s) => s.value === order.value) || FIRM_SORTS[0];

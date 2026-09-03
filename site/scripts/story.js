@@ -306,8 +306,8 @@ const FIGS = {
         [{ en: "Firms", bn: "প্রতিষ্ঠান" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         parts.map((p) => [t(p.label), pct(p.value)])
       ),
-      source: src(F.master + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Names are normalised for spelling only; two firms are never merged on a resemblance.",
-        F.master + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। নাম কেবল বানানের জন্য সমন্বিত; মিল দেখে দুটি প্রতিষ্ঠানকে কখনো এক করা হয়নি।"),
+      source: src(F.master + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Firms are grouped on that column and never merged on a resemblance; the name shown is a spelling the award notices print.",
+        F.master + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। প্রতিষ্ঠানগুলো ওই কলাম ধরে দলবদ্ধ, মিল দেখে কখনো এক করা হয়নি; যে নাম দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে ছাপা বানান।"),
     });
   },
   /* Eight outcomes over one set of tests, one unit. The ramp is ordered by

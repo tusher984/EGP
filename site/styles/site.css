@@ -801,6 +801,12 @@ html.dark-mode .btn-quiet { background: var(--surface-raised); }
   overflow-wrap: anywhere;
 }
 
+/* A value that is a list of records rather than one string: the owners an award
+   notice discloses for a firm, each with the office they hold. */
+.plain-list { list-style: none; margin: 0; padding: 0; }
+.plain-list li + li { margin-top: 0.2rem; }
+.owner-role { color: var(--text-muted); }
+
 .quote-cell {
   font-family: var(--font-caption);
   font-size: 0.92rem;

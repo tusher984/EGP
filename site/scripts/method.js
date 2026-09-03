@@ -14,7 +14,7 @@
    takes the deviation counts as breaches of law has been misled, so the tab
    says it before it says anything else. */
 
-import { el, t, n, digits, dash, taka, href, fill, fillText, cite } from "./core.js";
+import { el, t, n, digits, dash, takaFull, href, fill, fillText, cite } from "./core.js";
 import { figure, table } from "./charts.js";
 import { UI, LABELS } from "./content.js";
 
@@ -37,6 +37,7 @@ const W = {
   toolsHead: { en: "The tools, opened directly", bn: "টুলগুলো, সরাসরি" },
   gapsHead: { en: "What these documents never say", bn: "এই নথিগুলো যা কখনো বলে না" },
   qaHead: { en: "Corrections made after the first computation", bn: "প্রথম গণনার পরে করা সংশোধন" },
+  readHead: { en: "What is repaired between the file and the page", bn: "ফাইল থেকে পাতায় আসার পথে যা সারানো হয়" },
   notesHead: { en: "Where the fact check disagreed with the analysis", bn: "যেখানে তথ্য-যাচাই বিশ্লেষণের সঙ্গে একমত হয়নি" },
   confHead: { en: "How confident each reading is", bn: "প্রতিটি পাঠে কতটা আস্থা" },
   quoteHead: { en: "Why a quote may not grep", bn: "উদ্ধৃতি কেন হুবহু খুঁজে না-ও মিলতে পারে" },
@@ -288,7 +289,7 @@ function corrections(corpus) {
     table(
       [UI.words.tender, { en: "Column", bn: "কলাম" }, W.before, W.after, W.because],
       rows.map((c) => [digits(c.tender_id) + " (" + c.agency + ")", c.column,
-        taka(c.before), taka(c.after), c.quote]),
+        takaFull(c.before), takaFull(c.after), c.quote]),
       { textCols: true }
     ),
     el("p", { class: "src", text: t({
@@ -311,6 +312,59 @@ function notes(corpus) {
       el("p", null, [el("b", { text: t(W.claimed) + ": " }), note.what]),
       el("p", null, [el("b", { text: t(W.instead) + ": " }), note.instead]),
     ]))),
+  ]);
+}
+
+/** Two repairs happen between the audited CSVs and this page, and both are
+    stated here because both change a string a reader may be diffing against a
+    PDF: the extraction's broken characters are decoded, and a firm is shown
+    under one spelling instead of whichever the notice being read used. Neither
+    touches a figure, a clause number or a quotation's words. */
+function repairs(corpus) {
+  const r = (corpus.meta && corpus.meta.repairs) || null;
+  if (!r) return null;
+  const rows = [
+    [{ en: "Cells whose characters were decoded", bn: "যেসব ঘরের হরফ পুনরুদ্ধার হয়েছে" },
+      n(r.cells_mended),
+      { en: "The extraction wrote a curly apostrophe and a quotation mark as broken bytes. Decoding them is exact, so the site prints an apostrophe where the notice printed one.",
+        bn: "নিষ্কাশনের সময় বাঁকা অ্যাপস্ট্রফি ও উদ্ধৃতিচিহ্ন ভাঙা বাইট হয়ে লেখা হয়েছিল। সেগুলোর পাঠোদ্ধার নিখুঁত, তাই বিজ্ঞপ্তিতে যেখানে অ্যাপস্ট্রফি ছিল সাইটেও সেটিই থাকে।" }],
+    [{ en: "Runs a byte short of recoverable", bn: "যেসব খণ্ড এক বাইট কম, উদ্ধার অসম্ভব" },
+      n(r.unrecoverable_runs) + " (" + t({ en: "in", bn: "যা" }) + " " +
+        n(r.cells_with_unrecoverable_run) + " " + t({ en: "cells", bn: "ঘরে" }) + ")",
+      { en: "Here one byte of the original character is gone for good. Nothing is guessed: the run is closed up to the spacing around it and counted here, so a reader who finds a word missing a character in a PDF knows it was not invented away.",
+        bn: "এখানে মূল হরফের একটি বাইট চিরতরে হারিয়ে গেছে। কিছুই অনুমান করা হয়নি: খণ্ডটি তার পাশের ফাঁকায় মিলিয়ে দেওয়া হয়েছে এবং এখানে গোনা হয়েছে — তাই পিডিএফে কোনো শব্দে হরফ কম দেখলে পাঠক জানবেন সেটি বানিয়ে সরানো হয়নি।" }],
+    [{ en: "Firms grouped", bn: "দলবদ্ধ প্রতিষ্ঠান" },
+      n(r.firm_groups),
+      { en: "Grouping still runs on the CSV's own upper-case key, which is what makes two spellings of one firm add up. That key is printed on every firm record, so any grouping can be checked.",
+        bn: "দলবদ্ধ করা এখনো সিএসভির নিজের বড়-হাতের সূত্র ধরেই হয় — সে কারণেই এক প্রতিষ্ঠানের দুই বানান একসঙ্গে যোগ হয়। প্রতিটি প্রতিষ্ঠানের নথিতে সেই সূত্র ছাপা থাকে, তাই যেকোনো দলবদ্ধ করা যাচাই করা যায়।" }],
+    [{ en: "Firms shown as the notices spell them", bn: "বিজ্ঞপ্তির বানানে দেখানো প্রতিষ্ঠান" },
+      n(r.firms_shown_as_printed),
+      { en: "The upper-case key is a matching device, not a name. What is shown is a spelling the award notices actually print — the commonest one where a firm has more than one, and the notice's own spelling stays on the tender record beside it.",
+        bn: "বড়-হাতের সূত্রটি মেলানোর কৌশল, নাম নয়। যা দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে সত্যিই ছাপা কোনো বানান — একাধিক থাকলে সবচেয়ে বেশিবার ছাপা হওয়াটি; আর ওই দরপত্রের নথিতে বিজ্ঞপ্তির নিজের বানানটিও পাশে থাকে।" }],
+    [{ en: "Firms with more than one printed spelling", bn: "একাধিক ছাপা বানানের প্রতিষ্ঠান" },
+      n(r.firm_groups_multi_spelling),
+      { en: "All three are listed on the firms tool with every spelling the notices use, so the choice of which to show can be judged rather than trusted.",
+        bn: "তিনটিই প্রতিষ্ঠান-টুলে বিজ্ঞপ্তির প্রতিটি বানানসহ তালিকাভুক্ত, যাতে কোনটি দেখানো হলো তা বিশ্বাস করে না নিয়ে বিচার করা যায়।" }],
+    [{ en: "Names re-spaced", bn: "ফাঁক ঠিক করা নাম" },
+      n(r.names_respaced),
+      { en: "Spacing and one trailing full stop only — M/s.Suraim reads M/s. Suraim. No word is added, dropped or re-cased, and Ltd. keeps its point.",
+        bn: "কেবল ফাঁক আর শেষের একটি দাঁড়ি — M/s.Suraim হয় M/s. Suraim। কোনো শব্দ যোগ, বাদ বা হরফের ছোট-বড় বদল হয়নি, আর Ltd. তার বিন্দু রাখে।" }],
+    [{ en: "Owner names split from the office they hold", bn: "মালিকের নাম ও পদ আলাদা করা" },
+      n(r.owner_roles_split),
+      { en: "The award notice prints the person in one table column and the office in the next, and the extraction glued them together. They are separated back into a name and a role; neither word is changed.",
+        bn: "চুক্তি-বিজ্ঞপ্তি ব্যক্তিটিকে এক কলামে আর পদটি তার পরের কলামে ছাপে, নিষ্কাশনে দুটি জোড়া লেগে গিয়েছিল। সেগুলো আবার নাম ও পদে আলাদা করা হয়েছে; কোনো শব্দ বদলানো হয়নি।" }],
+  ];
+  return el("div", null, [
+    el("p", { class: "note-title", text: t(W.readHead) }),
+    table(
+      [{ en: "What", bn: "কী" }, { en: "How many", bn: "কতগুলো" }, { en: "Why", bn: "কেন" }],
+      rows.map((row) => [t(row[0]), row[1], t(row[2])]),
+      { textCols: true }
+    ),
+    el("p", { class: "src", text: t({
+      en: "The repair runs in site/build/build.py, listed below, and is applied on the way out of the CSVs — the CSVs themselves are left exactly as the analysis wrote them, so both can be compared.",
+      bn: "সারানোর কাজটি হয় নিচে তালিকাভুক্ত site/build/build.py-তে, আর তা প্রয়োগ হয় সিএসভি থেকে বেরোনোর পথে — সিএসভিগুলো ঠিক যেভাবে বিশ্লেষণ লিখেছিল সেভাবেই থাকে, তাই দুটোই মিলিয়ে দেখা যায়।",
+    }) }),
   ]);
 }
 
@@ -424,6 +478,9 @@ export function renderMethod(root, corpus) {
 
   const corr = corrections(corpus);
   if (corr) root.appendChild(corr);
+
+  const rep = repairs(corpus);
+  if (rep) root.appendChild(rep);
 
   const nn = notes(corpus);
   if (nn) root.appendChild(nn);
