@@ -20,6 +20,37 @@ export const HUES = ["var(--hue-1)", "var(--hue-2)", "var(--hue-3)"];
 export const SEQ = ["var(--seq-1)", "var(--seq-2)", "var(--seq-3)",
                     "var(--seq-4)", "var(--seq-5)", "var(--seq-6)"];
 
+/* Two canvas widths, because the article's grid gives a figure one of two
+   widths: the breakout column at 54rem, which is what CANVAS is drawn for, and
+   the full width of the page for the few figures marked wide.
+
+   A chart is drawn on a canvas of fixed units and scaled to its column by the
+   viewBox, so the canvas has to match the column or the scaling shows. Stretch
+   the 820-unit canvas across the full column and every label is magnified with
+   the bars: an 11px category label renders at 16px, larger than the body text
+   beside it. Drawn on the wider canvas instead, the label stays 11px and the
+   extra width goes where it was wanted — into the length of the bars. */
+export const CANVAS = 820;
+export const CANVAS_WIDE = 1200;
+
+/** The canvas for a figure marked wide: the width that column will actually
+    have, so the drawing is scaled as little as possible and its type stays the
+    size it was set at. Measured off the page box rather than computed from the
+    numbers in the stylesheet, because that padding changes with the breakpoint.
+
+    CANVAS is the floor. Below it there is nothing to gain — labelW and valueW
+    are canvas units chosen for a canvas about that wide, and a narrower one
+    would leave no room for the bars — so on a phone a wide figure is scaled
+    down to the column exactly as every other figure there is. */
+export function wideCanvas() {
+  const box = document.querySelector(".wrap");
+  if (!box) return CANVAS;
+  const pad = getComputedStyle(box);
+  const inner = box.clientWidth - parseFloat(pad.paddingLeft) - parseFloat(pad.paddingRight);
+  if (!(inner > 0)) return CANVAS;
+  return Math.max(CANVAS, Math.min(CANVAS_WIDE, Math.round(inner)));
+}
+
 /** A hidden tab and a hidden preview pane both stop firing rAF, and a chart
     that never gets its hover layer wired is a chart that looks finished and is
     not. Fall back to a timer, which keeps running either way. */
@@ -126,7 +157,7 @@ export function barsH(rows, opts) {
   const max = o.max || Math.max(1, ...rows.map((r) => Math.abs(r.value)));
   const rowH = o.rowH || 30, gap = 2, labelW = o.labelW || 190, valueW = o.valueW || 86;
   const h = rows.length * rowH;
-  const w = o.width || 820;
+  const w = o.width || CANVAS;
   const barX = labelW + 10;
   const barW = Math.max(60, w - barX - valueW);
 
@@ -167,7 +198,7 @@ export function barsH(rows, opts) {
 export function lines(cats, series, opts) {
   const o = opts || {};
   const fmt = o.fmt || ((v) => n(v));
-  const w = o.width || 820, h = o.height || 260;
+  const w = o.width || CANVAS, h = o.height || 260;
   const padL = o.padL || 44, padR = 12, padT = 10, padB = 26;
   const iw = w - padL - padR, ih = h - padT - padB;
   const max = o.max || Math.max(1, ...series.flatMap((s) => s.values.map((v) => v || 0)));
@@ -233,7 +264,7 @@ export function lines(cats, series, opts) {
 export function columns(cats, values, opts) {
   const o = opts || {};
   const fmt = o.fmt || ((v) => n(v));
-  const w = o.width || 820, h = o.height || 240;
+  const w = o.width || CANVAS, h = o.height || 240;
   const padL = o.padL || 52, padR = 12, padT = 10, padB = 26;
   const iw = w - padL - padR, ih = h - padT - padB;
   const max = o.max || Math.max(1, ...values);
@@ -289,7 +320,7 @@ export function columns(cats, values, opts) {
 export function percentileStrip(rows, opts) {
   const o = opts || {};
   const fmt = o.fmt || ((v) => n(v, 2));
-  const w = o.width || 820, rowH = o.rowH || 42, labelW = o.labelW || 150;
+  const w = o.width || CANVAS, rowH = o.rowH || 42, labelW = o.labelW || 150;
   const padR = 16;
   const h = rows.length * rowH;
   const x0 = labelW + 10, iw = w - x0 - padR;
@@ -342,7 +373,7 @@ export function stripLegend() {
 
 export function stackedShare(parts, opts) {
   const o = opts || {};
-  const w = o.width || 820, gap = 2;
+  const w = o.width || CANVAS, gap = 2;
   const total = parts.reduce((a, p) => a + p.value, 0) || 1;
   let x = 0;
   const marks = [], labels = [];

@@ -290,9 +290,35 @@ img, svg { max-width: 100%; }
 /* --------------------------------------------------------------------- prose
    One measure for reading, and it is narrow on purpose: 40rem of Utopia at
    1.0625rem is about 68 characters. Section rules are a top border on the
-   section, never a decorative <hr>. */
+   section, never a decorative <hr>.
 
-.prose { max-width: 40rem; }
+   The measure is 40rem and the page is 78rem, so the article is a grid and not
+   one clamped column. Clamped, it sat against the left edge and left the right
+   half of the page empty, and a figure could never be wider than a paragraph
+   however wide the window was -- the 54rem a chart is drawn at was unreachable
+   inside a 40rem parent.
+
+   Five tracks: two flexible outer margins, two 7rem breakout gutters, and the
+   measure between them. Prose sits on the measure and the outer margins centre
+   it. A figure or a row of tiles steps out into both gutters -- 7 + 40 + 7 is
+   the 54rem the charts are drawn for. A wide figure takes the lot. On a narrow
+   screen there is no free space to grow the margins or the gutters with, so
+   every track but the measure collapses to nothing and this is one column
+   again, which is why the breakout needs no media query. */
+
+.prose,
+.story-head {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) minmax(0, 7rem) min(40rem, 100%) minmax(0, 7rem) minmax(0, 1fr);
+}
+
+.prose > *,
+.story-head > * { grid-column: 3; }
+.prose > .fig,
+.prose > .tiles { grid-column: 2 / 5; }
+.prose > .fig-wide { grid-column: 1 / -1; }
+
 .prose > * + * { margin-top: 1.15rem; }
 .prose p { margin: 0; }
 
@@ -506,7 +532,14 @@ img, svg { max-width: 100%; }
 }
 
 .fig-plot { position: relative; }
-.fig-plot svg { display: block; overflow: visible; }
+
+/* A chart is drawn on a fixed canvas and scaled by its viewBox. The height
+   attribute on the <svg> is that canvas height in pixels, so as soon as the
+   column is narrower or wider than the canvas the drawing no longer fills the
+   box it was given: it is scaled to fit and centred, with a dead band above
+   and below. height:auto takes the height from the aspect ratio instead, so
+   the plot is exactly as tall as what is drawn in it at any column width. */
+.fig-plot svg { display: block; overflow: visible; width: 100%; height: auto; }
 
 .legend {
   display: flex;
@@ -1036,6 +1069,9 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
   .masthead, .controls, .chips, .skip, .tip, .masthead-tools, .foot-links { display: none !important; }
   body { font-size: 10.5pt; color: #000; background: #fff; }
   .wrap { max-width: none; padding: 0; }
+  /* On paper there is one column and it is the paper's width, so the article's
+     grid -- margins, breakout gutters, measure -- has nothing to do. */
+  .prose, .story-head { display: block; }
   .sections { background: none; padding: 1.5rem 0 0; }
   .section > summary { padding-left: 0; }
   .fig, .finding, .exhibit, .note, .tiles { break-inside: avoid; }

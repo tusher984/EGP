@@ -15,7 +15,7 @@
 import { el, t, n, pct, cr, digits, dash, fill, fillText, href, human, cite } from "./core.js";
 import {
   figure, table, barsH, lines, percentileStrip, stripLegend, stackedShare,
-  funnel, hue, SEQ,
+  funnel, hue, SEQ, wideCanvas,
 } from "./charts.js";
 import { UI, HEAD, STORY, DOORS, LABELS, EXHIBIT_WORDS } from "./content.js";
 
@@ -228,7 +228,7 @@ const FIGS = {
         bn: "প্রতিটি শর্ত, সংশ্লিষ্ট চুক্তিমূল্যের গুণিতকে। রেখাটি চুক্তিমূল্যের সমান মাত্রা দেখায়: তার ডানদিকে গেলে বিজ্ঞপ্তি দরদাতাকে কাজের চেয়ে বড় হতে বলেছে।",
       },
       plot: percentileStrip(rows, {
-        labelW: 210, reference: 1, min: 0,
+        labelW: 210, reference: 1, min: 0, width: wideCanvas(),
         alt: A({ en: "Requirement size as a multiple of contract value.", bn: "চুক্তিমূল্যের গুণিতকে শর্তের আকার।" }, corpus),
       }),
       legend: stripLegend(),
@@ -301,7 +301,7 @@ const FIGS = {
         bn: cr(corpus.money.crore, 0) + " গেছে " + n(c.distinct_winners) +
           "টি প্রতিষ্ঠানে। তার " + pct(c.top20_share) + " আছে কুড়িটির হাতে, আর একটি প্রতিষ্ঠানের হাতে " + n(c.top1.contracts) + "টি চুক্তিতে " + pct(top1) + "।",
       },
-      plot: stackedShare(parts, { alt: A({ en: "Share of contract value by firm rank.", bn: "প্রতিষ্ঠানের ক্রম অনুযায়ী চুক্তিমূল্যের অংশ।" }, corpus) }),
+      plot: stackedShare(parts, { width: wideCanvas(), alt: A({ en: "Share of contract value by firm rank.", bn: "প্রতিষ্ঠানের ক্রম অনুযায়ী চুক্তিমূল্যের অংশ।" }, corpus) }),
       table: table(
         [{ en: "Firms", bn: "প্রতিষ্ঠান" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         parts.map((p) => [t(p.label), pct(p.value)])
@@ -337,7 +337,7 @@ const FIGS = {
           pct((absent / rs.tested_rows) * 100) + ") চালানোই যায়নি, কারণ নিয়মটির যে ঘর দরকার তা নথিতে ফাঁকা।",
       },
       plot: barsH(rows, {
-        labelW: 320, valueW: 70, rowH: 32,
+        labelW: 320, valueW: 70, rowH: 32, width: wideCanvas(),
         alt: A({ en: "Outcomes of the rule tests.", bn: "নিয়ম পরীক্ষার ফলাফল।" }, corpus),
       }),
       table: table(
