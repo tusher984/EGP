@@ -416,6 +416,8 @@ function downloads(corpus) {
     ["investigation_output/rule_scripts/rule_catalogue.py", withCount({ en: "The {{counts.rules|n}} clauses, each with its file, page, wording and force", bn: "{{counts.rules|n}}টি ধারা, প্রতিটির ফাইল, পৃষ্ঠা, ভাষা ও ওজনসহ" }, corpus)],
     ["investigation_output/rule_scripts/run_rules.py", { en: "Runs every clause against every tender and writes rule_deviations.csv", bn: "প্রতিটি ধারা প্রতিটি দরপত্রে চালিয়ে rule_deviations.csv লেখে" }],
     ["investigation_output/rule_scripts/fix_liquid_asset_bug.py", { en: "The correction logged above, as it was applied", bn: "ওপরে লেখা সংশোধন, যেভাবে প্রয়োগ হয়েছে" }],
+    ["investigation_output/rule_scripts/verify_all.py", { en: "Re-derives every check on the five files from the CSVs and the PDFs, trusting none of the scripts above", bn: "ওপরের কোনো স্ক্রিপ্টে ভরসা না করে সিএসভি ও পিডিএফ থেকে পাঁচটি ফাইলের প্রতিটি পরীক্ষা আবার বের করে" }],
+    ["investigation_output/rule_scripts/verify_merge.py", { en: "The same for the merged and bilingual files, including that no Bengali sentence drops a figure", bn: "একত্রিত ও দ্বিভাষিক ফাইলের জন্য একই — কোনো বাংলা বাক্য কোনো সংখ্যা বাদ দেয়নি, তা-ও দেখে" }],
     ["site/build/build.py", { en: "Turns the three CSVs into the payloads this page lists", bn: "তিনটি সিএসভি থেকে এই পাতার তালিকাভুক্ত পেলোড তৈরি করে" }],
   ];
 
@@ -426,6 +428,10 @@ function downloads(corpus) {
     el("ul", { class: "dl-list" }, payloads.map(([p, note]) => linkRow(p, note))),
     el("p", { class: "note-title", text: t(W.scriptsHead) }),
     el("ul", { class: "dl-list" }, scripts.map(([p, note]) => linkRow(p, note))),
+    el("p", { class: "src", html: t({
+      en: "The two verification scripts take no arguments and work out where the repository is from where they sit, so a copy of this folder can be checked on any machine: <code>cd investigation_output/rule_scripts &amp;&amp; python3 verify_all.py</code>, then the same for <code>verify_merge.py</code>. Each ends by printing whether it read the PDFs with <code>pdftotext</code> or from the extracted-text file kept in the repository, because a check that quietly changes its source of truth is not a check.",
+      bn: "যাচাইয়ের দুটি স্ক্রিপ্ট কোনো আর্গুমেন্ট নেয় না এবং নিজেরা কোথায় আছে তা থেকেই রিপোজিটরি খুঁজে নেয়, তাই এই ফোল্ডারের কপি যেকোনো মেশিনে পরীক্ষা করা যায়: <code>cd investigation_output/rule_scripts &amp;&amp; python3 verify_all.py</code>, এরপর <code>verify_merge.py</code>-ও একইভাবে। প্রতিটি শেষে জানায়, পিডিএফ <code>pdftotext</code> দিয়ে পড়া হয়েছে না রিপোজিটরিতে রাখা লেখা-ফাইল থেকে — কারণ যে পরীক্ষা নিজের সূত্র চুপচাপ বদলে নেয়, সেটা পরীক্ষা নয়।",
+    }) }),
   ]);
 }
 
