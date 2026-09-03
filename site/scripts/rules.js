@@ -12,7 +12,7 @@
    the tender, the row says so. A reader who disagrees with a test can see
    exactly what it did and dismiss it, which is the point. */
 
-import { el, t, n, pct, cr, digits, dash, fill, href, human, cite } from "./core.js";
+import { el, t, n, pct, cr, digits, dash, fill, href, human, cite, agencyName } from "./core.js";
 import { figure, table, barsH, columns, hue, SEQ } from "./charts.js";
 import { UI, LABELS, RULE_TITLES } from "./content.js";
 
@@ -103,16 +103,16 @@ function ruleBlock(r, corpus) {
         (r.postdates_event ? " " + t(W.timing) + ": " + n(r.postdates_event) + "।" : ""),
     },
     plot: hasBars
-      ? barsH(r.by_agency.map((a) => ({ label: a.key, value: a.n })), {
+      ? barsH(r.by_agency.map((a) => ({ label: agencyName(a.key), value: a.n })), {
         labelW: 90, valueW: 60, rowH: 26, color: hue(1),
         alt: t({ en: "Deviations by authority.", bn: "সংস্থা অনুযায়ী বিচ্যুতি।" }),
       })
       : outcomes,
     table: hasBars ? outcomes : null,
     source: {
-      en: t(UI.words.source) + ": <code>investigation_output/rule_deviations.csv</code>, rows where <code>rule_code</code> is " +
+      en: t(UI.words.source) + ": e-GP portal data analysis — the clause tests, rows where <code>rule_code</code> is " +
         r.code + ".",
-      bn: t(UI.words.source) + ": <code>investigation_output/rule_deviations.csv</code>, যে সারিগুলোতে <code>rule_code</code> " +
+      bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — ধারা-পরীক্ষা, যে সারিগুলোতে <code>rule_code</code> " +
         r.code + "।",
     },
   }));
@@ -197,8 +197,8 @@ function spread(corpus) {
       cats.map((c, i) => [digits(c), n(values[i])])
     ),
     source: {
-      en: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, column <code>rule_deviation_count</code>.",
-      bn: t(UI.words.source) + ": <code>investigation_output/master_tender_investigation.csv</code>, <code>rule_deviation_count</code> কলাম।",
+      en: t(UI.words.source) + ": e-GP portal data analysis — tender notices and contract award notices, column <code>rule_deviation_count</code>.",
+      bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — দরপত্র ও চুক্তি বিজ্ঞপ্তি, <code>rule_deviation_count</code> কলাম।",
     },
   });
 }
@@ -222,9 +222,12 @@ export function renderRules(root, corpus, rules) {
   const ordered = rules.slice().sort((a, b) => a.code.localeCompare(b.code));
   root.appendChild(el("div", { class: "open-stack" }, ordered.map((r) => ruleBlock(r, corpus))));
 
+  /* The source is the analysis of the portal's own notices; the CSV is the copy
+     of it an editor can open in a spreadsheet. Naming it that way round keeps
+     the provenance straight and still tells an editor which file to download. */
   root.appendChild(el("p", { class: "src", html: fill(t({
-    en: "Every row behind these counts is in <code>investigation_output/rule_deviations.csv</code> — {{counts.deviation_rows}} rows, one per test, each carrying the excerpt it was read from, its page, and the timing and scope flags shown above.",
-    bn: "এই গণনার প্রতিটি সারি আছে <code>investigation_output/rule_deviations.csv</code>-এ — {{counts.deviation_rows}}টি সারি, প্রতি পরীক্ষায় একটি, প্রতিটিতে যে উদ্ধৃতি থেকে পড়া হয়েছে, তার পৃষ্ঠা, এবং উপরে দেখানো সময় ও পরিধির চিহ্ন।",
+    en: t(UI.words.source) + ": e-GP portal data analysis — the clause tests, run notice by notice. Every row behind these counts is published with this investigation as a downloadable table, <code>rule_deviations.csv</code> — {{counts.deviation_rows}} rows, one per test, each carrying the excerpt it was read from, its page, and the timing and scope flags shown above.",
+    bn: t(UI.words.source) + ": ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — ধারা-পরীক্ষা, বিজ্ঞপ্তি ধরে ধরে। এই গণনার প্রতিটি সারি এই অনুসন্ধানের সঙ্গে নামিয়ে নেওয়ার মতো তালিকা <code>rule_deviations.csv</code>-তে প্রকাশিত — {{counts.deviation_rows}}টি সারি, প্রতি পরীক্ষায় একটি, প্রতিটিতে যে উদ্ধৃতি থেকে পড়া হয়েছে, তার পৃষ্ঠা, এবং উপরে দেখানো সময় ও পরিধির চিহ্ন।",
   }), corpus) }));
 
   return root;

@@ -12,12 +12,15 @@
    only those whose bid count was published — the source line says which
    subset, because a denominator left unstated is a claim left unchecked. */
 
-import { el, t, n, pct, cr, digits, dash, fill, fillText, href, human, cite } from "./core.js";
+import {
+  el, t, n, pct, cr, taka, date, digits, dash, fill, fillText, href, human, cite,
+  agencyName, bodyName, placeName, firmName,
+} from "./core.js";
 import {
   figure, table, barsH, lines, percentileStrip, stripLegend, stackedShare,
   funnel, hue, SEQ, wideCanvas,
 } from "./charts.js";
-import { UI, HEAD, STORY, DOORS, LABELS, EXHIBIT_WORDS } from "./content.js";
+import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -35,11 +38,25 @@ function label(map, key) {
   return m[key] === undefined ? human(key) : t(m[key]);
 }
 
-/* Source lines. The name of the file and the subset, nothing decorative. */
+/* Source lines. What a figure was computed from, named the way a reader can
+   place it: an analysis of the tender and award notices the e-GP portal itself
+   publishes. The repository's CSV is not the source — it is one machine-readable
+   copy of the source, made by this investigation — so it no longer stands where
+   the source belongs.
+
+   The column names stay. They are the machine trail, not the provenance: an
+   editor re-derives the figure from those, and dropping them would leave the
+   line unable to be checked. Each entry is a pair rather than a string, so the
+   Bangla edition names the source in Bangla instead of borrowing the English. */
 const F = {
-  master: "<code>investigation_output/master_tender_investigation.csv</code>",
-  dev: "<code>investigation_output/rule_deviations.csv</code>",
-  bidder: "<code>investigation_output/bidder_detail.csv</code>",
+  master: {
+    en: "e-GP portal data analysis — tender notices and contract award notices",
+    bn: "ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — দরপত্র বিজ্ঞপ্তি ও চুক্তি বিজ্ঞপ্তি",
+  },
+  dev: {
+    en: "e-GP portal data analysis — the clause tests, run notice by notice",
+    bn: "ই-জিপি পোর্টালের তথ্য বিশ্লেষণ — ধারা-পরীক্ষা, বিজ্ঞপ্তি ধরে ধরে",
+  },
 };
 
 function src(en, bn) {
@@ -49,9 +66,13 @@ function src(en, bn) {
   };
 }
 /* -------------------------------------------------------------------- tiles
-   The four figures the whole investigation rests on, at the top, before any
-   argument is made. Each is a count from the corpus with its unit written out;
-   the zero is deliberately one of them, because the zero is the finding. */
+   The three figures that establish the size of what was read, at the top,
+   before any argument is made: how many documents, how much money, how many
+   bids set aside. Each is a count from the corpus with its unit written out.
+
+   The zero — no published reason, not once — is not a tile. It is the headline
+   and the last three bars of the funnel, and a stat tile whose number is 0 asks
+   a reader to work out what is missing from a number that looks like nothing. */
 
 function tiles(corpus) {
   const rows = [
@@ -70,16 +91,10 @@ function tiles(corpus) {
       u: { en: "bids rejected", bn: "দর বাতিল" },
       l: { en: "out of " + n(corpus.field.submitted) + " submitted", bn: "জমা পড়া " + n(corpus.field.submitted) + "টির মধ্যে" },
     },
-    {
-      v: n(corpus.field.reasons_published),
-      u: { en: "reasons published", bn: "কারণ প্রকাশিত" },
-      l: { en: "in the whole set — not one", bn: "এই নথিগুলোর কোথাও — একটিও নয়" },
-      hero: true,
-    },
   ];
 
   return el("div", { class: "tiles" }, rows.map((r) => el("div", { class: "tile" }, [
-    el("div", { class: "tile-n" + (r.hero ? " hero-n" : ""), text: r.v }),
+    el("div", { class: "tile-n", text: r.v }),
     el("div", { class: "tile-u", text: t(r.u) }),
     el("div", { class: "tile-l", text: t(r.l) }),
   ])));
@@ -117,8 +132,8 @@ const FIGS = {
         [{ en: "Stage", bn: "ধাপ" }, { en: "Bids", bn: "দর" }],
         rows.map((r) => [t(r.label), n(r.value)])
       ),
-      source: src(F.master + " — columns <code>total_bids_received</code>, <code>responsive_bids</code>, <code>bidders_rejected_count</code>, <code>rejection_reason</code>, <code>lowest_bid</code>.",
-        F.master + " — <code>total_bids_received</code>, <code>responsive_bids</code>, <code>bidders_rejected_count</code>, <code>rejection_reason</code>, <code>lowest_bid</code> কলাম।"),
+      source: src(F.master.en + " — columns <code>total_bids_received</code>, <code>responsive_bids</code>, <code>bidders_rejected_count</code>, <code>rejection_reason</code>, <code>lowest_bid</code>.",
+        F.master.bn + " — <code>total_bids_received</code>, <code>responsive_bids</code>, <code>bidders_rejected_count</code>, <code>rejection_reason</code>, <code>lowest_bid</code> কলাম।"),
     });
   },
   /* Money, not tenders, on the plot — the point of the figure is that the two
@@ -145,8 +160,8 @@ const FIGS = {
          { en: "Contract value", bn: "চুক্তিমূল্য" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         rows.map((r) => [r.label, n(r.n), cr(r.value), pct(r.share)])
       ),
-      source: src(F.master + " — <code>competition_level</code> against <code>contract_value_bdt</code>. Bid-count bands are read off <code>total_bids_received</code>: one bid, two, three, four to five, six or more.",
-        F.master + " — <code>competition_level</code> ও <code>contract_value_bdt</code>। দরের সংখ্যার ভাগগুলো <code>total_bids_received</code> থেকে পড়া: এক, দুই, তিন, চার-পাঁচ, ছয় বা তার বেশি।"),
+      source: src(F.master.en + " — <code>competition_level</code> against <code>contract_value_bdt</code>. Bid-count bands are read off <code>total_bids_received</code>: one bid, two, three, four to five, six or more.",
+        F.master.bn + " — <code>competition_level</code> ও <code>contract_value_bdt</code>। দরের সংখ্যার ভাগগুলো <code>total_bids_received</code> থেকে পড়া: এক, দুই, তিন, চার-পাঁচ, ছয় বা তার বেশি।"),
     });
   },
 
@@ -154,7 +169,7 @@ const FIGS = {
      that published no eligibility criteria at all. */
   agencies(corpus) {
     const rows = corpus.agencies.map((a) => ({
-      label: a.key, value: a.no_criteria_pct, a,
+      label: agencyName(a.key), value: a.no_criteria_pct, a,
     }));
     return figure({
       title: { en: "Share of notices that set no published bar", bn: "যেসব বিজ্ঞপ্তিতে প্রকাশিত কোনো শর্ত নেই, তার হার" },
@@ -172,11 +187,11 @@ const FIGS = {
         [{ en: "Authority", bn: "সংস্থা" }, { en: "Notices", bn: "বিজ্ঞপ্তি" },
          { en: "No published bar", bn: "প্রকাশিত শর্ত নেই" }, { en: "Share", bn: "হার" },
          { en: "Middle bid count", bn: "দরের মাঝের মান" }, { en: "Contract value", bn: "চুক্তিমূল্য" }],
-        rows.map((r) => [r.a.organization, n(r.a.tenders), n(r.a.no_criteria),
+        rows.map((r) => [bodyName(r.a.organization), n(r.a.tenders), n(r.a.no_criteria),
           pct(r.a.no_criteria_pct), r.a.median_bids === null ? dash() : n(r.a.median_bids), cr(r.a.crore)])
       ),
-      source: src(F.master + " — <code>eligibility_published</code> grouped by <code>agency</code>; a notice counts as publishing a bar only where the column reads <code>SUBSTANTIVE_TEXT_PUBLISHED</code>. The middle value is from <code>total_bids_received</code>.",
-        F.master + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>; কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে। মাঝের মান <code>total_bids_received</code> থেকে।"),
+      source: src(F.master.en + " — <code>eligibility_published</code> grouped by <code>agency</code>; a notice counts as publishing a bar only where the column reads <code>SUBSTANTIVE_TEXT_PUBLISHED</code>. The middle value is from <code>total_bids_received</code>.",
+        F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>; কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে। মাঝের মান <code>total_bids_received</code> থেকে।"),
     });
   },
   /* The figure that argues against our own starting theory. Median bids on the
@@ -206,8 +221,8 @@ const FIGS = {
         rows.map((x) => [x.label, n(x.r.n), n(x.r.median_bids), n(x.r.mean_bids, 2),
           n(x.r.single_responsive), pct(x.r.single_responsive_pct)])
       ),
-      source: src(F.master + " — <code>eligibility_restriction_level</code> against <code>total_bids_received</code> and <code>responsive_bids</code>. The bands are this investigation's own classification of the published criteria, not a finding by any authority.",
-        F.master + " — <code>eligibility_restriction_level</code> এবং <code>total_bids_received</code>, <code>responsive_bids</code>। স্তরগুলো প্রকাশিত শর্তের ভিত্তিতে এই অনুসন্ধানের নিজস্ব শ্রেণিবিভাগ, কোনো সংস্থার সিদ্ধান্ত নয়।"),
+      source: src(F.master.en + " — <code>eligibility_restriction_level</code> against <code>total_bids_received</code> and <code>responsive_bids</code>. The bands are this investigation's own classification of the published criteria, not a finding by any authority.",
+        F.master.bn + " — <code>eligibility_restriction_level</code> এবং <code>total_bids_received</code>, <code>responsive_bids</code>। স্তরগুলো প্রকাশিত শর্তের ভিত্তিতে এই অনুসন্ধানের নিজস্ব শ্রেণিবিভাগ, কোনো সংস্থার সিদ্ধান্ত নয়।"),
     });
   },
 
@@ -240,8 +255,8 @@ const FIGS = {
         all.map((k) => [t(LABELS.bars[k]), n(b[k].n), n(b[k].min, 2), n(b[k].p10, 2),
           n(b[k].median, 2), n(b[k].p90, 2), n(b[k].max, 2)])
       ),
-      source: src(F.master + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>. Only notices that published the figure are counted, so each row has its own denominator.",
-        F.master + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>। কেবল যেসব বিজ্ঞপ্তিতে সংখ্যাটি প্রকাশিত, সেগুলোই গোনা — তাই প্রতিটি সারির নিজস্ব হর।"),
+      source: src(F.master.en + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>. Only notices that published the figure are counted, so each row has its own denominator.",
+        F.master.bn + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>। কেবল যেসব বিজ্ঞপ্তিতে সংখ্যাটি প্রকাশিত, সেগুলোই গোনা — তাই প্রতিটি সারির নিজস্ব হর।"),
     });
   },
   /* Two series, one unit — tenders — so they belong on one axis. Money moves on
@@ -272,8 +287,8 @@ const FIGS = {
          { en: "Two or fewer bids", bn: "দুই বা কম দর" }],
         rows.map((r) => [digits(r.year), n(r.published), n(r.signed), cr(r.crore), n(r.thin_field)])
       ),
-      source: src(F.master + " — <code>publication_date</code> and <code>signing_date</code>, grouped by year; value from <code>contract_value_bdt</code>.",
-        F.master + " — বছর অনুযায়ী <code>publication_date</code> ও <code>signing_date</code>; মূল্য <code>contract_value_bdt</code> থেকে।"),
+      source: src(F.master.en + " — <code>publication_date</code> and <code>signing_date</code>, grouped by year; value from <code>contract_value_bdt</code>.",
+        F.master.bn + " — বছর অনুযায়ী <code>publication_date</code> ও <code>signing_date</code>; মূল্য <code>contract_value_bdt</code> থেকে।"),
     });
   },
 
@@ -306,10 +321,80 @@ const FIGS = {
         [{ en: "Firms", bn: "প্রতিষ্ঠান" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         parts.map((p) => [t(p.label), pct(p.value)])
       ),
-      source: src(F.master + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Firms are grouped on that column and never merged on a resemblance; the name shown is a spelling the award notices print.",
-        F.master + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। প্রতিষ্ঠানগুলো ওই কলাম ধরে দলবদ্ধ, মিল দেখে কখনো এক করা হয়নি; যে নাম দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে ছাপা বানান।"),
+      source: src(F.master.en + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Firms are grouped on that column and never merged on a resemblance; the name shown is a spelling the award notices print.",
+        F.master.bn + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। প্রতিষ্ঠানগুলো ওই কলাম ধরে দলবদ্ধ, মিল দেখে কখনো এক করা হয়নি; যে নাম দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে ছাপা বানান।"),
     });
   },
+  /* The nine rules that recorded a mismatch, counted only where the document
+     cited can be placed at or before the tender's own year, and coloured by the
+     one distinction that decides what the count is worth: whether the clause is
+     worded as a duty or as a figure the document recommends. The colour carries
+     an attribute of the rule, never its rank, and the same distinction is
+     written out in the table, so nothing here rests on colour alone. */
+  violations(corpus) {
+    const v = corpus.violations;
+    if (!v) return null;
+    const rows = v.rules.slice().sort((a, b) => b.in_force - a.in_force);
+    const DUTY = { en: "Worded as a duty", bn: "বাধ্যতা হিসেবে লেখা" };
+    const BAND = { en: "A recommended band, a ceiling in a note, or guidance",
+      bn: "সুপারিশকৃত সীমা, নোটে দেওয়া সর্বোচ্চ সীমা, বা নির্দেশনা" };
+
+    return figure({
+      wide: true,
+      title: { en: "The mismatches that survive the timing check, rule by rule",
+        bn: "সময়ের পরীক্ষা টিকে যাওয়া বিচ্যুতি, নিয়ম ধরে ধরে" },
+      deck: {
+        en: n(v.in_force) + " of the " + n(corpus.rules_summary.deviation_rows) +
+          " recorded mismatches cite a document that can be placed at or before the year of the tender's own event. " +
+          n(v.duty_in_force) + " of those are against a clause worded as a duty and " +
+          n(v.band_in_force) + " against a band, a ceiling in a note or guidance. " +
+          "Bars count the surviving tests; the full count is in the table.",
+        bn: "নথিভুক্ত " + n(corpus.rules_summary.deviation_rows) + "টি বিচ্যুতির " +
+          n(v.in_force) + "টিতে উদ্ধৃত দস্তাবেজটিকে দরপত্রের নিজের ঘটনার বছরে বা তার আগে বসানো যায়। এর " +
+          n(v.duty_in_force) + "টি বাধ্যতা হিসেবে লেখা ধারার বিপরীতে, আর " +
+          n(v.band_in_force) + "টি সুপারিশকৃত সীমা, নোটের সর্বোচ্চ সীমা বা নির্দেশনার বিপরীতে। " +
+          "দণ্ডগুলো টিকে যাওয়া পরীক্ষা গোনে; পুরো সংখ্যা টেবিলে আছে।",
+      },
+      plot: barsH(rows.map((r) => ({
+        label: t(RULE_SHORT[r.code] || { en: human(r.short), bn: human(r.short) }),
+        value: r.in_force,
+        color: r.duty ? hue(0) : hue(1),
+        note: RULE_TITLES[r.code],
+      })), {
+        labelW: 340, valueW: 60, rowH: 32, width: wideCanvas(),
+        alt: A({ en: "Mismatches per rule where the cited document was plausibly in force.",
+          bn: "যেসব নিয়মে উদ্ধৃত দস্তাবেজ তখন বলবৎ থাকা সম্ভব ছিল, সেখানকার বিচ্যুতি।" }, corpus),
+      }),
+      legend: [{ color: hue(0), label: DUTY }, { color: hue(1), label: BAND }],
+      table: table(
+        [{ en: "Rule", bn: "নিয়ম" }, { en: "What it tests", bn: "যা পরীক্ষা করে" },
+          { en: "How the clause is worded", bn: "ধারাটি যেভাবে লেখা" },
+          { en: "Mismatches", bn: "বিচ্যুতি" },
+          { en: "Of those, cited document in force", bn: "এর মধ্যে উদ্ধৃত দস্তাবেজ বলবৎ" }],
+        rows.map((r) => [
+          digits(r.code),
+          t(RULE_TITLES[r.code] || { en: human(r.short), bn: human(r.short) }),
+          label("force", r.force),
+          n(r.deviations),
+          n(r.in_force),
+        ]),
+        { textCols: true }
+      ),
+      source: src(F.dev.en + " — columns <code>rule_code</code>, <code>clause_force</code> and " +
+        "<code>instrument_timing_vs_this_tender</code>. A bar counts the rows whose timing flag reads " +
+        "INSTRUMENT_PLAUSIBLY_IN_FORCE, which means the year of the tender's own event is not earlier " +
+        "than the document cited. That test is year-granularity only: a tender published in April 2025 " +
+        "counts as in force against a document dated December 2025. The nine rules that recorded no " +
+        "mismatch at all are not plotted; they are listed in full on the rules tab.",
+        F.dev.bn + " — <code>rule_code</code>, <code>clause_force</code> ও " +
+        "<code>instrument_timing_vs_this_tender</code> কলাম। একটি দণ্ড সেই সারিগুলো গোনে যেগুলোর সময়-চিহ্নে " +
+        "INSTRUMENT_PLAUSIBLY_IN_FORCE লেখা, অর্থাৎ দরপত্রের নিজের ঘটনার বছর উদ্ধৃত দস্তাবেজের চেয়ে আগের নয়। " +
+        "ওই পরীক্ষা কেবল বছরের হিসাবে: ২০২৫ সালের এপ্রিলে প্রকাশিত দরপত্রও ২০২৫ সালের ডিসেম্বরের দস্তাবেজের " +
+        "বিপরীতে বলবৎ হিসেবে গোনা হয়। যে নয়টি নিয়মে কোনো বিচ্যুতিই ধরা পড়েনি সেগুলো আঁকা হয়নি; " +
+        "নিয়ম ট্যাবে সেগুলো পুরোটাই আছে।"),
+    });
+  },
+
   /* Eight outcomes over one set of tests, one unit. The ramp is ordered by
      lightness so the order survives any colour vision, and the outcome is
      written out in words on every bar — the colour carries nothing alone. */
@@ -344,11 +429,11 @@ const FIGS = {
         [{ en: "Outcome", bn: "ফলাফল" }, { en: "Tests", bn: "পরীক্ষা" }, { en: "Share", bn: "হার" }],
         rs.results.map((r) => [label("results", r.key), n(r.n), pct((r.n / rs.tested_rows) * 100)])
       ),
-      source: src(F.dev + " — " + n(rs.tested_rows) + " rows, column <code>test_result</code>. Of the " +
+      source: src(F.dev.en + " — " + n(rs.tested_rows) + " rows, column <code>test_result</code>. Of the " +
         n(rs.deviation_rows) + " deviation rows, " + n(rs.postdates_event) +
         " cite an instrument dated after the event tested and " + n(rs.plausibly_in_force) +
         " one plausibly in force at the time; the timing flag is on every row.",
-        F.dev + " — " + n(rs.tested_rows) + "টি সারি, <code>test_result</code> কলাম। " +
+        F.dev.bn + " — " + n(rs.tested_rows) + "টি সারি, <code>test_result</code> কলাম। " +
         n(rs.deviation_rows) + "টি বিচ্যুতির সারির " + n(rs.postdates_event) +
         "টিতে উদ্ধৃত দস্তাবেজের তারিখ পরীক্ষিত ঘটনার পরের, আর " + n(rs.plausibly_in_force) +
         "টিতে তখন বলবৎ থাকা সম্ভব ছিল; প্রতিটি সারিতে সময়-চিহ্ন আছে।"),
@@ -381,7 +466,7 @@ function exhibitBlock(corpus) {
       el("blockquote", null, el("p", { text: x.quote })),
       el("p", { class: "exhibit-read", text: t(words.reading || x.reading) }),
       el("p", { class: "src" }, cite({
-        entity: x.agency,
+        entity: agencyName(x.agency),
         tender: x.tender_id,
         page: x.page,
         column: x.column,
@@ -389,6 +474,170 @@ function exhibitBlock(corpus) {
       })),
     ]);
   }));
+}
+
+/* ---------------------------------------------------------------- the opening
+   The article opens on one tender, because 1,155 of them is not a thing a
+   reader can picture and one road is. Which tender is not a taste decision:
+   build.py picks it with a published rule — the largest contract where a real
+   field of bidders narrowed to one — and the rule and the size of the pool it
+   was picked from are printed with the scene, so a reader can see the case was
+   selected and not shopped for.
+
+   Returned as a fragment rather than a wrapper, so every piece lands as a
+   direct child of .prose and inherits the measure, the spacing, the drop cap
+   and the exhibit and source components the rest of the article uses. The case
+   study needs no box: it is the first scene of the story, not an aside.
+
+   The scene is prose about one specific road, so it is the one place in this
+   article where the words are pinned to an id rather than filled from a row. If
+   the corpus ever moves under it and the rule returns a different tender, the
+   page prints the mismatch where the scene would have been and names both ids.
+   Silence would be a lie: the paragraphs would still read as fact. */
+
+function caseBlock(corpus) {
+  const c = corpus.case;
+  if (!c) return null;
+  const w = CASE.words;
+
+  if (String(c.tender_id) !== String(CASE.tender)) return drifted(CASE.tender, c);
+
+  const frag = document.createDocumentFragment();
+
+  frag.appendChild(caseWhere(c, false));
+
+  CASE.open.forEach((p, i) => frag.appendChild(
+    el("p", { class: i ? null : "lede", html: T(p, corpus) })));
+
+  /* The eligibility clause as the page prints it, with the one figure the scene
+     reads out of it marked inside the quotation, so our sentence and the words
+     it rests on can be checked against each other in a single glance. */
+  frag.appendChild(el("div", { class: "exhibit" }, [
+    el("p", { class: "exhibit-label", text: t(w.quoteLabel) }),
+    quoted(c.mark, c.quote_experience),
+    el("p", { class: "exhibit-read", html: T(w.quoteRead, corpus) }),
+    el("p", { class: "case-note", text: t(w.markNote) }),
+  ]));
+
+  CASE.after.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+
+  frag.appendChild(caseRec(c, ["bids", "responsive", "value", "signed"]));
+  frag.appendChild(caseSrc(c));
+  frag.appendChild(caseRule(c));
+
+  CASE.close.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+  return frag;
+}
+
+/* --------------------------------------------------------- the four turns
+   The same scene, shorter, at four places where the article changes subject. A
+   transition study has to do two jobs at once — leave the aggregate, and set up
+   the count that follows — so it is built from the pieces below in a fixed order
+   and given a hairline above it, which is the whole of its decoration.
+
+   Each is pinned to an id like the opening, and drifts the same way: if the
+   published rule stops returning the tender the paragraphs describe, the page
+   prints the mismatch rather than a scene about the wrong road. */
+
+function sceneBlock(corpus, id) {
+  const c = (corpus.cases || {})[id];
+  const spec = CASES[id];
+  if (!c || !spec) return null;
+  if (String(c.tender_id) !== String(spec.tender)) return drifted(spec.tender, c);
+
+  const frag = document.createDocumentFragment();
+  frag.appendChild(caseWhere(c, true));
+  spec.p.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+
+  if (c.mark) {
+    frag.appendChild(el("div", { class: "exhibit" }, [
+      el("p", { class: "exhibit-label", text: t(spec.markLabel) }),
+      quoted(c.mark, ""),
+      el("p", { class: "exhibit-read", html: T(spec.markRead, corpus) }),
+      el("p", { class: "case-note", text: t(CASE.words.markNote) }),
+    ]));
+  }
+
+  frag.appendChild(caseRec(c, spec.rec));
+  frag.appendChild(caseSrc(c));
+  frag.appendChild(caseRule(c));
+  spec.after.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+  return frag;
+}
+
+/* ------------------------------------------------- the parts a scene is made of
+
+   Where and what, above the first line, the way a report opens on a place. */
+function caseWhere(c, turn) {
+  return el("p", { class: turn ? "case-where case-turn" : "case-where" },
+    [placeName(c.district), t(UI.words.tender) + " " + digits(c.tender_id),
+      bodyName(c.organization)].filter(Boolean).join(" · "));
+}
+
+/** A quotation with the operative words marked. `mark` is built by build.py from
+    the extracted page text and splits the passage in three; when the pattern
+    found nothing it hands back the whole passage as the hit, and when there is
+    no passage at all the fallback text is printed unmarked. Highlighted document
+    text is the strongest evidence this environment can render: the page's own
+    words, with the part being read marked, one click from the PDF. */
+function quoted(mark, fallback) {
+  if (!mark) return el("blockquote", null, el("p", { text: fallback }));
+  return el("blockquote", null, el("p", null, [
+    mark.before || null, el("mark", { text: mark.hit }), mark.after || null,
+  ]));
+}
+
+/** The figures a scene turns on, named by the scene so the strip carries what
+    this particular case is about. Formatting stays here, in one place. */
+const REC = {
+  sold: (c) => [CASE.words.sold, n(c.sold)],
+  bids: (c) => [CASE.words.bids, n(c.bids)],
+  responsive: (c) => [CASE.words.responsive, n(c.responsive)],
+  rejected: (c) => [CASE.words.rejected, n(c.rejected)],
+  value: (c) => [UI.words.value, taka(c.value)],
+  liquid: (c) => [CASE.words.liquid, taka(c.liquid)],
+  noa: (c) => [CASE.words.noa, date(c.noa)],
+  signed: (c) => [CASE.words.signed, date(c.signed)],
+  days: (c) => [CASE.words.days, n(c.days)],
+  overrun: (c) => [CASE.words.overrun, n(c.overrun)],
+  winnerRec: (c) => [CASE.words.winnerRec, firmName(c.winner) || dash()],
+};
+
+function caseRec(c, keys) {
+  return el("dl", { class: "case-rec" }, keys.map((k) => {
+    const [label, value] = REC[k](c);
+    return el("div", null, [el("dt", { text: t(label) }), el("dd", { text: value })]);
+  }));
+}
+
+/* The invitation reference is deliberately not passed as pkg: cite() prints the
+   word "package" in front of it, and a tender's package number is not its
+   reference number. */
+function caseSrc(c) {
+  const links = [];
+  if (c.notice && c.notice.file) {
+    links.push(el("a", { href: href(c.notice.dir, c.notice.file), text: t(UI.words.noticePdf) }));
+  }
+  if (c.award && c.award.file) {
+    links.push(el("a", { href: href(c.award.dir, c.award.file), text: t(UI.words.awardPdf) }));
+  }
+  return el("p", { class: "src" },
+    cite({ entity: agencyName(c.agency), tender: c.tender_id, page: c.page, links: links }));
+}
+
+/* The selection rule as build.py states it, column names and all, so an editor
+   can re-run the choice rather than take the paragraph's word for it. The column
+   names are wrapped in <code> in the corpus, which is why this one renders as
+   html: an identifier is set as an identifier in both editions, so the Bangla
+   article carries no loose English words. */
+function caseRule(c) {
+  return el("p", { class: "case-rule",
+    html: "<b>" + t(CASE.words.ruleLabel) + ": </b>" + t(c.rule) });
+}
+
+function drifted(pinned, c) {
+  return el("p", { class: "unresolved" },
+    t(CASE.words.mismatch) + " " + digits(String(pinned)) + " → " + digits(String(c.tender_id)));
 }
 
 /* --------------------------------------------------------------------- doors
@@ -441,6 +690,11 @@ function block(b, corpus) {
         el("p", { class: "note-title", html: T(b.title, corpus) }),
         ...b.p.map((p) => el("p", { html: T(p, corpus) })),
       ]);
+
+    /* The opening scene carries no id; the four transitions name the case they
+       are built from. */
+    case "case":
+      return b.id ? sceneBlock(corpus, b.id) : caseBlock(corpus);
 
     case "exhibits":
       return exhibitBlock(corpus);

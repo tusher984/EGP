@@ -11,7 +11,10 @@
    browser. The directory name "Tender Notice_PDFs" contains a space, so every
    link is percent-encoded segment by segment. */
 
-import { el, t, n, digits, date, dash, taka, href, fill, clear, human, ofTotal } from "./core.js";
+import {
+  el, t, n, digits, date, dash, taka, href, fill, clear, human, ofTotal,
+  agencyName, termName,
+} from "./core.js";
 import { figure, table, barsH, hue } from "./charts.js";
 import { UI } from "./content.js";
 
@@ -55,7 +58,7 @@ function docRow(r) {
   const p = pages(r);
   /* The procuring entity leads, as it does in every citation on this site. */
   const meta = [
-    r.agency,
+    agencyName(r.agency),
     t(KINDS[r.kind] || { en: human(r.kind), bn: human(r.kind) }),
     p === null ? null : digits(p) + " " + t(W.pages),
     r.date ? date(r.date) : null,
@@ -65,7 +68,7 @@ function docRow(r) {
   return el("li", { class: "doc-row" }, [
     el("span", { class: "doc-name" }, [
       el("code", { text: r.file }),
-      r.title ? el("span", { text: " — " + r.title }) : null,
+      r.title ? el("span", { text: " — " + termName("work", r.title) }) : null,
       r.tender_id ? el("span", { text: " · " + t(UI.words.tender) + " " + digits(r.tender_id) }) : null,
     ].filter(Boolean)),
     el("span", { class: "doc-meta", text: meta }),
@@ -109,17 +112,18 @@ function coverage(rows, corpus) {
     title: { en: "How many files came from each authority", bn: "কোন সংস্থা থেকে কতটি ফাইল" },
     deck: {
       en: n(rows.length) + " files in all, " + n(totalPages) + " pages read. " +
-        "Five of them are standard documents rather than tenders, listed under RULEBOOK.",
+        "Five of them are standard documents rather than tenders, and are listed as " +
+        agencyName("RULEBOOK") + ".",
       bn: "মোট " + n(rows.length) + "টি ফাইল, " + n(totalPages) + " পৃষ্ঠা পড়া হয়েছে। " +
-        "এর পাঁচটি দরপত্র নয়, আদর্শ দস্তাবেজ — RULEBOOK নামে তালিকাভুক্ত।",
+        "এর পাঁচটি দরপত্র নয়, " + agencyName("RULEBOOK") + " হিসেবে তালিকাভুক্ত।",
     },
-    plot: barsH(ordered.map(([key, cell]) => ({ label: key, value: cell.files })), {
+    plot: barsH(ordered.map(([key, cell]) => ({ label: agencyName(key), value: cell.files })), {
       labelW: 110, valueW: 70, rowH: 26, color: hue(0),
       alt: t({ en: "Files per authority.", bn: "সংস্থাপ্রতি ফাইল।" }),
     }),
     table: table(
       [UI.words.agency, { en: "Files", bn: "ফাইল" }, { en: "Pages read", bn: "পড়া পৃষ্ঠা" }],
-      ordered.map(([key, cell]) => [key, n(cell.files), n(cell.pages)])
+      ordered.map(([key, cell]) => [agencyName(key), n(cell.files), n(cell.pages)])
     ),
     source: {
       en: t(UI.words.source) + ": the folders themselves — <code>Tender Notice_PDFs</code>, " +
@@ -137,7 +141,10 @@ function optionsFor(rows, col, map) {
   for (const r of rows) tally.set(String(r[col] || ""), (tally.get(String(r[col] || "")) || 0) + 1);
   const out = [{ value: "", label: t(UI.words.all) + " (" + n(rows.length) + ")" }];
   for (const key of [...tally.keys()].sort((a, b) => tally.get(b) - tally.get(a))) {
-    const words = map && map[key] ? t(map[key]) : (key || t(UI.words.none));
+    /* `map` is a map of {en, bn} pairs, or a function where the value is a name
+       the reader should meet in their own language rather than a fixed token. */
+    const words = typeof map === "function" ? map(key) || t(UI.words.none)
+      : map && map[key] ? t(map[key]) : (key || t(UI.words.none));
     out.push({ value: key, label: words + " (" + n(tally.get(key)) + ")" });
   }
   return out;
@@ -152,7 +159,7 @@ function select(id, labelPair, options) {
 
 function docIndex(rows) {
   const kind = select("d-kind", W.kind, optionsFor(rows, "kind", KINDS));
-  const agency = select("d-agency", UI.words.agency, optionsFor(rows, "agency"));
+  const agency = select("d-agency", UI.words.agency, optionsFor(rows, "agency", agencyName));
   const input = el("input", { type: "search", id: "d-q", autocomplete: "off", spellcheck: "false" });
   const status = el("p", { class: "result-count" });
   const list = el("ul", { class: "dl-list" });
@@ -215,8 +222,8 @@ function refused(tenders) {
     }) }),
     el("ul", { class: "dl-list" }, rows.map((r) => el("li", { class: "dl-row" }, [
       el("span", { class: "dl-what", text: digits(r.tender_id) }),
-      el("span", { class: "dl-note", text: (r.agency || "") + " — " +
-        (r.package_description || r.project_name || dash()) }),
+      el("span", { class: "dl-note", text: agencyName(r.agency || "") + " — " +
+        (termName("work", r.package_description) || termName("work", r.project_name) || dash()) }),
       el("span", { class: "dl-size" }, r.notice && r.notice.file
         ? el("a", { href: href(r.notice.dir, r.notice.file), text: t(UI.words.open) })
         : dash()),
