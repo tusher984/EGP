@@ -1,0 +1,198 @@
+/* e-GP WATCH — design tokens.
+   ------------------------------------------------------------------
+   The :root and html.dark-mode blocks below are the publication's own token
+   set, reproduced here once and only once so this investigation runs offline
+   as a standalone document. Nothing else in this repository redefines them.
+   If the site is dropped back into the publication's stylesheet stack, this
+   file is the single thing to delete — every rule elsewhere reads the tokens
+   through var() and will pick up the house values unchanged.
+
+   The chart tokens at the end are NOT part of the house set. They are added
+   here because charts need hues the house set does not carry, and they are
+   not chosen by eye: they are the output of
+
+     python3 -P investigation/scripts/validate_palette.py "#2f5c8f,#b0521f,#3f7368" "#ffffff"
+     python3 -P investigation/scripts/validate_palette.py "#7caeea,#f48b58,#80b8ab" "#151719" --dark
+
+   which checks a narrow OKLab lightness band, a chroma floor, contrast against
+   the surface the mark is drawn on, and separation between neighbouring hues
+   under protanopia, deuteranopia and tritanopia. Both modes PASS. Re-run it
+   before changing a value. There are three categorical hues because a fourth
+   could not be told from the third under deuteranopia at either lightness;
+   anything with more than three parts uses the sequential ramp, which is
+   ordered by lightness and so survives any colour vision, and is labelled in
+   words as well as colour. */
+
+:root {
+  color-scheme: light;
+
+  --ntr-home-panel: #f7fafc;
+  --ntr-home-panel-soft: #fbfdfe;
+  --ntr-home-line: rgba(0, 36, 62, 0.12);
+  --ntr-home-line-soft: rgba(0, 36, 62, 0.07);
+  --ntr-home-line-strong: rgba(0, 36, 62, 0.2);
+  --ntr-home-accent: rgba(0, 36, 62, 0.04);
+  --ntr-home-accent-strong: rgba(0, 36, 62, 0.07);
+  --ntr-home-muted: #637882;
+  --ntr-home-muted-strong: #3f535c;
+  --ntr-byline-avatar: 50px;
+  --ntr-byline-avatar-zoom: 1.35;
+  --ntr-byline-avatar-focus: 0;
+
+  --color-primary: #00243e;
+  --color-darkgrey: #15171A;
+  --color-midgrey: #3f535c;
+  --color-lightgrey: #c5d2d9;
+  --color-wash: #e5eff5;
+  --color-darkmode: #151719;
+
+  --surface-page: #ffffff;
+  --surface-raised: #F8FCFF;
+  --surface-sunken: #f0f6f9;
+  --surface-pure: #ffffff;
+  --surface-placeholder: #e1e8ec;
+  --surface-hover: #e5e5e5;
+
+  --text-strong: #0b0c0d;
+  --text-body: #222222;
+  --text-default: #35373a;
+  --text-muted: #637882;
+  --text-faint: #8ca0a8;
+
+  --on-accent: #ffffff;
+  --accent-fill: var(--color-primary);
+  --ghost-accent-color: #00243e;
+  --button-bg-color: #ffffff;
+  --button-text-color: var(--color-darkgrey);
+
+  --font-museo-sans: "museo-sans", "museo-fallback", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-utopia-std: "utopia-std", "utopia-fallback", Georgia, Cambria,
+    "Times New Roman", Times, serif;
+  --font-heading: var(--font-museo-sans);
+  --font-body: var(--font-utopia-std);
+  --font-serif: var(--font-utopia-std);
+  --font-caption: "utopia-std-caption", var(--font-utopia-std);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --font-bn: 'Noto Sans Bengali', sans-serif;
+  --font-bn-body: 'Noto Serif Bengali', serif;
+}
+
+/* The Bangla edition prefixes the Bengali family onto the existing stacks rather
+   than replacing them, and the unicode-range below is the whole trick: the browser
+   only reaches for that face when it meets a Bengali codepoint. A firm's name, a
+   tender number, a PDF filename or a figure falls straight through to the same
+   faces the English edition uses, so the Latin evidence beside Bengali prose does
+   not change typeface. The house --font-bn tokens above keep their own values;
+   this rule only orders the locally-shipped family in front of them. */
+html:lang(bn) {
+  --font-heading: "Li Ador Noirrit", var(--font-bn), var(--font-museo-sans);
+  --font-body: "Li Ador Noirrit", var(--font-bn-body), var(--font-utopia-std);
+  --font-serif: var(--font-body);
+}
+
+/* The one embedded face, and it is local: the Bengali family that ships in this
+   repository. Nothing here is fetched from a font service, a CDN or any other
+   host - the whole site opens from a folder with no network. */
+@font-face {
+  font-family: "Li Ador Noirrit";
+  src: url("../../fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20A-V1%20Regular.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0980-09FF, U+200C-200D, U+25CC;
+}
+
+@font-face {
+  font-family: "Li Ador Noirrit";
+  src: url("../../fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20A-V1%20SemiBold.ttf")
+    format("truetype");
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0980-09FF, U+200C-200D, U+25CC;
+}
+
+@font-face {
+  font-family: "Li Ador Noirrit";
+  src: url("../../fonts/LiAdorNoirritMultiweight/Li%20Ador%20Noirrit%20A-V1%20Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0980-09FF, U+200C-200D, U+25CC;
+}
+
+html.dark-mode {
+  color-scheme: dark;
+
+  --surface-page: #151719;
+  --surface-raised: #1c2025;
+  --surface-sunken: #22272c;
+  --surface-pure: #1c2025;
+  --surface-placeholder: #2b3036;
+  --surface-hover: rgba(255, 255, 255, 0.1);
+
+  --text-strong: rgba(255, 255, 255, 0.92);
+  --text-body: rgba(255, 255, 255, 0.82);
+  --text-default: rgba(255, 255, 255, 0.82);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --text-faint: rgba(255, 255, 255, 0.42);
+
+  --color-primary: #6ea8d8;
+  --accent-fill: #1f4e78;
+  --color-darkgrey: rgba(255, 255, 255, 0.88);
+  --color-midgrey: rgba(255, 255, 255, 0.55);
+
+  --ntr-home-line: rgba(255, 255, 255, 0.08);
+  --ntr-home-line-soft: rgba(255, 255, 255, 0.05);
+  --ntr-home-line-strong: rgba(255, 255, 255, 0.14);
+  --ntr-home-accent: rgba(255, 255, 255, 0.04);
+  --ntr-home-accent-strong: rgba(255, 255, 255, 0.07);
+  --ntr-home-muted: rgba(255, 255, 255, 0.5);
+  --ntr-home-muted-strong: rgba(255, 255, 255, 0.7);
+  --ntr-home-panel: #1b1f23;
+  --ntr-home-panel-soft: #181c20;
+}
+
+/* ---------------------------------------------------------------- charts
+   Not part of the house set. Validated, not eyeballed - see the header. */
+
+:root {
+  --hue-1: #2f5c8f;
+  --hue-2: #b0521f;
+  --hue-3: #3f7368;
+
+  --seq-1: #d7e8fd;
+  --seq-2: #b4cfef;
+  --seq-3: #87adda;
+  --seq-4: #5583b9;
+  --seq-5: #2f5c8f;
+  --seq-6: #133e6c;
+
+  --div-low: #b0521f;
+  --div-mid: #b6b2ab;
+  --div-high: #2f5c8f;
+
+  --grid: rgba(0, 36, 62, 0.1);
+  --axis: rgba(0, 36, 62, 0.28);
+}
+
+html.dark-mode {
+  --hue-1: #7caeea;
+  --hue-2: #f48b58;
+  --hue-3: #80b8ab;
+
+  --seq-1: #192f48;
+  --seq-2: #2a496e;
+  --seq-3: #406b9d;
+  --seq-4: #618fc6;
+  --seq-5: #83b3ec;
+  --seq-6: #abd5ff;
+
+  --div-low: #f48b58;
+  --div-mid: #5c5952;
+  --div-high: #7caeea;
+
+  --grid: rgba(255, 255, 255, 0.1);
+  --axis: rgba(255, 255, 255, 0.3);
+}

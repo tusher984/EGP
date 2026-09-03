@@ -3,49 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>e-GP Watch — who was allowed to bid, who bid, and who won</title>
-<meta name="description" content="An investigation built only from the tender notices,
-  amendments and contract-award notices published on Bangladesh's e-Procurement portal:
-  who could enter each tender, who entered, who was rejected, who won, and how much
-  money changed hands. Every figure links to the page it was read from.">
+
+<!-- Both editions of the title and the description live here, in the markup, so a
+     crawler and a reader with no JavaScript get them. site/scripts/app.js picks the
+     pair that matches the edition being read; it does not invent either string. -->
+<title data-bn="e-GP ওয়াচ — কারা দরপত্রে অংশ নিতে পারত, কারা নিল, কারা জিতল">e-GP Watch — who was allowed to bid, who bid, and who won</title>
+<meta name="description"
+  data-bn="এই অনুসন্ধান দাঁড়িয়ে আছে কেবল বাংলাদেশের ছয়টি নগর উন্নয়ন সংস্থার প্রকাশিত দরপত্র বিজ্ঞপ্তি ও চুক্তি-প্রদানের বিজ্ঞপ্তির উপর: কোন দরপত্রে কারা অংশ নিতে পারত, কারা নিল, কাদের বাদ দেওয়া হল, কারা জিতল, এবং কত টাকা হাতবদল হল। প্রতিটি সংখ্যার সঙ্গে সেই পাতার লিংক আছে যেখান থেকে তা পড়া হয়েছে।"
+  content="An investigation built only from the tender notices and contract-award notices
+  published by six of Bangladesh's urban development authorities: who could enter each
+  tender, who entered, who was rejected, who won, and how much money changed hands.
+  Every figure links to the page it was read from.">
 <meta name="robots" content="index, follow">
 <meta name="color-scheme" content="light dark">
 
-<!-- The entry document sits at the repository root so that the published site opens
-     on the investigation itself. Everything it loads lives under investigation/, and
-     the modules address their own files relative to themselves rather than to this
-     page, so this file holds no data paths beyond the three below. -->
+<!-- The entry document sits at the repository root so the published site opens on the
+     investigation itself. Everything it loads is under site/, and each module addresses
+     its own files relative to itself, so this file holds no data paths at all. -->
 
-<!-- Two stylesheets and no third: tokens.css holds the validated palette and the
-     type scale, site.css holds the page. Both are in this repository, as is the one
-     embedded typeface. Nothing is fetched from another host, here or anywhere in
-     this build. -->
-<link rel="stylesheet" href="investigation/styles/tokens.css">
-<link rel="stylesheet" href="investigation/styles/site.css">
+<!-- Two stylesheets and no third: tokens.css holds the palette, the type scale and the
+     one embedded typeface; site.css holds the page. Both are in this repository.
+     Nothing is fetched from another host, here or anywhere in this build. -->
+<link rel="stylesheet" href="site/styles/tokens.css">
+<link rel="stylesheet" href="site/styles/site.css">
+<link rel="icon" type="image/svg+xml" href="site/assets/favicon.svg">
 
-<!-- One icon, drawn in this repository, in the same two colours as the charts. -->
-<link rel="icon" type="image/svg+xml" href="investigation/assets/favicon.svg">
-
-<!-- Palette and language, both chosen before the first paint: a reader who has asked
-     their system for a dark screen never gets a white flash, and a reader who asked
-     for Bangla gets the Bengali face and its leading from the first frame rather than
-     watching the page re-set itself. A remembered choice beats the system setting.
-
-     This is the only inline script on the page, and the only place the language is
-     resolved twice — investigation/i18n/i18n.js resolves it the same way, from the
-     same two places and in the same order, for the modules that follow. It is
-     duplicated here because a tab needs a title and <html> needs a lang attribute
-     before any module has loaded, and this file cannot import one. The two titles
-     below are the only prose in this document that is not paired in the markup. -->
+<!-- Palette and edition, both settled before the first paint: a reader who asked their
+     system for a dark screen never gets a white flash, and a reader who asked for
+     Bangla gets the Bengali face from the first frame rather than watching the page
+     re-set itself. A remembered choice beats the system setting. This is the only
+     inline script on the page; app.js reads what it decided rather than deciding
+     again, so the two cannot disagree. -->
 <script>
   (function () {
     var d = document.documentElement;
     try {
-      var kept = localStorage.getItem("egp-watch-night");
+      var kept = localStorage.getItem("egp-watch-theme");
       var dark = kept === null
         ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        : kept === "1";
-      if (dark) d.classList.add("night");
+        : kept === "dark";
+      if (dark) d.classList.add("dark-mode");
     } catch (e) { /* private browsing: fall through to the light palette */ }
 
     var lang = "en";
@@ -55,84 +52,82 @@
       if (chosen === "bn" || chosen === "en") lang = chosen;
     } catch (e) { /* no URL or no storage: fall through to English */ }
     d.lang = lang;
-    if (lang === "bn") {
-      document.title = "ই-জিপি ওয়াচ — কারা দরপত্রে অংশ নিতে পারত, কারা নিল, কারা জিতল";
-      var m = document.querySelector('meta[name="description"]');
-      if (m) {
-        m.content = "এই অনুসন্ধান দাঁড়িয়ে আছে কেবল বাংলাদেশের ই-প্রকিউরমেন্ট "
-          + "পোর্টালে প্রকাশিত দরপত্র বিজ্ঞপ্তি, সংশোধনী ও চুক্তি-প্রদানের "
-          + "বিজ্ঞপ্তির উপর: কোন দরপত্রে কারা অংশ নিতে পারত, কারা নিল, কাদের বাদ "
-          + "দেওয়া হল, কারা জিতল, এবং কত টাকা হাতবদল হল। প্রতিটি সংখ্যার সঙ্গে সেই "
-          + "পাতার লিংক আছে যেখান থেকে তা পড়া হয়েছে।";
-      }
-    }
   }());
 </script>
 </head>
 <body>
 
-<a class="skip" href="#summary" data-lang="en">Skip to the story</a>
-<a class="skip" href="#summary" data-lang="bn" lang="bn">প্রতিবেদনে যান</a>
+<a class="skip" href="#app" id="skip">Skip to content</a>
 
 <header class="masthead" id="bar"></header>
 
-<main id="app">
-  <div class="wrap">
-    <p class="loading" data-lang="en">Reading what the analysis wrote</p>
-    <p class="loading" data-lang="bn" lang="bn">বিশ্লেষণ যা লিখেছে, তা পড়া হচ্ছে</p>
-  </div>
+<main id="app" tabindex="-1">
+  <div class="wrap"><p class="src">Loading…</p></div>
 </main>
 
 <footer class="foot" id="foot"></footer>
 
 <noscript>
-  <div class="wrap" style="padding-block:3rem;max-width:34rem" data-lang="en">
+  <div class="wrap" style="padding-block:3rem;max-width:34rem" lang="en">
     <h2>This page assembles itself in your browser</h2>
-    <p>There is no server behind this site and no pre-rendered article: the pages you
-      would read are built out of the dataset by JavaScript running on your own
-      machine. With JavaScript switched off, the dataset is still yours to read, and
-      it is the same dataset the article is written from.</p>
+    <p>There is no server behind this site and no pre-rendered article: what you would
+      read is built out of the data files by JavaScript running on your own machine.
+      With JavaScript switched off, the data is still yours to read, and it is the same
+      data every sentence of the article is written from.</p>
     <ul>
-      <li><a href="investigation/data/tables/">The eighteen tables</a>, one CSV per
-        thing counted</li>
-      <li><a href="investigation/data/master_dataset.csv">master_dataset.csv</a> — one
-        row per tender, from notice to award</li>
-      <li><a href="investigation/data/analysis.json">analysis.json</a> — every finding
-        and every aggregate the article prints</li>
-      <li><a href="EVIDENCE_MATRIX.csv">EVIDENCE_MATRIX.csv</a> — one row per finding,
-        with the document and page it rests on</li>
-      <li><a href="investigation/public/pages/">The extracted text</a> of every
-        document, one file each</li>
-      <li><a href="EDITOR_QA_REPORT.md">EDITOR_QA_REPORT.md</a> — what was checked,
-        what failed, and what these documents cannot answer</li>
+      <li><a href="investigation_output/master_tender_investigation.csv">master_tender_investigation.csv</a>
+        — one row per tender, 1,155 rows and 176 columns, from notice to award</li>
+      <li><a href="investigation_output/rule_deviations.csv">rule_deviations.csv</a> —
+        one row per rule tested against one tender, 5,525 rows, each carrying the
+        excerpt it was read from and its page</li>
+      <li><a href="investigation_output/bidder_detail.csv">bidder_detail.csv</a> — the
+        winning firms and joint-venture partners, 1,189 rows</li>
+      <li><a href="investigation_output/investigative_summary.md">investigative_summary.md</a>
+        — the analysis these pages were built from, in full</li>
+      <li><a href="site/data/corpus.json">site/data/corpus.json</a> — every aggregate
+        the article prints, and beside it the eight other payloads the tabs read</li>
+      <li><a href="investigation_output/rule_scripts/rule_catalogue.py">rule_catalogue.py</a>
+        and <a href="investigation_output/rule_scripts/run_rules.py">run_rules.py</a> —
+        the eighteen rules as code, and the script that ran them</li>
     </ul>
-    <p>The PDFs themselves sit in the folders beside this file.</p>
+    <p>The PDFs themselves sit in three folders beside this file:
+      <code>Tender Notice_PDFs</code> (1,155 notices),
+      <code>Contract_Awards_PDFs</code> (645 award notices) and
+      <code>eGP_Forensic_Engine</code> (the five standard documents the rules were
+      drawn from).</p>
   </div>
 
-  <div class="wrap" style="padding-block:3rem;max-width:34rem" data-lang="bn" lang="bn">
+  <div class="wrap" style="padding-block:3rem;max-width:34rem" lang="bn">
     <h2>এই পাতাটি আপনার ব্রাউজারেই নিজেকে তৈরি করে</h2>
-    <p>এই সাইটের পিছনে কোনও সার্ভার নেই, আগে থেকে তৈরি করা কোনও প্রতিবেদনও নেই: আপনি
-      যে পাতাগুলি পড়তেন, সেগুলি আপনার নিজের যন্ত্রে চলা জাভাস্ক্রিপ্ট ডেটাসেট থেকে
-      বানিয়ে দেয়। জাভাস্ক্রিপ্ট বন্ধ থাকলেও ডেটাসেটটি আপনারই থাকে — এবং প্রতিবেদনটি
-      ঠিক এই ডেটাসেট থেকেই লেখা।</p>
+    <p>এই সাইটের পিছনে কোনো সার্ভার নেই, আগে থেকে তৈরি কোনো প্রতিবেদনও নেই: আপনি যা
+      পড়তেন, তা আপনার নিজের যন্ত্রে চলা জাভাস্ক্রিপ্ট ডেটা ফাইল থেকে বানিয়ে দেয়।
+      জাভাস্ক্রিপ্ট বন্ধ থাকলেও ডেটা আপনারই থাকে — আর প্রতিবেদনের প্রতিটি বাক্য ঠিক এই
+      ডেটা থেকেই লেখা।</p>
     <ul>
-      <li><a href="investigation/data/tables/">আঠারোটি টেবিল</a> — যা গোনা হয়েছে, তার
-        প্রতিটির জন্য একটি CSV</li>
-      <li><a href="investigation/data/master_dataset.csv">master_dataset.csv</a> —
-        প্রতি দরপত্রে এক সারি, বিজ্ঞপ্তি থেকে চুক্তি পর্যন্ত</li>
-      <li><a href="investigation/data/analysis.json">analysis.json</a> — প্রতিবেদনে
-        ছাপা প্রতিটি ফলাফল ও প্রতিটি সমষ্টি</li>
-      <li><a href="EVIDENCE_MATRIX.csv">EVIDENCE_MATRIX.csv</a> — প্রতি ফলাফলে এক সারি,
-        সঙ্গে যে নথি ও পাতার উপর তা দাঁড়িয়ে আছে</li>
-      <li><a href="investigation/public/pages/">প্রতিটি নথির উদ্ধার করা লেখা</a>,
-        নথিপ্রতি একটি ফাইল</li>
-      <li><a href="EDITOR_QA_REPORT.md">EDITOR_QA_REPORT.md</a> — কী যাচাই হয়েছে, কী
-        ব্যর্থ হয়েছে, আর এই নথিগুলি কোন প্রশ্নের উত্তর দিতে পারে না</li>
+      <li><a href="investigation_output/master_tender_investigation.csv">master_tender_investigation.csv</a>
+        — প্রতি দরপত্রে এক সারি, ১,১৫৫টি সারি ও ১৭৬টি কলাম, বিজ্ঞপ্তি থেকে চুক্তি পর্যন্ত</li>
+      <li><a href="investigation_output/rule_deviations.csv">rule_deviations.csv</a> —
+        এক দরপত্রে এক নিয়মের পরীক্ষায় এক সারি, মোট ৫,৫২৫টি সারি; প্রতিটিতে যে উদ্ধৃতি
+        থেকে পড়া হয়েছে তা ও তার পৃষ্ঠা</li>
+      <li><a href="investigation_output/bidder_detail.csv">bidder_detail.csv</a> —
+        বিজয়ী প্রতিষ্ঠান ও যৌথ উদ্যোগের অংশীদার, ১,১৮৯টি সারি</li>
+      <li><a href="investigation_output/investigative_summary.md">investigative_summary.md</a>
+        — এই পাতাগুলো যে বিশ্লেষণ থেকে তৈরি, সম্পূর্ণ</li>
+      <li><a href="site/data/corpus.json">site/data/corpus.json</a> — প্রতিবেদনে ছাপা
+        প্রতিটি সমষ্টি, আর তার পাশে ট্যাবগুলো যে আটটি ফাইল পড়ে</li>
+      <li><a href="investigation_output/rule_scripts/rule_catalogue.py">rule_catalogue.py</a>
+        ও <a href="investigation_output/rule_scripts/run_rules.py">run_rules.py</a> —
+        আঠারোটি নিয়ম কোড আকারে, আর যে স্ক্রিপ্ট সেগুলো চালিয়েছে</li>
     </ul>
-    <p>PDF নথিগুলি এই ফাইলের পাশের ফোল্ডারগুলিতেই আছে।</p>
+    <p>পিডিএফগুলো এই ফাইলের পাশের তিনটি ফোল্ডারেই আছে:
+      <code>Tender Notice_PDFs</code> (১,১৫৫টি বিজ্ঞপ্তি),
+      <code>Contract_Awards_PDFs</code> (৬৪৫টি চুক্তির নথি) এবং
+      <code>eGP_Forensic_Engine</code> (নিয়মগুলো যে পাঁচটি আদর্শ দস্তাবেজ থেকে নেওয়া)।</p>
   </div>
+
 </noscript>
 
-<script type="module" src="investigation/app/main.js"></script>
+
+<script type="module" src="site/scripts/app.js"></script>
 </body>
 </html>
