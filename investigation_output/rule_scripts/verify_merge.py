@@ -20,10 +20,17 @@ Nothing here trusts the builders. Seven groups:
      re-found in its PDF as a spot check
 """
 import csv, os, re, subprocess, collections
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
-REPO = "/sessions/exciting-laughing-curie/mnt/EGP-CDA"
-CACHE = "/tmp/vpg"
+OUT = _p.OUT
+REPO = _p.REPO
+CACHE = _p.CACHE
 MASTER, DEV, BROKEN = ("master_tender_investigation.csv", "rule_deviations.csv",
                        "rules_broken_line_by_line.csv")
 BID = "bidder_detail.csv"
@@ -240,17 +247,10 @@ def check_g(bid, merged):
 
 
 def pages(d, f):
-    os.makedirs(CACHE, exist_ok=True)
-    cp = os.path.join(CACHE, re.sub(r"[^A-Za-z0-9._-]", "_", d + "__" + f) + ".txt")
-    if not os.path.exists(cp):
-        p = os.path.join(REPO, d, f)
-        if not os.path.exists(p):
-            return []
-        subprocess.run(["pdftotext", "-layout", p, cp],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if not os.path.exists(cp):
-        return []
-    return open(cp, encoding="utf-8", errors="replace").read().split("\f")
+    """The pages of one cited PDF. Read with pdftotext where it is installed and
+       from the extraction cache in the repository where it is not; which one
+       answered is printed at the end of the run."""
+    return _p.page_text(d, f)
 
 
 def flat(s):
@@ -301,6 +301,7 @@ def spot_check_pdfs(biling):
 
 
 def main():
+    _p.check()
     master, dev, broken = load(MASTER), load(DEV), load(BROKEN)
     bid, biling, merged = load(BID), load(BILING), load(MERGED)
     check_a(master, merged, biling, broken)
@@ -312,8 +313,13 @@ def main():
     check_g(bid, merged)
     spot_check_pdfs(biling)
     print("\n" + "=" * 78)
-    print("MERGE VERIFICATION FAILED: %d problem(s)" % len(FAILURES) if FAILURES
-          else "ALL MERGE CHECKS PASSED")
+    print(_p.page_source_line())
+    if FAILURES:
+        print("MERGE VERIFICATION FAILED: %d problem(s)" % len(FAILURES))
+        for f in FAILURES:
+            print("  - " + f)
+    else:
+        print("ALL MERGE CHECKS PASSED")
     print("=" * 78)
 
 

@@ -18,9 +18,10 @@ silently empty Bengali cell would look like an absent value rather than a bug.
 """
 import csv, os, sys, collections
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 sys.path.insert(0, os.path.join(OUT, "rule_scripts"))
 import bengali_dictionary as B  # noqa: E402
+import repo_paths as _p
 
 SRC = os.path.join(OUT, "rules_broken_line_by_line.csv")
 DST = os.path.join(OUT, "rules_broken_line_by_line_bilingual.csv")

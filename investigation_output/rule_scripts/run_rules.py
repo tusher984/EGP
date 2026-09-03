@@ -15,8 +15,9 @@ Design rules followed here:
 import csv, os, re, sys, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rule_catalogue import RULES, RULE_BY_CODE, INSTRUMENT_NOTE, QUOTE_REPRODUCTION_NOTE
+import repo_paths as _p
 
-BASE = "/sessions/exciting-laughing-curie/mnt/EGP-CDA"
+BASE = _p.REPO
 OUT = os.path.join(BASE, "investigation_output")
 MASTER = os.path.join(OUT, "master_tender_investigation.csv")
 

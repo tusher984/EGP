@@ -30,8 +30,15 @@ Three things happen here, all of them requested explicitly.
    whether the line can be published as a breach.
 """
 import csv, os, collections
+import os, sys
+# python3 -P keeps a script's own folder off sys.path, and this repository has
+# a stub at its root that must never shadow a real package, so -P is the right
+# way to run these. Putting this folder back on the path explicitly is what
+# makes the shared paths module importable under it.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import repo_paths as _p
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 MASTER = os.path.join(OUT, "master_tender_investigation.csv")
 DEV = os.path.join(OUT, "rule_deviations.csv")
 BIDDER = os.path.join(OUT, "bidder_detail.csv")

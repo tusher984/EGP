@@ -28,9 +28,10 @@ files carry it.
 """
 import csv, os, sys, collections
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 sys.path.insert(0, os.path.join(OUT, "rule_scripts"))
 import bengali_dictionary as B  # noqa: E402
+import repo_paths as _p
 
 MASTER = os.path.join(OUT, "master_tender_investigation.csv")
 BID = os.path.join(OUT, "bidder_detail.csv")

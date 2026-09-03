@@ -15,9 +15,10 @@ transformations applied after the dictionary was first written, are added here.
 """
 import csv, os, sys
 
-OUT = "/sessions/exciting-laughing-curie/mnt/EGP-CDA/investigation_output"
+OUT = _p.OUT
 sys.path.insert(0, os.path.join(OUT, "rule_scripts"))
 from finalise_csvs import why_empty, WHY_EMPTY  # noqa: E402
+import repo_paths as _p
 
 WHY_EMPTY.update({
     "evidence_page_map": (
