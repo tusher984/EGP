@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img"
+     aria-label="e-GP Watch">
+  <title>e-GP Watch</title>
+  <!-- Three bars narrowing downward: the shape the whole investigation follows —
+       bids submitted, bids ruled responsive, contracts awarded. The two colours are
+       --hue-1 and --surface-page from site/styles/tokens.css, written out here
+       because a favicon is loaded without the stylesheet. Square corners, like
+       everything else on the site. Legible at 16px: each bar lands on 2 device
+       pixels with 1.5 between. -->
+  <rect width="32" height="32" fill="#2f5c8f"/>
+  <rect x="6"  y="7"  width="20" height="4" fill="#ffffff"/>
+  <rect x="9"  y="14" width="14" height="4" fill="#ffffff"/>
+  <rect x="12" y="21" width="8"  height="4" fill="#ffffff"/>
+</svg>
