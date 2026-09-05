@@ -43,8 +43,14 @@ export const UI = {
     bn: "ডেটা ফাইলটি লোড হয়নি। সাইটটি এটি এই ফোল্ডারের <code>site/data/</code> থেকে পড়ে।",
   },
 
+  /* The label a section is named by in the stack under the article, and in the
+     footer. The first two used to be headings inside the article; they are
+     headed by the same words in the same order, in the place a reader now opens
+     them from. */
   tabs: {
     story: { en: "The investigation", bn: "অনুসন্ধান" },
+    limits: { en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
+    check: { en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
     rules: { en: "Rules tested", bn: "যে নিয়মগুলো পরীক্ষা করা হয়েছে" },
     tools: { en: "Explore the data", bn: "ডেটা ঘেঁটে দেখুন" },
     docs: { en: "Documents", bn: "নথিপত্র" },
@@ -2292,11 +2298,25 @@ export const STORY = [
     en: "One figure is the same in all six rows, and it is the one that matters most to the argument this article opened with. {{authority.rejected|n}} bids were set aside across the six authorities, and not one of the six publishes a reason for a single one of them. On whether a narrower field costs the public more, the six differ on every measure of how the field was narrowed — and agree exactly on what they do not say.",
     bn: "একটি সংখ্যা ছয়টি সারিতেই এক, আর এই লেখা যে তর্ক নিয়ে শুরু হয়েছিল তার জন্য সেটিই সবচেয়ে জরুরি। ছয় সংস্থায় মিলিয়ে {{authority.rejected|n}}টি দর বাদ দেওয়া হয়েছে, আর ছয়টির একটিও তার একটিরও কারণ প্রকাশ করে না। প্রতিযোগিতা সংকুচিত হলে জনগণের খরচ বাড়ে কি না — এই প্রশ্নে প্রতিযোগিতা কীভাবে সংকুচিত হলো তার প্রতিটি মাপে ছয়টি সংস্থা আলাদা, আর যা তারা বলে না, তাতে ছয়টিই হুবহু এক।",
   },
+];
 
-  /* ---- 15. what the documents cannot tell us ----------------------------- */
+/* --------------------------------------------------- the closing two sections
+   The limits, and the doors onto the working material. Both of these used to be
+   the last two headings of the article, where a reader who had just finished the
+   story met a wall of caution and a list of links before the page would let them
+   go. They are not the reading — they are what the reading was built from and
+   what it cannot say — so they now sit in the stack at the foot of the page with
+   the other sections: closed until a reader opens one, and headed there by the
+   same words that headed them here.
 
-  { k: "h2", en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
+   Not one sentence is rewritten. story.js draws these with the same builders it
+   draws the article with, so a finding in this stack looks exactly like a
+   finding in the article, and "every finding above" still points above. The two
+   <h2> blocks are gone and nothing else is: the disclosure a section opens out
+   of is its heading, and a second copy of the same words under it would be a
+   heading twice. */
 
+export const LIMITS = [
   {
     k: "p",
     en: "This is the part of an investigation that usually goes unpublished. Three things are missing from the public record in a way that limits every finding above — one of them from every single tender — and a fourth limit is in how this set was put together.",
@@ -2358,12 +2378,9 @@ export const STORY = [
       },
     ],
   },
+];
 
-  /* ---- 16. how to check it ----------------------------------------------- */
-
-
-  { k: "h2", en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
-
+export const CHECK = [
   {
     k: "p",
     en: "Nothing above has to be taken on trust. Every figure in this article is worked out, as the page is built, from the spreadsheets underneath it; every tender has a record of its own; and every record links back to the PDF pages it was read from. The four doors below open onto that working material.",

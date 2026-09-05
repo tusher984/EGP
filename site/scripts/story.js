@@ -20,7 +20,10 @@ import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
   funnel, matrix, matrixLegend, divisionMap, hue, SEQ, wideCanvas,
 } from "./charts.js";
-import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
+import {
+  UI, HEAD, CASE, CASES, STORY, LIMITS, CHECK, DOORS, LABELS, EXHIBIT_WORDS,
+  RULE_TITLES, RULE_SHORT,
+} from "./content.js";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -990,3 +993,21 @@ export function renderStory(root, corpus) {
   root.appendChild(body);
   return root;
 }
+
+/* -------------------------------------------------------- the closing sections
+   What the documents cannot tell us, and how to check the article — the same
+   writing, drawn by the same builders, in the stack at the foot of the page
+   instead of at the end of the article. Neither carries a heading of its own:
+   the section it opens out of is its heading. Neither is drawn on arrival
+   either, which is the point of moving them — a reader who wants the caveats or
+   the doors opens them, and a reader who has finished the story is finished. */
+
+function closing(root, corpus, blocks) {
+  root.appendChild(el("div", { class: "prose" },
+    blocks.map((b) => block(b, corpus)).filter(Boolean)));
+  return root;
+}
+
+export function renderLimits(root, corpus) { return closing(root, corpus, LIMITS); }
+
+export function renderCheck(root, corpus) { return closing(root, corpus, CHECK); }

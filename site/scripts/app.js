@@ -1,11 +1,12 @@
-/* e-GP WATCH — the shell: one article, four sections under it, two editions.
+/* e-GP WATCH — the shell: one article, six sections under it, two editions.
    ------------------------------------------------------------------
    This file draws nothing a reader reads. It builds the masthead, the article,
-   and the four sections beneath it, then hands each section to the module that
+   and the six sections beneath it, then hands each section to the module that
    fills it.
 
-   The investigation is the page. Rules tested, the data explorer, the document
-   index and the method are not tabs standing beside it: they sit at the bottom,
+   The investigation is the page. What the documents cannot tell us, how to
+   check the article, the rules tested, the data explorer, the document index
+   and the method are not tabs standing beside it: they sit at the bottom,
    closed, and a reader who wants them opens them there. Four decisions here are
    not obvious from the code:
 
@@ -34,7 +35,7 @@
 
 import { el, t, clear, fill, load, state, setLang } from "./core.js";
 import { UI, HEAD } from "./content.js";
-import { renderStory } from "./story.js";
+import { renderStory, renderLimits, renderCheck } from "./story.js";
 import { renderRules } from "./rules.js";
 import { renderTools } from "./tools.js";
 import { renderDocs } from "./docs.js";
@@ -42,11 +43,30 @@ import { renderMethod } from "./method.js";
 
 const STORY = "story";
 
-/* The four sections, in the order a reader meets them. `needs` names the
-   payloads in site/data/ the section cannot draw without — fetched on first
-   open, never before. `note` is the line beside the heading, written with
-   {{tokens}} so that not one figure on a section label is typed here. */
+/* The sections under the article, in the order a reader meets them. `needs`
+   names the payloads in site/data/ the section cannot draw without — fetched on
+   first open, never before. `note` is the line beside the heading, written with
+   {{tokens}} so that not one figure on a section label is typed here.
+
+   The first two used to be the last two headings of the article. They are the
+   caveats and the doors: what the reading cannot say and what it was built from,
+   which is this stack's subject and not the story's. Closed like the rest, so
+   the article now ends on its own last sentence. */
 const SECTIONS = [
+  {
+    key: "limits", needs: [],
+    note: {
+      en: "The evaluation record, the official cost estimate, the owner box — and one limit in how this set was put together",
+      bn: "মূল্যায়নের নথি, সরকারি প্রাক্কলিত ব্যয়, মালিকের ঘর — আর এই সম্ভার যেভাবে গোছানো, তার একটি সীমা",
+    },
+  },
+  {
+    key: "check", needs: [],
+    note: {
+      en: "Every figure in the article, reproducible from the files under this page",
+      bn: "লেখার প্রতিটি সংখ্যা এই পাতার নিচের ফাইল থেকেই আবার বের করা যায়",
+    },
+  },
   {
     key: "rules", needs: ["rules"],
     note: {
@@ -184,7 +204,7 @@ function masthead(host) {
 }
 
 /* --------------------------------------------------------------------- panels
-   The article is a section that is always open. The other four are disclosures
+   The article is a section that is always open. The other six are disclosures
    in a stack under it: closed on arrival, built on first open, and each one
    keyed by the same panel-<key> id the hash router has always used, so every
    link an editor has already sent to someone keeps working. */
@@ -202,7 +222,7 @@ function sectionPanel(spec) {
   const inner = el("div", { class: "open-inner" });
   view.panels[spec.key] = inner;
 
-  /* The blurb used to sit under the label, where four of them made a wall of
+  /* The blurb used to sit under the label, where a stack of them made a wall of
      text a reader had to get past to reach the end of the article. It belongs to
      the section it describes, so it opens with it: before the click there is a
      label and nothing else. */
@@ -273,6 +293,8 @@ async function draw(key) {
 
   clear(host);
   if (key === STORY) renderStory(host, view.corpus);
+  else if (key === "limits") renderLimits(host, view.corpus);
+  else if (key === "check") renderCheck(host, view.corpus);
   else if (key === "rules") renderRules(host, view.corpus, data.rules);
   else if (key === "tools") renderTools(host, view.corpus, data);
   else if (key === "docs") renderDocs(host, view.corpus, data);
@@ -379,7 +401,7 @@ function switchLang(lang) {
 }
 
 /* -------------------------------------------------------------------- footer
-   The four sections again, as links, for a reader who has read to the end and
+   The sections again, as links, for a reader who has read to the end and
    scrolled past the stack without noticing it. */
 
 function footer(host) {
