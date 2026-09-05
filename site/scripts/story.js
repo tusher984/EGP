@@ -87,9 +87,12 @@ function tiles(corpus) {
       l: { en: "across " + n(corpus.counts.awarded) + " awards", bn: n(corpus.counts.awarded) + "টি চুক্তিতে" },
     },
     {
-      v: n(corpus.field.lost),
-      u: { en: "bids rejected", bn: "দর বাতিল" },
-      l: { en: "out of " + n(corpus.field.submitted) + " submitted", bn: "জমা পড়া " + n(corpus.field.submitted) + "টির মধ্যে" },
+      v: n(corpus.estimate.lowest_price_test.tested),
+      u: { en: "contracts with no benchmark", bn: "মানদণ্ডহীন চুক্তি" },
+      l: {
+        en: "the official cost estimate is in none of the documents",
+        bn: "সরকারি প্রাক্কলিত ব্যয় কোনো নথিতেই নেই",
+      },
     },
   ];
 

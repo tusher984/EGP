@@ -1204,24 +1204,28 @@ export const EXHIBIT_WORDS = {
 
 export const HEAD = {
   kicker: { en: "e-GP Watch · Public procurement", bn: "e-GP ওয়াচ · সরকারি ক্রয়" },
-  /* The headline carries no figure, deliberately. What this set of documents
-     does is asymmetrical before it is numerical: one side of every contest is
-     written down by name and the other side is not written down at all, and a
-     reader understands that sentence before they have been handed a single
-     number. Both halves are documented rather than characterised — {{counts.awards}}
-     award documents, every one of them naming a winner and none of them blank,
-     against a published count of named losing bidders that is zero.
+  /* The headline is the finding, and it is a rule rather than a characterisation:
+     {{estimate.two_sided}} of the notices in this set reject a price that falls
+     more than ten per cent BELOW the government's own cost estimate, and that
+     estimate is printed in none of the {{counts.pdfs}} documents. Both halves
+     are on the page — the percentage is quoted from each notice's own sentence,
+     and the absence of the estimate is what makes {{estimate.lowest_price_test.tested}}
+     of the audit's price tests unrunnable.
+
+     It says "you lose" rather than "the tender is rejected" because a reader who
+     has never bid for public work still knows what losing is; the technical
+     phrase is in the finding underneath, where it belongs.
 
      The deck then does the counting the headline refuses to do, and it does it
      in prose with verbs rather than as a row of figures, because three zeros
      set as display type read as a dashboard tile and were rejected as one. */
   hed: {
-    en: "Every winner has a name. No one who lost does.",
-    bn: "প্রত্যেক বিজয়ীর নাম আছে। যারা হেরেছে, তাদের কারও নাম নেই।",
+    en: "Bid below the government's estimate and you lose the work. The estimate is published nowhere.",
+    bn: "সরকারি প্রাক্কলনের চেয়ে কম দর দিলে কাজ হারাতে হয়। প্রাক্কলনটি কোথাও প্রকাশিত নয়।",
   },
   dek: {
-    en: "We read every page of {{counts.pdfs|n}} procurement documents from six of Bangladesh's urban development authorities — {{counts.notices|n}} tender notices and {{counts.awards|n}} contract awards covering {{money.crore|cr}}. {{field.lost|n}} bids were turned down across that set. The documents name {{field.losers_named|n}} of the companies that lost, publish {{field.losing_amounts_published|n}} of the prices they offered, and record {{field.reasons_published|n}} reasons for turning any of them down.",
-    bn: "বাংলাদেশের ছয়টি নগর উন্নয়ন সংস্থার {{counts.pdfs|n}}টি ক্রয়-নথির প্রতিটি পৃষ্ঠা আমরা পড়েছি — {{counts.notices|n}}টি দরপত্র বিজ্ঞপ্তি ও {{counts.awards|n}}টি চুক্তির নথি, মোট {{money.crore|cr}} টাকার কাজ। এই নথিগুলোজুড়ে বাতিল হয়েছে {{field.lost|n}}টি দর। যেসব প্রতিষ্ঠান হেরেছে, নথিগুলোতে তাদের {{field.losers_named|n}}টির নাম আছে, তাদের দেওয়া দরের {{field.losing_amounts_published|n}}টি প্রকাশিত, আর কোনোটিকে বাতিল করার কারণ লেখা আছে {{field.reasons_published|n}}টি।",
+    en: "We read every page of {{counts.pdfs|n}} procurement documents from six of Bangladesh's urban development authorities — {{counts.notices|n}} tender notices and {{counts.awards|n}} contract awards covering {{money.crore|cr}}. {{estimate.band_notices|n}} of those notices declare that any price more than {{estimate.width_common|n}} per cent above or below the official cost estimate will be rejected outright. The estimate itself appears in none of the documents, which is also why the audit could run {{estimate.lowest_price_test.tested|n}} tests of whether the winning price was too high and complete none of them.",
+    bn: "বাংলাদেশের ছয়টি নগর উন্নয়ন সংস্থার {{counts.pdfs|n}}টি ক্রয়-নথির প্রতিটি পৃষ্ঠা আমরা পড়েছি — {{counts.notices|n}}টি দরপত্র বিজ্ঞপ্তি ও {{counts.awards|n}}টি চুক্তির নথি, মোট {{money.crore|cr}} টাকার কাজ। এর {{estimate.band_notices|n}}টি বিজ্ঞপ্তিতে লেখা আছে, সরকারি প্রাক্কলিত ব্যয়ের {{estimate.width_common|n}} শতাংশ উপরে বা নিচের যেকোনো দর সরাসরি বাতিল। অথচ প্রাক্কলনটি কোনো নথিতেই নেই — আর সেই কারণেই বিজয়ী দর বেশি ছিল কি না, তা যাচাইয়ের {{estimate.lowest_price_test.tested|n}}টি পরীক্ষা শুরু করা গেলেও একটিও শেষ করা যায়নি।",
   },
   byline: { en: "AL AMIN TUSHER", bn: "আল আমিন তুষার" },
   /* The portrait is a file in this repository; the initials sit behind it and
@@ -1509,8 +1513,8 @@ export const CASES = {
         bn: "বিজ্ঞপ্তির বাকিটা টাকার হিসাব ঠিক করে দেয়। একটি প্রতিষ্ঠানের হাতে নগদ বা ঋণসীমা হিসেবে থাকতে হতো {{cases.rule_stack.liquid|taka}} — যে অঙ্কে শেষে চুক্তিটি হয়েছে, তার {{cases.rule_stack.financial_ratio|x2}} — আর আগেই একটিমাত্র প্যাকেজে {{cases.rule_stack.similar|taka}}, অর্থাৎ কাজের {{cases.rule_stack.similar_ratio|x2}} পরিমাণ কাজ শেষ করে থাকতে হতো। প্রতিটি দরের সঙ্গে নেওয়া জামানত ছিল {{cases.rule_stack.security|taka}}, চুক্তিমূল্যের {{cases.rule_stack.security_pct|pct}} — যেখানে ডেটা শিট সর্বোচ্চ সীমা বেঁধে দেয় ৩ শতাংশে। কম্পিউটার, প্রিন্টার ও ইউপিএসের জন্য বিজ্ঞপ্তিতে প্রস্তুতকারকের অনুমোদনপত্রও চাওয়া হয়েছে — যেসব পণ্য দোকান থেকেই কেনা যায়, আর আদর্শ দস্তাবেজে যেগুলোর জন্য সাধারণ নিয়মই হলো এমন কোনো পত্র লাগে না।",
       },
       {
-        en: "Then the dates. The award notice prints the letter of acceptance as {{cases.rule_stack.noa|date}} and the signing as {{cases.rule_stack.signed|date}} — {{cases.rule_stack.days|n}} days, against the {{cases.rule_stack.cap|n}} the same rulebook allows for a contract of this size. Two lines below, the notice's own field, “Was the Contract Singed in due time?”, answers “yes”. The misspelling is the document's. That answer is exactly what the portal's single flat deadline predicts, as the section above set out: {{cases.rule_stack.days|n}} days is comfortably inside twenty-eight, and {{cases.rule_stack.overrun|n}} days outside the {{cases.rule_stack.cap|n}} this contract's value earns it. Both dates and the answer are on page one of the award notice linked above.",
-        bn: "তারপর তারিখগুলো। চুক্তির বিজ্ঞপ্তিতে ছাপা আছে, কাজের চিঠি {{cases.rule_stack.noa|date}} আর স্বাক্ষর {{cases.rule_stack.signed|date}} — অর্থাৎ {{cases.rule_stack.days|n}} দিন, যেখানে এই মাপের চুক্তির জন্য একই নিয়মপুস্তিকা সময় দেয় {{cases.rule_stack.cap|n}} দিন। দুই লাইন নিচেই বিজ্ঞপ্তির নিজের ঘরে প্রশ্ন করা হয়েছে, চুক্তিটি যথাসময়ে স্বাক্ষরিত হয়েছে কি না — উত্তর লেখা “হ্যাঁ”। উপরের অংশে যা বলা হলো, পোর্টালের ওই একটিমাত্র নির্দিষ্ট সময়সীমা ঠিক এই উত্তরটিই অনুমান করে: {{cases.rule_stack.days|n}} দিন আটাশের বেশ ভেতরে, আর এই চুক্তির মূল্য অনুযায়ী প্রাপ্য {{cases.rule_stack.cap|n}} দিনের {{cases.rule_stack.overrun|n}} দিন বাইরে। দুটি তারিখ আর ওই উত্তর, তিনটিই উপরে যুক্ত চুক্তির বিজ্ঞপ্তির প্রথম পৃষ্ঠায়।",
+        en: "Then the dates. The award notice prints the letter of acceptance as {{cases.rule_stack.noa|date}} and the signing as {{cases.rule_stack.signed|date}} — {{cases.rule_stack.days|n}} days, against the {{cases.rule_stack.cap|n}} the same rulebook allows for a contract of this size. Two lines below, the notice's own field, “Was the Contract Singed in due time?”, answers “yes”. The misspelling is the document's. That answer is exactly what a single flat twenty-eight-day deadline predicts, which is the one the portal applies to every contract regardless of size: {{cases.rule_stack.days|n}} days is comfortably inside twenty-eight, and {{cases.rule_stack.overrun|n}} days outside the {{cases.rule_stack.cap|n}} this contract's value earns it. Both dates and the answer are on page one of the award notice linked above.",
+        bn: "তারপর তারিখগুলো। চুক্তির বিজ্ঞপ্তিতে ছাপা আছে, কাজের চিঠি {{cases.rule_stack.noa|date}} আর স্বাক্ষর {{cases.rule_stack.signed|date}} — অর্থাৎ {{cases.rule_stack.days|n}} দিন, যেখানে এই মাপের চুক্তির জন্য একই নিয়মপুস্তিকা সময় দেয় {{cases.rule_stack.cap|n}} দিন। দুই লাইন নিচেই বিজ্ঞপ্তির নিজের ঘরে প্রশ্ন করা হয়েছে, চুক্তিটি যথাসময়ে স্বাক্ষরিত হয়েছে কি না — উত্তর লেখা “হ্যাঁ”। আটাশ দিনের একটিমাত্র নির্দিষ্ট সময়সীমা ধরলে ঠিক এই উত্তরটিই আসে, আর পোর্টাল আকার নির্বিশেষে প্রতিটি চুক্তিতে সেটিই ধরে: {{cases.rule_stack.days|n}} দিন আটাশের বেশ ভেতরে, আর এই চুক্তির মূল্য অনুযায়ী প্রাপ্য {{cases.rule_stack.cap|n}} দিনের {{cases.rule_stack.overrun|n}} দিন বাইরে। দুটি তারিখ আর ওই উত্তর, তিনটিই উপরে যুক্ত চুক্তির বিজ্ঞপ্তির প্রথম পৃষ্ঠায়।",
       },
       {
         en: "Three of this tender's {{cases.rule_stack.deviations|n}} mismatches are against clauses worded as duties. The other four are against figures a document recommends, or a note, or guidance — and that difference is the whole of what follows.",
@@ -1684,8 +1688,8 @@ export const CASES = {
     },
     after: [
       {
-        en: "{{concentration.top1.name|firm}} signed it, {{cases.biggest.days|n}} days after being notified — comfortably inside the window, unlike most of the contracts in the section above. And the same company appears somewhere else in this report: one of the {{concentration.top1.contracts|n}} contracts it holds here is the road this article opened on.",
-        bn: "চুক্তিটি করে {{concentration.top1.name|firm}}, নোটিশ পাওয়ার {{cases.biggest.days|n}} দিন পর — উপরের অংশের বেশির ভাগ চুক্তির মতো নয়, এটি সময়ের ভেতরেই। আর একই প্রতিষ্ঠান এই প্রতিবেদনের আরেক জায়গাতেও আছে: এখানে তার হাতে থাকা {{concentration.top1.contracts|n}}টি চুক্তির একটি হলো সেই সড়ক, যেটি দিয়ে এই লেখা শুরু হয়েছে।",
+        en: "{{concentration.top1.name|firm}} signed it, {{cases.biggest.days|n}} days after being notified — comfortably inside the window, unlike most of the late-signed contracts counted earlier. And the same company appears somewhere else in this report: one of the {{concentration.top1.contracts|n}} contracts it holds here is the road this article opened on.",
+        bn: "চুক্তিটি করে {{concentration.top1.name|firm}}, নোটিশ পাওয়ার {{cases.biggest.days|n}} দিন পর — আগে গোনা দেরিতে স্বাক্ষরিত চুক্তিগুলোর বেশির ভাগের মতো নয়, এটি সময়ের ভেতরেই। আর একই প্রতিষ্ঠান এই প্রতিবেদনের আরেক জায়গাতেও আছে: এখানে তার হাতে থাকা {{concentration.top1.contracts|n}}টি চুক্তির একটি হলো সেই সড়ক, যেটি দিয়ে এই লেখা শুরু হয়েছে।",
       },
       {
         en: "Which is the honest way into the rest of this section. Very few firms in any country can price an {{cases.biggest.crore|cr}} river-bank road, so finding the same names on the largest packages is expected rather than suspicious. What follows is not an allegation about any of them. It is the arithmetic of how few names the top of this table has.",
@@ -1754,91 +1758,123 @@ export const STORY = [
 
   {
     k: "p",
-    en: "Most of our questions the documents answer. Who published the tender, when it closed, what the contract was worth, who signed it. A few they do not answer at all — and what is missing turns out to be the same thing, in the same place, in almost every file.",
-    bn: "আমাদের বেশির ভাগ প্রশ্নের উত্তর নথিতে আছে — কে দরপত্র দিয়েছে, কখন বন্ধ হয়েছে, চুক্তির মূল্য কত, কে স্বাক্ষর করেছে। কয়েকটির উত্তর একেবারেই নেই। আর যা নেই, তা প্রায় প্রতিটি ফাইলে একই জিনিস, একই জায়গায়।",
+    en: "Most of our questions the documents answer. Who published the tender, when it closed, what the contract was worth, who signed it. One they never answer — and it is the one every check on the price depends on. It is missing from the same place in the same way in all {{counts.tenders|n}} files, which is where this begins.",
+    bn: "আমাদের বেশির ভাগ প্রশ্নের উত্তর নথিতে আছে — কে দরপত্র দিয়েছে, কখন বন্ধ হয়েছে, চুক্তির মূল্য কত, কে স্বাক্ষর করেছে। একটির উত্তর কোথাও নেই — আর দামের প্রতিটি যাচাই ঠিক সেটির ওপরই দাঁড়িয়ে। {{counts.tenders|n}}টি ফাইলের সবগুলোতেই একই জায়গায় একইভাবে সেটি অনুপস্থিত, আর সেখান থেকেই এই লেখার শুরু।",
   },
 
-  /* ---- 1. the field collapses, and what the file will not show ------------- */
+  /* ---- 1. a band around a number nobody published -------------------------
+     The cost section, and the one place in this investigation where a rule can
+     be read straight off the page against the money. Everything here is either
+     a sentence quoted from a notice or a count off the audit; nothing is
+     inferred. The note at the end of the section gives away the two things that
+     weaken it, before a reader has to find them.
 
-  { k: "case", id: "all_rejected" },
+     Not used here, deliberately: any comparison between what the band notices
+     paid and what everything else paid. The band sits almost entirely inside one
+     authority, so a price difference between the two groups would be a
+     difference between two authorities. The rule and its own arithmetic need no
+     comparison group. */
 
-  /* The headline already says the record stops at the winner, so this subhead
-     does the next thing instead of repeating it: it names the consequence the
-     section's finding argues, which is that the losing side of the decision is
-     not readable by anyone outside the committee that made it. */
-  { k: "h2", en: "The part of the file no one outside can read", bn: "ফাইলের যে অংশ বাইরের কেউ পড়তে পারে না" },
+  { k: "case", id: "price_band" },
+
+  { k: "h2", en: "The rule that rejects the cheaper bid", bn: "যে নিয়ম সস্তা দরটিকেই বাতিল করে" },
 
   {
     k: "p",
-    en: "Across the {{counts.with_bid_counts|n}} tenders that publish a bid count, {{field.submitted|n}} bids were submitted. {{field.responsive|n}} of them were ruled responsive — the official word for a bid the committee accepts as meeting the notice's own conditions. The other {{field.lost|n}} were set aside, across {{field.tenders_losing_bids|n}} tenders. Behind each of those was a company that prepared a bid and lost it.",
-    bn: "যে {{counts.with_bid_counts|n}}টি দরপত্রে দরদাতার সংখ্যা প্রকাশিত হয়েছে, সেগুলোতে জমা পড়েছিল {{field.submitted|n}}টি দর। তার {{field.responsive|n}}টিকে ‘গ্রহণযোগ্য’ ধরা হয়েছে — কমিটি যে দরকে বিজ্ঞপ্তির নিজের শর্ত মেনেছে বলে মানে, দরপত্রের ভাষায় তাকেই বলা হয় গ্রহণযোগ্য। বাকি {{field.lost|n}}টি সরিয়ে রাখা হয়েছে, {{field.tenders_losing_bids|n}}টি দরপত্রজুড়ে। ওই প্রতিটির পেছনে একটি প্রতিষ্ঠান ছিল, যারা দর তৈরি করেছিল আর হেরেছিল।",
+    en: "Before a public job is advertised, the office advertising it works out what the job ought to cost. That figure is the official cost estimate, and in the national rulebook it is the reference point almost every price check turns on. It is not published — not in a notice, not in an award, not once in {{counts.pdfs|n}} documents. What some notices do publish is a rule about it.",
+    bn: "কোনো সরকারি কাজের বিজ্ঞপ্তি দেওয়ার আগে যে দপ্তর সেটি দিচ্ছে, তারা হিসাব করে কাজটির খরচ কত হওয়া উচিত। ওই হিসাবটির নাম সরকারি প্রাক্কলিত ব্যয়, আর জাতীয় নিয়মপুস্তিকায় দামের প্রায় প্রতিটি যাচাই এই হিসাবটিকেই ভিত্তি ধরে চলে। এটি প্রকাশ করা হয় না — কোনো বিজ্ঞপ্তিতে নয়, কোনো চুক্তিতে নয়, {{counts.pdfs|n}}টি নথির একটিতেও একবার নয়। কিছু বিজ্ঞপ্তি যা প্রকাশ করে, সেটি ওই হিসাব নিয়ে একটি নিয়ম।",
   },
-
-  { k: "fig", id: "funnel" },
 
   {
     k: "finding",
     tag: "fact",
     h: {
-      en: "In not one case does any document in this set say why a bid was rejected",
-      bn: "এই নথিগুলোর একটি কাগজেও লেখা নেই কেন কোনো দর বাতিল হয়েছে",
+      en: "{{estimate.band_notices|n}} notices reject any price more than {{estimate.width_common|n}} per cent below the estimate — so no bidder is allowed to save more than that",
+      bn: "{{estimate.band_notices|n}}টি বিজ্ঞপ্তিতে প্রাক্কলনের {{estimate.width_common|n}} শতাংশের বেশি নিচের যেকোনো দর বাতিল — অর্থাৎ কোনো দরদাতাই এর চেয়ে বেশি সাশ্রয় করতে পারবে না",
     },
     p: [
       {
-        en: "The contract award notices carry a field for the reason a bid was found non-responsive. In {{field.rejected_aggregate_rows|n}} tenders where bids were rejected, that field is filled in {{field.reasons_published|n}} times. The number of losing bidders named anywhere in these {{counts.pdfs|n}} files is {{field.losers_named|n}}. The number of losing prices published is {{field.losing_amounts_published|n}}.",
-        bn: "চুক্তি প্রদানের বিজ্ঞপ্তিতে দর অগ্রহণযোগ্য হওয়ার কারণ লেখার ঘর আছে। যে {{field.rejected_aggregate_rows|n}}টি দরপত্রে দর বাতিল হয়েছে, সেখানে ওই ঘরটি পূরণ করা হয়েছে {{field.reasons_published|n}} বার। এই {{counts.pdfs|n}}টি ফাইলের কোথাও নাম লেখা আছে এমন পরাজিত দরদাতার সংখ্যা {{field.losers_named|n}}। প্রকাশিত পরাজিত দরের সংখ্যা {{field.losing_amounts_published|n}}।",
+        en: "The clause is printed in the notice itself, and it cuts both ways. {{estimate.two_sided|n}} of the {{estimate.band_notices|n}} notices that carry it name both directions: a price too far above the estimate is out, and a price too far below it is out as well. The percentage is in the sentence — {{estimate.widths.0.n|n}} notices set it at {{estimate.widths.0.key|n}} per cent and {{estimate.widths.1.n|n}} at {{estimate.widths.1.key|n}}. That is a ceiling on competition written as arithmetic. A company that can do the work for a fifth less than the government expected cannot say so and win; the saving is not rewarded, it is grounds for rejection.",
+        bn: "শর্তটি বিজ্ঞপ্তিতেই ছাপা থাকে, আর তা দুদিকেই কাটে। এটি বহন করা {{estimate.band_notices|n}}টি বিজ্ঞপ্তির {{estimate.two_sided|n}}টিতেই দুটি দিকের কথা লেখা: প্রাক্কলনের অনেক বেশি উপরের দর বাদ, অনেক নিচের দরও বাদ। শতাংশটি ওই বাক্যেই আছে — {{estimate.widths.0.n|n}}টি বিজ্ঞপ্তিতে তা {{estimate.widths.0.key|n}} শতাংশ, {{estimate.widths.1.n|n}}টিতে {{estimate.widths.1.key|n}}। এটি প্রতিযোগিতার ওপর একটি ছাদ, অঙ্ক দিয়ে লেখা। যে প্রতিষ্ঠান সরকারের ধারণার চেয়ে এক-পঞ্চমাংশ কমে কাজটি করতে পারে, সে তা বলে কাজ পেতে পারবে না; সাশ্রয়টির পুরস্কার নেই, বরং সেটিই বাতিলের কারণ।",
       },
       {
-        en: "This is not a gap in our reading. It is what the published document contains. A company that loses under this record cannot find out which of its papers failed, so it cannot argue with a decision it is never shown — and no one outside the evaluation committee can check whether the same test was applied to everyone in the room.",
-        bn: "এটি আমাদের পড়ার ঘাটতি নয়; প্রকাশিত নথিতে এটুকুই আছে। এই নথির ভিত্তিতে কোনো প্রতিষ্ঠান হারলে সে জানতেই পারে না তার কোন কাগজে ঘাটতি ছিল — যে সিদ্ধান্ত তাকে কখনো দেখানো হয় না, তা নিয়ে সে তর্কও করতে পারে না। আর মূল্যায়ন কমিটির বাইরের কেউ যাচাই করতে পারে না, ঘরের সবার ক্ষেত্রে একই মাপকাঠি ব্যবহার হয়েছে কি না।",
+        en: "And the bidder cannot see the number it is being measured against. The estimate is unpublished, so a company reading one of these notices is being told to land inside a corridor whose centre it is not allowed to know, and to lose the work if it lands outside. {{estimate.band_awarded|n}} of the {{estimate.band_notices|n}} went on to a contract, worth {{estimate.band_crore|cr}} between them. The middle one of those contracts is {{estimate.band_median_crore|cr}} — small work, priced against a secret.",
+        bn: "আর যে সংখ্যার সঙ্গে মেলানো হচ্ছে, দরদাতা সেটি দেখতেই পায় না। প্রাক্কলন অপ্রকাশিত, তাই এই বিজ্ঞপ্তিগুলোর একটি পড়ে একটি প্রতিষ্ঠানকে বলা হচ্ছে এমন একটি বলয়ের ভেতরে দর দিতে, যার কেন্দ্রটি তাকে জানতেই দেওয়া হয়নি — আর বাইরে পড়লে কাজটি হারাতে হবে। {{estimate.band_notices|n}}টির {{estimate.band_awarded|n}}টিতে শেষে চুক্তি হয়েছে, সব মিলিয়ে {{estimate.band_crore|cr}} টাকার। ওই চুক্তিগুলোর মাঝেরটি {{estimate.band_median_crore|cr}} টাকার — ছোট কাজ, দর গোপন হিসাবের বিপরীতে।",
+      },
+      {
+        en: "The clause is concentrated rather than general: {{estimate.band_agencies.0.n|n}} of the {{estimate.band_notices|n}} come from {{estimate.band_agencies.0.key|agency}} and {{estimate.band_agencies.1.n|n}} from {{estimate.band_agencies.1.key|agency}}. The other {{estimate.band_agencies_silent|n}} authorities in this set never use it.",
+        bn: "শর্তটি সর্বজনীন নয়, কেন্দ্রীভূত: {{estimate.band_notices|n}}টির {{estimate.band_agencies.0.n|n}}টি {{estimate.band_agencies.0.key|agency}}-এর, আর {{estimate.band_agencies.1.n|n}}টি {{estimate.band_agencies.1.key|agency}}-এর। এই সম্ভারের বাকি {{estimate.band_agencies_silent|n}}টি সংস্থা এটি কখনো ব্যবহার করেনি।",
       },
     ],
   },
 
-  /* ---- 2. how thin the field is, and where the money is ------------------ */
+  {
+    k: "finding",
+    tag: "unresolved",
+    h: {
+      en: "The two checks that would catch an overpriced contract both need the estimate, and neither can be run",
+      bn: "অতিরিক্ত দামে দেওয়া চুক্তি ধরার দুটি পরীক্ষাই প্রাক্কলনের ওপর দাঁড়ানো, আর দুটির একটিও চালানো যায় না",
+    },
+    p: [
+      {
+        en: "The standard document gives an authority the power to throw out every tender when the lowest evaluated price comes in above the official estimate. Testing that on this set means asking, for each contract, whether the price beat the estimate. We asked it {{estimate.lowest_price_test.tested|n}} times, once for every award, and got the same answer {{estimate.lowest_price_test.unrun|n}} times: the estimate is not there, so the question cannot be answered — not by us, and not by anyone outside the office that holds the figure.",
+        bn: "আদর্শ দস্তাবেজ কোনো সংস্থাকে ক্ষমতা দেয় সব দরপত্র বাতিল করার, যদি মূল্যায়িত সর্বনিম্ন দরটিও সরকারি প্রাক্কলনের চেয়ে বেশি হয়। এই সম্ভারে সেটি পরীক্ষা করা মানে প্রতিটি চুক্তির ক্ষেত্রে জিজ্ঞেস করা, দরটি প্রাক্কলনের নিচে ছিল কি না। আমরা {{estimate.lowest_price_test.tested|n}} বার — প্রতিটি চুক্তির জন্য একবার — সেটি জিজ্ঞেস করেছি, আর {{estimate.lowest_price_test.unrun|n}} বারই একই উত্তর পেয়েছি: প্রাক্কলনটি নেই, তাই প্রশ্নটির উত্তর দেওয়া সম্ভব নয় — আমাদের পক্ষেও নয়, যে দপ্তর সংখ্যাটি রাখে তার বাইরে আর কারও পক্ষেও নয়।",
+      },
+      {
+        en: "The second check is the one written for exactly the situation this set is full of. Where only one tender survives evaluation, the standard document does not allow the usual comparison between rival prices — there are none. It orders a direct comparison with the official estimate instead, and says the tender is non-responsive if the gap is more than {{estimate.std_pct|n}} per cent. {{estimate.single_tender_test.tested|n}} tenders here reached that position. On all {{estimate.single_tender_test.unrun|n}}, the comparison the rule requires cannot be verified by a reader, for the same reason.",
+        bn: "দ্বিতীয় পরীক্ষাটি ঠিক সেই পরিস্থিতির জন্যই লেখা, যা এই সম্ভারে ভরা। যেখানে মূল্যায়নে টেকে মাত্র একটি দরপত্র, সেখানে আদর্শ দস্তাবেজ প্রতিদ্বন্দ্বী দরের সঙ্গে সাধারণ তুলনার অনুমতি দেয় না — প্রতিদ্বন্দ্বী তো নেই। বদলে সেটি সরাসরি সরকারি প্রাক্কলনের সঙ্গে মেলানোর নির্দেশ দেয়, আর বলে, ফারাক {{estimate.std_pct|n}} শতাংশের বেশি হলে দরপত্রটি গ্রহণযোগ্য নয়। এখানে {{estimate.single_tender_test.tested|n}}টি দরপত্র ঠিক ওই অবস্থায় পৌঁছেছে। {{estimate.single_tender_test.unrun|n}}টিতেই নিয়মের চাওয়া তুলনাটি একজন পাঠকের পক্ষে যাচাই করা যায় না, একই কারণে।",
+      },
+      {
+        en: "Neither of those is a finding that a price was too high. It is a finding that the price cannot be checked. The rule exists, the duty to compare exists, and the number both of them turn on is held by one side only.",
+        bn: "এর কোনোটিই এই সিদ্ধান্ত নয় যে দাম বেশি ছিল। এটি এই সিদ্ধান্ত যে দামটি যাচাই করা যায় না। নিয়ম আছে, মেলানোর দায়িত্বও আছে, আর দুটিই যে সংখ্যার ওপর দাঁড়িয়ে সেটি কেবল এক পক্ষের হাতে।",
+      },
+    ],
+  },
 
-  { k: "case", id: "single_bid" },
+  {
+    k: "note",
+    title: { en: "Two things that weaken this section", bn: "এই অংশটি যে দুটি কারণে দুর্বল" },
+    p: [
+      {
+        en: "The first is a date. The standard document that sets a computed price floor from the actual spread of bids, and a {{estimate.std_pct|n}} per cent test against the estimate for a lone survivor, is December 2025 text. These notices run from long before that: on the year-granularity test, {{estimate.band_predates_standard|n}} of the {{estimate.band_notices|n}} were published before the machinery they depart from existed, and only {{estimate.band_standard_in_force|n}} were published when it was plausibly in force. Read the flat band as a departure from the current standard, then — not as a breach at the time it was written. What does not depend on the date is the arithmetic: a notice that rejects a price {{estimate.width_common|n}} per cent below the estimate caps the saving at {{estimate.width_common|n}} per cent, whatever rulebook is in force.",
+        bn: "প্রথমটি একটি তারিখ। যে আদর্শ দস্তাবেজ দরগুলোর প্রকৃত বিস্তার থেকে দামের একটি গণনাকৃত মেঝে ঠিক করে, আর একটিমাত্র দরপত্র টিকলে প্রাক্কলনের সঙ্গে {{estimate.std_pct|n}} শতাংশের পরীক্ষা দেয়, সেটি ২০২৫ সালের ডিসেম্বরের লেখা। এই বিজ্ঞপ্তিগুলো তার অনেক আগে থেকে: বছরের হিসাবে চলা পরীক্ষায় {{estimate.band_notices|n}}টির {{estimate.band_predates_standard|n}}টিই প্রকাশিত হয়েছে ওই কাঠামো তৈরি হওয়ার আগে, আর কেবল {{estimate.band_standard_in_force|n}}টি প্রকাশিত হয়েছে যখন সেটি সম্ভাব্যভাবে বলবৎ ছিল। তাই নির্দিষ্ট শতাংশের বলয়টিকে পড়ুন বর্তমান আদর্শ থেকে সরে যাওয়া হিসেবে — লেখার সময়ের নিয়ম ভাঙা হিসেবে নয়। তারিখের ওপর যা নির্ভর করে না, সেটি অঙ্ক: যে বিজ্ঞপ্তি প্রাক্কলনের {{estimate.width_common|n}} শতাংশ নিচের দর বাতিল করে, সেটি সাশ্রয়ের সীমা {{estimate.width_common|n}} শতাংশেই বেঁধে দেয় — যে নিয়মপুস্তিকাই বলবৎ থাকুক।",
+      },
+      {
+        en: "The second is what we have not claimed. The band notices did draw a thinner field — a middle of {{estimate.band_median_bids|n}} bidders against {{estimate.rest_median_bids|n}} for the {{estimate.rest_with_bids|n}} other tenders that published a bid count. We are not publishing that as an effect of the clause. {{estimate.band_agencies.0.n|n}} of the {{estimate.band_notices|n}} belong to a single authority, so the comparison is largely a comparison between two authorities and their different kinds of work, and it cannot be separated from either. The clause and its arithmetic need no comparison group; the bid counts are printed here so a reader can see what we saw and weigh it themselves.",
+        bn: "দ্বিতীয়টি হলো যা আমরা দাবি করিনি। বলয়যুক্ত বিজ্ঞপ্তিগুলোতে প্রতিযোগিতা সত্যিই পাতলা ছিল — মাঝের মান {{estimate.band_median_bids|n}}টি দরদাতা, আর দরদাতার সংখ্যা প্রকাশ করা বাকি {{estimate.rest_with_bids|n}}টি দরপত্রে {{estimate.rest_median_bids|n}}টি। আমরা এটিকে ওই শর্তের ফল হিসেবে প্রকাশ করছি না। {{estimate.band_notices|n}}টির {{estimate.band_agencies.0.n|n}}টিই একটিমাত্র সংস্থার, তাই তুলনাটি মূলত দুটি সংস্থা আর তাদের ভিন্ন ধরনের কাজের মধ্যে তুলনা হয়ে দাঁড়ায়, আর দুটির কোনোটি থেকেই এটিকে আলাদা করা যায় না। শর্ত আর তার অঙ্কের জন্য কোনো তুলনার দল দরকার নেই; দরদাতার সংখ্যাগুলো এখানে ছাপা হলো যাতে পাঠক আমরা যা দেখেছি তা দেখতে পান এবং নিজেই ওজন করতে পারেন।",
+      },
+    ],
+  },
 
-  { k: "h2", en: "Where the field is thinnest, the money is thickest", bn: "যেখানে প্রতিযোগিতা সবচেয়ে কম, টাকা সেখানেই সবচেয়ে বেশি" },
+  /* ---- 2. the bars, measured against the contract ------------------------ */
+
+  { k: "case", id: "high_bar" },
+
+  { k: "h2", en: "What the notices demanded, measured against the job", bn: "বিজ্ঞপ্তি যা চেয়েছে, কাজের মাপে মিলিয়ে" },
 
   {
     k: "p",
-    en: "Line the tenders up by how many companies bid and the shape is unremarkable: many tenders with a handful of bidders, a few with a crowd. What is remarkable is where the money sits inside that shape. {{money.thin_field_n|n}} tenders drew two bidders or fewer. Those {{money.thin_field_n|n}} carry {{money.thin_field_crore|cr}} between them — {{money.thin_field_share|pct}} of every taka in this set.",
-    bn: "কত দর জমা পড়েছে সেই অনুযায়ী দরপত্রগুলো সাজালে চেহারাটা অস্বাভাবিক কিছু নয়: বেশির ভাগ দরপত্রে হাতে গোনা কয়েকজন দরদাতা, অল্প কয়েকটিতে ভিড়। অস্বাভাবিক ব্যাপারটা হলো, ওই চেহারার ভেতরে টাকা কোথায় বসে আছে। {{money.thin_field_n|n}}টি দরপত্রে দরদাতা ছিল দুই বা তার কম। ওই {{money.thin_field_n|n}}টিতেই আছে {{money.thin_field_crore|cr}} — এই নথিগুলোর প্রতিটি টাকার {{money.thin_field_share|pct}}।",
+    en: "A price corridor limits what a company may offer. The conditions further up the same notice decide whether it may offer anything at all — cash it must be holding, a minimum yearly income, a similar job already finished. Three of those bars are printed as figures, so all three can be read as a multiple of the contract that followed.",
+    bn: "দামের বলয় ঠিক করে দেয় একটি প্রতিষ্ঠান কত দর দিতে পারবে। একই বিজ্ঞপ্তির উপরের দিকের শর্তগুলো ঠিক করে, সে আদৌ দর দিতে পারবে কি না — হাতে রাখতে হওয়া নগদ অর্থ, বছরে সর্বনিম্ন লেনদেন, আগে শেষ করা সমমানের কাজ। এই তিনটি মাপকাঠি সংখ্যায় ছাপা থাকে, তাই তিনটিকেই পরের চুক্তির কত গুণ, সেভাবে পড়া যায়।",
   },
 
-  { k: "fig", id: "competition" },
+  { k: "fig", id: "bars" },
 
   {
     k: "finding",
     tag: "derived",
     h: {
-      en: "Nearly half the money moved through tenders with two bidders or fewer",
-      bn: "প্রায় অর্ধেক টাকা গেছে দুই বা তার কম দরদাতার দরপত্রে",
+      en: "{{bars.financial_above_1x|n}} notices asked a bidder to hold more liquid money than the contract was worth",
+      bn: "{{bars.financial_above_1x|n}}টি বিজ্ঞপ্তিতে চুক্তির মূল্যের চেয়ে বেশি নগদ সম্পদ দাবি করা হয়েছে",
     },
     p: [
       {
-        en: "{{competition.key=SINGLE_BID.n|n}} tenders received a single bid, worth {{competition.key=SINGLE_BID.crore|cr}} — one company priced the job and nobody else did. A further {{competition.key=VERY_LOW.n|n}} received two or three, and those carry {{competition.key=VERY_LOW.crore|cr}}, or {{competition.key=VERY_LOW.share|pct}} of the total: more than any other group. The busiest group, the tenders with the most bidders, carries {{competition.key=HIGH.share|pct}}.",
-        bn: "{{competition.key=SINGLE_BID.n|n}}টি দরপত্রে একটিমাত্র দর জমা পড়েছে, মূল্য {{competition.key=SINGLE_BID.crore|cr}} — একটি প্রতিষ্ঠান দর দিয়েছে, আর কেউ দেয়নি। আরও {{competition.key=VERY_LOW.n|n}}টিতে দুই বা তিনটি দর, আর সেগুলোতে আছে {{competition.key=VERY_LOW.crore|cr}}, অর্থাৎ মোটের {{competition.key=VERY_LOW.share|pct}} — অন্য যেকোনো দলের চেয়ে বেশি। সবচেয়ে ভিড়ের দলটিতে, যেখানে দরদাতা সবচেয়ে বেশি, আছে {{competition.key=HIGH.share|pct}}।",
+        en: "Of the {{bars.financial.n|n}} tenders where both the money demanded and the contract value are published, the middle demand is {{bars.financial.median|x2}} the contract value. {{bars.financial_above_2x|n}} ask for more than twice the contract, and {{bars.financial_above_5x|n}} for more than five times it. A company that could do the work but cannot show that much money in the bank is not eligible to bid.",
+        bn: "যে {{bars.financial.n|n}}টি দরপত্রে চাওয়া অর্থ ও চুক্তিমূল্য দুটিই প্রকাশিত, সেখানে দাবির মাঝের মান চুক্তিমূল্যের {{bars.financial.median|x2}}। {{bars.financial_above_2x|n}}টিতে চুক্তির দ্বিগুণের বেশি চাওয়া হয়েছে, {{bars.financial_above_5x|n}}টিতে পাঁচ গুণের বেশি। যে প্রতিষ্ঠান কাজটি করতে পারত, কিন্তু ব্যাংকে ওই পরিমাণ অর্থ দেখাতে পারে না, সে দর দেওয়ার যোগ্যই নয়।",
       },
       {
-        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing — and the reason it matters here is the section above: because no rejection is ever explained, nothing in the published record lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
-        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ উপরের অংশটির কারণেই: বাতিলের কারণ যেহেতু কখনো ব্যাখ্যা করা হয় না, প্রকাশিত নথির কিছুই বলে দেয় না — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
-      },
-    ],
-  },
-
-  {
-    k: "finding",
-    tag: "derived",
-    h: {
-      en: "In {{field.single_responsive|n}} tenders, exactly one bid survived the evaluation",
-      bn: "{{field.single_responsive|n}}টি দরপত্রে মূল্যায়ন পেরিয়েছে ঠিক একটি দর",
-    },
-    p: [
-      {
-        en: "That is {{field.single_responsive_pct|pct}} of the tenders that publish a bid count. In {{field.half_lost|n}} tenders more than half the bids were set aside. In {{field.mass_disqualified|n}}, three or more went at once. And in {{field.many_one|n}} tenders — worth {{field.many_one_crore|cr}} — four or more companies bid and exactly one was still standing at the end.",
-        bn: "দরদাতার সংখ্যা প্রকাশিত দরপত্রগুলোর এটি {{field.single_responsive_pct|pct}}। {{field.half_lost|n}}টি দরপত্রে অর্ধেকের বেশি দর সরিয়ে রাখা হয়েছে। {{field.mass_disqualified|n}}টিতে একসঙ্গে তিন বা তার বেশি দর বাদ গেছে। আর {{field.many_one|n}}টি দরপত্রে — মূল্য {{field.many_one_crore|cr}} — চার বা তার বেশি প্রতিষ্ঠান দর দিয়েছিল, শেষে টিকে ছিল ঠিক একটি।",
+        en: "The deposit a bidder has to put up alongside the bid — the tender security — is, by contrast, almost always inside the range the national rules allow: {{bars.security_in_band|n}} of {{bars.security.n|n}} — {{bars.security_in_band_pct|pct}} — fall between half a per cent and five per cent of the contract value. Where a national rule is specific and easy to check, it is largely followed, and that deserves saying as plainly as the failures.",
+        bn: "অন্যদিকে দর জমা দেওয়ার সময় যে জামানত রাখতে হয় — দরপত্র জামানত — তা প্রায় সর্বত্রই জাতীয় বিধির অনুমোদিত সীমার ভেতরে: {{bars.security.n|n}}টির {{bars.security_in_band|n}}টি — {{bars.security_in_band_pct|pct}} — চুক্তিমূল্যের অর্ধ শতাংশ থেকে পাঁচ শতাংশের মধ্যে। যেখানে জাতীয় বিধি নির্দিষ্ট ও সহজে যাচাইযোগ্য, সেখানে তা মোটের ওপর মানা হয়েছে — ব্যর্থতার মতো এটিও স্পষ্ট করে বলা দরকার।",
       },
     ],
   },
@@ -1876,14 +1912,80 @@ export const STORY = [
     ],
   },
 
-  /* ---- 4. the theory that did not hold ----------------------------------- */
+  /* ---- 4. the same sentences, over and over ------------------------------- */
+
+  { k: "case", id: "repeat_clause" },
+
+  { k: "h2", en: "The same sentences, over and over", bn: "একই বাক্য, বারবার" },
+
+  {
+    k: "p",
+    en: "Eligibility wording is not written fresh for each job. {{reuse.tenders|n}} tenders share at least one qualification sentence word for word with another tender here, and {{reuse.ten_or_more|n}} of them use a sentence that turns up in ten or more notices. The most-reused sentence of all appears in {{reuse.top.0.n|n}}.",
+    bn: "যোগ্যতার শর্ত প্রতিটি কাজের জন্য নতুন করে লেখা হয় না। এখানকার {{reuse.tenders|n}}টি দরপত্রে অন্তত একটি যোগ্যতার বাক্য অন্য দরপত্রের সঙ্গে হুবহু মেলে, আর তার {{reuse.ten_or_more|n}}টিতে এমন বাক্য আছে যা দশ বা তার বেশি বিজ্ঞপ্তিতে দেখা যায়। সবচেয়ে বেশিবার ব্যবহৃত বাক্যটি আছে {{reuse.top.0.n|n}}টিতে।",
+  },
+
+  {
+    k: "p",
+    en: "Reuse on its own is ordinary, and often sensible — a standard clause is a standard clause. It becomes a question only when the sentence being copied is the unusually specific one. That is what the clause explorer is for, in Explore the data at the foot of this page: it lists every shared sentence with the tenders that carry it.",
+    bn: "পুনর্ব্যবহার নিজে থেকে স্বাভাবিক, প্রায়ই যুক্তিসংগতও — আদর্শ শর্ত আদর্শ শর্তই। প্রশ্ন ওঠে তখনই, যখন নকল হওয়া বাক্যটিই অস্বাভাবিকভাবে নির্দিষ্ট। শর্ত-অনুসন্ধানী এ কাজেই — এই পৃষ্ঠার নিচে ‘ডেটা ঘেঁটে দেখুন’ অংশে: সেখানে প্রতিটি ভাগ করা বাক্যের সঙ্গে সেসব দরপত্রের তালিকা আছে যেগুলোতে সেটি রয়েছে।",
+  },
+
+  /* ---- 5. how thin the field is, and where the money is ------------------ */
+
+  { k: "case", id: "single_bid" },
+
+  { k: "h2", en: "Where the field is thinnest, the money is thickest", bn: "যেখানে প্রতিযোগিতা সবচেয়ে কম, টাকা সেখানেই সবচেয়ে বেশি" },
+
+  {
+    k: "p",
+    en: "Line the tenders up by how many companies bid and the shape is unremarkable: many tenders with a handful of bidders, a few with a crowd. What is remarkable is where the money sits inside that shape. {{money.thin_field_n|n}} tenders drew two bidders or fewer. Those {{money.thin_field_n|n}} carry {{money.thin_field_crore|cr}} between them — {{money.thin_field_share|pct}} of every taka in this set.",
+    bn: "কত দর জমা পড়েছে সেই অনুযায়ী দরপত্রগুলো সাজালে চেহারাটা অস্বাভাবিক কিছু নয়: বেশির ভাগ দরপত্রে হাতে গোনা কয়েকজন দরদাতা, অল্প কয়েকটিতে ভিড়। অস্বাভাবিক ব্যাপারটা হলো, ওই চেহারার ভেতরে টাকা কোথায় বসে আছে। {{money.thin_field_n|n}}টি দরপত্রে দরদাতা ছিল দুই বা তার কম। ওই {{money.thin_field_n|n}}টিতেই আছে {{money.thin_field_crore|cr}} — এই নথিগুলোর প্রতিটি টাকার {{money.thin_field_share|pct}}।",
+  },
+
+  { k: "fig", id: "competition" },
+
+  {
+    k: "finding",
+    tag: "derived",
+    h: {
+      en: "Nearly half the money moved through tenders with two bidders or fewer",
+      bn: "প্রায় অর্ধেক টাকা গেছে দুই বা তার কম দরদাতার দরপত্রে",
+    },
+    p: [
+      {
+        en: "{{competition.key=SINGLE_BID.n|n}} tenders received a single bid, worth {{competition.key=SINGLE_BID.crore|cr}} — one company priced the job and nobody else did. A further {{competition.key=VERY_LOW.n|n}} received two or three, and those carry {{competition.key=VERY_LOW.crore|cr}}, or {{competition.key=VERY_LOW.share|pct}} of the total: more than any other group. The busiest group, the tenders with the most bidders, carries {{competition.key=HIGH.share|pct}}.",
+        bn: "{{competition.key=SINGLE_BID.n|n}}টি দরপত্রে একটিমাত্র দর জমা পড়েছে, মূল্য {{competition.key=SINGLE_BID.crore|cr}} — একটি প্রতিষ্ঠান দর দিয়েছে, আর কেউ দেয়নি। আরও {{competition.key=VERY_LOW.n|n}}টিতে দুই বা তিনটি দর, আর সেগুলোতে আছে {{competition.key=VERY_LOW.crore|cr}}, অর্থাৎ মোটের {{competition.key=VERY_LOW.share|pct}} — অন্য যেকোনো দলের চেয়ে বেশি। সবচেয়ে ভিড়ের দলটিতে, যেখানে দরদাতা সবচেয়ে বেশি, আছে {{competition.key=HIGH.share|pct}}।",
+      },
+      {
+        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing — and the reason it matters here is what comes two sections on: because no rejection is ever explained, nothing in the published record lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
+        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ তার পরের অংশগুলোর কারণে: বাতিলের কারণ যেহেতু কখনো ব্যাখ্যা করা হয় না, প্রকাশিত নথির কিছুই বলে দেয় না — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
+      },
+    ],
+  },
+
+  {
+    k: "finding",
+    tag: "derived",
+    h: {
+      en: "In {{field.single_responsive|n}} tenders, exactly one bid survived the evaluation",
+      bn: "{{field.single_responsive|n}}টি দরপত্রে মূল্যায়ন পেরিয়েছে ঠিক একটি দর",
+    },
+    p: [
+      {
+        en: "That is {{field.single_responsive_pct|pct}} of the tenders that publish a bid count. In {{field.half_lost|n}} tenders more than half the bids were set aside. In {{field.mass_disqualified|n}}, three or more went at once. And in {{field.many_one|n}} tenders — worth {{field.many_one_crore|cr}} — four or more companies bid and exactly one was still standing at the end.",
+        bn: "দরদাতার সংখ্যা প্রকাশিত দরপত্রগুলোর এটি {{field.single_responsive_pct|pct}}। {{field.half_lost|n}}টি দরপত্রে অর্ধেকের বেশি দর সরিয়ে রাখা হয়েছে। {{field.mass_disqualified|n}}টিতে একসঙ্গে তিন বা তার বেশি দর বাদ গেছে। আর {{field.many_one|n}}টি দরপত্রে — মূল্য {{field.many_one_crore|cr}} — চার বা তার বেশি প্রতিষ্ঠান দর দিয়েছিল, শেষে টিকে ছিল ঠিক একটি।",
+      },
+    ],
+  },
+
+  /* ---- 6. the theory that did not hold ----------------------------------- */
 
   { k: "h2", en: "The obvious theory does not hold, and we are publishing that", bn: "সহজ অনুমানটি মেলেনি, এবং সেটিও আমরা প্রকাশ করছি" },
 
   {
     k: "p",
-    en: "The usual suspicion about a tailored condition runs like this: an oddly specific requirement keeps rival companies away, few bids arrive, and the company the clause suits wins. We gave every notice that publishes its criteria a restrictiveness score of our own making — a tally of how demanding and how narrow its conditions are — and compared it with the number of bids that arrived. The relationship runs the wrong way.",
-    bn: "শর্ত-সাজানো নিয়ে প্রচলিত সন্দেহটি এমন: অস্বাভাবিকভাবে নির্দিষ্ট একটি শর্ত প্রতিদ্বন্দ্বীদের দূরে রাখে, ফলে অল্প দর জমা পড়ে, আর যে প্রতিষ্ঠানের সঙ্গে শর্তটি মেলে তারাই কাজ পায়। শর্ত প্রকাশ করা প্রতিটি বিজ্ঞপ্তিকে আমরা নিজেরা একটি কঠোরতার নম্বর দিয়েছি — শর্তগুলো কতটা কঠিন ও কতটা সংকীর্ণ, তার হিসাব — আর জমা পড়া দরের সংখ্যার সঙ্গে মিলিয়ে দেখেছি। সম্পর্কটি উল্টো দিকে চলছে।",
+    en: "The corridor at the top of this article raises the cost of the work by arithmetic: it forbids the cheap bid. There is a second and more familiar theory about how restriction raises cost, and it works through the number of bidders — an oddly specific requirement keeps rival companies away, few bids arrive, and the company the clause suits wins. That second theory we can test here, and it fails. We gave every notice that publishes its criteria a restrictiveness score of our own making — a tally of how demanding and how narrow its conditions are — and compared it with the number of bids that arrived. The relationship runs the wrong way.",
+    bn: "এই লেখার শুরুর বলয়টি কাজের খরচ বাড়ায় অঙ্কের নিয়মে: সস্তা দরটিকে সে নিষিদ্ধ করে। সীমাবদ্ধতা কীভাবে খরচ বাড়ায়, তার আরেকটি বেশি পরিচিত ব্যাখ্যা আছে — সেটি চলে দরদাতার সংখ্যা ধরে: অস্বাভাবিকভাবে নির্দিষ্ট একটি শর্ত প্রতিদ্বন্দ্বীদের দূরে রাখে, ফলে অল্প দর জমা পড়ে, আর যে প্রতিষ্ঠানের সঙ্গে শর্তটি মেলে তারাই কাজ পায়। এই দ্বিতীয় ব্যাখ্যাটি এখানে পরীক্ষা করা যায় — আর তা মেলেনি। শর্ত প্রকাশ করা প্রতিটি বিজ্ঞপ্তিকে আমরা নিজেরা একটি কঠোরতার নম্বর দিয়েছি — শর্তগুলো কতটা কঠিন ও কতটা সংকীর্ণ, তার হিসাব — আর জমা পড়া দরের সংখ্যার সঙ্গে মিলিয়ে দেখেছি। সম্পর্কটি উল্টো দিকে চলছে।",
   },
 
   { k: "fig", id: "restriction" },
@@ -1911,9 +2013,46 @@ export const STORY = [
     ],
   },
 
-  { k: "case", id: "peer_gap" },
+  /* ---- 7. the field collapses, and what the file will not show ------------- */
 
-  /* ---- 5. the documents that say it in their own words -------------------- */
+  { k: "case", id: "all_rejected" },
+
+  /* The price sections above turn on a figure the reader is not shown. This one
+     is the same problem one step later in the process: the decision that applies
+     those conditions is not shown either. The subhead names that consequence
+     rather than the count, because the count is in the finding underneath. */
+  { k: "h2", en: "The part of the file no one outside can read", bn: "ফাইলের যে অংশ বাইরের কেউ পড়তে পারে না" },
+
+  {
+    k: "p",
+    en: "So far the missing figure has been the estimate. Here it is the decision. Across the {{counts.with_bid_counts|n}} tenders that publish a bid count, {{field.submitted|n}} bids were submitted. {{field.responsive|n}} of them were ruled responsive — the official word for a bid the committee accepts as meeting the notice's own conditions. The other {{field.lost|n}} were set aside, across {{field.tenders_losing_bids|n}} tenders. Behind each of those was a company that prepared a bid and lost it.",
+    bn: "এ পর্যন্ত অনুপস্থিত সংখ্যাটি ছিল প্রাক্কলন। এখানে অনুপস্থিত সিদ্ধান্তটি। যে {{counts.with_bid_counts|n}}টি দরপত্রে দরদাতার সংখ্যা প্রকাশিত হয়েছে, সেগুলোতে জমা পড়েছিল {{field.submitted|n}}টি দর। তার {{field.responsive|n}}টিকে ‘গ্রহণযোগ্য’ ধরা হয়েছে — কমিটি যে দরকে বিজ্ঞপ্তির নিজের শর্ত মেনেছে বলে মানে, দরপত্রের ভাষায় তাকেই বলা হয় গ্রহণযোগ্য। বাকি {{field.lost|n}}টি সরিয়ে রাখা হয়েছে, {{field.tenders_losing_bids|n}}টি দরপত্রজুড়ে। ওই প্রতিটির পেছনে একটি প্রতিষ্ঠান ছিল, যারা দর তৈরি করেছিল আর হেরেছিল।",
+  },
+
+  { k: "fig", id: "funnel" },
+
+  {
+    k: "finding",
+    tag: "fact",
+    h: {
+      en: "In not one case does any document in this set say why a bid was rejected",
+      bn: "এই নথিগুলোর একটি কাগজেও লেখা নেই কেন কোনো দর বাতিল হয়েছে",
+    },
+    p: [
+      {
+        en: "The contract award notices carry a field for the reason a bid was found non-responsive. In {{field.rejected_aggregate_rows|n}} tenders where bids were rejected, that field is filled in {{field.reasons_published|n}} times. The number of losing bidders named anywhere in these {{counts.pdfs|n}} files is {{field.losers_named|n}}. The number of losing prices published is {{field.losing_amounts_published|n}}.",
+        bn: "চুক্তি প্রদানের বিজ্ঞপ্তিতে দর অগ্রহণযোগ্য হওয়ার কারণ লেখার ঘর আছে। যে {{field.rejected_aggregate_rows|n}}টি দরপত্রে দর বাতিল হয়েছে, সেখানে ওই ঘরটি পূরণ করা হয়েছে {{field.reasons_published|n}} বার। এই {{counts.pdfs|n}}টি ফাইলের কোথাও নাম লেখা আছে এমন পরাজিত দরদাতার সংখ্যা {{field.losers_named|n}}। প্রকাশিত পরাজিত দরের সংখ্যা {{field.losing_amounts_published|n}}।",
+      },
+      {
+        en: "This is not a gap in our reading. It is what the published document contains. A company that loses under this record cannot find out which of its papers failed, so it cannot argue with a decision it is never shown — and no one outside the evaluation committee can check whether the same test was applied to everyone in the room.",
+        bn: "এটি আমাদের পড়ার ঘাটতি নয়; প্রকাশিত নথিতে এটুকুই আছে। এই নথির ভিত্তিতে কোনো প্রতিষ্ঠান হারলে সে জানতেই পারে না তার কোন কাগজে ঘাটতি ছিল — যে সিদ্ধান্ত তাকে কখনো দেখানো হয় না, তা নিয়ে সে তর্কও করতে পারে না। আর মূল্যায়ন কমিটির বাইরের কেউ যাচাই করতে পারে না, ঘরের সবার ক্ষেত্রে একই মাপকাঠি ব্যবহার হয়েছে কি না।",
+      },
+    ],
+  },
+
+  /* ---- 8. the documents that say it in their own words -------------------- */
+
+  { k: "case", id: "peer_gap" },
 
   { k: "h2", en: "Four documents that speak for themselves", bn: "চারটি নথি, যেগুলো নিজেরাই কথা বলে" },
 
@@ -1932,82 +2071,6 @@ export const STORY = [
       {
         en: "The first of the four is the only document in this entire set where a government office says, in its own words, that it adjusted the qualification criteria with a particular kind of bidder in mind. It does not name a company. It does not say who asked for the change. Two bids arrived and one was ruled responsive. We quote it because it is on the public record — and we stop where the page stops.",
         bn: "চারটির প্রথমটি এই পুরো সংগ্রহে একমাত্র নথি, যেখানে একটি সরকারি অফিস নিজের ভাষাতেই লিখেছে যে নির্দিষ্ট ধরনের দরদাতার কথা মাথায় রেখে যোগ্যতার শর্ত সমন্বয় করা হয়েছে। এতে কোনো প্রতিষ্ঠানের নাম নেই। কে বদলাতে বলেছে, তা-ও নেই। দুটি দর জমা পড়েছিল, একটি গ্রহণযোগ্য বিবেচিত হয়। এটি উদ্ধৃত করছি কারণ এটি সরকারি নথিতেই আছে — আর কাগজ যেখানে থামে, আমরাও সেখানেই থামছি।",
-      },
-    ],
-  },
-
-  /* ---- 6. the bars, measured against the contract ------------------------ */
-
-  { k: "case", id: "high_bar" },
-
-  { k: "h2", en: "What the notices demanded, measured against the job", bn: "বিজ্ঞপ্তি যা চেয়েছে, কাজের মাপে মিলিয়ে" },
-
-  {
-    k: "p",
-    en: "Where a notice does print its conditions, they can be held up against the contract that followed. A demand for cash in hand, for a minimum yearly income, or for a similar job already finished, set beside what the winning contract turned out to be worth — and read as how many times over.",
-    bn: "যেসব বিজ্ঞপ্তিতে শর্ত লেখা আছে, সেগুলো পরের চুক্তির সঙ্গে মিলিয়ে দেখা যায়। হাতে নগদ অর্থ, বছরে সর্বনিম্ন লেনদেন, বা আগে শেষ করা সমমানের কাজের দাবি — বিজয়ী চুক্তির প্রকৃত মূল্যের পাশে রেখে দেখা যায়, দাবিটি তার কত গুণ।",
-  },
-
-  { k: "fig", id: "bars" },
-
-  {
-    k: "finding",
-    tag: "derived",
-    h: {
-      en: "{{bars.financial_above_1x|n}} notices asked a bidder to hold more liquid money than the contract was worth",
-      bn: "{{bars.financial_above_1x|n}}টি বিজ্ঞপ্তিতে চুক্তির মূল্যের চেয়ে বেশি নগদ সম্পদ দাবি করা হয়েছে",
-    },
-    p: [
-      {
-        en: "Of the {{bars.financial.n|n}} tenders where both the money demanded and the contract value are published, the middle demand is {{bars.financial.median|x2}} the contract value. {{bars.financial_above_2x|n}} ask for more than twice the contract, and {{bars.financial_above_5x|n}} for more than five times it. A company that could do the work but cannot show that much money in the bank is not eligible to bid.",
-        bn: "যে {{bars.financial.n|n}}টি দরপত্রে চাওয়া অর্থ ও চুক্তিমূল্য দুটিই প্রকাশিত, সেখানে দাবির মাঝের মান চুক্তিমূল্যের {{bars.financial.median|x2}}। {{bars.financial_above_2x|n}}টিতে চুক্তির দ্বিগুণের বেশি চাওয়া হয়েছে, {{bars.financial_above_5x|n}}টিতে পাঁচ গুণের বেশি। যে প্রতিষ্ঠান কাজটি করতে পারত, কিন্তু ব্যাংকে ওই পরিমাণ অর্থ দেখাতে পারে না, সে দর দেওয়ার যোগ্যই নয়।",
-      },
-      {
-        en: "The deposit a bidder has to put up alongside the bid — the tender security — is, by contrast, almost always inside the range the national rules allow: {{bars.security_in_band|n}} of {{bars.security.n|n}} — {{bars.security_in_band_pct|pct}} — fall between half a per cent and five per cent of the contract value. Where a national rule is specific and easy to check, it is largely followed, and that deserves saying as plainly as the failures.",
-        bn: "অন্যদিকে দর জমা দেওয়ার সময় যে জামানত রাখতে হয় — দরপত্র জামানত — তা প্রায় সর্বত্রই জাতীয় বিধির অনুমোদিত সীমার ভেতরে: {{bars.security.n|n}}টির {{bars.security_in_band|n}}টি — {{bars.security_in_band_pct|pct}} — চুক্তিমূল্যের অর্ধ শতাংশ থেকে পাঁচ শতাংশের মধ্যে। যেখানে জাতীয় বিধি নির্দিষ্ট ও সহজে যাচাইযোগ্য, সেখানে তা মোটের ওপর মানা হয়েছে — ব্যর্থতার মতো এটিও স্পষ্ট করে বলা দরকার।",
-      },
-    ],
-  },
-
-  /* ---- 7. the same sentences, over and over ------------------------------- */
-
-  { k: "case", id: "repeat_clause" },
-
-  { k: "h2", en: "The same sentences, over and over", bn: "একই বাক্য, বারবার" },
-
-  {
-    k: "p",
-    en: "Eligibility wording is not written fresh for each job. {{reuse.tenders|n}} tenders share at least one qualification sentence word for word with another tender here, and {{reuse.ten_or_more|n}} of them use a sentence that turns up in ten or more notices. The most-reused sentence of all appears in {{reuse.top.0.n|n}}.",
-    bn: "যোগ্যতার শর্ত প্রতিটি কাজের জন্য নতুন করে লেখা হয় না। এখানকার {{reuse.tenders|n}}টি দরপত্রে অন্তত একটি যোগ্যতার বাক্য অন্য দরপত্রের সঙ্গে হুবহু মেলে, আর তার {{reuse.ten_or_more|n}}টিতে এমন বাক্য আছে যা দশ বা তার বেশি বিজ্ঞপ্তিতে দেখা যায়। সবচেয়ে বেশিবার ব্যবহৃত বাক্যটি আছে {{reuse.top.0.n|n}}টিতে।",
-  },
-
-  {
-    k: "p",
-    en: "Reuse on its own is ordinary, and often sensible — a standard clause is a standard clause. It becomes a question only when the sentence being copied is the unusually specific one. That is what the clause explorer is for, in Explore the data at the foot of this page: it lists every shared sentence with the tenders that carry it.",
-    bn: "পুনর্ব্যবহার নিজে থেকে স্বাভাবিক, প্রায়ই যুক্তিসংগতও — আদর্শ শর্ত আদর্শ শর্তই। প্রশ্ন ওঠে তখনই, যখন নকল হওয়া বাক্যটিই অস্বাভাবিকভাবে নির্দিষ্ট। শর্ত-অনুসন্ধানী এ কাজেই — এই পৃষ্ঠার নিচে ‘ডেটা ঘেঁটে দেখুন’ অংশে: সেখানে প্রতিটি ভাগ করা বাক্যের সঙ্গে সেসব দরপত্রের তালিকা আছে যেগুলোতে সেটি রয়েছে।",
-  },
-
-  /* ---- 8. a band around a number nobody published ------------------------- */
-
-  { k: "case", id: "price_band" },
-
-  { k: "h2", en: "Priced against a figure that was never published", bn: "যে সংখ্যাটি কখনো প্রকাশ হয়নি, দর তার বিপরীতে" },
-
-  {
-    k: "finding",
-    tag: "fact",
-    h: {
-      en: "Some notices reject any price more than 10% away from an estimate they never publish",
-      bn: "কিছু বিজ্ঞপ্তিতে এমন প্রাক্কলনের ১০% বাইরের যেকোনো দর বাতিল, যা কখনো প্রকাশ করা হয় না",
-    },
-    p: [
-      {
-        en: "The official cost estimate — the government's own view of what a job should cost — is absent from every one of these {{counts.tenders|n}} tenders. Where a notice also carries a clause rejecting any bid more than ten per cent above or below that estimate, a company is being asked to guess a number it is not allowed to see, and to lose the work if it guesses wrong. {{qa.retendered|n}} tenders here were put out a second time.",
-        bn: "সরকারি প্রাক্কলিত ব্যয় — কাজটির খরচ কত হওয়া উচিত বলে সরকার নিজে মনে করে — এই {{counts.tenders|n}}টি দরপত্রের প্রতিটিতেই অনুপস্থিত। যেসব বিজ্ঞপ্তিতে আবার শর্ত আছে যে ওই প্রাক্কলনের দশ শতাংশ উপরে বা নিচের যেকোনো দর বাতিল, সেখানে একটি প্রতিষ্ঠানকে এমন একটি সংখ্যা অনুমান করতে বলা হচ্ছে যা তাকে দেখতেই দেওয়া হয়নি — আর অনুমান ভুল হলে কাজটি হারাতে হবে। এখানকার {{qa.retendered|n}}টি দরপত্র দ্বিতীয়বার আহ্বান করা হয়েছে।",
-      },
-      {
-        en: "The clause is concentrated, not general: of the {{violations.rules.code=R05.deviations|n}} notices carrying it, {{violations.rules.code=R05.by_agency.0.n|n}} come from {{violations.rules.code=R05.by_agency.0.key|agency}} and {{violations.rules.code=R05.by_agency.1.n|n}} from {{violations.rules.code=R05.by_agency.1.key|agency}}. The other four authorities in this set never use it.",
-        bn: "শর্তটি সর্বজনীন নয়, কেন্দ্রীভূত: এটি বহন করা {{violations.rules.code=R05.deviations|n}}টি বিজ্ঞপ্তির {{violations.rules.code=R05.by_agency.0.n|n}}টি {{violations.rules.code=R05.by_agency.0.key|agency}}-এর, আর {{violations.rules.code=R05.by_agency.1.n|n}}টি {{violations.rules.code=R05.by_agency.1.key|agency}}-এর। এই সম্ভারের বাকি চারটি সংস্থা এটি কখনো ব্যবহার করেনি।",
       },
     ],
   },
@@ -2212,8 +2275,8 @@ export const STORY = [
     h: { en: "The official cost estimate", bn: "সরকারি প্রাক্কলিত ব্যয়" },
     p: [
       {
-        en: "Before a tender goes out, the office works out what the job ought to cost. That figure is the yardstick a price is judged against, high or low — and it appears in none of these {{counts.tenders|n}} tenders. We can tell you what was paid. On the evidence in this folder we cannot tell you what it should have been, so no price in this investigation is called excessive or suspiciously low.",
-        bn: "দরপত্র ছাড়ার আগে অফিস হিসাব করে কাজটির খরচ কত হওয়া উচিত। ওই সংখ্যাটিই সেই মাপকাঠি, যার বিপরীতে কোনো দর বেশি না কম তা বিচার করা হয় — আর এই {{counts.tenders|n}}টি দরপত্রের একটিতেও তা নেই। কত টাকা দেওয়া হয়েছে, তা আমরা বলতে পারি। এই ফোল্ডারের প্রমাণ দিয়ে কত হওয়া উচিত ছিল তা বলতে পারি না, তাই এই অনুসন্ধানে কোনো দরকেই অতিরিক্ত বা সন্দেহজনকভাবে কম বলা হয়নি।",
+        en: "This is the limit the top of the article is about, restated as a limit on us. The estimate appears in none of these {{counts.tenders|n}} tenders, so we can tell you what was paid and we cannot tell you what it should have been. No price anywhere in this investigation is called excessive, inflated or suspiciously low, and none of the {{counts.awarded|n}} contracts is presented as good or bad value. What we report is that the checks the rulebook builds on that figure — {{estimate.lowest_price_test.tested|n}} of them on the price and {{estimate.single_tender_test.tested|n}} on the lone survivor — cannot be completed by anyone reading the published record.",
+        bn: "লেখার শুরুতে যে সীমাটির কথা, এটি সেটিই — এবার আমাদের নিজেদের সীমা হিসেবে। এই {{counts.tenders|n}}টি দরপত্রের একটিতেও প্রাক্কলনটি নেই, তাই কত টাকা দেওয়া হয়েছে তা আমরা বলতে পারি, কত হওয়া উচিত ছিল তা পারি না। এই অনুসন্ধানের কোথাও কোনো দরকে অতিরিক্ত, বাড়ানো বা সন্দেহজনকভাবে কম বলা হয়নি, আর {{counts.awarded|n}}টি চুক্তির কোনোটিকেই সুলভ বা অসুলভ বলে দেখানো হয়নি। আমরা যা জানাচ্ছি তা হলো, নিয়মপুস্তিকা ওই সংখ্যাটির ওপর যে যাচাইগুলো দাঁড় করিয়েছে — দামের ক্ষেত্রে {{estimate.lowest_price_test.tested|n}}টি, একমাত্র টিকে থাকা দরের ক্ষেত্রে {{estimate.single_tender_test.tested|n}}টি — প্রকাশিত নথি পড়ে কারও পক্ষেই সেগুলো শেষ করা সম্ভব নয়।",
       },
     ],
   },

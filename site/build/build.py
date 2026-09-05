@@ -658,6 +658,97 @@ def build_rules():
     return rules
 
 
+# ------------------------------------------------- the price nobody can check against
+# The official cost estimate is the figure a procuring entity works out before it
+# advertises: what the job ought to cost. Three of the eighteen rules tested here
+# decide something by comparing a price to it - whether the winning price was the
+# lowest evaluated one, whether a lone surviving tender was reasonable, and whether
+# a quoted rate fell inside a fixed corridor. The estimate is printed in none of
+# the documents, so this block records, per rule, how many tests turned on it and
+# how many could therefore be run at all.
+#
+# The corridor is the one place the estimate does operative work on the page. Where
+# a notice declares that any rate more than ten per cent above or below the
+# estimate is non-responsive, the percentage is printed in the notice's own
+# sentence, so the figure is read out of that sentence rather than assumed.
+
+BAND_PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:\(\s*[A-Za-z]+\s*\)\s*)?\s*(?:%|percent|per cent)",
+                      re.I)
+
+
+def build_estimate():
+    by_code = collections.defaultdict(list)
+    for d in DEV:
+        by_code[d["rule_code"]].append(d)
+
+    def turns_on(code, result):
+        """One rule that needs the estimate: rows tested, and rows the named
+           result was recorded on. The two are equal wherever the estimate is
+           what was missing, which is the point being reported."""
+        rows = by_code.get(code, [])
+        return {"code": code, "tested": len(rows),
+                "unrun": sum(1 for d in rows if d["test_result"] == result)}
+
+    band = [r for r in MASTER if yes(r, "price_band_nonresponsive_clause")]
+    band_won = [r for r in band if num(r, "contract_value_bdt")]
+    band_bids = [num(r, "total_bids_received") for r in band]
+    rest_bids = [num(r, "total_bids_received") for r in MASTER
+                 if not yes(r, "price_band_nonresponsive_clause")]
+
+    # the corridor width as each notice prints it, not as we assume it
+    widths = collections.Counter()
+    both = 0
+    for r in band:
+        ex = txt(r, "evidence_excerpt_price_band")
+        m = BAND_PCT.search(ex)
+        widths[m.group(1) if m else "NOT_PRINTED_IN_EXCERPT"] += 1
+        # a corridor that names both directions rejects the cheap tender as well
+        # as the dear one; that is what caps the saving, so count it separately
+        if re.search(r"below|less|lower", ex, re.I) and \
+           re.search(r"above|more than|exceed|over", ex, re.I):
+            both += 1
+
+    # what the standard document itself allows, read out of its own sentence
+    q = next((r.get("quote", "") for r in RULES if r.get("code") == "R11"), "")
+    m = re.search(r"(\d+)\s*%", q)
+    std = m.group(1) if m else None
+
+    # ITT 50.3-50.6 is December 2025 text and these notices run from 2015; the
+    # engine's year-granularity timing test says how many were published before
+    # the machinery they depart from existed
+    timing = collections.Counter(d["instrument_timing_vs_this_tender"]
+                                 for d in by_code.get("R05", []))
+    return {
+        "lowest_price_test": turns_on("R14", "NOT_TESTABLE_DATA_ABSENT"),
+        "single_tender_test": turns_on("R11", "MANDATED_TEST_UNVERIFIABLE"),
+        "band_rule": "R05",
+        "band_notices": len(band),
+        "band_pct": pct(len(band), len(MASTER)),
+        "band_awarded": len(band_won),
+        "band_crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in band_won)),
+        "band_share": pct(sum(num(r, "contract_value_bdt") or 0 for r in band_won),
+                          AWARDED_VALUE, 2),
+        "band_median_crore": cr(med([num(r, "contract_value_bdt") for r in band_won])),
+        "band_median_bids": med(band_bids),
+        "rest_median_bids": med(rest_bids),
+        "rest_with_bids": sum(1 for x in rest_bids if x is not None),
+        "band_with_bids": sum(1 for x in band_bids if x is not None),
+        "band_agencies": [{"key": k, "n": v} for k, v
+                          in collections.Counter(r["agency"] for r in band).most_common()],
+        "band_agencies_silent": len({r["agency"] for r in MASTER})
+        - len({r["agency"] for r in band}),
+        "widths": [{"key": k, "n": v} for k, v in widths.most_common()],
+        "width_common": widths.most_common(1)[0][0] if widths else None,
+        "two_sided": both,
+        "std_pct": std,
+        "excerpt_published": sum(1 for r in band
+                                 if txt(r, "evidence_excerpt_price_band")),
+        "band_predates_standard": sum(n for k, n in timing.items() if "POSTDATE" in k),
+        "band_standard_in_force": sum(n for k, n in timing.items()
+                                      if "PLAUSIBLY_IN_FORCE" in k),
+    }
+
+
 # ------------------------------------- the deviations that survive both discounts
 # A deviation count is only worth printing once two things have been taken off it:
 # the tests where the clause cited postdates the event it is measured against, and
@@ -1869,6 +1960,7 @@ def main():
             "security": spread([num(r, "tender_security_bdt") for r in MASTER]),
         },
         "competition": C["comp"],
+        "estimate": build_estimate(),
         "provenance": provenance,
         "field": {
             "submitted": int(sum(x or 0 for x in C["bids"])),
