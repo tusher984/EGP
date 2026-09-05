@@ -43,8 +43,15 @@ export const UI = {
     bn: "ডেটা ফাইলটি লোড হয়নি। সাইটটি এটি এই ফোল্ডারের <code>site/data/</code> থেকে পড়ে।",
   },
 
+  /* The label a section is named by in the stack under the article, and in the
+     footer. The first two used to be headings inside the article; they are
+     headed by the same words in the same order, in the place a reader now opens
+     them from. */
   tabs: {
     story: { en: "The investigation", bn: "অনুসন্ধান" },
+    full: { en: "The long version", bn: "বিস্তারিত সংস্করণ" },
+    limits: { en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
+    check: { en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
     rules: { en: "Rules tested", bn: "যে নিয়মগুলো পরীক্ষা করা হয়েছে" },
     tools: { en: "Explore the data", bn: "ডেটা ঘেঁটে দেখুন" },
     docs: { en: "Documents", bn: "নথিপত্র" },
@@ -1970,8 +1977,8 @@ export const STORY = [
         bn: "{{competition.key=SINGLE_BID.n|n}}টি দরপত্রে একটিমাত্র দর জমা পড়েছে, মূল্য {{competition.key=SINGLE_BID.crore|cr}} — একটি প্রতিষ্ঠান দর দিয়েছে, আর কেউ দেয়নি। আরও {{competition.key=VERY_LOW.n|n}}টিতে দুই বা তিনটি দর, আর সেগুলোতে আছে {{competition.key=VERY_LOW.crore|cr}}, অর্থাৎ মোটের {{competition.key=VERY_LOW.share|pct}} — অন্য যেকোনো দলের চেয়ে বেশি। সবচেয়ে ভিড়ের দলটিতে, যেখানে দরদাতা সবচেয়ে বেশি, আছে {{competition.key=HIGH.share|pct}}।",
       },
       {
-        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing — and the reason it matters here is what comes two sections on: because no rejection is ever explained, nothing in the published record lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
-        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ তার পরের অংশগুলোর কারণে: বাতিলের কারণ যেহেতু কখনো ব্যাখ্যা করা হয় না, প্রকাশিত নথির কিছুই বলে দেয় না — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
+        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing. What makes it matter here is what the record leaves out: no rejection is ever explained, so nothing published lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
+        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ হয়ে ওঠে নথিতে যা নেই সেটির কারণে: বাতিলের কারণ কখনো ব্যাখ্যা করা হয় না, তাই প্রকাশিত নথি দেখে বোঝার উপায় নেই — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
       },
     ],
   },
@@ -2292,11 +2299,25 @@ export const STORY = [
     en: "One figure is the same in all six rows, and it is the one that matters most to the argument this article opened with. {{authority.rejected|n}} bids were set aside across the six authorities, and not one of the six publishes a reason for a single one of them. On whether a narrower field costs the public more, the six differ on every measure of how the field was narrowed — and agree exactly on what they do not say.",
     bn: "একটি সংখ্যা ছয়টি সারিতেই এক, আর এই লেখা যে তর্ক নিয়ে শুরু হয়েছিল তার জন্য সেটিই সবচেয়ে জরুরি। ছয় সংস্থায় মিলিয়ে {{authority.rejected|n}}টি দর বাদ দেওয়া হয়েছে, আর ছয়টির একটিও তার একটিরও কারণ প্রকাশ করে না। প্রতিযোগিতা সংকুচিত হলে জনগণের খরচ বাড়ে কি না — এই প্রশ্নে প্রতিযোগিতা কীভাবে সংকুচিত হলো তার প্রতিটি মাপে ছয়টি সংস্থা আলাদা, আর যা তারা বলে না, তাতে ছয়টিই হুবহু এক।",
   },
+];
 
-  /* ---- 15. what the documents cannot tell us ----------------------------- */
+/* --------------------------------------------------- the closing two sections
+   The limits, and the doors onto the working material. Both of these used to be
+   the last two headings of the article, where a reader who had just finished the
+   story met a wall of caution and a list of links before the page would let them
+   go. They are not the reading — they are what the reading was built from and
+   what it cannot say — so they now sit in the stack at the foot of the page with
+   the other sections: closed until a reader opens one, and headed there by the
+   same words that headed them here.
 
-  { k: "h2", en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
+   Not one sentence is rewritten. story.js draws these with the same builders it
+   draws the article with, so a finding in this stack looks exactly like a
+   finding in the article, and "every finding above" still points above. The two
+   <h2> blocks are gone and nothing else is: the disclosure a section opens out
+   of is its heading, and a second copy of the same words under it would be a
+   heading twice. */
 
+export const LIMITS = [
   {
     k: "p",
     en: "This is the part of an investigation that usually goes unpublished. Three things are missing from the public record in a way that limits every finding above — one of them from every single tender — and a fourth limit is in how this set was put together.",
@@ -2358,12 +2379,9 @@ export const STORY = [
       },
     ],
   },
+];
 
-  /* ---- 16. how to check it ----------------------------------------------- */
-
-
-  { k: "h2", en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
-
+export const CHECK = [
   {
     k: "p",
     en: "Nothing above has to be taken on trust. Every figure in this article is worked out, as the page is built, from the spreadsheets underneath it; every tender has a record of its own; and every record links back to the PDF pages it was read from. The four doors below open onto that working material.",

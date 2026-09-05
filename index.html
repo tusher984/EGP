@@ -17,6 +17,15 @@
 <meta name="robots" content="index, follow">
 <meta name="color-scheme" content="light dark">
 
+<!-- The article itself. The words a reader reads are in this text file, not in the
+     JavaScript: site/scripts/storydoc.js parses it and site/scripts/story.js draws it,
+     so the story can be edited, retranslated or reordered by anyone who can edit a text
+     file, with no build step. Numbers in it are {{tokens}} resolved against
+     site/data/corpus.json at render time, so no edit here can put a stale figure on the
+     page. If this file is missing or will not parse, the page draws the copy compiled
+     into site/scripts/content.js instead. -->
+<meta name="story-src" content="site/story.md">
+
 <!-- The entry document sits at the repository root so the published site opens on the
      investigation itself. Everything it loads is under site/, and each module addresses
      its own files relative to itself, so this file holds no data paths at all. -->

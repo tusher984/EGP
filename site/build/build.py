@@ -1256,6 +1256,25 @@ EXHIBIT_SPEC = [
 ]
 
 
+# The amendment column prints "<field>: <old> -> <new>". Where the office filled
+# in neither the field name nor the old value, the cell opens on ":  -> #" — the
+# column's own punctuation and a list marker, not words from the page. An exhibit
+# presents itself as a quotation, so that scaffolding is dropped from what is
+# shown and the untouched cell is kept beside it as quote_raw. Only leading
+# separators go; not one word is changed, and a cell that starts with a word
+# (Tender/Proposal Security: BDT 830000 -> BDT 83000) is left exactly as printed.
+LEADING_SCAFFOLD = re.compile(r"^\s*:?\s*(?:->|→)\s*|^\s*#\s*")
+
+
+def shown_quote(s):
+    out = (s or "").strip()
+    while True:
+        cut = LEADING_SCAFFOLD.sub("", out, count=1).strip()
+        if cut == out:
+            return out
+        out = cut
+
+
 def build_exhibits():
     out = []
     for spec in EXHIBIT_SPEC:
@@ -1272,7 +1291,7 @@ def build_exhibits():
             "reference": txt(r, "tender_reference"),
             "package": txt(r, "package_description") or txt(r, "project_name"),
             "label": spec["label"], "reading": spec["reading"],
-            "quote": quote, "column": spec["column"],
+            "quote": shown_quote(quote), "quote_raw": quote, "column": spec["column"],
             "page": txt(r, "eligibility_page") or "1",
             "notice": docref("notice", txt(r, "notice_source_file"), txt(r, "notice_pages")),
             "award": docref("award", txt(r, "award_source_file"), txt(r, "award_pages")),

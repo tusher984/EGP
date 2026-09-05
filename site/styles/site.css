@@ -165,6 +165,13 @@ img, svg { max-width: 100%; }
 .section > summary:hover { background: var(--ntr-home-accent); }
 .section > .open-body { padding: 0 0.9rem 2rem; }
 
+/* Two of the sections are article prose: the limits, and the doors onto the
+   working material. They keep the article's face and its rhythm and lose only
+   its breakout grid — there is no figure in either, and a centred measure would
+   not line up with the note above it — so the grid collapses to a block on the
+   measure, which is what the other sections set their prose on. */
+.open-inner > .prose { display: block; max-width: 40rem; }
+
 /* The heading a section is named by lives inside its own summary — one heading,
    not a summary label and a duplicate <h2> under it. */
 .section-h {
@@ -1263,6 +1270,7 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
   /* On paper there is one column and it is the paper's width, so the article's
      grid -- margins, breakout gutters, measure -- has nothing to do. */
   .prose, .story-head { display: block; }
+  .open-inner > .prose { max-width: none; }
   .sections { background: none; padding: 1.5rem 0 0; }
   .section > summary { padding-left: 0; }
   .fig, .finding, .exhibit, .note, .tiles { break-inside: avoid; }

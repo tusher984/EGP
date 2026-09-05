@@ -20,7 +20,10 @@ import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
   funnel, matrix, matrixLegend, divisionMap, hue, SEQ, wideCanvas,
 } from "./charts.js";
-import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
+import {
+  UI, HEAD, CASE, CASES, STORY, LIMITS, CHECK, DOORS, LABELS, EXHIBIT_WORDS,
+  RULE_TITLES, RULE_SHORT,
+} from "./content.js";
 
 /* ------------------------------------------------------------------ helpers */
 
@@ -969,12 +972,21 @@ function bylineMark() {
 }
 
 /** Build the header and the article into `root`. Called once, on first paint of
-    the story tab, and again whenever the language changes. */
-export function renderStory(root, corpus) {
+    the story tab, and again whenever the language changes.
+
+    `doc` is the parsed site/story.md when that file was readable — the article a
+    reader sees is written there, so it can be edited, retranslated or reordered
+    without touching any JavaScript. When the file is missing or unparseable the
+    argument is null and the copy compiled into content.js is drawn instead, so
+    the page is never blank because a text file moved. The byline never comes
+    from the file: the reporter, the portrait and the role belong to the
+    publication, not to the story. */
+export function renderStory(root, corpus, doc) {
+  const h = (doc && doc.head) || {};
   const head = el("header", { class: "story-head" }, [
-    el("p", { class: "kicker", html: T(HEAD.kicker, corpus) }),
-    el("h1", { class: "hed", html: T(HEAD.hed, corpus) }),
-    el("p", { class: "dek", html: T(HEAD.dek, corpus) }),
+    el("p", { class: "kicker", html: T(h.kicker || HEAD.kicker, corpus) }),
+    el("h1", { class: "hed", html: T(h.hed || HEAD.hed, corpus) }),
+    el("p", { class: "dek", html: T(h.dek || HEAD.dek, corpus) }),
     el("div", { class: "byline" }, [
       bylineMark(),
       el("span", null, [
@@ -984,9 +996,37 @@ export function renderStory(root, corpus) {
     ]),
   ]);
 
-  const body = el("div", { class: "prose" }, STORY.map((b) => block(b, corpus)).filter(Boolean));
+  const blocks = doc && doc.blocks && doc.blocks.length ? doc.blocks : STORY;
+  const body = el("div", { class: "prose" }, blocks.map((b) => block(b, corpus)).filter(Boolean));
 
   root.appendChild(head);
   root.appendChild(body);
   return root;
 }
+
+/* -------------------------------------------------------- the closing sections
+   What the documents cannot tell us, and how to check the article — the same
+   writing, drawn by the same builders, in the stack at the foot of the page
+   instead of at the end of the article. Neither carries a heading of its own:
+   the section it opens out of is its heading. Neither is drawn on arrival
+   either, which is the point of moving them — a reader who wants the caveats or
+   the doors opens them, and a reader who has finished the story is finished. */
+
+function closing(root, corpus, blocks) {
+  root.appendChild(el("div", { class: "prose" },
+    blocks.map((b) => block(b, corpus)).filter(Boolean)));
+  return root;
+}
+
+export function renderLimits(root, corpus) { return closing(root, corpus, LIMITS); }
+
+export function renderCheck(root, corpus) { return closing(root, corpus, CHECK); }
+
+/** The long version. The article at the top of the page is the short reading —
+    one thousand words, written in site/story.md. This is the full one it was cut
+    from: every finding, every case study, at length, drawn by the same builders
+    from the same corpus tokens. It is kept because the cutting was editorial, not
+    a retraction — nothing in here was found to be wrong, and a reader or an
+    editor who wants the whole argument should not have to read the git history
+    for it. */
+export function renderFull(root, corpus) { return closing(root, corpus, STORY); }

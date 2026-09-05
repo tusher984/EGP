@@ -1,13 +1,20 @@
-/* e-GP WATCH — the shell: one article, four sections under it, two editions.
+/* e-GP WATCH — the shell: one article, seven sections under it, two editions.
    ------------------------------------------------------------------
    This file draws nothing a reader reads. It builds the masthead, the article,
-   and the four sections beneath it, then hands each section to the module that
+   and the seven sections beneath it, then hands each section to the module that
    fills it.
 
-   The investigation is the page. Rules tested, the data explorer, the document
-   index and the method are not tabs standing beside it: they sit at the bottom,
-   closed, and a reader who wants them opens them there. Four decisions here are
-   not obvious from the code:
+   The investigation is the page. The long version of the article, what the
+   documents cannot tell us, how to check the article, the rules tested, the data
+   explorer, the document index and the method are not tabs standing beside it:
+   they sit at the bottom, closed, and a reader who wants them opens them there.
+   Five decisions here are not obvious from the code:
+
+   · The article a reader reads is a text file, site/story.md, named in
+     <meta name="story-src"> and fetched at boot. Editing it changes the page; no
+     JavaScript is touched and no build step is run. If the file is gone or will
+     not parse the page falls back to the copy compiled into content.js, so a
+     moved text file can never leave the article blank.
 
    · A section is built once, on first open, and its data is fetched then. The
      article needs corpus.json alone, so the page paints before the 3.2 MB
@@ -34,7 +41,8 @@
 
 import { el, t, clear, fill, load, state, setLang } from "./core.js";
 import { UI, HEAD } from "./content.js";
-import { renderStory } from "./story.js";
+import { renderStory, renderLimits, renderCheck, renderFull } from "./story.js";
+import { loadStory } from "./storydoc.js";
 import { renderRules } from "./rules.js";
 import { renderTools } from "./tools.js";
 import { renderDocs } from "./docs.js";
@@ -42,11 +50,41 @@ import { renderMethod } from "./method.js";
 
 const STORY = "story";
 
-/* The four sections, in the order a reader meets them. `needs` names the
-   payloads in site/data/ the section cannot draw without — fetched on first
-   open, never before. `note` is the line beside the heading, written with
-   {{tokens}} so that not one figure on a section label is typed here. */
+/* The sections under the article, in the order a reader meets them. `needs`
+   names the payloads in site/data/ the section cannot draw without — fetched on
+   first open, never before. `note` is the line beside the heading, written with
+   {{tokens}} so that not one figure on a section label is typed here.
+
+   The first two used to be the last two headings of the article. They are the
+   caveats and the doors: what the reading cannot say and what it was built from,
+   which is this stack's subject and not the story's. Closed like the rest, so
+   the article now ends on its own last sentence.
+
+   The first, `full`, is the article as it stood before it was cut to a thousand
+   words. Cutting was editorial: nothing in it was found to be wrong, so it is
+   kept where a reader who wants the whole argument can open it. */
 const SECTIONS = [
+  {
+    key: "full", needs: [],
+    note: {
+      en: "The full reading the article above was cut from — every finding and every case study at length",
+      bn: "উপরের লেখাটি যে পূর্ণ পাঠ থেকে ছোট করা হয়েছে — প্রতিটি ফলাফল আর প্রতিটি কেস স্টাডি বিস্তারে",
+    },
+  },
+  {
+    key: "limits", needs: [],
+    note: {
+      en: "The evaluation record, the official cost estimate, the owner box — and one limit in how this set was put together",
+      bn: "মূল্যায়নের নথি, সরকারি প্রাক্কলিত ব্যয়, মালিকের ঘর — আর এই সম্ভার যেভাবে গোছানো, তার একটি সীমা",
+    },
+  },
+  {
+    key: "check", needs: [],
+    note: {
+      en: "Every figure in the article, reproducible from the files under this page",
+      bn: "লেখার প্রতিটি সংখ্যা এই পাতার নিচের ফাইল থেকেই আবার বের করা যায়",
+    },
+  },
   {
     key: "rules", needs: ["rules"],
     note: {
@@ -111,7 +149,7 @@ function recall(key) {
   try { return localStorage.getItem(key); } catch (err) { return null; }
 }
 
-const view = { corpus: null, panels: {}, pending: {} };
+const view = { corpus: null, story: null, panels: {}, pending: {} };
 
 /* ------------------------------------------------------------------ scrolling
    The stylesheet asks for smooth scrolling, which is right for a link inside
@@ -184,7 +222,7 @@ function masthead(host) {
 }
 
 /* --------------------------------------------------------------------- panels
-   The article is a section that is always open. The other four are disclosures
+   The article is a section that is always open. The other six are disclosures
    in a stack under it: closed on arrival, built on first open, and each one
    keyed by the same panel-<key> id the hash router has always used, so every
    link an editor has already sent to someone keeps working. */
@@ -202,7 +240,7 @@ function sectionPanel(spec) {
   const inner = el("div", { class: "open-inner" });
   view.panels[spec.key] = inner;
 
-  /* The blurb used to sit under the label, where four of them made a wall of
+  /* The blurb used to sit under the label, where a stack of them made a wall of
      text a reader had to get past to reach the end of the article. It belongs to
      the section it describes, so it opens with it: before the click there is a
      label and nothing else. */
@@ -272,7 +310,10 @@ async function draw(key) {
   if (edition !== state.lang) return;   /* edition switched mid-flight */
 
   clear(host);
-  if (key === STORY) renderStory(host, view.corpus);
+  if (key === STORY) renderStory(host, view.corpus, view.story);
+  else if (key === "full") renderFull(host, view.corpus);
+  else if (key === "limits") renderLimits(host, view.corpus);
+  else if (key === "check") renderCheck(host, view.corpus);
   else if (key === "rules") renderRules(host, view.corpus, data.rules);
   else if (key === "tools") renderTools(host, view.corpus, data);
   else if (key === "docs") renderDocs(host, view.corpus, data);
@@ -379,7 +420,7 @@ function switchLang(lang) {
 }
 
 /* -------------------------------------------------------------------- footer
-   The four sections again, as links, for a reader who has read to the end and
+   The sections again, as links, for a reader who has read to the end and
    scrolled past the stack without noticing it. */
 
 function footer(host) {
@@ -424,6 +465,11 @@ async function boot() {
     return;
   }
 
+  /* The article itself is a text file, named by <meta name="story-src"> and
+     fetched here so a reader can edit site/story.md and reload. It is not fatal:
+     loadStory() returns null if the file is missing or unparseable, and
+     renderStory then draws the copy compiled into content.js. */
+  view.story = await loadStory();
   masthead(document.getElementById("bar"));
   paint(app);
   footer(document.getElementById("foot"));
