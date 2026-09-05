@@ -1292,16 +1292,14 @@ def build_exhibits():
 
 CASE_RULE = {
     "en": "The largest signed contract in this set where at least three bids "
-          "arrived and exactly one was ruled responsive — that is, where the "
-          "published record shows a real field of bidders narrowing to a single "
-          "firm. Ranked on contract value over the awarded tenders satisfying "
+          "arrived and exactly one was ruled responsive. Ranked on contract "
+          "value over the awarded tenders satisfying "
           "<code>total_bids_received &gt;= 3</code> and "
           "<code>responsive_bids == 1</code>.",
     "bn": "এই সংকলনে যেসব স্বাক্ষরিত চুক্তিতে অন্তত তিনটি দর জমা পড়েছে এবং "
-          "ঠিক একটি দর গ্রহণযোগ্য বিবেচিত হয়েছে — অর্থাৎ প্রকাশিত নথিতেই "
-          "দরদাতার একটি প্রকৃত দল সংকুচিত হয়ে একটি প্রতিষ্ঠানে এসে দাঁড়িয়েছে — "
-          "তার মধ্যে সবচেয়ে বড় চুক্তিটি। <code>total_bids_received &gt;= 3</code> "
-          "এবং <code>responsive_bids == 1</code> শর্ত পূরণ করা চুক্তিগুলোকে "
+          "ঠিক একটি দর গ্রহণযোগ্য বিবেচিত হয়েছে, তার মধ্যে সবচেয়ে বড় চুক্তিটি। "
+          "<code>total_bids_received &gt;= 3</code> এবং "
+          "<code>responsive_bids == 1</code> শর্ত পূরণ করা চুক্তিগুলোকে "
           "চুক্তিমূল্য অনুযায়ী সাজিয়ে বাছাই করা হয়েছে।",
 }
 
