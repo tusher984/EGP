@@ -64,6 +64,37 @@ export function columnWidth() {
   return inner > 0 ? Math.round(inner) : CANVAS;
 }
 
+/** The track a figure that is not marked wide is laid out in: the measure plus
+    both breakout gutters, which the stylesheet sets at 7 + 40 + 7 rem and lets
+    collapse towards the measure when the window has no free space left. Read off
+    the root font size rather than written as 864, so a reader who enlarges the
+    page gets a drawing sized to the column they actually have.
+
+    A chart that is scaled to its column by the stylesheet does not need this —
+    the 5% magnification between the 820 canvas and this track is the compromise
+    the stylesheet already makes. The map does need it: its svg is sized in pixels
+    so that the type in its key is never scaled, which means the number handed to
+    it has to be the width of the column and not an approximation of it. */
+export function midColumn() {
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  return Math.min(columnWidth(), Math.round(54 * rem));
+}
+
+/** The canvas for a drawing that is allowed to scroll sideways rather than be
+    scaled down — the matrix, whose row labels and tail column are set in type
+    that a phone cannot afford to shrink. The column, so that the drawing fills
+    the grid and nothing scrolls, until the column falls below the width the
+    drawing actually needs; from there the canvas holds at that width and the
+    reader gets a scroller instead of five-pixel type.
+
+    `min` is that width, and it belongs to the drawing rather than to the page:
+    CANVAS is a floor for a bar chart with a 210-unit label gutter and too high
+    for a matrix with a 120-unit one. Passing the floor where the column is only
+    a little narrower than it is what put a 32px scroller on an 820px window. */
+export function scrollCanvas(min) {
+  return Math.max(min, Math.min(CANVAS_WIDE, columnWidth()));
+}
+
 /** A hidden tab and a hidden preview pane both stop firing rAF, and a chart
     that never gets its hover layer wired is a chart that looks finished and is
     not. Fall back to a timer, which keeps running either way. */
@@ -674,7 +705,7 @@ export function districtMap(shade, seats, opts) {
   const o = opts || {};
   const w = o.width || CANVAS_WIDE;
   const [bx, by] = MAP_BOX;
-  /* The column the figure will really be laid out in, unfloored — see columnWidth.
+  /* The column the figure will really be laid out in, unfloored — see midColumn.
      A phone gets a different arrangement of the same two layers, not a smaller
      copy of this one, because the type in the key does not survive being scaled
      to a third of its size. */
@@ -706,8 +737,8 @@ export function districtMap(shade, seats, opts) {
   /* The country is portrait — 366 by 519 — so height, not width, is what the map
      is sized by: at this aspect a map drawn to fit the width would be three times
      as wide as it is allowed to be tall. So the height is taken first and the
-     width follows from it, and the canvas is then cut to the map plus the two
-     flanks rather than left at the column's full width.
+     width follows from it, and the flanks the key needs are then measured off the
+     canvas the column gives, rather than the canvas being cut to the drawing.
 
      The height is whatever leaves room for both flanks, capped at 640. The cap is
      higher than a locator map needs, and deliberately: at 64 areas the small
@@ -715,8 +746,8 @@ export function districtMap(shade, seats, opts) {
      islands rather than as noise on the coast. It also stops a very wide column
      from turning a portrait country into a 1,000px-tall figure that a reader
      scrolls through in pieces. Stacked, the height comes from the column instead,
-     so the map is exactly as wide as the column and the whole country is on
-     screen at once. */
+     up to a ceiling of its own, so on a phone the map is exactly as wide as the
+     column and the whole country is on screen at once. */
   const mh = stacked
     ? Math.round(Math.min(560, col * (by / bx)))
     : Math.round(Math.min(640, Math.max(320, (w - 2 * flank) * (by / bx))));
@@ -731,9 +762,20 @@ export function districtMap(shade, seats, opts) {
      because four bodies east of centre and two west would leave one flank crowded
      and the other nearly empty. On each side the rows keep the vertical order of
      their marks and are pushed apart to a legible minimum, so a leader never has
-     to cross another leader. */
-  const cw = stacked ? mw : mw + 2 * flank;
-  const mapX = stacked ? 0 : flank;
+     to cross another leader.
+
+     The canvas is the column, never less. The map and its two flanks are the
+     minimum it can be — below that the key runs off the edge — but where the
+     height ceiling has left the drawing narrower than the track it is laid out
+     in, the leftover goes into the flanks instead of standing as white space
+     outside the svg: this figure is the one drawing on the page whose svg is
+     sized in pixels rather than stretched to 100% of its parent, so a canvas cut
+     to the drawing is a canvas that visibly fails to reach the ends of the grid
+     it shares with the title above it. What keeps that leftover small is the
+     column the figure is given — the 54rem measure, not the full page width;
+     that choice is made where the figure is built. */
+  const cw = Math.max(stacked ? mw : mw + 2 * flank, Math.min(w, col));
+  const mapX = Math.round((cw - mw) / 2);
   const pins = seats.filter((s) => SITES[s.key]).map((s) => ({
     s,
     x: mapX + S(SITES[s.key][0]),
@@ -741,11 +783,11 @@ export function districtMap(shade, seats, opts) {
   }));
   let h;
   if (stacked) {
-    /* Two columns under the map, filled left to right, north to south. Not by
+    /* Two columns across the canvas, filled left to right, north to south. Not by
        count: these marks carry no value, and a key ranked by size would say they
        did. 22px of air under the coast so the first row is not read as a label
        on the sea. */
-    const half = Math.floor(mw / 2);
+    const half = Math.floor(cw / 2);
     pins.slice().sort((a, b) => a.y - b.y).forEach((p, i) => {
       p.kx = (i % 2) * half;
       p.ky = mh + 22 + Math.floor(i / 2) * rowH;

@@ -19,7 +19,7 @@ import {
 import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
   funnel, matrix, matrixLegend, districtMap, mapLegend, byBoundary, DISTRICT_N,
-  hue, SEQ, wideCanvas, columnWidth,
+  hue, SEQ, wideCanvas, midColumn, scrollCanvas,
 } from "./charts.js";
 import {
   UI, HEAD, CASE, CASES, STORY, LIMITS, CHECK, DOORS, LABELS, EXHIBIT_WORDS,
@@ -254,7 +254,13 @@ const FIGS = {
 
     const rows = Object.entries(shade).sort((a, b) => b[1].v - a[1].v);
     return figure({
-      wide: true,
+      /* Every other chart here is marked wide and stretches to the full page, and
+         this one deliberately does not. A portrait country under a 640px height
+         ceiling is 451px wide; on the full page that leaves the key rows a fifth
+         of the window away from the coast they point at, and the alternative —
+         scaling the country up to the page — puts a 950px-tall figure in the
+         middle of the article. On the 54rem measure the drawing reaches both ends
+         of its column with the leaders barely longer than they were. */
       title: {
         en: "Every district these notices name, and the six bodies that named them",
         bn: "এই বিজ্ঞপ্তিগুলোতে যেসব জেলার নাম আছে, আর যে ছয় সংস্থা নাম দিয়েছে",
@@ -266,15 +272,15 @@ const FIGS = {
             "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
       },
       plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
-        /* A width budget, not a canvas. The country is portrait, so the map is
-           drawn to a height and the height has a ceiling; the map then cuts the
-           canvas down to itself plus the two flanks its key rows need, and the
-           svg is centred in the column. Passing the full wide canvas therefore
-           costs no white space — the ceiling does the limiting. */
-        width: wideCanvas(),
-        /* Unfloored, so the map can tell a phone column from a desktop one and
-           stack its key on one flank rather than being scaled to a third size. */
-        col: columnWidth(),
+        /* The width of the column this figure is laid out in, measured, because
+           the map is drawn to it exactly: the svg carries a pixel width so that
+           the type in its key is never scaled, and a canvas narrower than the
+           column would sit in the grid with white space at both ends. */
+        width: midColumn(),
+        /* The same number again, and separately, because the two questions are
+           different: this one is how narrow the column is, which is what tells a
+           phone to stack the key under the map instead of flanking it. */
+        col: midColumn(),
         alt: A({
           en: "A map of the 64 districts of Bangladesh, shaded darker where more tender notices name the district, with one mark for each of the six authorities. The counts are in the table below.",
           bn: "বাংলাদেশের ৬৪ জেলার মানচিত্র; যে জেলার নাম বেশি বিজ্ঞপ্তিতে সেটি তত গাঢ়, আর ছয়টি সংস্থার জন্য একটি করে চিহ্ন। সংখ্যাগুলো নিচের টেবিলে আছে।",
@@ -366,7 +372,11 @@ const FIGS = {
         bn: "প্রতি সারিতে একটি সংস্থা, প্রতি কলামে একটি মাপ; প্রতিটি কলাম নিজের সর্বোচ্চ মানে মাপা, কারণ ছয়টি মাপ ছয় রকম এককে — কারও সঙ্গে কারও অক্ষ মেলে না। দণ্ডের খাড়া দাগটি ওই মাপে ছয়টির মাঝের মান। শেষ কলামটি গোনে, ছয়টির কতটিতে এই সংস্থা ওই মাঝের মানের উপরে — নিছক গোনা, কোনো ভার দেওয়া নেই, আর এটি আমাদের হিসাব, কোনো সংস্থার নয়। নামের নিচে সেই জেলা, যেটি ওই সংস্থার বিজ্ঞপ্তিতেই সবচেয়ে বেশিবার ছাপা হয়েছে।",
       },
       plot: el("div", { class: "tbl-scroll" }, matrix(rows, cols, {
-        width: wideCanvas(), labelW: 120, tailW: 96,
+        /* Drawn to the column, and only held wider than it — behind a scroller —
+           where the column is too narrow for six columns of bars beside a name
+           and a tail. 700 units is that width: below it the columns are under
+           60 units each and the bars stop being comparable. */
+        width: scrollCanvas(700), labelW: 120, tailW: 96,
         tail: [{ en: "Above the", bn: "মাঝের মানের" }, { en: "middle on", bn: "উপরে" }],
         absent: dash(),
         alt: A({
@@ -450,8 +460,8 @@ const FIGS = {
       wide: true,
       title: { en: "What the notices demanded, measured against the job", bn: "বিজ্ঞপ্তিতে যা দাবি করা হয়েছে, কাজের তুলনায়" },
       deck: {
-        en: "Each requirement as a multiple of the contract it was attached to. The line marks one times the contract value: to the right of it, a notice asked a bidder to be larger than the work.",
-        bn: "প্রতিটি শর্ত, সংশ্লিষ্ট চুক্তিমূল্যের গুণিতকে। রেখাটি চুক্তিমূল্যের সমান মাত্রা দেখায়: তার ডানদিকে গেলে বিজ্ঞপ্তি দরদাতাকে কাজের চেয়ে বড় হতে বলেছে।",
+        en: "Each requirement as a multiple of the contract it was attached to. The line marks one times the contract value: to the right of it, a notice asked a bidder to be larger than the work. The money row takes whichever figure the notice set higher — yearly turnover, or cash and credit.",
+        bn: "প্রতিটি শর্ত, সংশ্লিষ্ট চুক্তিমূল্যের গুণিতকে। রেখাটি চুক্তিমূল্যের সমান মাত্রা দেখায়: তার ডানদিকে গেলে বিজ্ঞপ্তি দরদাতাকে কাজের চেয়ে বড় হতে বলেছে। অর্থের সারিটি নেয় বিজ্ঞপ্তি যেটি বেশি ধরেছে — বার্ষিক লেনদেন, নয়তো নগদ ও ঋণসীমা।",
       },
       plot: percentileStrip(rows, {
         labelW: 210, reference: 1, min: 0, width: wideCanvas(),
