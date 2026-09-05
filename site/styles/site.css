@@ -526,6 +526,14 @@ html:lang(bn) .verbatim { font-family: var(--font-caption); }
 
 .case-where + p { margin-top: 0.7rem; }
 
+/* A compact case carries no paragraphs, so the thing under the dateline is the
+   quotation itself — or, where the notice gave nothing to quote, the record
+   strip. Both set their own top margin for a scene that had prose above them;
+   held in tight here for the same reason the paragraph above is: a dateline is
+   a dateline, not its own beat. */
+.case-where + .exhibit,
+.case-where + .case-rec { margin-top: 0.9rem; }
+
 /* A transition scene arrives in the middle of the article, where the reader is
    already moving, so it needs one signal that the page has changed footing and
    nothing more: a hairline above the dateline, the same rule the section heads

@@ -763,6 +763,80 @@ def build_estimate():
 DUTY_FORCE = {"MANDATORY_SHALL", "MANDATORY_SHALL_NOT"}
 
 
+# ------------------------------------------- how closed an enlistment gate really is
+# R03 finds 88 open tenders that require the bidder to be enlisted already. Printing
+# 88 alone would be false in the direction that matters: read the wording on each one
+# and most of them are "Enlisted (Electrical) Contractor/Supplier of RAJUK or Other
+# Govt./Semi Govt./Autonomous Organization/Reputed Bonafide Firm", which excludes only
+# a firm never enlisted anywhere in the public sector. So the wording is sorted into
+# three shapes and the article prints all three, commonest first.
+#
+#   catch_all     a named body OR any other public body - the widest form
+#   named_list    a fixed list of named public bodies and nothing else
+#   single_office one named office and nothing else - the genuinely closed form
+#   own_office    of those, the ones naming the authority running the tender
+#
+# The test is on the excerpt the engine kept for the row, so it can be re-read: the
+# excerpt is on every R03 row of rule_deviations.csv and in the rules section.
+
+CATCH_ALL = re.compile(r"other\s+govt|any\s+government|semi[-\s]?govt|semi[-\s]?government",
+                       re.I)
+NAMED_BODY = re.compile(r"\b(RAJUK|CDA|COXDA|KDA|RDA|BPDB|PWD|CPA|WASA|CCC|KGDCL|"
+                        r"Petrobangla|Cox'?s\s+Bazar\s+Development\s+Authority)\b", re.I)
+AGENCY_SELF = {
+    "RAJUK": re.compile(r"\bRAJUK\b", re.I),
+    "CDA": re.compile(r"\bCDA\b", re.I),
+    "COXDA": re.compile(r"\bCOXDA\b|Cox'?s\s+Bazar\s+Development\s+Authority", re.I),
+    "KDA": re.compile(r"\bKDA\b", re.I),
+    "RDA": re.compile(r"\bRDA\b", re.I),
+    "GDA": re.compile(r"\bGDA\b", re.I),
+}
+
+
+def enlisting_bodies(ex):
+    """How many enlisting bodies the wording offers as alternatives.
+
+    Counted by alternation, not by name: the excerpt is split on the separators
+    these clauses use to list bodies - "/", ",", "or", "&" - and a segment counts
+    once however many names it holds. That is what keeps "KGDCL of Petrobangla",
+    a utility named with its parent, one body rather than two, while "CDA/ BPDB/
+    PWD/ CPA/ WASA/ CCC" stays six.
+    """
+    return sum(1 for seg in re.split(r"[/,&]|\bor\b", ex, flags=re.I)
+               if NAMED_BODY.search(seg))
+
+
+def enlistment_shapes():
+    rows = [d for d in DEV
+            if d["rule_code"] == "R03" and d["test_result"] == "DEVIATION"]
+    out = {"n": len(rows), "catch_all": 0, "named_list": 0, "single_office": 0,
+           "own_office": 0, "closed": []}
+    for d in rows:
+        ex = txt(d, "tender_evidence_excerpt")
+        if CATCH_ALL.search(ex):
+            out["catch_all"] += 1
+            continue
+        bodies = enlisting_bodies(ex)
+        if bodies > 1:
+            out["named_list"] += 1
+            continue
+        out["single_office"] += 1
+        self_named = AGENCY_SELF.get(d["agency"])
+        own = bool(self_named and self_named.search(ex))
+        if own:
+            out["own_office"] += 1
+        out["closed"].append({
+            "tender_id": d["tender_id"],
+            "agency": d["agency"],
+            "own_office": own,
+            "excerpt": ex[:400],
+            "file": txt(d, "tender_evidence_source_file"),
+            "page": txt(d, "tender_evidence_page"),
+        })
+    out["closed"].sort(key=lambda x: (not x["own_office"], x["tender_id"]))
+    return out
+
+
 def build_violations():
     dev = [d for d in DEV if d["test_result"] == "DEVIATION"]
     in_force = [d for d in dev
@@ -2185,6 +2259,7 @@ def main():
             "levels": tally(MASTER, "eligibility_restriction_level"),
             "documents_demanded": spread([num(r, "required_document_types_count")
                                           for r in MASTER]),
+            "enlistment": enlistment_shapes(),
         },
         "bars": bars,
         "flags": flags,

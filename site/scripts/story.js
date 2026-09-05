@@ -756,17 +756,26 @@ function caseBlock(corpus) {
   return frag;
 }
 
-/* --------------------------------------------------------- the four turns
-   The same scene, shorter, at four places where the article changes subject. A
-   transition study has to do two jobs at once — leave the aggregate, and set up
-   the count that follows — so it is built from the pieces below in a fixed order
-   and given a hairline above it, which is the whole of its decoration.
+/* ------------------------------------------------------- the case studies
+   The same scene at two lengths, at the places where the article changes
+   subject. A transition study has to do two jobs at once — leave the aggregate,
+   and set up the count that follows — so it is built from the pieces below in a
+   fixed order and given a hairline above it, which is the whole of its
+   decoration.
+
+   `compact` is the form the article uses now: the tender named, the passage from
+   its own page with the operative words marked, the figures that passage turns
+   on, the two PDFs and the selection rule — and none of the scene's paragraphs.
+   It is the evidence without the essay, which is what lets every one of these
+   twelve cases sit inside a thousand-word article at the finding it belongs to
+   rather than in a long version at the foot of the page. The full form, with the
+   paragraphs, is still what the opening scene draws.
 
    Each is pinned to an id like the opening, and drifts the same way: if the
    published rule stops returning the tender the paragraphs describe, the page
    prints the mismatch rather than a scene about the wrong road. */
 
-function sceneBlock(corpus, id) {
+function sceneBlock(corpus, id, compact) {
   const c = (corpus.cases || {})[id];
   const spec = CASES[id];
   if (!c || !spec) return null;
@@ -774,7 +783,7 @@ function sceneBlock(corpus, id) {
 
   const frag = document.createDocumentFragment();
   frag.appendChild(caseWhere(c, true));
-  spec.p.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+  if (!compact) spec.p.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
 
   if (c.mark) {
     frag.appendChild(el("div", { class: "exhibit" }, [
@@ -791,7 +800,7 @@ function sceneBlock(corpus, id) {
   frag.appendChild(caseRec(c, spec.rec));
   frag.appendChild(caseSrc(c));
   frag.appendChild(caseRule(c));
-  spec.after.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
+  if (!compact) spec.after.forEach((p) => frag.appendChild(el("p", { html: T(p, corpus) })));
   return frag;
 }
 
@@ -934,10 +943,14 @@ function block(b, corpus) {
         ...b.p.map((p) => el("p", { html: T(p, corpus) })),
       ]);
 
-    /* The opening scene carries no id; the four transitions name the case they
-       are built from. */
+    /* The opening scene carries no id and draws in full. Every other case is
+       named and draws as evidence: the document, the figures and the links,
+       without the paragraphs. */
     case "case":
       return b.id ? sceneBlock(corpus, b.id) : caseBlock(corpus);
+
+    case "evidence":
+      return b.id ? sceneBlock(corpus, b.id, true) : null;
 
     case "exhibits":
       return exhibitBlock(corpus);
@@ -1021,12 +1034,3 @@ function closing(root, corpus, blocks) {
 export function renderLimits(root, corpus) { return closing(root, corpus, LIMITS); }
 
 export function renderCheck(root, corpus) { return closing(root, corpus, CHECK); }
-
-/** The long version. The article at the top of the page is the short reading —
-    one thousand words, written in site/story.md. This is the full one it was cut
-    from: every finding, every case study, at length, drawn by the same builders
-    from the same corpus tokens. It is kept because the cutting was editorial, not
-    a retraction — nothing in here was found to be wrong, and a reader or an
-    editor who wants the whole argument should not have to read the git history
-    for it. */
-export function renderFull(root, corpus) { return closing(root, corpus, STORY); }
