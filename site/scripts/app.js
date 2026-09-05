@@ -1,14 +1,20 @@
-/* e-GP WATCH — the shell: one article, six sections under it, two editions.
+/* e-GP WATCH — the shell: one article, seven sections under it, two editions.
    ------------------------------------------------------------------
    This file draws nothing a reader reads. It builds the masthead, the article,
-   and the six sections beneath it, then hands each section to the module that
+   and the seven sections beneath it, then hands each section to the module that
    fills it.
 
-   The investigation is the page. What the documents cannot tell us, how to
-   check the article, the rules tested, the data explorer, the document index
-   and the method are not tabs standing beside it: they sit at the bottom,
-   closed, and a reader who wants them opens them there. Four decisions here are
-   not obvious from the code:
+   The investigation is the page. The long version of the article, what the
+   documents cannot tell us, how to check the article, the rules tested, the data
+   explorer, the document index and the method are not tabs standing beside it:
+   they sit at the bottom, closed, and a reader who wants them opens them there.
+   Five decisions here are not obvious from the code:
+
+   · The article a reader reads is a text file, site/story.md, named in
+     <meta name="story-src"> and fetched at boot. Editing it changes the page; no
+     JavaScript is touched and no build step is run. If the file is gone or will
+     not parse the page falls back to the copy compiled into content.js, so a
+     moved text file can never leave the article blank.
 
    · A section is built once, on first open, and its data is fetched then. The
      article needs corpus.json alone, so the page paints before the 3.2 MB
@@ -35,7 +41,8 @@
 
 import { el, t, clear, fill, load, state, setLang } from "./core.js";
 import { UI, HEAD } from "./content.js";
-import { renderStory, renderLimits, renderCheck } from "./story.js";
+import { renderStory, renderLimits, renderCheck, renderFull } from "./story.js";
+import { loadStory } from "./storydoc.js";
 import { renderRules } from "./rules.js";
 import { renderTools } from "./tools.js";
 import { renderDocs } from "./docs.js";
@@ -51,8 +58,19 @@ const STORY = "story";
    The first two used to be the last two headings of the article. They are the
    caveats and the doors: what the reading cannot say and what it was built from,
    which is this stack's subject and not the story's. Closed like the rest, so
-   the article now ends on its own last sentence. */
+   the article now ends on its own last sentence.
+
+   The first, `full`, is the article as it stood before it was cut to a thousand
+   words. Cutting was editorial: nothing in it was found to be wrong, so it is
+   kept where a reader who wants the whole argument can open it. */
 const SECTIONS = [
+  {
+    key: "full", needs: [],
+    note: {
+      en: "The full reading the article above was cut from — every finding and every case study at length",
+      bn: "উপরের লেখাটি যে পূর্ণ পাঠ থেকে ছোট করা হয়েছে — প্রতিটি ফলাফল আর প্রতিটি কেস স্টাডি বিস্তারে",
+    },
+  },
   {
     key: "limits", needs: [],
     note: {
@@ -131,7 +149,7 @@ function recall(key) {
   try { return localStorage.getItem(key); } catch (err) { return null; }
 }
 
-const view = { corpus: null, panels: {}, pending: {} };
+const view = { corpus: null, story: null, panels: {}, pending: {} };
 
 /* ------------------------------------------------------------------ scrolling
    The stylesheet asks for smooth scrolling, which is right for a link inside
@@ -292,7 +310,8 @@ async function draw(key) {
   if (edition !== state.lang) return;   /* edition switched mid-flight */
 
   clear(host);
-  if (key === STORY) renderStory(host, view.corpus);
+  if (key === STORY) renderStory(host, view.corpus, view.story);
+  else if (key === "full") renderFull(host, view.corpus);
   else if (key === "limits") renderLimits(host, view.corpus);
   else if (key === "check") renderCheck(host, view.corpus);
   else if (key === "rules") renderRules(host, view.corpus, data.rules);
@@ -446,6 +465,11 @@ async function boot() {
     return;
   }
 
+  /* The article itself is a text file, named by <meta name="story-src"> and
+     fetched here so a reader can edit site/story.md and reload. It is not fatal:
+     loadStory() returns null if the file is missing or unparseable, and
+     renderStory then draws the copy compiled into content.js. */
+  view.story = await loadStory();
   masthead(document.getElementById("bar"));
   paint(app);
   footer(document.getElementById("foot"));

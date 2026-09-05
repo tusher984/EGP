@@ -49,6 +49,7 @@ export const UI = {
      them from. */
   tabs: {
     story: { en: "The investigation", bn: "অনুসন্ধান" },
+    full: { en: "The long version", bn: "বিস্তারিত সংস্করণ" },
     limits: { en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
     check: { en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
     rules: { en: "Rules tested", bn: "যে নিয়মগুলো পরীক্ষা করা হয়েছে" },
