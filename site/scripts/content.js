@@ -1976,8 +1976,8 @@ export const STORY = [
         bn: "{{competition.key=SINGLE_BID.n|n}}টি দরপত্রে একটিমাত্র দর জমা পড়েছে, মূল্য {{competition.key=SINGLE_BID.crore|cr}} — একটি প্রতিষ্ঠান দর দিয়েছে, আর কেউ দেয়নি। আরও {{competition.key=VERY_LOW.n|n}}টিতে দুই বা তিনটি দর, আর সেগুলোতে আছে {{competition.key=VERY_LOW.crore|cr}}, অর্থাৎ মোটের {{competition.key=VERY_LOW.share|pct}} — অন্য যেকোনো দলের চেয়ে বেশি। সবচেয়ে ভিড়ের দলটিতে, যেখানে দরদাতা সবচেয়ে বেশি, আছে {{competition.key=HIGH.share|pct}}।",
       },
       {
-        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing — and the reason it matters here is what comes two sections on: because no rejection is ever explained, nothing in the published record lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
-        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ তার পরের অংশগুলোর কারণে: বাতিলের কারণ যেহেতু কখনো ব্যাখ্যা করা হয় না, প্রকাশিত নথির কিছুই বলে দেয় না — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
+        en: "A small field is not by itself evidence of anything improper. Small or specialised jobs attract few bidders everywhere. It is an investigative signal, not a finding of wrongdoing. What makes it matter here is what the record leaves out: no rejection is ever explained, so nothing published lets you tell a tender that happened to draw two bidders from one that was narrowed down to two.",
+        bn: "কম দরদাতা থাকা নিজে থেকেই অনিয়মের প্রমাণ নয়। ছোট বা বিশেষায়িত কাজে সব জায়গাতেই কম দর জমা পড়ে। এটি অনুসন্ধানের একটি সংকেত, অন্যায়ের প্রমাণ নয়। এখানে এটি গুরুত্বপূর্ণ হয়ে ওঠে নথিতে যা নেই সেটির কারণে: বাতিলের কারণ কখনো ব্যাখ্যা করা হয় না, তাই প্রকাশিত নথি দেখে বোঝার উপায় নেই — কোনো দরপত্রে দুজন দরদাতা এমনিতেই এসেছিল, না কি মাঠ কমিয়ে দুজনে নামানো হয়েছিল।",
       },
     ],
   },
