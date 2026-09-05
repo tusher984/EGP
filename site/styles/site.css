@@ -740,6 +740,19 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 .fig .mark-dot { stroke: var(--surface-page); stroke-width: 2; }
 .fig .gap { stroke: var(--surface-page); stroke-width: 2; fill: none; }
 
+/* Map layer. The divisions are a base a reader orients by, so they take the
+   recessive surface and a page-colour stroke — that stroke opens the 2px gap
+   between two fills instead of a border being drawn between them. The value
+   sits on the authority's own mark, which wears a page-colour ring so an
+   overlap onto a division edge stays readable, and a hairline leader carries
+   the eye to its row in the key. Division names are set small but on the body
+   text token, not a faint one: they sit on a filled area rather than on the page,
+   and a fainter token measured 2.5:1 against that fill. */
+.fig .area { fill: var(--surface-sunken); stroke: var(--surface-page); stroke-width: 2; }
+.fig .t-geo { fill: var(--text-default); font-size: 10px; letter-spacing: 0.01em; }
+.fig .leader { stroke: var(--axis); stroke-width: 1; fill: none; }
+.fig .mark.seat { stroke: var(--surface-page); stroke-width: 2; }
+
 /* Hover layer: a crosshair on time series, a per-mark tooltip elsewhere. */
 .fig .hit { fill: transparent; cursor: crosshair; }
 .fig .cross { stroke: var(--axis); stroke-width: 1; pointer-events: none; }
@@ -1228,6 +1241,10 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
     forced-color-adjust: none;
   }
   .fig .mark { stroke: CanvasText; stroke-width: 1; }
+  .fig .area { fill: Canvas; stroke: CanvasText; stroke-width: 1; }
+  .fig .t-geo { fill: GrayText; }
+  .fig .leader { stroke: CanvasText; }
+  .fig .mark.seat { stroke: CanvasText; stroke-width: 1; }
   .swatch { border: 1px solid CanvasText; }
   .finding, .note, .record, .controls, .tiles, .tile { border: 1px solid CanvasText; background: Canvas; }
   .tag, .pill, .btn { border: 1px solid CanvasText; }

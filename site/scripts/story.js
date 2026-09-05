@@ -18,7 +18,7 @@ import {
 } from "./core.js";
 import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
-  funnel, matrix, matrixLegend, tileMap, hue, SEQ, wideCanvas,
+  funnel, matrix, matrixLegend, divisionMap, hue, SEQ, wideCanvas,
 } from "./charts.js";
 import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
 
@@ -197,20 +197,21 @@ const FIGS = {
         F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>, আর কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে।"),
     });
   },
-  /* Two views of the same comparison: six public bodies set beside each other on
-     six measures, and the map that comparison would have been made on if these
-     documents carried one. No boundary geometry exists in the supplied folder and
-     that folder is the only source this investigation may use, so place is
-     carried the way the notices carry it themselves — the district printed on
-     them, under the name of the body that printed it.
+  /* Two views of the same comparison: the six public bodies on the map their own
+     notices place them on, and the matrix of the six measures the map is shaded
+     from.
 
-     The map-shaped view first, because it is the one a reader can take in at a
-     glance: one shaded area per authority, shaded by the count the matrix ends
-     on. The count is printed on every area, so the shading is the second telling
-     and never the only one. */
+     The map first, because it is the one a reader takes in at a glance. Its
+     outline is a schematic drawn for this page — mapshape.js sets out why at
+     length, and the source line says so on the page — because no boundary
+     geometry exists in the supplied folder and that folder is the only source
+     this investigation may use. What the documents supply is the district
+     printed on each notice. The count is printed beside every mark, so the
+     shading is the second telling and never the only one. */
   authorityMap(corpus) {
     const au = corpus.authority;
     const cells = au.rows.map((r) => ({
+      key: r.key,
       label: agencyName(r.key),
       sub: placeName(r.district),
       v: r.measured ? r.above / r.measured : null,
@@ -227,14 +228,14 @@ const FIGS = {
         bn: "ছয় সংস্থা কোথায়, আর কে কতবার খারাপ দিকে",
       },
       deck: {
-        en: "One shaded area per authority, darker the more of the six measures it sits above the middle on, with the district its own notices print most often underneath. It is not drawn as a map of Bangladesh: no boundary for any of these districts appears in the supplied documents, and nothing outside them was used.",
-        bn: "প্রতি সংস্থার জন্য একটি রঙানো ঘর — ছয় মাপের যতগুলোতে সংস্থাটি মাঝের মানের উপরে, ততই গাঢ়; নিচে সেই জেলা, যেটি ওই সংস্থার বিজ্ঞপ্তিতেই সবচেয়ে বেশিবার ছাপা হয়েছে। এটি বাংলাদেশের মানচিত্র হিসেবে আঁকা নয়: সরবরাহ করা দস্তাবেজে এই জেলাগুলোর কোনোটির সীমানা নেই, আর দস্তাবেজের বাইরের কিছু ব্যবহার করা হয়নি।",
+        en: "One mark per authority, standing in the district its own notices print most often, darker the more of the six measures below it sits above the middle on. The value is on the mark and not on the division because two of the six work in one division and two more in another.",
+        bn: "প্রতি সংস্থার জন্য একটি চিহ্ন, বসানো সেই জেলায় যেটি ওই সংস্থার বিজ্ঞপ্তিতে সবচেয়ে বেশিবার ছাপা হয়েছে; নিচের ছয় মাপের যতগুলোতে সংস্থাটি মাঝের মানের উপরে, ততই গাঢ়। মান বিভাগের উপর নয়, চিহ্নের উপর — কারণ ছয়টির দুটি একই বিভাগে, আরও দুটি অন্য একটি বিভাগে।",
       },
-      plot: el("div", { class: "tbl-scroll" }, tileMap(cells, {
+      plot: el("div", { class: "tbl-scroll" }, divisionMap(cells, {
         width: wideCanvas(), max: 1, absent: dash(),
         alt: A({
-          en: "Six shaded areas, one per authority, darker the more measures it is above the middle on. The counts are in the table below.",
-          bn: "ছয়টি রঙানো ঘর, প্রতি সংস্থার একটি; যত বেশি মাপে মাঝের মানের উপরে, তত গাঢ়। সংখ্যাগুলো নিচের টেবিলে আছে।",
+          en: "A schematic map of Bangladesh with one shaded mark per authority, darker the more measures it is above the middle on. The counts are in the table below.",
+          bn: "বাংলাদেশের একটি রূপরেখা মানচিত্র, প্রতি সংস্থার জন্য একটি রঙানো চিহ্ন; যত বেশি মাপে মাঝের মানের উপরে, তত গাঢ়। সংখ্যাগুলো নিচের টেবিলে আছে।",
         }, corpus),
       })),
       legend: [
@@ -252,10 +253,12 @@ const FIGS = {
           n(r.above) + "/" + n(r.measured)])
       ),
       source: src(
-        F.master.en + " — the last column of the matrix below, with place from " +
-        "<code>pe_district</code> as printed and no geographic file of any kind.",
-        F.master.bn + " — নিচের ছকটির শেষ কলাম; জেলা <code>pe_district</code> " +
-        "থেকে, যেমন ছাপা হয়েছে তেমনই, আর কোনো ভৌগোলিক ফাইল ব্যবহার করা হয়নি।"),
+        F.master.en + " — the last column of the matrix below, placed by " +
+        "<code>pe_district</code> as printed on an outline drawn by hand for this " +
+        "page, because the documents carry no boundary for any of these places.",
+        F.master.bn + " — নিচের ছকটির শেষ কলাম; বসানো হয়েছে <code>pe_district</code> " +
+        "থেকে, যেমন ছাপা হয়েছে তেমনই, আর রূপরেখাটি এই পাতার জন্য হাতে আঁকা, " +
+        "কারণ দস্তাবেজে এসব জায়গার কোনো সীমানা নেই।"),
     });
   },
 

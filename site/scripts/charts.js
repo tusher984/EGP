@@ -15,6 +15,7 @@
    they are recorded together with the validator command that passes them. */
 
 import { el, svg, clear, t, n, digits } from "./core.js";
+import { DIVISIONS, SITES, MAP_BOX } from "./mapshape.js";
 
 export const HUES = ["var(--hue-1)", "var(--hue-2)", "var(--hue-3)"];
 export const SEQ = ["var(--seq-1)", "var(--seq-2)", "var(--seq-3)",
@@ -544,55 +545,121 @@ export function matrixLegend() {
   ];
 }
 
-/* ------------------------------------------------------------------ tile map
-   A choropleth shades a region by a value. This shades a tile by a value and
-   names the district under it, because the region is the one thing the supplied
-   documents do not carry: there is no boundary geometry anywhere in the folder,
-   and the folder is the only source this investigation may use. An outline
-   fetched from elsewhere would put a shape on the page that this evidence cannot
-   support; one drawn from memory would be worse. So the grammar is kept — one
-   shaded area per body, one measure, one ramp, a legend — and the false
-   precision of a map is dropped.
+/* ----------------------------------------------------------------- map figure
+   Bangladesh, its eight divisions, and one shaded mark for each of the six
+   authorities, standing where its own notices say it works.
 
-   Text never sits on the fill. It sits under it, on the page surface, where the
-   inverted ramp cannot take it below contrast in one mode or the other. The
-   figure is printed on every tile, so the shading is the second telling. */
+   The outline is a schematic drawn for this page and mapshape.js says so at
+   length: no boundary geometry exists in the supplied documents, and nothing
+   outside them may be used. What the map is doing here is orientation, not
+   measurement. Every number on it comes off the notices.
 
-export function tileMap(cells, opts) {
+   Why marks and not shaded divisions, which is what a choropleth would be: two
+   of these six bodies sit in one division and two more in another, so four of
+   the six values would have to share two areas. An area cannot hold two values
+   without lying about one of them. So the divisions are a recessive base and the
+   value sits on the body it belongs to.
+
+   Text never sits on a fill. The marks carry it in a key beside the map, joined
+   to each mark by a hairline, so the ramp inverting between light and dark can
+   never take a label below contrast. */
+
+export function divisionMap(cells, opts) {
   const o = opts || {};
   const w = o.width || CANVAS_WIDE;
-  const per = Math.min(o.per || cells.length, cells.length);
-  const gap = o.gap || 14, textH = o.textH || 56;
-  const side = Math.floor((w - gap * (per - 1)) / per);
-  /* Landscape rather than square: six squares across a full-width column is
-     more ink than six numbers need, and a wide block reads as an area either
-     way. */
-  const th = o.height || Math.round(side * 0.66);
-  const rows = Math.ceil(cells.length / per);
+  const [bx, by] = MAP_BOX;
+  /* The country is portrait, so height is the constraining dimension: the map is
+     sized by how tall it may be and stops at 480, and a wider column spreads the
+     key further out rather than blowing the country up to fill it. */
+  const mh = Math.round(Math.min(480, Math.max(300, w * 0.46)));
+  const k = mh / by;
+  const mw = Math.round(bx * k);
   const max = o.max || Math.max(...cells.map((c) => c.v || 0));
-  const marks = [];
+  const S = (n) => Math.round(n * k * 10) / 10;
 
-  cells.forEach((c, i) => {
-    const x = (i % per) * (side + gap), y = Math.floor(i / per) * (th + textH);
+  /* Labels go on the flank the body sits on — the western half of the six west
+     of the map, the eastern half east of it — so the type is spread across the
+     width instead of banked up one side, and the map is centred between them.
+     The split is by rank rather than by a line down the middle, because four
+     bodies east of centre and two west would leave one flank crowded and the
+     other nearly empty. On each side the rows keep the vertical order of their
+     marks and are pushed apart to a legible minimum, so a leader never has to
+     cross another leader. */
+  /* A key row is two lines: the body's name, then its count and its district.
+     19px between the two baselines and 46px between rows, because the Bengali
+     face's ink box measures 18.5px at 14px — the matra of the lower line reaches
+     into the descender of the upper one at the 14px spacing the Latin face is
+     happy with. One spacing, set by the tighter of the two editions. */
+  const rowH = o.rowH || 46, lineH = 19, gap = 46, side = 13;
+  const mapX = Math.round((w - mw) / 2);
+  const seats = cells.map((c) => ({
+    c,
+    x: mapX + S(SITES[c.key][0]),
+    y: S(SITES[c.key][1]),
+  }));
+  const westward = seats.slice().sort((a, b) => a.x - b.x)
+    .slice(0, Math.ceil(seats.length / 2));
+  seats.forEach((s) => { s.west = westward.indexOf(s) >= 0; });
+  let low = 0;
+  [true, false].forEach((flank) => {
+    let last = -Infinity;
+    seats.filter((s) => s.west === flank).sort((a, b) => a.y - b.y)
+      .forEach((s) => { s.ky = Math.max(s.y, last + rowH); last = s.ky; });
+    low = Math.max(low, last);
+  });
+  /* The lowest row's second line sits lineH below its own baseline and its ink
+     descends a few px further, so the canvas has to reserve for that or the last
+     district name is clipped by the viewBox. */
+  const h = Math.max(mh, Math.round(low) + lineH + 6);
+
+  const areas = DIVISIONS.map((d) => {
+    const pts = [];
+    for (let i = 0; i < d.p.length; i += 2) {
+      pts.push((mapX + S(d.p[i])) + "," + S(d.p[i + 1]));
+    }
+    return svg("polygon", { class: "area", points: pts.join(" ") });
+  });
+  const names = DIVISIONS.map((d) => svg("text", {
+    class: "t-geo", x: mapX + S(d.at[0]), y: S(d.at[1]), "text-anchor": "middle",
+  }, t(d)));
+
+  const marks = [], key = [];
+  seats.forEach((s) => {
+    const c = s.c;
     const absent = c.v === null || c.v === undefined;
     const step = absent ? -1
       : Math.min(BARS.length - 1, Math.floor((c.v / (max || 1)) * BARS.length));
+    const fill = absent ? "var(--surface-placeholder)" : BARS[step];
+    const swX = s.west ? mapX - gap - side : mapX + mw + gap;
+    const txX = s.west ? swX - 8 : swX + side + 8;
+    marks.push(svg("line", {
+      class: "leader",
+      x1: s.west ? s.x - 7 : s.x + 7, y1: s.y,
+      x2: s.west ? mapX - gap + 6 : swX - 6, y2: s.ky - 6,
+    }));
     marks.push(svg("rect", {
-      class: "mark", x, y, width: side, height: th,
-      fill: absent ? "var(--surface-placeholder)" : BARS[step],
+      class: "mark seat", x: s.x - 7, y: s.y - 7, width: 14, height: 14, fill,
     }, c.tip ? svg("title", null, c.tip) : null));
-    marks.push(svg("text", { x, y: y + th + 16, class: "t-cat" }, t(c.label)));
-    if (c.sub) marks.push(svg("text", { x, y: y + th + 31 }, t(c.sub)));
-    marks.push(svg("text", { x, y: y + th + 47, class: "t-val" },
-      absent ? (o.absent || "—") : c.read));
+    key.push(svg("rect", {
+      class: "mark", x: swX, y: s.ky - side, width: side, height: side, fill,
+    }));
+    key.push(svg("text", {
+      class: "t-cat", x: txX, y: s.ky - 2, "text-anchor": s.west ? "end" : "start",
+    }, t(c.label)));
+    key.push(svg("text", {
+      class: "t-val", x: txX, y: s.ky - 2 + lineH, "text-anchor": s.west ? "end" : "start",
+    }, (absent ? (o.absent || "—") : c.read) + " · " + t(c.sub)));
   });
 
   return svg("svg", {
-    viewBox: "0 0 " + w + " " + (rows * (th + textH)),
-    width: w + "px", height: rows * (th + textH),
+    viewBox: "0 0 " + w + " " + h, width: w + "px", height: h,
     role: "img", "aria-label": o.alt || "",
-  }, svg("g", { class: "marks" }, marks));
+  }, [
+    svg("g", { class: "geo" }, [...areas, ...names]),
+    svg("g", { class: "marks" }, [...marks, ...key]),
+  ]);
 }
+
 
 
 
