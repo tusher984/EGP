@@ -447,6 +447,154 @@ export function funnel(rows, opts) {
   })), Object.assign({ rowH: 34 }, o));
 }
 
+/* -------------------------------------------------------------------- matrix
+   Six named bodies measured six ways, which is the shape the question takes
+   when it is "which of these is worst". If the six were places on a map this
+   would be a choropleth; no map is drawn here, because no boundary geometry
+   exists in the supplied documents and those documents are the only source this
+   investigation may use. What is drawn is the same comparison without the
+   geography, and the district each body's own notices print rides on its row.
+
+   A cell is a bar, not a filled block. A block would have to carry its number
+   on top of itself, and the ramp cannot hold small text at contrast either way
+   round: its dark steps fail in light mode and its light steps fail in dark,
+   because tokens.css inverts the ramp between the two. So magnitude is a length
+   and the number sits on the page surface, where it is readable in both. Colour
+   is that same magnitude a second time — the redundancy any colour vision
+   needs — and never the only carrier of anything.
+
+   Each column is scaled to its own highest value, because six measures in six
+   units share no axis and one drawn across them would be a lie. The thin upright
+   is that column's middle value, so "above the middle" is something a reader can
+   see rather than a number they have to take on trust. */
+
+/* Only the ramp's upper steps colour the bars. tokens.css inverts the ramp
+   between the two modes, so a step has to clear the page surface in both, and
+   measured against #ffffff and #151719 the first three steps land between 1.2:1
+   and 3.3:1 in one mode or the other — a seven-pixel bar at that contrast is a
+   bar nobody can see. From --seq-4 up, every step clears 3:1 either way round.
+   Three steps is also all the colour has to carry: the figure is printed above
+   each bar and the upright already marks the middle, so the ramp says magnitude
+   a second time and is never the only thing saying it. */
+const BARS = SEQ.slice(3);
+
+export function matrix(rows, cols, opts) {
+  const o = opts || {};
+  const w = o.width || CANVAS_WIDE;
+  const labelW = o.labelW || 150, tailW = o.tailW || 74;
+  const rowH = o.rowH || 46, headH = o.headH || 40, gap = 16;
+  const cw = (w - labelW - 10 - tailW) / cols.length;
+  const barW = cw - gap;
+  const h = headH + rows.length * rowH;
+  const colX = (j) => labelW + 10 + j * cw;
+  const head = [], marks = [];
+
+  cols.forEach((c, j) => (c.head || []).forEach((line, k) => head.push(
+    svg("text", { x: colX(j), y: 11 + k * 13, class: "t-cat" }, t(line)))));
+  (o.tail || []).forEach((line, k) => head.push(svg("text", {
+    x: w, y: 11 + k * 13, class: "t-cat", "text-anchor": "end" }, t(line))));
+
+  rows.forEach((r, i) => {
+    const y = headH + i * rowH;
+    marks.push(svg("text", { x: 0, y: y + 15, class: "t-cat" }, t(r.label)));
+    if (r.sub) marks.push(svg("text", { x: 0, y: y + 29 }, t(r.sub)));
+    cols.forEach((c, j) => {
+      const x = colX(j), max = c.max || 100, cell = r.cells[j] || {};
+      /* Nothing recorded is not a value of zero, and it is not drawn as one:
+         the cell carries the absence mark and no bar at all. */
+      if (cell.v === null || cell.v === undefined) {
+        marks.push(svg("text", { x, y: y + 15, class: "t-val" }, o.absent || "—"));
+      } else {
+        const len = Math.max(1, (cell.v / max) * barW);
+        const step = Math.min(BARS.length - 1, Math.floor((cell.v / max) * BARS.length));
+        marks.push(svg("text", { x, y: y + 15, class: "t-val" },
+          (c.fmt || ((v) => n(v)))(cell.v)));
+        marks.push(svg("rect", { class: "mark", x, y: y + 22, width: len, height: 7,
+          fill: BARS[step] }));
+        if (c.middle !== undefined && c.middle !== null) {
+          const mx = x + Math.min(barW, (c.middle / max) * barW);
+          marks.push(svg("line", { class: "cross", x1: mx, x2: mx, y1: y + 19, y2: y + 32 }));
+        }
+      }
+      /* The hover target is the whole cell rather than the seven pixels of the
+         bar, and it goes on last so it is the thing under the pointer. */
+      if (cell.tip) marks.push(svg("rect", { class: "hit", x, y: y + 2,
+        width: Math.max(barW, 24), height: rowH - 4 }, svg("title", null, cell.tip)));
+    });
+    if (r.tail !== undefined) marks.push(svg("text", {
+      x: w, y: y + 15, class: "t-val", "text-anchor": "end" }, r.tail));
+  });
+
+  /* Fixed px, not a percentage: below about 820 units a six-column matrix
+     scaled to the column would print its labels at three pixels. It keeps its
+     size and the wrapper scrolls instead, exactly as a wide table does. */
+  return svg("svg", {
+    viewBox: "0 0 " + w + " " + h, width: w + "px", height: h,
+    role: "img", "aria-label": o.alt || "",
+  }, [svg("g", null, head), svg("g", { class: "marks" }, marks)]);
+}
+
+/** The ramp and the upright in words, so the matrix never has to be decoded.
+    The two swatches are the ends of the range the bars actually use. */
+export function matrixLegend() {
+  return [
+    { label: { en: "Lower share within that column", bn: "ওই কলামের মধ্যে কম হার" }, color: BARS[0] },
+    { label: { en: "Higher share within that column", bn: "ওই কলামের মধ্যে বেশি হার" }, color: BARS[BARS.length - 1] },
+    { label: { en: "The middle value of the six (the upright)", bn: "ছয়টির মাঝের মান (খাড়া দাগ)" }, color: "var(--axis)" },
+  ];
+}
+
+/* ------------------------------------------------------------------ tile map
+   A choropleth shades a region by a value. This shades a tile by a value and
+   names the district under it, because the region is the one thing the supplied
+   documents do not carry: there is no boundary geometry anywhere in the folder,
+   and the folder is the only source this investigation may use. An outline
+   fetched from elsewhere would put a shape on the page that this evidence cannot
+   support; one drawn from memory would be worse. So the grammar is kept — one
+   shaded area per body, one measure, one ramp, a legend — and the false
+   precision of a map is dropped.
+
+   Text never sits on the fill. It sits under it, on the page surface, where the
+   inverted ramp cannot take it below contrast in one mode or the other. The
+   figure is printed on every tile, so the shading is the second telling. */
+
+export function tileMap(cells, opts) {
+  const o = opts || {};
+  const w = o.width || CANVAS_WIDE;
+  const per = Math.min(o.per || cells.length, cells.length);
+  const gap = o.gap || 14, textH = o.textH || 56;
+  const side = Math.floor((w - gap * (per - 1)) / per);
+  /* Landscape rather than square: six squares across a full-width column is
+     more ink than six numbers need, and a wide block reads as an area either
+     way. */
+  const th = o.height || Math.round(side * 0.66);
+  const rows = Math.ceil(cells.length / per);
+  const max = o.max || Math.max(...cells.map((c) => c.v || 0));
+  const marks = [];
+
+  cells.forEach((c, i) => {
+    const x = (i % per) * (side + gap), y = Math.floor(i / per) * (th + textH);
+    const absent = c.v === null || c.v === undefined;
+    const step = absent ? -1
+      : Math.min(BARS.length - 1, Math.floor((c.v / (max || 1)) * BARS.length));
+    marks.push(svg("rect", {
+      class: "mark", x, y, width: side, height: th,
+      fill: absent ? "var(--surface-placeholder)" : BARS[step],
+    }, c.tip ? svg("title", null, c.tip) : null));
+    marks.push(svg("text", { x, y: y + th + 16, class: "t-cat" }, t(c.label)));
+    if (c.sub) marks.push(svg("text", { x, y: y + th + 31 }, t(c.sub)));
+    marks.push(svg("text", { x, y: y + th + 47, class: "t-val" },
+      absent ? (o.absent || "—") : c.read));
+  });
+
+  return svg("svg", {
+    viewBox: "0 0 " + w + " " + (rows * (th + textH)),
+    width: w + "px", height: rows * (th + textH),
+    role: "img", "aria-label": o.alt || "",
+  }, svg("g", { class: "marks" }, marks));
+}
+
+
 
 
 

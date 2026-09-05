@@ -822,6 +822,173 @@ def build_violations():
     }
 
 
+# ------------------------------------------- the six authorities, side by side
+# The question a reader asks of six public bodies is not how many notices each
+# published but whose record is worst, and that cannot honestly be answered with
+# one number: the six measures below are in six different units, and no weighting
+# between them is written in any of these documents. So none is invented here.
+# Each measure is computed on its own denominator, which is carried beside it
+# because a denominator left unstated is a claim left unchecked. The six bodies
+# are ranked on each, and the only composite printed is a count - on how many of
+# the six does this body sit above the middle of the six. That count is ours, and
+# the article says so where it prints it.
+#
+# A body with nothing recorded is not a body with a clean record. Where the
+# denominator is zero - no bid count published anywhere, no award to time - the
+# measure is None rather than 0, and it is left out of that body's count in both
+# directions rather than scored as a clean sheet.
+#
+# Six bodies in six places is a map, and no map is drawn. No boundary geometry
+# exists in the supplied documents, and the documents are the only source this
+# investigation may use, so place is carried the one way the documents carry it
+# themselves: the district printed on the notice, with the number of notices that
+# printed it. Where one body's notices print a district two ways, both spellings
+# are carried at their own counts and neither is merged away.
+
+AUTH_MEASURES = [
+    ("no_criteria", "notices"),
+    ("one_resp", "with_bids"),
+    ("band", "notices"),
+    ("late", "awarded"),
+    ("top1", "awarded"),
+    ("duty", "notices"),
+]
+
+
+def frac(part, whole):
+    """A share with its own denominator attached, or None where the documents
+       record nothing to divide by. Zero out of zero is not zero per cent."""
+    if not whole:
+        return None
+    return {"pct": pct(part, whole), "n": part, "of": whole}
+
+
+def build_authorities():
+    # one set of tender ids per authority: the notices carrying at least one
+    # departure from a clause worded as a duty whose instrument the engine could
+    # place at or before the year of the tender's own event
+    duty_ids = collections.defaultdict(set)
+    for d in DEV:
+        if d["test_result"] == "DEVIATION" and d["clause_force"] in DUTY_FORCE and \
+           "PLAUSIBLY_IN_FORCE" in d["instrument_timing_vs_this_tender"]:
+            duty_ids[d["agency"]].add(d["tender_id"])
+
+    rows = []
+    for key, notices in collections.Counter(r["agency"] for r in MASTER).most_common():
+        mine = [r for r in MASTER if r["agency"] == key]
+        awd = [r for r in mine if num(r, "contract_value_bdt")]
+        withb = [r for r in mine if num(r, "total_bids_received") is not None]
+        noc = [r for r in mine
+               if r["eligibility_published"] != "SUBSTANTIVE_TEXT_PUBLISHED"]
+        one = [r for r in withb if num(r, "responsive_bids") == 1]
+        band = [r for r in mine if yes(r, "price_band_nonresponsive_clause")]
+        # the legal window is read off the engine's own verdict string, which
+        # names the cap it applied; EXCEEDS is the only way it records an overrun
+        timed = [r for r in mine if txt(r, "signing_within_legal_band")]
+        late = [r for r in timed
+                if txt(r, "signing_within_legal_band").startswith("EXCEEDS")]
+        value = sum(num(r, "contract_value_bdt") or 0 for r in awd)
+
+        # the largest single winner inside this authority, keyed the way
+        # build_winners keys one, so a reader can reconcile the two lists
+        won, wins = collections.defaultdict(float), collections.Counter()
+        for r in awd:
+            w = txt(r, "winner_name_normalised") or txt(r, "winner_name")
+            if w:
+                won[w] += num(r, "contract_value_bdt") or 0
+                wins[w] += 1
+        booked = sum(won.values())
+        top = max(won.items(), key=lambda x: x[1]) if booked else None
+
+        # district as printed, commonest first, every spelling kept
+        printed = [{"key": p, "n": c} for p, c in collections.Counter(
+            txt(r, "pe_district") for r in mine if txt(r, "pe_district")).most_common()]
+
+        rows.append({
+            "key": key,
+            "organization": next((txt(r, "organization") for r in mine
+                                  if txt(r, "organization")), ""),
+            "district": printed[0]["key"] if printed else "",
+            "district_n": printed[0]["n"] if printed else 0,
+            "printed": printed,
+            "spellings": len(printed),
+            "tenders": notices,
+            "awarded": len(awd),
+            "crore": cr(value),
+            "taka": round(value, 2),
+            "share": pct(value, AWARDED_VALUE),
+            "median_bids": med([num(r, "total_bids_received") for r in withb]),
+            "rejected": int(sum(num(r, "bidders_rejected_count") or 0 for r in mine)),
+            "reasons": 0,
+            "top1_name": NAME_OF.get(top[0]) or tidy_name(top[0]) if top else "",
+            "top1_wins": wins[top[0]] if top else 0,
+            "hhi": round(sum((v / booked * 100) ** 2 for v in won.values()), 1)
+            if booked else None,
+            "winners": len(won),
+            "m": {
+                "no_criteria": frac(len(noc), notices),
+                "one_resp": frac(len(one), len(withb)),
+                "band": frac(len(band), notices),
+                "late": frac(len(late), len(timed)),
+                # a money share, so its parts are money and are named as money
+                # rather than dressed as the n-of-N the other five carry
+                "top1": {"pct": pct(top[1], booked), "crore": cr(top[1]),
+                         "of_crore": cr(booked), "contracts": wins[top[0]]}
+                if top else None,
+                "duty": frac(len(duty_ids[key]), notices),
+            },
+        })
+
+    # Each measure ranked on its own: the middle of the six, the body at the top
+    # of the list and the body at the bottom. "Worst" throughout means the
+    # highest share on that one measure and nothing beyond it.
+    measures = {}
+    for mk, denom in AUTH_MEASURES:
+        got = [(r["key"], r["m"][mk]["pct"]) for r in rows if r["m"].get(mk)]
+        if not got:
+            continue
+        hi = max(got, key=lambda x: x[1])
+        lo = min(got, key=lambda x: x[1])
+        measures[mk] = {
+            "denominator": denom, "measured": len(got),
+            "middle": round(st.median([v for _, v in got]), 2),
+            "worst": hi[0], "worst_pct": hi[1], "best": lo[0], "best_pct": lo[1],
+            "max": max(v for _, v in got),
+        }
+
+    for r in rows:
+        got = [mk for mk, _ in AUTH_MEASURES if r["m"].get(mk)]
+        r["measured"] = len(got)
+        r["above"] = sum(1 for mk in got if r["m"][mk]["pct"] > measures[mk]["middle"])
+        r["worst_on"] = [mk for mk in got if measures[mk]["worst"] == r["key"]]
+
+    # ordered by the count, then by the money, so the table reads as the answer
+    rows.sort(key=lambda r: (-r["above"], -r["taka"]))
+    lead = [r for r in rows if r["above"] == rows[0]["above"]]
+    return {
+        "order": [mk for mk, _ in AUTH_MEASURES],
+        "measures": measures,
+        "rows": rows,
+        "n": len(rows),
+        "of": len(AUTH_MEASURES),
+        # how many bodies tie at the top of our own count, and their combined
+        # share of the money - the article leads on this rather than on a winner
+        "lead": [r["key"] for r in lead],
+        "lead_n": len(lead),
+        "lead_above": rows[0]["above"],
+        "lead_crore": cr(sum(r["taka"] for r in lead)),
+        "lead_share": pct(sum(r["taka"] for r in lead), AWARDED_VALUE),
+        "rejected": int(sum(num(r, "bidders_rejected_count") or 0 for r in MASTER)),
+        "reasons": 0,
+        "districts": len({p["key"] for r in rows for p in r["printed"]}),
+        # bodies whose notices print a second district name more than once. Not
+        # a claim that the two names are two places, nor that they are one: both
+        # are reported as printed and the reader is told the counts.
+        "second_named": [r["key"] for r in rows if r["spellings"] > 1
+                         and r["printed"][1]["n"] > 1],
+    }
+
+
 # ---------------------------------------------- one slim row per tender, 1,155
 
 SLIM = [
@@ -1961,6 +2128,7 @@ def main():
         },
         "competition": C["comp"],
         "estimate": build_estimate(),
+        "authority": build_authorities(),
         "provenance": provenance,
         "field": {
             "submitted": int(sum(x or 0 for x in C["bids"])),

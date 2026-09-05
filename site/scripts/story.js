@@ -18,7 +18,7 @@ import {
 } from "./core.js";
 import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
-  funnel, hue, SEQ, wideCanvas,
+  funnel, matrix, matrixLegend, tileMap, hue, SEQ, wideCanvas,
 } from "./charts.js";
 import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
 
@@ -163,8 +163,8 @@ const FIGS = {
          { en: "Contract value", bn: "চুক্তিমূল্য" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         rows.map((r) => [r.label, n(r.n), cr(r.value), pct(r.share)])
       ),
-      source: src(F.master.en + " — <code>competition_level</code> against <code>contract_value_bdt</code>. Bid-count bands are read off <code>total_bids_received</code>: one bid, two, three, four to five, six or more.",
-        F.master.bn + " — <code>competition_level</code> ও <code>contract_value_bdt</code>। দরের সংখ্যার ভাগগুলো <code>total_bids_received</code> থেকে পড়া: এক, দুই, তিন, চার-পাঁচ, ছয় বা তার বেশি।"),
+      source: src(F.master.en + " — <code>competition_level</code> against <code>contract_value_bdt</code>, with the bid-count bands read off <code>total_bids_received</code>.",
+        F.master.bn + " — <code>competition_level</code> ও <code>contract_value_bdt</code>, দরের সংখ্যার ভাগগুলো <code>total_bids_received</code> থেকে পড়া।"),
     });
   },
 
@@ -193,10 +193,168 @@ const FIGS = {
         rows.map((r) => [bodyName(r.a.organization), n(r.a.tenders), n(r.a.no_criteria),
           pct(r.a.no_criteria_pct), r.a.median_bids === null ? dash() : n(r.a.median_bids), cr(r.a.crore)])
       ),
-      source: src(F.master.en + " — <code>eligibility_published</code> grouped by <code>agency</code>; a notice counts as publishing a bar only where the column reads <code>SUBSTANTIVE_TEXT_PUBLISHED</code>. The middle value is from <code>total_bids_received</code>.",
-        F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>; কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে। মাঝের মান <code>total_bids_received</code> থেকে।"),
+      source: src(F.master.en + " — <code>eligibility_published</code> grouped by <code>agency</code>, counting a notice as publishing a bar only where that column reads <code>SUBSTANTIVE_TEXT_PUBLISHED</code>.",
+        F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>, আর কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে।"),
     });
   },
+  /* Two views of the same comparison: six public bodies set beside each other on
+     six measures, and the map that comparison would have been made on if these
+     documents carried one. No boundary geometry exists in the supplied folder and
+     that folder is the only source this investigation may use, so place is
+     carried the way the notices carry it themselves — the district printed on
+     them, under the name of the body that printed it.
+
+     The map-shaped view first, because it is the one a reader can take in at a
+     glance: one shaded area per authority, shaded by the count the matrix ends
+     on. The count is printed on every area, so the shading is the second telling
+     and never the only one. */
+  authorityMap(corpus) {
+    const au = corpus.authority;
+    const cells = au.rows.map((r) => ({
+      label: agencyName(r.key),
+      sub: placeName(r.district),
+      v: r.measured ? r.above / r.measured : null,
+      read: n(r.above) + "/" + n(r.measured),
+      tip: bodyName(r.organization) + " — " + placeName(r.district) + " · " +
+        t({ en: "above the middle on " + n(r.above) + " of " + n(r.measured) +
+                " measures",
+            bn: n(r.measured) + "টি মাপের " + n(r.above) + "টিতে মাঝের মানের উপরে" }),
+    }));
+    return figure({
+      wide: true,
+      title: {
+        en: "Where the six sit, and how often each is on the worse side",
+        bn: "ছয় সংস্থা কোথায়, আর কে কতবার খারাপ দিকে",
+      },
+      deck: {
+        en: "One shaded area per authority, darker the more of the six measures it sits above the middle on, with the district its own notices print most often underneath. It is not drawn as a map of Bangladesh: no boundary for any of these districts appears in the supplied documents, and nothing outside them was used.",
+        bn: "প্রতি সংস্থার জন্য একটি রঙানো ঘর — ছয় মাপের যতগুলোতে সংস্থাটি মাঝের মানের উপরে, ততই গাঢ়; নিচে সেই জেলা, যেটি ওই সংস্থার বিজ্ঞপ্তিতেই সবচেয়ে বেশিবার ছাপা হয়েছে। এটি বাংলাদেশের মানচিত্র হিসেবে আঁকা নয়: সরবরাহ করা দস্তাবেজে এই জেলাগুলোর কোনোটির সীমানা নেই, আর দস্তাবেজের বাইরের কিছু ব্যবহার করা হয়নি।",
+      },
+      plot: el("div", { class: "tbl-scroll" }, tileMap(cells, {
+        width: wideCanvas(), max: 1, absent: dash(),
+        alt: A({
+          en: "Six shaded areas, one per authority, darker the more measures it is above the middle on. The counts are in the table below.",
+          bn: "ছয়টি রঙানো ঘর, প্রতি সংস্থার একটি; যত বেশি মাপে মাঝের মানের উপরে, তত গাঢ়। সংখ্যাগুলো নিচের টেবিলে আছে।",
+        }, corpus),
+      })),
+      legend: [
+        { label: { en: "Above the middle on fewer measures", bn: "কম মাপে মাঝের মানের উপরে" },
+          color: "var(--seq-4)" },
+        { label: { en: "Above the middle on more measures", bn: "বেশি মাপে মাঝের মানের উপরে" },
+          color: "var(--seq-6)" },
+      ],
+      table: table(
+        [{ en: "Authority", bn: "সংস্থা" },
+         { en: "District printed most often", bn: "সবচেয়ে বেশি ছাপা জেলা" },
+         { en: "Above the middle on", bn: "মাঝের মানের উপরে" }],
+        au.rows.map((r) => [bodyName(r.organization),
+          placeName(r.district) + " " + n(r.district_n),
+          n(r.above) + "/" + n(r.measured)])
+      ),
+      source: src(
+        F.master.en + " — the last column of the matrix below, with place from " +
+        "<code>pe_district</code> as printed and no geographic file of any kind.",
+        F.master.bn + " — নিচের ছকটির শেষ কলাম; জেলা <code>pe_district</code> " +
+        "থেকে, যেমন ছাপা হয়েছে তেমনই, আর কোনো ভৌগোলিক ফাইল ব্যবহার করা হয়নি।"),
+    });
+  },
+
+  /* One row per authority, one column per measure, one bar per cell, and a count
+     at the end. Six measures on six honest denominators is the answer to "which
+     one is worse" that these documents can carry; a single weighted index would
+     be an answer this investigation invented, because no document in the folder
+     printed it.
+
+     Each column is scaled to its own highest value, because the six measures are
+     in six different units and share no axis; one drawn across them would be a
+     lie. The upright is the middle of the six on that column, so "above the
+     middle" is something a reader can see rather than take on trust. The last
+     column counts those placements. That count is ours, it weights nothing, and
+     the article says so where it prints it. */
+  authority(corpus) {
+    const au = corpus.authority, M = au.measures;
+
+    /* "49 of 96", in the order each language reads it. */
+    const outOf = (part, whole) => t({
+      en: n(part) + " of " + n(whole),
+      bn: n(whole) + "টির মধ্যে " + n(part),
+    });
+
+    /* The parts behind a share, in the unit that share is made of: five of the
+       six are documents counted, the sixth is money. */
+    const parts = (k, m) => (k === "top1"
+      ? t({ en: cr(m.crore) + " of " + cr(m.of_crore),
+            bn: cr(m.of_crore) + "-এর মধ্যে " + cr(m.crore) })
+      : outOf(m.n, m.of));
+
+    const cols = au.order.map((k) => ({
+      head: LABELS.authorityHead[k],
+      max: M[k].max, middle: M[k].middle, fmt: (v) => pct(v),
+    }));
+
+    const rows = au.rows.map((r) => ({
+      label: agencyName(r.key),
+      sub: placeName(r.district),
+      cells: au.order.map((k) => {
+        const m = r.m[k];
+        return {
+          v: m ? m.pct : null,
+          tip: bodyName(r.organization) + " — " + label("authority", k) + ": " +
+            (m ? pct(m.pct) + " (" + parts(k, m) + ")" : dash()),
+        };
+      }),
+      tail: n(r.above) + "/" + n(r.measured),
+    }));
+    return figure({
+      wide: true,
+      title: {
+        en: "The six authorities, measured six ways",
+        bn: "ছয় সংস্থা, ছয় মাপে",
+      },
+      deck: {
+        en: "One row per authority, one column per measure, and each column scaled to its own highest value, because the six are in six different units and share no axis. The upright on a bar is the middle of the six on that measure. The last column counts how many of the six this body sits above that middle on — a count of placements, weighting nothing, and ours rather than any authority's. Under each name is the district its own notices print most often.",
+        bn: "প্রতি সারিতে একটি সংস্থা, প্রতি কলামে একটি মাপ; প্রতিটি কলাম নিজের সর্বোচ্চ মানে মাপা, কারণ ছয়টি মাপ ছয় রকম এককে — কারও সঙ্গে কারও অক্ষ মেলে না। দণ্ডের খাড়া দাগটি ওই মাপে ছয়টির মাঝের মান। শেষ কলামটি গোনে, ছয়টির কতটিতে এই সংস্থা ওই মাঝের মানের উপরে — নিছক গোনা, কোনো ভার দেওয়া নেই, আর এটি আমাদের হিসাব, কোনো সংস্থার নয়। নামের নিচে সেই জেলা, যেটি ওই সংস্থার বিজ্ঞপ্তিতেই সবচেয়ে বেশিবার ছাপা হয়েছে।",
+      },
+      plot: el("div", { class: "tbl-scroll" }, matrix(rows, cols, {
+        width: wideCanvas(), labelW: 120, tailW: 96,
+        tail: [{ en: "Above the", bn: "মাঝের মানের" }, { en: "middle on", bn: "উপরে" }],
+        absent: dash(),
+        alt: A({
+          en: "Six authorities against six measures, each column scaled to its own highest value. The figures are in the table below.",
+          bn: "ছয়টি সংস্থা ছয়টি মাপের বিপরীতে, প্রতিটি কলাম নিজের সর্বোচ্চ মানে মাপা। সংখ্যাগুলো নিচের টেবিলে আছে।",
+        }, corpus),
+      })),
+      legend: matrixLegend(),
+      table: table(
+        [{ en: "Authority", bn: "সংস্থা" },
+         { en: "District printed most often", bn: "সবচেয়ে বেশি ছাপা জেলা" },
+         { en: "Notices", bn: "বিজ্ঞপ্তি" }, { en: "Contract value", bn: "চুক্তিমূল্য" }]
+          .concat(au.order.map((k) => LABELS.authority[k]))
+          .concat([{ en: "Above the middle on", bn: "মাঝের মানের উপরে" }]),
+        au.rows.map((r) => [bodyName(r.organization),
+          placeName(r.district) + " " + n(r.district_n), n(r.tenders), cr(r.crore)]
+          .concat(au.order.map((k) => (r.m[k]
+            ? pct(r.m[k].pct) + " (" + parts(k, r.m[k]) + ")" : dash())))
+          .concat([n(r.above) + "/" + n(r.measured)]))
+      ),
+      source: src(
+        F.master.en + ", with the sixth measure from the clause tests — " +
+        "<code>eligibility_published</code>; <code>responsive_bids</code> against " +
+        "<code>total_bids_received</code>; <code>price_band_nonresponsive_clause</code>; " +
+        "<code>signing_within_legal_band</code>; <code>contract_value_bdt</code> grouped by " +
+        "<code>winner_name_normalised</code>; <code>clause_force</code> with " +
+        "<code>instrument_timing_vs_this_tender</code>; and place from <code>pe_district</code> " +
+        "as printed.",
+        F.master.bn + ", ষষ্ঠ মাপটি ধারা-পরীক্ষা থেকে — " +
+        "<code>eligibility_published</code>; <code>total_bids_received</code>-এর বিপরীতে " +
+        "<code>responsive_bids</code>; <code>price_band_nonresponsive_clause</code>; " +
+        "<code>signing_within_legal_band</code>; <code>winner_name_normalised</code> অনুযায়ী " +
+        "<code>contract_value_bdt</code>; <code>clause_force</code> ও " +
+        "<code>instrument_timing_vs_this_tender</code>; আর জেলা <code>pe_district</code> " +
+        "থেকে, যেমন ছাপা হয়েছে তেমনই।"),
+    });
+  },
+
   /* The figure that argues against our own starting theory. Median bids on the
      plot — one unit — with the single-responsive share in the table, because
      the two are different quantities and stacking them on one axis would let a
@@ -224,8 +382,8 @@ const FIGS = {
         rows.map((x) => [x.label, n(x.r.n), n(x.r.median_bids), n(x.r.mean_bids, 2),
           n(x.r.single_responsive), pct(x.r.single_responsive_pct)])
       ),
-      source: src(F.master.en + " — <code>eligibility_restriction_level</code> against <code>total_bids_received</code> and <code>responsive_bids</code>. The bands are this investigation's own classification of the published criteria, not a finding by any authority.",
-        F.master.bn + " — <code>eligibility_restriction_level</code> এবং <code>total_bids_received</code>, <code>responsive_bids</code>। স্তরগুলো প্রকাশিত শর্তের ভিত্তিতে এই অনুসন্ধানের নিজস্ব শ্রেণিবিভাগ, কোনো সংস্থার সিদ্ধান্ত নয়।"),
+      source: src(F.master.en + " — <code>eligibility_restriction_level</code> against <code>total_bids_received</code> and <code>responsive_bids</code>.",
+        F.master.bn + " — <code>eligibility_restriction_level</code> এবং <code>total_bids_received</code>, <code>responsive_bids</code>।"),
     });
   },
 
@@ -258,8 +416,8 @@ const FIGS = {
         all.map((k) => [t(LABELS.bars[k]), n(b[k].n), n(b[k].min, 2), n(b[k].p10, 2),
           n(b[k].median, 2), n(b[k].p90, 2), n(b[k].max, 2)])
       ),
-      source: src(F.master.en + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>. Only notices that published the figure are counted, so each row has its own denominator.",
-        F.master.bn + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code>, <code>minimum_similar_projects</code>। কেবল যেসব বিজ্ঞপ্তিতে সংখ্যাটি প্রকাশিত, সেগুলোই গোনা — তাই প্রতিটি সারির নিজস্ব হর।"),
+      source: src(F.master.en + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code> and <code>minimum_similar_projects</code>, each row counting only the notices that published that figure.",
+        F.master.bn + " — <code>turnover_to_contract_value_ratio</code>, <code>financial_bar_to_contract_value_ratio</code>, <code>similar_project_value_to_contract_value_ratio</code>, <code>security_to_contract_value_ratio</code>, <code>minimum_years_experience</code> ও <code>minimum_similar_projects</code>, প্রতিটি সারিতে কেবল সেসব বিজ্ঞপ্তিই গোনা যেগুলোতে ওই সংখ্যাটি প্রকাশিত।"),
     });
   },
   /* Two series, one unit — tenders — so they belong on one axis. Money moves on
@@ -356,8 +514,8 @@ const FIGS = {
          { en: "Share of the set", bn: "সম্ভারের হার" }],
         rows.map((r) => [digits(r.key), n(r.n), pct((r.n / corpus.counts.tenders) * 100)])
       ),
-      source: src(F.master.en + " — <code>preselection_stage_count</code> and <code>preselection_stages_met</code>. The seven conditions are this investigation's own tests, applied to the documents' own fields; no authority has classified any of these tenders.",
-        F.master.bn + " — <code>preselection_stage_count</code> ও <code>preselection_stages_met</code>। সাতটি শর্ত এই অনুসন্ধানের নিজস্ব পরীক্ষা, নথির নিজের ঘর ধরে প্রয়োগ করা; কোনো সংস্থা এসব দরপত্রকে কোনো শ্রেণিতে ফেলেনি।"),
+      source: src(F.master.en + " — <code>preselection_stage_count</code> and <code>preselection_stages_met</code>.",
+        F.master.bn + " — <code>preselection_stage_count</code> ও <code>preselection_stages_met</code>।"),
     });
   },
 
@@ -390,8 +548,8 @@ const FIGS = {
         [{ en: "Firms", bn: "প্রতিষ্ঠান" }, { en: "Share of the money", bn: "অর্থের অংশ" }],
         parts.map((p) => [t(p.label), pct(p.value)])
       ),
-      source: src(F.master.en + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>. The bands are the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced. Firms are grouped on that column and never merged on a resemblance; the name shown is a spelling the award notices print.",
-        F.master.bn + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>। স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল। প্রতিষ্ঠানগুলো ওই কলাম ধরে দলবদ্ধ, মিল দেখে কখনো এক করা হয়নি; যে নাম দেখানো হয় তা চুক্তি-বিজ্ঞপ্তিতে ছাপা বানান।"),
+      source: src(F.master.en + " — <code>winner_name_normalised</code> against <code>contract_value_bdt</code>, the bands being the cumulative top-1, top-5, top-10 and top-20 shares of all awarded value, differenced.",
+        F.master.bn + " — <code>contract_value_bdt</code>-এর বিপরীতে <code>winner_name_normalised</code>, আর স্তরগুলো ক্রমযোজিত শীর্ষ-১, ৫, ১০ ও ২০-এর অংশের বিয়োগফল।"),
     });
   },
   /* The nine rules that recorded a mismatch, counted only where the document
@@ -450,17 +608,11 @@ const FIGS = {
         { textCols: true }
       ),
       source: src(F.dev.en + " — columns <code>rule_code</code>, <code>clause_force</code> and " +
-        "<code>instrument_timing_vs_this_tender</code>. A bar counts the rows whose timing flag reads " +
-        "INSTRUMENT_PLAUSIBLY_IN_FORCE, which means the year of the tender's own event is not earlier " +
-        "than the document cited. That test is year-granularity only: a tender published in April 2025 " +
-        "counts as in force against a document dated December 2025. The nine rules that recorded no " +
-        "mismatch at all are not plotted; they are listed in full on the rules tab.",
+        "<code>instrument_timing_vs_this_tender</code>, each bar counting only the rows whose " +
+        "timing flag reads <code>INSTRUMENT_PLAUSIBLY_IN_FORCE</code>.",
         F.dev.bn + " — <code>rule_code</code>, <code>clause_force</code> ও " +
-        "<code>instrument_timing_vs_this_tender</code> কলাম। একটি দণ্ড সেই সারিগুলো গোনে যেগুলোর সময়-চিহ্নে " +
-        "INSTRUMENT_PLAUSIBLY_IN_FORCE লেখা, অর্থাৎ দরপত্রের নিজের ঘটনার বছর উদ্ধৃত দস্তাবেজের চেয়ে আগের নয়। " +
-        "ওই পরীক্ষা কেবল বছরের হিসাবে: ২০২৫ সালের এপ্রিলে প্রকাশিত দরপত্রও ২০২৫ সালের ডিসেম্বরের দস্তাবেজের " +
-        "বিপরীতে বলবৎ হিসেবে গোনা হয়। যে নয়টি নিয়মে কোনো বিচ্যুতিই ধরা পড়েনি সেগুলো আঁকা হয়নি; " +
-        "নিয়ম ট্যাবে সেগুলো পুরোটাই আছে।"),
+        "<code>instrument_timing_vs_this_tender</code> কলাম, আর প্রতিটি দণ্ড কেবল সেই সারিগুলোই গোনে " +
+        "যেগুলোর সময়-চিহ্নে <code>INSTRUMENT_PLAUSIBLY_IN_FORCE</code> লেখা।"),
     });
   },
 
@@ -498,14 +650,14 @@ const FIGS = {
         [{ en: "Outcome", bn: "ফলাফল" }, { en: "Tests", bn: "পরীক্ষা" }, { en: "Share", bn: "হার" }],
         rs.results.map((r) => [label("results", r.key), n(r.n), pct((r.n / rs.tested_rows) * 100)])
       ),
-      source: src(F.dev.en + " — " + n(rs.tested_rows) + " rows, column <code>test_result</code>. Of the " +
-        n(rs.deviation_rows) + " deviation rows, " + n(rs.postdates_event) +
-        " cite an instrument dated after the event tested and " + n(rs.plausibly_in_force) +
-        " one plausibly in force at the time; the timing flag is on every row.",
-        F.dev.bn + " — " + n(rs.tested_rows) + "টি সারি, <code>test_result</code> কলাম। " +
+      source: src(F.dev.en + " — " + n(rs.tested_rows) + " rows, column <code>test_result</code>, with " +
+        n(rs.postdates_event) + " of the " + n(rs.deviation_rows) +
+        " deviation rows citing an instrument dated after the event tested and " +
+        n(rs.plausibly_in_force) + " one plausibly in force at the time.",
+        F.dev.bn + " — " + n(rs.tested_rows) + "টি সারি, <code>test_result</code> কলাম, আর " +
         n(rs.deviation_rows) + "টি বিচ্যুতির সারির " + n(rs.postdates_event) +
-        "টিতে উদ্ধৃত দস্তাবেজের তারিখ পরীক্ষিত ঘটনার পরের, আর " + n(rs.plausibly_in_force) +
-        "টিতে তখন বলবৎ থাকা সম্ভব ছিল; প্রতিটি সারিতে সময়-চিহ্ন আছে।"),
+        "টিতে উদ্ধৃত দস্তাবেজের তারিখ পরীক্ষিত ঘটনার পরের, " + n(rs.plausibly_in_force) +
+        "টিতে তখন বলবৎ থাকা সম্ভব ছিল।"),
     });
   },
 };
@@ -620,7 +772,10 @@ function sceneBlock(corpus, id) {
 
   if (c.mark) {
     frag.appendChild(el("div", { class: "exhibit" }, [
-      el("p", { class: "exhibit-label", text: t(spec.markLabel) }),
+      /* Two of these labels quote a figure — the peer middle, the reuse count —
+         so the label goes through the same resolution as the prose around it.
+         It is a text slot, so it takes the tag-free form. */
+      el("p", { class: "exhibit-label", text: A(spec.markLabel, corpus) }),
       quoted(c.mark, ""),
       el("p", { class: "exhibit-read", html: T(spec.markRead, corpus) }),
       el("p", { class: "case-note", text: t(CASE.words.markNote) }),
@@ -770,12 +925,6 @@ function block(b, corpus) {
           el("span", { class: "tag tag-" + b.tag, text: t(UI.tags[b.tag]) }),
           el("h3", { html: T(b.h, corpus) }),
         ]),
-        ...b.p.map((p) => el("p", { html: T(p, corpus) })),
-      ]);
-
-    case "note":
-      return el("aside", { class: "note" }, [
-        el("p", { class: "note-title", html: T(b.title, corpus) }),
         ...b.p.map((p) => el("p", { html: T(p, corpus) })),
       ]);
 

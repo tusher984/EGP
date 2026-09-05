@@ -115,6 +115,28 @@ export const LABELS = {
     UNKNOWN: { en: "Bid count not published", bn: "দরের সংখ্যা প্রকাশিত নয়" },
   },
 
+  /* The six measures the authorities are set beside each other on. Long form
+     for the table, where a column has a whole line to itself. */
+  authority: {
+    no_criteria: { en: "Notices publishing no eligibility bar at all", bn: "যেসব বিজ্ঞপ্তিতে যোগ্যতার কোনো শর্তই প্রকাশিত নয়" },
+    one_resp: { en: "Tenders where one bid survived the responsiveness check", bn: "যেসব দরপত্রে গ্রহণযোগ্যতার যাচাই একটি দরই টিকেছে" },
+    band: { en: "Notices carrying the fixed price corridor", bn: "যেসব বিজ্ঞপ্তিতে দামের নির্দিষ্ট বলয় আছে" },
+    late: { en: "Contracts signed outside the legal window", bn: "আইনি সময়সীমার বাইরে স্বাক্ষরিত চুক্তি" },
+    top1: { en: "The single biggest winner's share of that body's money", bn: "ওই সংস্থার অর্থের কত অংশ একক বৃহত্তম বিজয়ীর" },
+    duty: { en: "Notices departing from a clause worded as a duty", bn: "বাধ্যতামূলক ভাষায় লেখা ধারা থেকে বিচ্যুত বিজ্ঞপ্তি" },
+  },
+
+  /* The same six over two short lines, which is all a column head has room
+     for. Every one of them is a share, so no unit is repeated in the head. */
+  authorityHead: {
+    no_criteria: [{ en: "No published", bn: "প্রকাশিত শর্ত" }, { en: "bar at all", bn: "নেই" }],
+    one_resp: [{ en: "One bid", bn: "একটি দর" }, { en: "survived", bn: "টিকেছে" }],
+    band: [{ en: "Price", bn: "দামের" }, { en: "corridor", bn: "বলয়" }],
+    late: [{ en: "Signed", bn: "দেরিতে" }, { en: "late", bn: "স্বাক্ষরিত" }],
+    top1: [{ en: "Biggest winner's", bn: "বৃহত্তম বিজয়ীর" }, { en: "share", bn: "অংশ" }],
+    duty: [{ en: "Departs from", bn: "বাধ্যতা থেকে" }, { en: "a duty clause", bn: "বিচ্যুত" }],
+  },
+
   restriction: {
     NONE_IDENTIFIED: { en: "No restrictive pattern identified", bn: "সীমাবদ্ধকারী কোনো ধরন পাওয়া যায়নি" },
     POSSIBLE: { en: "Possible", bn: "সম্ভাব্য" },
@@ -1832,18 +1854,9 @@ export const STORY = [
   },
 
   {
-    k: "note",
-    title: { en: "Two things that weaken this section", bn: "এই অংশটি যে দুটি কারণে দুর্বল" },
-    p: [
-      {
-        en: "The first is a date. The standard document that sets a computed price floor from the actual spread of bids, and a {{estimate.std_pct|n}} per cent test against the estimate for a lone survivor, is December 2025 text. These notices run from long before that: on the year-granularity test, {{estimate.band_predates_standard|n}} of the {{estimate.band_notices|n}} were published before the machinery they depart from existed, and only {{estimate.band_standard_in_force|n}} were published when it was plausibly in force. Read the flat band as a departure from the current standard, then — not as a breach at the time it was written. What does not depend on the date is the arithmetic: a notice that rejects a price {{estimate.width_common|n}} per cent below the estimate caps the saving at {{estimate.width_common|n}} per cent, whatever rulebook is in force.",
-        bn: "প্রথমটি একটি তারিখ। যে আদর্শ দস্তাবেজ দরগুলোর প্রকৃত বিস্তার থেকে দামের একটি গণনাকৃত মেঝে ঠিক করে, আর একটিমাত্র দরপত্র টিকলে প্রাক্কলনের সঙ্গে {{estimate.std_pct|n}} শতাংশের পরীক্ষা দেয়, সেটি ২০২৫ সালের ডিসেম্বরের লেখা। এই বিজ্ঞপ্তিগুলো তার অনেক আগে থেকে: বছরের হিসাবে চলা পরীক্ষায় {{estimate.band_notices|n}}টির {{estimate.band_predates_standard|n}}টিই প্রকাশিত হয়েছে ওই কাঠামো তৈরি হওয়ার আগে, আর কেবল {{estimate.band_standard_in_force|n}}টি প্রকাশিত হয়েছে যখন সেটি সম্ভাব্যভাবে বলবৎ ছিল। তাই নির্দিষ্ট শতাংশের বলয়টিকে পড়ুন বর্তমান আদর্শ থেকে সরে যাওয়া হিসেবে — লেখার সময়ের নিয়ম ভাঙা হিসেবে নয়। তারিখের ওপর যা নির্ভর করে না, সেটি অঙ্ক: যে বিজ্ঞপ্তি প্রাক্কলনের {{estimate.width_common|n}} শতাংশ নিচের দর বাতিল করে, সেটি সাশ্রয়ের সীমা {{estimate.width_common|n}} শতাংশেই বেঁধে দেয় — যে নিয়মপুস্তিকাই বলবৎ থাকুক।",
-      },
-      {
-        en: "The second is what we have not claimed. The band notices did draw a thinner field — a middle of {{estimate.band_median_bids|n}} bidders against {{estimate.rest_median_bids|n}} for the {{estimate.rest_with_bids|n}} other tenders that published a bid count. We are not publishing that as an effect of the clause. {{estimate.band_agencies.0.n|n}} of the {{estimate.band_notices|n}} belong to a single authority, so the comparison is largely a comparison between two authorities and their different kinds of work, and it cannot be separated from either. The clause and its arithmetic need no comparison group; the bid counts are printed here so a reader can see what we saw and weigh it themselves.",
-        bn: "দ্বিতীয়টি হলো যা আমরা দাবি করিনি। বলয়যুক্ত বিজ্ঞপ্তিগুলোতে প্রতিযোগিতা সত্যিই পাতলা ছিল — মাঝের মান {{estimate.band_median_bids|n}}টি দরদাতা, আর দরদাতার সংখ্যা প্রকাশ করা বাকি {{estimate.rest_with_bids|n}}টি দরপত্রে {{estimate.rest_median_bids|n}}টি। আমরা এটিকে ওই শর্তের ফল হিসেবে প্রকাশ করছি না। {{estimate.band_notices|n}}টির {{estimate.band_agencies.0.n|n}}টিই একটিমাত্র সংস্থার, তাই তুলনাটি মূলত দুটি সংস্থা আর তাদের ভিন্ন ধরনের কাজের মধ্যে তুলনা হয়ে দাঁড়ায়, আর দুটির কোনোটি থেকেই এটিকে আলাদা করা যায় না। শর্ত আর তার অঙ্কের জন্য কোনো তুলনার দল দরকার নেই; দরদাতার সংখ্যাগুলো এখানে ছাপা হলো যাতে পাঠক আমরা যা দেখেছি তা দেখতে পান এবং নিজেই ওজন করতে পারেন।",
-      },
-    ],
+    k: "p",
+    en: "Two limits sit on this section, and Data & method sets both out in full. The standard that computes a price floor is December 2025 text, so {{estimate.band_predates_standard|n}} of these {{estimate.band_notices|n}} notices were published before the machinery they depart from existed; and the thinner field on them is not published here as an effect of the clause, because {{estimate.band_agencies.0.n|n}} of the {{estimate.band_notices|n}} belong to a single authority. What does not depend on either is the arithmetic: a notice that rejects a price {{estimate.width_common|n}} per cent below the estimate caps the saving at {{estimate.width_common|n}} per cent, whatever rulebook is in force.",
+    bn: "এই অংশটির উপর দুটি সীমা আছে, আর ‘ডেটা ও পদ্ধতি’ অংশে দুটিই পুরো লেখা আছে। দামের মেঝে গণনা করা আদর্শ দস্তাবেজটি ২০২৫ সালের ডিসেম্বরের লেখা, তাই এই {{estimate.band_notices|n}}টি বিজ্ঞপ্তির {{estimate.band_predates_standard|n}}টিই প্রকাশিত হয়েছে ওই কাঠামো তৈরি হওয়ার আগে; আর ওগুলোতে প্রতিযোগিতা পাতলা থাকাকে আমরা ওই শর্তের ফল হিসেবে প্রকাশ করছি না, কারণ {{estimate.band_notices|n}}টির {{estimate.band_agencies.0.n|n}}টিই একটিমাত্র সংস্থার। দুটির কোনোটির উপরেই যা নির্ভর করে না, সেটি অঙ্ক: যে বিজ্ঞপ্তি প্রাক্কলনের {{estimate.width_common|n}} শতাংশ নিচের দর বাতিল করে, সেটি সাশ্রয়ের সীমা {{estimate.width_common|n}} শতাংশেই বেঁধে দেয় — যে নিয়মপুস্তিকাই বলবৎ থাকুক।",
   },
 
   /* ---- 2. the bars, measured against the contract ------------------------ */
@@ -2065,14 +2078,9 @@ export const STORY = [
   { k: "exhibits" },
 
   {
-    k: "note",
-    title: { en: "How to read these four", bn: "এই চারটি কীভাবে পড়বেন" },
-    p: [
-      {
-        en: "The first of the four is the only document in this entire set where a government office says, in its own words, that it adjusted the qualification criteria with a particular kind of bidder in mind. It does not name a company. It does not say who asked for the change. Two bids arrived and one was ruled responsive. We quote it because it is on the public record — and we stop where the page stops.",
-        bn: "চারটির প্রথমটি এই পুরো সংগ্রহে একমাত্র নথি, যেখানে একটি সরকারি অফিস নিজের ভাষাতেই লিখেছে যে নির্দিষ্ট ধরনের দরদাতার কথা মাথায় রেখে যোগ্যতার শর্ত সমন্বয় করা হয়েছে। এতে কোনো প্রতিষ্ঠানের নাম নেই। কে বদলাতে বলেছে, তা-ও নেই। দুটি দর জমা পড়েছিল, একটি গ্রহণযোগ্য বিবেচিত হয়। এটি উদ্ধৃত করছি কারণ এটি সরকারি নথিতেই আছে — আর কাগজ যেখানে থামে, আমরাও সেখানেই থামছি।",
-      },
-    ],
+    k: "p",
+    en: "The first of those four is the only document in this entire set where a government office says, in its own words, that it adjusted the qualification criteria with a particular kind of bidder in mind. It does not name a company. It does not say who asked for the change. Two bids arrived and one was ruled responsive. We quote it because it is on the public record — and we stop where the page stops.",
+    bn: "ওই চারটির প্রথমটি এই পুরো সংগ্রহে একমাত্র নথি, যেখানে একটি সরকারি অফিস নিজের ভাষাতেই লিখেছে যে নির্দিষ্ট ধরনের দরদাতার কথা মাথায় রেখে যোগ্যতার শর্ত সমন্বয় করা হয়েছে। এতে কোনো প্রতিষ্ঠানের নাম নেই। কে বদলাতে বলেছে, তা-ও নেই। দুটি দর জমা পড়েছিল, একটি গ্রহণযোগ্য বিবেচিত হয়। এটি উদ্ধৃত করছি কারণ এটি সরকারি নথিতেই আছে — আর কাগজ যেখানে থামে, আমরাও সেখানেই থামছি।",
   },
 
   /* ---- 9. after the award ------------------------------------------------- */
@@ -2213,14 +2221,9 @@ export const STORY = [
   },
 
   {
-    k: "note",
-    title: { en: "Read this before you use any of these numbers", bn: "এই সংখ্যাগুলোর কোনোটি ব্যবহারের আগে এটি পড়ুন" },
-    p: [
-      {
-        en: "Four limits, all of them ours to declare. The rulebook we tested against is dated after many of these tenders were published, which is why {{rules_summary.postdates_event|n}} of the {{rules_summary.deviation_rows|n}} mismatches are discounted above. The timing test that does the discounting works to the year only: a tender published in April 2025 counts as inside the reach of a document dated December 2025. One of the five standard documents carries the words “Preliminary working Draft” on its cover page. And the folder contains no text of the Public Procurement Rules at all — not one line across the five reference PDFs — so where a clause cites a rule, we are reading the standard document's citation of it and not the rule itself. Every row records which document it was checked against and both flags; Rules tested, at the foot of this page, shows that on the row. None of this is a finding that a law was broken. It is a set of {{violations.duty_without_ownership|n}} places where a government document does not do what the government's own standard document says it must, published so that the officials who wrote them can answer.",
-        bn: "চারটি সীমা, চারটিই আমাদের নিজে থেকে বলা। যে নিয়মপুস্তিকার বিপরীতে আমরা পরীক্ষা করেছি, তার তারিখ এই দরপত্রগুলোর অনেকগুলো প্রকাশের পরের — এ কারণেই {{rules_summary.deviation_rows|n}}টি অমিলের {{rules_summary.postdates_event|n}}টি উপরে বাদ দেওয়া হয়েছে। যে সময়-পরীক্ষা দিয়ে ওই বাদ দেওয়া হয়, তা কেবল বছরের হিসাবে চলে: ২০২৫ সালের এপ্রিলে প্রকাশিত দরপত্রও ২০২৫ সালের ডিসেম্বরের দস্তাবেজের আওতার ভেতরে গোনা হয়। পাঁচটি আদর্শ দস্তাবেজের একটির প্রচ্ছদেই নিজেকে প্রাথমিক খসড়া বলে লেখা আছে। আর ফোল্ডারে সরকারি ক্রয় বিধিমালার কোনো লেখাই নেই — পাঁচটি রেফারেন্স পিডিএফের কোথাও একটি লাইনও নয় — তাই কোনো ধারা যখন কোনো বিধির উল্লেখ করে, আমরা পড়ছি আদর্শ দস্তাবেজে দেওয়া সেই উল্লেখটি, বিধিটি নিজে নয়। প্রতিটি সারিতে লেখা আছে কোন নথির বিপরীতে মিলিয়ে দেখা হয়েছে, দুটি চিহ্নসহ; এই পৃষ্ঠার নিচে ‘যে নিয়মগুলো পরীক্ষা করা হয়েছে’ অংশে সারির গায়েই তা দেখানো। এর কোনোটিই আইন ভাঙার সিদ্ধান্ত নয়। এটি এমন {{violations.duty_without_ownership|n}}টি জায়গার তালিকা, যেখানে একটি সরকারি নথি সরকারের নিজের আদর্শ দস্তাবেজে যা করতে বলা আছে তা করেনি — প্রকাশ করা হলো, যাতে যাঁরা সেগুলো লিখেছেন তাঁরা উত্তর দিতে পারেন।",
-      },
-    ],
+    k: "p",
+    en: "None of that is a finding that a law was broken, and four limits belong on it — the rulebook postdates many of these tenders, the timing test that allows for that works only to the year, one of the five standard documents calls itself a preliminary working draft, and the folder carries no text of the Procurement Rules themselves. Data & method sets out all four. What is published here is {{violations.duty_without_ownership|n}} places where a government document does not do what the government's own standard document says it must, put on the record so the officials who wrote them can answer.",
+    bn: "এর কোনোটিই আইন ভাঙার সিদ্ধান্ত নয়, আর এর উপর চারটি সীমা আছে — নিয়মপুস্তিকার তারিখ এই দরপত্রগুলোর অনেকগুলোর পরের, সেটি হিসাবে নেওয়া সময়-পরীক্ষা কেবল বছরের হিসাবে চলে, পাঁচটি আদর্শ দস্তাবেজের একটি নিজেকেই প্রাথমিক খসড়া বলে, আর ফোল্ডারে ক্রয় বিধিমালার নিজের কোনো লেখা নেই। ‘ডেটা ও পদ্ধতি’ অংশে চারটিই লেখা আছে। এখানে যা প্রকাশ করা হলো তা এমন {{violations.duty_without_ownership|n}}টি জায়গা, যেখানে একটি সরকারি নথি সরকারের নিজের আদর্শ দস্তাবেজে যা করতে বলা আছে তা করেনি — নথিতে তোলা হলো, যাতে যাঁরা সেগুলো লিখেছেন তাঁরা উত্তর দিতে পারেন।",
   },
 
   /* ---- 13. where the signals stack up ------------------------------------
@@ -2239,15 +2242,58 @@ export const STORY = [
 
   {
     k: "p",
-    en: "Two limits belong on that figure before anyone quotes it. The seven conditions are this investigation's own tests, not any authority's — no office has classified any of these tenders as anything. And the composite score we built from them puts {{priority.bands.key=HIGH.n|n}} of the {{counts.tenders|n}} tenders in the top band and {{priority.bands.key=MEDIUM.n|n}} in the middle one, against a median score of {{priority.spread.median|n}} and a highest score anywhere in the set of {{priority.spread.max|n1}}. That ranking is a reading order for reporters and auditors. It is not a verdict, and nothing in it should be published as one.",
-    bn: "ওই চিত্র কেউ উদ্ধৃত করার আগে দুটি সীমা সঙ্গে থাকা দরকার। সাতটি শর্ত এই অনুসন্ধানের নিজের পরীক্ষা, কোনো সংস্থার নয় — কোনো দপ্তর এই দরপত্রগুলোর কোনোটিকে কোনো শ্রেণিতে ফেলেনি। আর সেগুলো মিলিয়ে আমরা যে সমন্বিত নম্বর বানিয়েছি, তাতে {{counts.tenders|n}}টি দরপত্রের {{priority.bands.key=HIGH.n|n}}টি পড়ে সবচেয়ে উপরের ধাপে আর {{priority.bands.key=MEDIUM.n|n}}টি মাঝের ধাপে, যেখানে মধ্যক নম্বর {{priority.spread.median|n}} এবং গোটা সম্ভারে সর্বোচ্চ নম্বর {{priority.spread.max|n1}}। ওই ক্রম প্রতিবেদক ও নিরীক্ষকদের জন্য পড়ার একটি ক্রম। এটি রায় নয়, আর এর কিছুই রায় হিসেবে প্রকাশ করা উচিত নয়।",
+    en: "The composite score we built from those seven puts {{priority.bands.key=HIGH.n|n}} of the {{counts.tenders|n}} tenders in the top band and {{priority.bands.key=MEDIUM.n|n}} in the middle one, against a median score of {{priority.spread.median|n}} and a highest score anywhere in the set of {{priority.spread.max|n1}}. The seven conditions are this investigation's own tests, not any authority's — no office has classified any of these tenders as anything. That ranking is a reading order for reporters and auditors. It is not a verdict, and nothing in it should be published as one.",
+    bn: "ওই সাতটি মিলিয়ে আমরা যে সমন্বিত নম্বর বানিয়েছি, তাতে {{counts.tenders|n}}টি দরপত্রের {{priority.bands.key=HIGH.n|n}}টি পড়ে সবচেয়ে উপরের ধাপে আর {{priority.bands.key=MEDIUM.n|n}}টি মাঝের ধাপে, যেখানে মধ্যক নম্বর {{priority.spread.median|n}} এবং গোটা সম্ভারে সর্বোচ্চ নম্বর {{priority.spread.max|n1}}। সাতটি শর্ত এই অনুসন্ধানের নিজের পরীক্ষা, কোনো সংস্থার নয় — কোনো দপ্তর এই দরপত্রগুলোর কোনোটিকে কোনো শ্রেণিতে ফেলেনি। ওই ক্রম প্রতিবেদক ও নিরীক্ষকদের জন্য পড়ার একটি ক্রম। এটি রায় নয়, আর এর কিছুই রায় হিসেবে প্রকাশ করা উচিত নয়।",
   },
 
   { k: "fig", id: "stack" },
 
   { k: "case", id: "preselection" },
 
-  /* ---- 14. what the documents cannot tell us ----------------------------- */
+  /* ---- 14. the six bodies, side by side -----------------------------------
+     Everything this section compares has already been established one measure
+     at a time, which is why it goes here and not near the top: the comparison
+     is only honest once the reader knows what each column is counting. It is
+     also where the article says out loud that the six-way count is ours and
+     that the map it would have been cannot be drawn from these documents. */
+
+  { k: "h2", en: "Six authorities, and no single worst one", bn: "ছয় সংস্থা, আর ‘সবচেয়ে খারাপ’ বলে একটিও নেই" },
+
+  {
+    k: "p",
+    en: "A reader who has come this far asks a blunter question than any of the tests above: of the six authorities, which is the worst? The record answers it, and the answer is not a name. Set the six bodies against six of the measures already in this article — notices that publish no bar at all, tenders where a single bid survived the responsiveness check, notices carrying the fixed price corridor, contracts signed outside the legal window, one firm's share of a body's money, and departures from clauses worded as duties — and {{authority.lead_n|n}} of the six sit above the middle of the six on {{authority.lead_above|n}} of those measures: {{authority.lead.0|agency}}, {{authority.lead.1|agency}} and {{authority.lead.2|agency}}. Between them they hold {{authority.lead_crore|cr}} of the {{money.crore|cr}} in this set — {{authority.lead_share|pct}} of the money.",
+    bn: "এত দূর পড়ে আসা পাঠক উপরের যেকোনো পরীক্ষার চেয়ে সোজা একটি প্রশ্ন করেন: ছয় সংস্থার মধ্যে সবচেয়ে খারাপ কোনটি? নথিতে এর উত্তর আছে, আর সেই উত্তর কোনো একটি নাম নয়। এই লেখায় আগেই আসা ছয়টি মাপের বিপরীতে ছয় সংস্থাকে বসান — যেসব বিজ্ঞপ্তিতে যোগ্যতার কোনো শর্তই প্রকাশিত নয়, যেসব দরপত্রে গ্রহণযোগ্যতার যাচাই একটি দরই টিকেছে, যেসব বিজ্ঞপ্তিতে দামের নির্দিষ্ট বলয় আছে, আইনি সময়সীমার বাইরে স্বাক্ষরিত চুক্তি, এক প্রতিষ্ঠানের হাতে যাওয়া সংস্থার অর্থের অংশ, আর বাধ্যতামূলক ভাষায় লেখা ধারা থেকে বিচ্যুতি — দেখা যায় ছয়টির {{authority.lead_n|n}}টি সংস্থা ওই মাপগুলোর {{authority.lead_above|n}}টিতেই ছয়টির মাঝের মানের উপরে: {{authority.lead.0|agency}}, {{authority.lead.1|agency}} ও {{authority.lead.2|agency}}। এই সম্ভারের {{money.crore|cr}} টাকার মধ্যে {{authority.lead_crore|cr}} এই তিনটিরই হাতে — অর্থের {{authority.lead_share|pct}}।",
+  },
+
+  {
+    k: "p",
+    en: "Which of them is worst depends entirely on which measure you pick, and that is the finding. On notices that publish no bar the highest share is {{authority.measures.no_criteria.worst|agency}}'s, {{authority.measures.no_criteria.worst_pct|pct}} of its notices. On tenders where one bid survived it is {{authority.measures.one_resp.worst|agency}}'s, at {{authority.measures.one_resp.worst_pct|pct}}. On the price corridor, {{authority.measures.band.worst|agency}}'s, at {{authority.measures.band.worst_pct|pct}}. On contracts signed outside the legal window, {{authority.measures.late.worst|agency}}'s, at {{authority.measures.late.worst_pct|pct}}. On one firm's share of a body's money, {{authority.measures.top1.worst|agency}}'s, at {{authority.measures.top1.worst_pct|pct}}. And on departures from a clause worded as a duty, {{authority.measures.duty.worst|agency}}'s, at {{authority.measures.duty.worst_pct|pct}}. Whichever of the six you weight most heavily decides which body you name — and nothing in these documents tells you which to weight most heavily.",
+    bn: "কোনটি সবচেয়ে খারাপ, তা পুরোপুরি নির্ভর করে আপনি কোন মাপটি বেছে নিচ্ছেন — এবং সেটিই এখানকার ফলাফল। যেসব বিজ্ঞপ্তিতে কোনো শর্তই প্রকাশিত নয়, সেই হারে সবচেয়ে উপরে {{authority.measures.no_criteria.worst|agency}} — নিজের বিজ্ঞপ্তির {{authority.measures.no_criteria.worst_pct|pct}}। যেসব দরপত্রে একটি দরই টিকেছে, সেখানে {{authority.measures.one_resp.worst|agency}} — {{authority.measures.one_resp.worst_pct|pct}}। দামের বলয়ে {{authority.measures.band.worst|agency}} — {{authority.measures.band.worst_pct|pct}}। আইনি সময়সীমার বাইরে স্বাক্ষরিত চুক্তিতে {{authority.measures.late.worst|agency}} — {{authority.measures.late.worst_pct|pct}}। সংস্থার অর্থের কত অংশ এক প্রতিষ্ঠানের হাতে, সেই মাপে {{authority.measures.top1.worst|agency}} — {{authority.measures.top1.worst_pct|pct}}। আর বাধ্যতামূলক ভাষায় লেখা ধারা থেকে বিচ্যুতিতে {{authority.measures.duty.worst|agency}} — {{authority.measures.duty.worst_pct|pct}}। ছয়টির কোনটিকে আপনি সবচেয়ে বেশি ভার দেবেন, তাতেই ঠিক হয় আপনি কোন সংস্থার নাম বলবেন — আর কোনটিকে বেশি ভার দিতে হবে, এই নথিগুলোর কিছুই তা বলে না।",
+  },
+
+  { k: "fig", id: "authorityMap" },
+
+  {
+    k: "p",
+    en: "Three things belong on the table below. The six bases are not the same size: {{authority.rows.key=RAJUK.tenders|n}} of the notices are {{authority.rows.key=RAJUK.key|agency}}'s and {{authority.rows.key=GDA.tenders|n}} are {{authority.rows.key=GDA.key|agency}}'s, so a share in the smallest column can move on a handful of documents. A blank is not a clean record: only {{authority.measures.one_resp.measured|n}} of the six publish a bid count anywhere, and the sixth is left out of that column in both directions rather than scored as nought — which is why its row reads {{authority.rows.key=GDA.above|n}} of {{authority.rows.key=GDA.measured|n}} where the others read out of {{authority.of|n}}. And the last column is a count of placements we made, not a ranking any of these bodies published.",
+    bn: "নিচের ছকটির সঙ্গে তিনটি কথা থাকা দরকার। ছয়টির ভিত্তি সমান নয়: বিজ্ঞপ্তিগুলোর {{authority.rows.key=RAJUK.tenders|n}}টি {{authority.rows.key=RAJUK.key|agency}}-এর আর {{authority.rows.key=GDA.tenders|n}}টি {{authority.rows.key=GDA.key|agency}}-এর, ফলে সবচেয়ে ছোট ঘরে গুটিকয় নথিতেই হার নড়ে যায়। ঘর ফাঁকা থাকা মানে নথি পরিষ্কার নয়: ছয়টির মধ্যে মাত্র {{authority.measures.one_resp.measured|n}}টি কোথাও দরের সংখ্যা প্রকাশ করে, আর ষষ্ঠটিকে ওই কলামে শূন্য না ধরে দুই দিকেই বাদ রাখা হয়েছে — এ কারণেই তার সারিতে লেখা {{authority.rows.key=GDA.measured|n}}-এর মধ্যে {{authority.rows.key=GDA.above|n}}, যেখানে বাকিদের বেলায় {{authority.of|n}}। আর শেষ কলামটি আমাদেরই গোনা, এই সংস্থাগুলোর কারও প্রকাশ করা কোনো তালিকা নয়।",
+  },
+
+  { k: "fig", id: "authority" },
+
+  {
+    k: "p",
+    en: "The districts on those notices show one more thing. {{authority.districts|n}} district names appear across the set, printed by the authorities themselves — and {{authority.second_named.0|agency}}'s notices print their own under two spellings, {{authority.rows.key=CDA.printed.0.key|place}} on {{authority.rows.key=CDA.printed.0.n|n}} notices and {{authority.rows.key=CDA.printed.1.key|place}} on {{authority.rows.key=CDA.printed.1.n|n}}. Both are reported as printed. Neither is merged into the other.",
+    bn: "ওই বিজ্ঞপ্তির জেলার নামগুলো আরও একটি জিনিস দেখায়। গোটা সম্ভারে সংস্থাগুলোর নিজেদের ছাপা {{authority.districts|n}}টি জেলার নাম আছে — আর {{authority.second_named.0|agency}}-এর বিজ্ঞপ্তিতে নিজেদের জেলার নাম দুই বানানে ছাপা হয়েছে: {{authority.rows.key=CDA.printed.0.n|n}}টিতে এক বানানে, {{authority.rows.key=CDA.printed.1.n|n}}টিতে অন্য বানানে। দুটিই যেমন ছাপা হয়েছে তেমনই জানানো হলো; একটিকে অন্যটির সঙ্গে মিলিয়ে দেওয়া হয়নি।",
+  },
+
+  {
+    k: "p",
+    en: "One figure is the same in all six rows, and it is the one that matters most to the argument this article opened with. {{authority.rejected|n}} bids were set aside across the six authorities, and not one of the six publishes a reason for a single one of them. On whether a narrower field costs the public more, the six differ on every measure of how the field was narrowed — and agree exactly on what they do not say.",
+    bn: "একটি সংখ্যা ছয়টি সারিতেই এক, আর এই লেখা যে তর্ক নিয়ে শুরু হয়েছিল তার জন্য সেটিই সবচেয়ে জরুরি। ছয় সংস্থায় মিলিয়ে {{authority.rejected|n}}টি দর বাদ দেওয়া হয়েছে, আর ছয়টির একটিও তার একটিরও কারণ প্রকাশ করে না। প্রতিযোগিতা সংকুচিত হলে জনগণের খরচ বাড়ে কি না — এই প্রশ্নে প্রতিযোগিতা কীভাবে সংকুচিত হলো তার প্রতিটি মাপে ছয়টি সংস্থা আলাদা, আর যা তারা বলে না, তাতে ছয়টিই হুবহু এক।",
+  },
+
+  /* ---- 15. what the documents cannot tell us ----------------------------- */
 
   { k: "h2", en: "What these documents cannot tell us", bn: "এই নথিগুলো যা বলতে পারে না" },
 
@@ -2313,7 +2359,7 @@ export const STORY = [
     ],
   },
 
-  /* ---- 15. how to check it ----------------------------------------------- */
+  /* ---- 16. how to check it ----------------------------------------------- */
 
 
   { k: "h2", en: "How to check this", bn: "এটি যাচাই করবেন কীভাবে" },
@@ -2330,6 +2376,60 @@ export const STORY = [
     k: "p",
     en: "If a number in this article cannot be reproduced from those files, it is a mistake and we want to be told. Every correction already made to the data is listed at the foot of Data & method, with the figure before, the figure after, and the document that settled it.",
     bn: "এই লেখার কোনো সংখ্যা যদি ওই ফাইলগুলো থেকে আবার বের করা না যায়, সেটি ভুল — এবং আমরা তা জানতে চাই। ডেটায় এ পর্যন্ত করা প্রতিটি সংশোধন ‘ডেটা ও পদ্ধতি’ অংশের শেষে তালিকাভুক্ত: আগের সংখ্যা, পরের সংখ্যা, আর যে নথি বিষয়টি নিষ্পত্তি করেছে।",
+  },
+];
+
+/* ------------------------------------------------------------- method notes
+   Everything a reader has to know before quoting a figure, and nothing a reader
+   has to read to follow the story. Three of these groups used to sit inside the
+   article as boxed asides, where they stopped the narrative to explain the
+   method; the rest are the caveats that used to run on past the first sentence
+   of a figure's source line. Both kinds belong here, and the article keeps a
+   one-sentence pointer where each of them stood, so nothing is quietly dropped.
+
+   Written as {en, bn} pairs with {{tokens}} like every other string in this
+   file: method.js resolves them against corpus.json, so not one figure in a
+   caution is typed by hand either. */
+
+export const METHOD_NOTES = [
+  {
+    title: { en: "Two things that weaken the price-corridor section", bn: "দামের বলয়ের অংশটি যে দুটি কারণে দুর্বল" },
+    p: [
+      {
+        en: "The first is a date. The standard document that sets a computed price floor from the actual spread of bids, and a {{estimate.std_pct|n}} per cent test against the estimate for a lone survivor, is December 2025 text. These notices run from long before that: on the year-granularity test, {{estimate.band_predates_standard|n}} of the {{estimate.band_notices|n}} were published before the machinery they depart from existed, and only {{estimate.band_standard_in_force|n}} were published when it was plausibly in force. Read the flat band as a departure from the current standard, then — not as a breach at the time it was written. What does not depend on the date is the arithmetic: a notice that rejects a price {{estimate.width_common|n}} per cent below the estimate caps the saving at {{estimate.width_common|n}} per cent, whatever rulebook is in force.",
+        bn: "প্রথমটি একটি তারিখ। যে আদর্শ দস্তাবেজ দরগুলোর প্রকৃত বিস্তার থেকে দামের একটি গণনাকৃত মেঝে ঠিক করে, আর একটিমাত্র দরপত্র টিকলে প্রাক্কলনের সঙ্গে {{estimate.std_pct|n}} শতাংশের পরীক্ষা দেয়, সেটি ২০২৫ সালের ডিসেম্বরের লেখা। এই বিজ্ঞপ্তিগুলো তার অনেক আগে থেকে: বছরের হিসাবে চলা পরীক্ষায় {{estimate.band_notices|n}}টির {{estimate.band_predates_standard|n}}টিই প্রকাশিত হয়েছে ওই কাঠামো তৈরি হওয়ার আগে, আর কেবল {{estimate.band_standard_in_force|n}}টি প্রকাশিত হয়েছে যখন সেটি সম্ভাব্যভাবে বলবৎ ছিল। তাই নির্দিষ্ট শতাংশের বলয়টিকে পড়ুন বর্তমান আদর্শ থেকে সরে যাওয়া হিসেবে — লেখার সময়ের নিয়ম ভাঙা হিসেবে নয়। তারিখের ওপর যা নির্ভর করে না, সেটি অঙ্ক: যে বিজ্ঞপ্তি প্রাক্কলনের {{estimate.width_common|n}} শতাংশ নিচের দর বাতিল করে, সেটি সাশ্রয়ের সীমা {{estimate.width_common|n}} শতাংশেই বেঁধে দেয় — যে নিয়মপুস্তিকাই বলবৎ থাকুক।",
+      },
+      {
+        en: "The second is what we have not claimed. The band notices did draw a thinner field — a middle of {{estimate.band_median_bids|n}} bidders against {{estimate.rest_median_bids|n}} for the {{estimate.rest_with_bids|n}} other tenders that published a bid count. We are not publishing that as an effect of the clause. {{estimate.band_agencies.0.n|n}} of the {{estimate.band_notices|n}} belong to a single authority, so the comparison is largely a comparison between two authorities and their different kinds of work, and it cannot be separated from either. The clause and its arithmetic need no comparison group; the bid counts are printed in the article so a reader can see what we saw and weigh it themselves.",
+        bn: "দ্বিতীয়টি হলো যা আমরা দাবি করিনি। বলয়যুক্ত বিজ্ঞপ্তিগুলোতে প্রতিযোগিতা সত্যিই পাতলা ছিল — মাঝের মান {{estimate.band_median_bids|n}}টি দরদাতা, আর দরদাতার সংখ্যা প্রকাশ করা বাকি {{estimate.rest_with_bids|n}}টি দরপত্রে {{estimate.rest_median_bids|n}}টি। আমরা এটিকে ওই শর্তের ফল হিসেবে প্রকাশ করছি না। {{estimate.band_notices|n}}টির {{estimate.band_agencies.0.n|n}}টিই একটিমাত্র সংস্থার, তাই তুলনাটি মূলত দুটি সংস্থা আর তাদের ভিন্ন ধরনের কাজের মধ্যে তুলনা হয়ে দাঁড়ায়, আর দুটির কোনোটি থেকেই এটিকে আলাদা করা যায় না। শর্ত আর তার অঙ্কের জন্য কোনো তুলনার দল দরকার নেই; দরদাতার সংখ্যাগুলো লেখাতেই ছাপা হলো, যাতে পাঠক আমরা যা দেখেছি তা দেখতে পান এবং নিজেই ওজন করতে পারেন।",
+      },
+    ],
+  },
+  {
+    title: { en: "Read this before you use any of the clause-test counts", bn: "ধারা-পরীক্ষার সংখ্যাগুলো ব্যবহারের আগে এটি পড়ুন" },
+    p: [
+      {
+        en: "Four limits, all of them ours to declare. The rulebook we tested against is dated after many of these tenders were published, which is why {{rules_summary.postdates_event|n}} of the {{rules_summary.deviation_rows|n}} mismatches are discounted in the article. The timing test that does the discounting works to the year only: a tender published in April 2025 counts as inside the reach of a document dated December 2025. One of the five standard documents carries the words “Preliminary working Draft” on its cover page. And the folder contains no text of the Public Procurement Rules at all — not one line across the five reference PDFs — so where a clause cites a rule, we are reading the standard document's citation of it and not the rule itself.",
+        bn: "চারটি সীমা, চারটিই আমাদের নিজে থেকে বলা। যে নিয়মপুস্তিকার বিপরীতে আমরা পরীক্ষা করেছি, তার তারিখ এই দরপত্রগুলোর অনেকগুলো প্রকাশের পরের — এ কারণেই {{rules_summary.deviation_rows|n}}টি অমিলের {{rules_summary.postdates_event|n}}টি লেখায় বাদ দেওয়া হয়েছে। যে সময়-পরীক্ষা দিয়ে ওই বাদ দেওয়া হয়, তা কেবল বছরের হিসাবে চলে: ২০২৫ সালের এপ্রিলে প্রকাশিত দরপত্রও ২০২৫ সালের ডিসেম্বরের দস্তাবেজের আওতার ভেতরে গোনা হয়। পাঁচটি আদর্শ দস্তাবেজের একটির প্রচ্ছদেই নিজেকে প্রাথমিক খসড়া বলে লেখা আছে। আর ফোল্ডারে সরকারি ক্রয় বিধিমালার কোনো লেখাই নেই — পাঁচটি রেফারেন্স পিডিএফের কোথাও একটি লাইনও নয় — তাই কোনো ধারা যখন কোনো বিধির উল্লেখ করে, আমরা পড়ছি আদর্শ দস্তাবেজে দেওয়া সেই উল্লেখটি, বিধিটি নিজে নয়।",
+      },
+      {
+        en: "Every row records which document it was checked against and both flags; Rules tested, at the foot of the page, shows that on the row. The chart of deviations by rule plots only the rows whose timing flag reads <code>INSTRUMENT_PLAUSIBLY_IN_FORCE</code>, and only the {{violations.deviating_rules|n}} of the {{counts.rules|n}} rules that any notice deviated from at all. None of this is a finding that a law was broken. It is a set of {{violations.duty_without_ownership|n}} places where a government document does not do what the government's own standard document says it must, published so that the officials who wrote them can answer.",
+        bn: "প্রতিটি সারিতে লেখা আছে কোন নথির বিপরীতে মিলিয়ে দেখা হয়েছে, দুটি চিহ্নসহ; পৃষ্ঠার নিচে ‘যে নিয়মগুলো পরীক্ষা করা হয়েছে’ অংশে সারির গায়েই তা দেখানো। নিয়ম অনুযায়ী বিচ্যুতির চিত্রটিতে কেবল সেই সারিগুলোই আঁকা হয়েছে যাদের সময়-চিহ্নে <code>INSTRUMENT_PLAUSIBLY_IN_FORCE</code> লেখা, আর {{counts.rules|n}}টি নিয়মের মধ্যে কেবল সেই {{violations.deviating_rules|n}}টি, যেগুলোয় কোনো বিজ্ঞপ্তিতে অন্তত একবার বিচ্যুতি আছে। এর কোনোটিই আইন ভাঙার সিদ্ধান্ত নয়। এটি এমন {{violations.duty_without_ownership|n}}টি জায়গার তালিকা, যেখানে একটি সরকারি নথি সরকারের নিজের আদর্শ দস্তাবেজে যা করতে বলা আছে তা করেনি — প্রকাশ করা হলো, যাতে যাঁরা সেগুলো লিখেছেন তাঁরা উত্তর দিতে পারেন।",
+      },
+    ],
+  },
+  {
+    title: { en: "Which classifications are ours and not an authority's", bn: "কোন শ্রেণিভাগ আমাদের, কোনো সংস্থার নয়" },
+    p: [
+      {
+        en: "Four of the figures in this article rest on tests this investigation wrote, and no office has classified any of these tenders as anything. The restriction levels are our own bands, read off the criteria as printed. The seven preselection conditions are our own tests, and the composite score built from them is a reading order for reporters and auditors rather than a verdict. The count in the last column of the authority matrix is a count of placements above the middle of six measures — six units with no weighting between them written in any of these documents, so none is invented here. And the middle bid count quoted beside each authority is the median of <code>total_bids_received</code>, over only those notices that published one.",
+        bn: "এই লেখার চারটি চিত্র দাঁড়িয়ে আছে এই অনুসন্ধানের নিজের লেখা পরীক্ষার উপর, আর কোনো দপ্তর এই দরপত্রগুলোর কোনোটিকে কোনো শ্রেণিতে ফেলেনি। সীমাবদ্ধতার ধাপগুলো আমাদেরই ভাগ, যেমন ছাপা হয়েছে তেমন শর্ত থেকে পড়া। বাছাইয়ের সাতটি শর্তও আমাদের নিজের পরীক্ষা, আর সেগুলো মিলিয়ে বানানো সমন্বিত নম্বরটি প্রতিবেদক ও নিরীক্ষকদের জন্য পড়ার একটি ক্রম — রায় নয়। সংস্থার ছকের শেষ কলামের গোনাটি ছয়টি মাপের মাঝের মানের উপরে থাকার গোনা — ছয়টি ভিন্ন একক, তাদের মধ্যে কোনো ভারের হিসাব এই নথিগুলোর কোথাও লেখা নেই, তাই বানিয়ে নেওয়াও হয়নি। আর প্রতিটি সংস্থার পাশে যে মাঝের দর-সংখ্যা লেখা, সেটি <code>total_bids_received</code>-এর মধ্যক, কেবল যেসব বিজ্ঞপ্তি তা প্রকাশ করেছে সেগুলোর উপরেই।",
+      },
+      {
+        en: "Two rules of counting run under every figure. A share is measured only over the notices that published the thing being measured, so each column of the authority matrix has its own denominator and the article prints it beside the share. And an empty cell is an absence, never a nought: where a body publishes no bid count anywhere, its row is left out of that column in both directions rather than scored zero, which is why one row is out of five where the others are out of six. Firms are grouped on <code>winner_name_normalised</code> and are never merged on a resemblance between two names.",
+        bn: "প্রতিটি চিত্রের নিচে গোনার দুটি নিয়ম চলে। কোনো হার মাপা হয়েছে কেবল সেই বিজ্ঞপ্তিগুলোর উপরেই, যেগুলো মাপা জিনিসটি প্রকাশ করেছে — তাই সংস্থার ছকের প্রতিটি কলামের নিজের ভাজক আছে, আর লেখায় হারের পাশেই সেটি ছাপা। আর ফাঁকা ঘর মানে অনুপস্থিতি, কখনো শূন্য নয়: যে সংস্থা কোথাও দরের সংখ্যা প্রকাশ করে না, তাকে ওই কলামে শূন্য না ধরে দুই দিকেই বাদ রাখা হয়েছে — এ কারণেই একটি সারি পাঁচটির মধ্যে, বাকিরা ছয়টির মধ্যে। প্রতিষ্ঠানগুলোকে দল করা হয়েছে <code>winner_name_normalised</code> অনুযায়ী, আর দুটি নামের চেহারা মিলে যাওয়ার কারণে কখনো একটিকে অন্যটির সঙ্গে মেলানো হয়নি।",
+      },
+    ],
   },
 ];
 

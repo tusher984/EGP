@@ -154,14 +154,7 @@ img, svg { max-width: 100%; }
 
 .sections-h {
   font-size: clamp(1.2rem, 2.6vw, 1.5rem);
-  margin: 0 0 0.7rem;
-}
-
-.sections-note {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--text-default);
-  margin: 0 0 1.8rem;
+  margin: 0 0 1.2rem;
 }
 
 /* The stack sits on the page surface so each closed section reads as a door
@@ -654,6 +647,9 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 .open[open] > summary::before { content: "\2212"; }
 .open > summary:hover { background: var(--ntr-home-accent); }
 .open-note { font-weight: 400; font-size: 0.78rem; color: var(--text-muted); margin-left: auto; }
+/* The same sentence, but as the first line inside an opened section rather than
+   a label beside the closed one: a block, not something pushed to the right. */
+.open-lede { font-size: 0.95rem; line-height: 1.6; color: var(--text-muted); margin: 0 0 1.6rem; }
 .open-body { padding: 0 0 1.6rem; }
 .open-body > :first-child { margin-top: 0; }
 .open + .open { margin-top: 0; }
@@ -698,6 +694,14 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
    and below. height:auto takes the height from the aspect ratio instead, so
    the plot is exactly as tall as what is drawn in it at any column width. */
 .fig-plot svg { display: block; overflow: visible; width: 100%; height: auto; }
+
+/* One figure will not scale: a six-column matrix squeezed into a phone column
+   would print its 11px labels at three pixels. That one is drawn at a fixed
+   width inside a scroller, exactly as a wide table is, so width:auto here takes
+   the width from the <svg> element's own attribute instead of the column. The
+   scroller loses its top margin because the figure has already spaced it. */
+.fig-plot > .tbl-scroll { margin-top: 0; }
+.fig-plot > .tbl-scroll > svg { width: auto; max-width: none; }
 
 .legend {
   display: flex;
@@ -1186,9 +1190,8 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
   .kv dd { padding-top: 0.1rem; padding-bottom: 0.5rem; }
   .lede:first-letter { font-size: 2.9rem; }
   .masthead-note { display: none; }
-  /* A section heading and its count line will not sit on one line here. */
+  /* A section heading has the whole summary line to itself here. */
   .section > summary { flex-wrap: wrap; padding: 0.95rem 0.75rem; }
-  .section > summary .open-note { margin-left: 0; flex-basis: 100%; }
   .section > .open-body { padding: 0 0.75rem 1.6rem; }
   /* A chart is drawn on a canvas 820 units wide and then scaled to fit, so on a
      narrow screen its 11-unit text lands at well under 11 real pixels. These two

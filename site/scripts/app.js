@@ -93,10 +93,6 @@ const KEYS = { lang: "egp-watch-lang", theme: "egp-watch-theme" };
 const W = {
   sections: { en: "Sections of the investigation", bn: "অনুসন্ধানের অংশগুলো" },
   moreTitle: { en: "Everything this was built from", bn: "যা থেকে এটি তৈরি" },
-  moreNote: {
-    en: "The story ends above. What it was built out of is below, closed until you want it: the rules we tested a tender against, every tender in a table you can search and sort, all {{counts.pdfs|n}} source PDFs, and a plain account of how the whole thing was made and where it falls short. Open one and it stays open. Nothing here is a summary of the story — it is the material, and you are meant to disagree with us using it.",
-    bn: "গল্প এখানেই শেষ। যা থেকে এটি তৈরি, তা নিচে — বন্ধ অবস্থায়, আপনি চাইলে খুলবে: যে নিয়মগুলোর সঙ্গে প্রতিটি দরপত্র মিলিয়ে দেখা হয়েছে, খোঁজা ও সাজানো যায় এমন টেবিলে প্রতিটি দরপত্র, উৎসের {{counts.pdfs|n}}টি পিডিএফ, এবং কীভাবে পুরোটা করা হলো ও কোথায় ঘাটতি আছে তার সরল বিবরণ। একটা খুললে খোলাই থাকবে। এখানে গল্পের সারসংক্ষেপ কিছু নেই — এটি উপকরণ, এবং এটি দিয়েই আমাদের সঙ্গে দ্বিমত করা যায়।",
-  },
   footNote: {
     en: "Built from the documents in this folder and nothing else. No network host is contacted; no figure on this page was typed by hand.",
     bn: "এই ফোল্ডারের দস্তাবেজ থেকেই তৈরি, আর কিছু থেকে নয়। কোনো নেটওয়ার্ক হোস্টে যোগাযোগ করা হয় না; এই পৃষ্ঠার কোনো সংখ্যা হাতে লেখা নয়।",
@@ -203,12 +199,20 @@ function storyPanel() {
 }
 
 function sectionPanel(spec) {
-  const body = el("div", { class: "open-body" });
-  view.panels[spec.key] = body;
+  const inner = el("div", { class: "open-inner" });
+  view.panels[spec.key] = inner;
+
+  /* The blurb used to sit under the label, where four of them made a wall of
+     text a reader had to get past to reach the end of the article. It belongs to
+     the section it describes, so it opens with it: before the click there is a
+     label and nothing else. */
+  const body = el("div", { class: "open-body" }, [
+    el("p", { class: "open-lede measure", html: fill(t(spec.note), view.corpus) }),
+    inner,
+  ]);
 
   const sum = el("summary", null, [
     el("h2", { class: "section-h", text: t(UI.tabs[spec.key]) }),
-    el("span", { class: "open-note", html: fill(t(spec.note), view.corpus) }),
   ]);
 
   const d = el("details", {
@@ -233,7 +237,6 @@ function paint(host) {
   host.appendChild(storyPanel());
   host.appendChild(el("div", { class: "sections" }, el("div", { class: "wrap" }, [
     el("h2", { class: "sections-h", text: t(W.moreTitle) }),
-    el("p", { class: "measure sections-note", html: fill(t(W.moreNote), view.corpus) }),
     el("div", { class: "open-stack" }, SECTIONS.map(sectionPanel)),
   ])));
 }

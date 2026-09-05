@@ -16,7 +16,7 @@
 
 import { el, t, n, digits, dash, takaFull, ratio, href, fill, fillText, cite, agencyName, said } from "./core.js";
 import { figure, table } from "./charts.js";
-import { UI, LABELS } from "./content.js";
+import { UI, LABELS, METHOD_NOTES } from "./content.js";
 
 /* A label or note that prints a count. The count is resolved here, against the
    corpus, rather than typed into the string: no figure on this tab — not even
@@ -36,6 +36,7 @@ const W = {
   scriptsHead: { en: "The scripts that produce every figure", bn: "প্রতিটি সংখ্যা তৈরি করা স্ক্রিপ্ট" },
   toolsHead: { en: "The tools, opened directly", bn: "টুলগুলো, সরাসরি" },
   gapsHead: { en: "What these documents never say", bn: "এই নথিগুলো যা কখনো বলে না" },
+  cautionHead: { en: "What to carry with a figure before you quote it", bn: "কোনো সংখ্যা উদ্ধৃত করার আগে সঙ্গে যা নিতে হবে" },
   qaHead: { en: "Corrections made after the first computation", bn: "প্রথম গণনার পরে করা সংশোধন" },
   readHead: { en: "What is repaired between the file and the page", bn: "ফাইল থেকে পাতায় আসার পথে যা সারানো হয়" },
   notesHead: { en: "Where the fact check disagreed with the analysis", bn: "যেখানে তথ্য-যাচাই বিশ্লেষণের সঙ্গে একমত হয়নি" },
@@ -327,6 +328,26 @@ function corrections(corpus) {
   ]);
 }
 
+/** The cautions that used to interrupt the article. Three of them were boxed
+    asides between its paragraphs, which is the wrong place for them twice over:
+    a reader following the story does not want the method, and a reporter about
+    to quote a figure should not have to find the right paragraph to learn what
+    the figure will not carry. They are one list here, and the article keeps a
+    one-sentence pointer where each of them stood.
+
+    html rather than text on every line, because these carry the column names
+    the figures were computed from and a column name keeps its monospace face. */
+function cautions(corpus) {
+  if (!METHOD_NOTES.length) return null;
+  return el("div", null, [
+    el("p", { class: "note-title", text: t(W.cautionHead) }),
+    el("div", null, METHOD_NOTES.map((g) => el("aside", { class: "note" }, [
+      el("p", { class: "note-title", text: t(g.title) }),
+      ...g.p.map((p) => el("p", { html: fill(t(p), corpus) })),
+    ]))),
+  ]);
+}
+
 /** Where the fact check could not reproduce the analyst's own figure. Both
     disagreements are printed with what the site publishes instead, because a
     figure quietly replaced is a figure a reader cannot audit. */
@@ -514,6 +535,9 @@ export function renderMethod(root, corpus) {
 
   const g = gaps(corpus);
   if (g) root.appendChild(g);
+
+  const cau = cautions(corpus);
+  if (cau) root.appendChild(cau);
 
   const conf = confidence(corpus);
   if (conf) root.appendChild(conf);
