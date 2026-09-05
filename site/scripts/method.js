@@ -476,6 +476,9 @@ function downloads(corpus) {
     ["investigation_output/rule_scripts/verify_all.py", { en: "Re-derives every check on the five files from the CSVs and the PDFs, trusting none of the scripts above", bn: "ওপরের কোনো স্ক্রিপ্টে ভরসা না করে সিএসভি ও পিডিএফ থেকে পাঁচটি ফাইলের প্রতিটি পরীক্ষা আবার বের করে" }],
     ["investigation_output/rule_scripts/verify_merge.py", { en: "The same for the merged and bilingual files, including that no Bengali sentence drops a figure", bn: "একত্রিত ও দ্বিভাষিক ফাইলের জন্য একই — কোনো বাংলা বাক্য কোনো সংখ্যা বাদ দেয়নি, তা-ও দেখে" }],
     ["site/build/build.py", { en: "Turns the three CSVs into the payloads this page lists", bn: "তিনটি সিএসভি থেকে এই পাতার তালিকাভুক্ত পেলোড তৈরি করে" }],
+    ["site/build/mapshape_gen.py", { en: "Projects the district boundaries below into the outline the map draws, and fails rather than guess if the notices print a district it cannot place", bn: "নিচের জেলাসীমা থেকে মানচিত্রের রূপরেখা তৈরি করে; বিজ্ঞপ্তিতে এমন কোনো জেলার নাম থাকলে যেটি বসানো যায় না, তখন অনুমান না করে থেমে যায়" }],
+    ["site/build/geo/bgd-adm2-districts.geojson", { en: "The district boundaries themselves — <span class=\"verbatim\">geoBoundaries gbOpen</span> for Bangladesh at <code>ADM2</code>, tracing to the Bangladesh Bureau of Statistics and <span class=\"verbatim\">OCHA ROAP</span>, under <span class=\"verbatim\">CC BY 4.0</span>. The one file here that did not come with the documents; used for the outline and for nothing else", bn: "জেলাসীমাগুলো নিজেই — বাংলাদেশের জন্য <span class=\"verbatim\">geoBoundaries gbOpen</span>, <code>ADM2</code> স্তরে, উৎস বাংলাদেশ পরিসংখ্যান ব্যুরো ও <span class=\"verbatim\">OCHA ROAP</span>, <span class=\"verbatim\">CC BY 4.0</span> অনুযায়ী। এখানে এটিই একমাত্র ফাইল যা দস্তাবেজের সঙ্গে আসেনি; কেবল রূপরেখার জন্য ব্যবহৃত, অন্য কিছুতে নয়" }],
+
   ];
 
   return el("div", null, [
@@ -559,8 +562,13 @@ export function renderMethod(root, corpus) {
     text: t(W.byline) + ": " + (meta.byline || dash()) }));
 
   root.appendChild(el("p", { class: "src measure", text: t({
-    en: "This site loads nothing from outside this folder: no map service, no font service, no analytics, no external dataset. Every figure, every quote and every link resolves to a file listed on this page.",
-    bn: "এই সাইট এই ফোল্ডারের বাইরে থেকে কিছু আনে না: কোনো ম্যাপ সেবা নয়, ফন্ট সেবা নয়, অ্যানালিটিক্স নয়, বাইরের কোনো ডেটাসেট নয়। প্রতিটি সংখ্যা, প্রতিটি উদ্ধৃতি ও প্রতিটি লিংক এই পাতায় তালিকাভুক্ত কোনো ফাইলেই পৌঁছায়।",
+    en: "This site loads nothing from a network: no map service, no font service, no analytics, no remote dataset. Every figure, every quote and every link resolves to a file in this folder, listed above.",
+    bn: "এই সাইট নেটওয়ার্ক থেকে কিছু আনে না: কোনো ম্যাপ সেবা নয়, ফন্ট সেবা নয়, অ্যানালিটিক্স নয়, দূরের কোনো ডেটাসেট নয়। প্রতিটি সংখ্যা, প্রতিটি উদ্ধৃতি ও প্রতিটি লিংক এই ফোল্ডারের কোনো ফাইলেই পৌঁছায় — ওপরে তালিকাভুক্ত।",
+  }) }));
+
+  root.appendChild(el("p", { class: "src measure", html: t({
+    en: "One file in that list did not come with the documents. The supplied folder holds no map of Bangladesh — no shapefile, no boundary of any kind in any of the " + n(corpus.counts.pdfs) + " PDFs — so the district outlines on the map were taken from <span class=\"verbatim\">geoBoundaries gbOpen</span> at <code>ADM2</code>, which traces to the Bangladesh Bureau of Statistics and <span class=\"verbatim\">OCHA ROAP</span> and is published under <span class=\"verbatim\">CC BY 4.0</span>. It is copied into the repository, so the page still contacts no host. The exception stops at the outline: no area, distance, neighbour or spatial join is computed from it, and not one number in this investigation comes from it. The shading on the map is the district each notice prints, counted; the boundaries only say where that district is.",
+    bn: "ওই তালিকার একটি ফাইল দস্তাবেজের সঙ্গে আসেনি। সরবরাহ করা ফোল্ডারে বাংলাদেশের কোনো মানচিত্র নেই — " + n(corpus.counts.pdfs) + "টি পিডিএফের একটিতেও কোনো শেপফাইল বা কোনো ধরনের সীমানা নেই — তাই মানচিত্রের জেলাসীমা নেওয়া হয়েছে <span class=\"verbatim\">geoBoundaries gbOpen</span> থেকে, <code>ADM2</code> স্তরে, যার উৎস বাংলাদেশ পরিসংখ্যান ব্যুরো ও <span class=\"verbatim\">OCHA ROAP</span>, আর যা প্রকাশিত <span class=\"verbatim\">CC BY 4.0</span> অনুযায়ী। ফাইলটি রিপোজিটরিতেই রাখা, তাই পাতাটি এখনও কোনো হোস্টের সঙ্গে যোগাযোগ করে না। ছাড়টি রূপরেখাতেই শেষ: এ থেকে কোনো আয়তন, দূরত্ব, প্রতিবেশ বা স্থানিক মিলন হিসাব করা হয়নি, আর এই অনুসন্ধানের একটি সংখ্যাও এ থেকে আসেনি। মানচিত্রের রং প্রতিটি বিজ্ঞপ্তিতে ছাপা জেলার গণনা; সীমানা কেবল বলে সেই জেলা কোথায়।",
   }) }));
 
   return root;

@@ -2344,7 +2344,7 @@ def main():
         "nature": tally(MASTER, "procurement_nature"),
         "timeline": build_timeline(),
         "portal": build_portal(),
-        "districts": tally([r for r in MASTER if txt(r, "pe_district")], "pe_district", 12),
+        "districts": tally([r for r in MASTER if txt(r, "pe_district")], "pe_district"),
         "exhibits": build_exhibits(),
         "case": build_case(),
         "cases": build_cases(),

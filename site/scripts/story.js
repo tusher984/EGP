@@ -18,7 +18,8 @@ import {
 } from "./core.js";
 import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
-  funnel, matrix, matrixLegend, divisionMap, hue, SEQ, wideCanvas,
+  funnel, matrix, matrixLegend, districtMap, mapLegend, byBoundary, DISTRICT_N,
+  hue, SEQ, wideCanvas, columnWidth,
 } from "./charts.js";
 import {
   UI, HEAD, CASE, CASES, STORY, LIMITS, CHECK, DOORS, LABELS, EXHIBIT_WORDS,
@@ -200,68 +201,111 @@ const FIGS = {
         F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>, আর কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে।"),
     });
   },
-  /* Two views of the same comparison: the six public bodies on the map their own
-     notices place them on, and the matrix of the six measures the map is shaded
-     from.
+  /* Two views of the same six bodies: the districts their notices name, and the
+     matrix of the six measures that answers which of them is worse.
 
-     The map first, because it is the one a reader takes in at a glance. Its
-     outline is a schematic drawn for this page — mapshape.js sets out why at
-     length, and the source line says so on the page — because no boundary
-     geometry exists in the supplied folder and that folder is the only source
-     this investigation may use. What the documents supply is the district
-     printed on each notice. The count is printed beside every mark, so the
-     shading is the second telling and never the only one. */
+     The map first, because it is the one a reader takes in at a glance, and it
+     answers only one question — where the paperwork comes from. The shading is
+     notices published, off pe_district as printed. The six marks are all one
+     colour and carry no value at all: they say which district each body works
+     in, nothing more. "Which body is worse" is the matrix directly below, where
+     six measures sit on six honest denominators, and a single shade on a single
+     mark could not carry that without picking one measure and calling it the
+     answer.
+
+     The outline is the one exception to this investigation's source rule, and
+     the source line names it on the page: no boundary geometry exists in the
+     supplied folder, so the districts were fetched from geoBoundaries and
+     vendored into the repository. Not one number here is computed from it. */
   authorityMap(corpus) {
     const au = corpus.authority;
-    const cells = au.rows.map((r) => ({
+    /* Which bodies published a notice naming each district. Dinajpur is named by
+       two of the six, so this is a list and not a single name. */
+    const from = {};
+    au.rows.forEach((r) => (r.printed || []).forEach((p) => {
+      (from[p.key] = from[p.key] || []).push(r.key);
+    }));
+
+    /* Six of the thirteen named districts are named exactly once, and "1 notices"
+       is not something a reader should be shown. Bangla does not inflect here —
+       ১টি বিজ্ঞপ্তি is right for one and for a hundred — so only English forks. */
+    const notices = (v) => ({
+      en: n(v) + (v === 1 ? " notice" : " notices"),
+      bn: n(v) + "টি বিজ্ঞপ্তি",
+    });
+
+    const shade = byBoundary(corpus.districts);
+    Object.entries(shade).forEach(([key, cell]) => {
+      const named = [...new Set(cell.printed.flatMap((s) => from[s] || []))];
+      cell.tip = cell.printed.map((s) => placeName(s)).join(" / ") + " — " +
+        t(notices(cell.v)) + " · " + named.map((k) => agencyName(k)).join(", ");
+    });
+
+    const seats = au.rows.map((r) => ({
       key: r.key,
       label: agencyName(r.key),
       sub: placeName(r.district),
-      v: r.measured ? r.above / r.measured : null,
-      read: n(r.above) + "/" + n(r.measured),
-      tip: bodyName(r.organization) + " — " + placeName(r.district) + " · " +
-        t({ en: "above the middle on " + n(r.above) + " of " + n(r.measured) +
-                " measures",
-            bn: n(r.measured) + "টি মাপের " + n(r.above) + "টিতে মাঝের মানের উপরে" }),
+      read: n(r.tenders),
+      tip: bodyName(r.organization) + " — " +
+        t({ en: notices(r.tenders).en + ", most often naming " + placeName(r.district),
+            bn: notices(r.tenders).bn + ", সবচেয়ে বেশিবার নাম এসেছে " +
+                placeName(r.district) + " জেলার" }),
     }));
+
+    const rows = Object.entries(shade).sort((a, b) => b[1].v - a[1].v);
     return figure({
       wide: true,
       title: {
-        en: "Where the six sit, and how often each is on the worse side",
-        bn: "ছয় সংস্থা কোথায়, আর কে কতবার খারাপ দিকে",
+        en: "Every district these notices name, and the six bodies that named them",
+        bn: "এই বিজ্ঞপ্তিগুলোতে যেসব জেলার নাম আছে, আর যে ছয় সংস্থা নাম দিয়েছে",
       },
       deck: {
-        en: "One mark per authority, standing in the district its own notices print most often, darker the more of the six measures below it sits above the middle on. The value is on the mark and not on the division because two of the six work in one division and two more in another.",
-        bn: "প্রতি সংস্থার জন্য একটি চিহ্ন, বসানো সেই জেলায় যেটি ওই সংস্থার বিজ্ঞপ্তিতে সবচেয়ে বেশিবার ছাপা হয়েছে; নিচের ছয় মাপের যতগুলোতে সংস্থাটি মাঝের মানের উপরে, ততই গাঢ়। মান বিভাগের উপর নয়, চিহ্নের উপর — কারণ ছয়টির দুটি একই বিভাগে, আরও দুটি অন্য একটি বিভাগে।",
+        en: n(DISTRICT_N - rows.length) + " of the " + n(DISTRICT_N) +
+            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
+        bn: n(DISTRICT_N) + " জেলার " + n(DISTRICT_N - rows.length) +
+            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
       },
-      plot: el("div", { class: "tbl-scroll" }, divisionMap(cells, {
-        width: wideCanvas(), max: 1, absent: dash(),
+      plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
+        /* A width budget, not a canvas. The country is portrait, so the map is
+           drawn to a height and the height has a ceiling; the map then cuts the
+           canvas down to itself plus the two flanks its key rows need, and the
+           svg is centred in the column. Passing the full wide canvas therefore
+           costs no white space — the ceiling does the limiting. */
+        width: wideCanvas(),
+        /* Unfloored, so the map can tell a phone column from a desktop one and
+           stack its key on one flank rather than being scaled to a third size. */
+        col: columnWidth(),
         alt: A({
-          en: "A schematic map of Bangladesh with one shaded mark per authority, darker the more measures it is above the middle on. The counts are in the table below.",
-          bn: "বাংলাদেশের একটি রূপরেখা মানচিত্র, প্রতি সংস্থার জন্য একটি রঙানো চিহ্ন; যত বেশি মাপে মাঝের মানের উপরে, তত গাঢ়। সংখ্যাগুলো নিচের টেবিলে আছে।",
+          en: "A map of the 64 districts of Bangladesh, shaded darker where more tender notices name the district, with one mark for each of the six authorities. The counts are in the table below.",
+          bn: "বাংলাদেশের ৬৪ জেলার মানচিত্র; যে জেলার নাম বেশি বিজ্ঞপ্তিতে সেটি তত গাঢ়, আর ছয়টি সংস্থার জন্য একটি করে চিহ্ন। সংখ্যাগুলো নিচের টেবিলে আছে।",
         }, corpus),
       })),
-      legend: [
-        { label: { en: "Above the middle on fewer measures", bn: "কম মাপে মাঝের মানের উপরে" },
-          color: "var(--seq-4)" },
-        { label: { en: "Above the middle on more measures", bn: "বেশি মাপে মাঝের মানের উপরে" },
-          color: "var(--seq-6)" },
-      ],
+      legend: mapLegend(),
       table: table(
-        [{ en: "Authority", bn: "সংস্থা" },
-         { en: "District printed most often", bn: "সবচেয়ে বেশি ছাপা জেলা" },
-         { en: "Above the middle on", bn: "মাঝের মানের উপরে" }],
-        au.rows.map((r) => [bodyName(r.organization),
-          placeName(r.district) + " " + n(r.district_n),
-          n(r.above) + "/" + n(r.measured)])
+        [{ en: "District", bn: "জেলা" },
+         { en: "Notices naming it", bn: "যত বিজ্ঞপ্তিতে নাম" },
+         { en: "Named by", bn: "নাম দিয়েছে" },
+         { en: "Printed as", bn: "যেভাবে ছাপা" }],
+        rows.map(([key, cell]) => [
+          placeName(key), n(cell.v),
+          [...new Set(cell.printed.flatMap((s) => from[s] || []))]
+            .map((k) => agencyName(k)).join(", "),
+          cell.printed.map((s) => placeName(s)).join(" / "),
+        ]),
+        { num: [1] }
       ),
+      /* One sentence, like every other source line. The licence, the lineage and
+         the limits of the exception are set out in full in the method section,
+         which is where a reader who wants them goes; repeating them under the
+         figure would put four lines of small print under a map. */
       source: src(
-        F.master.en + " — the last column of the matrix below, placed by " +
-        "<code>pe_district</code> as printed on an outline drawn by hand for this " +
-        "page, because the documents carry no boundary for any of these places.",
-        F.master.bn + " — নিচের ছকটির শেষ কলাম; বসানো হয়েছে <code>pe_district</code> " +
-        "থেকে, যেমন ছাপা হয়েছে তেমনই, আর রূপরেখাটি এই পাতার জন্য হাতে আঁকা, " +
-        "কারণ দস্তাবেজে এসব জায়গার কোনো সীমানা নেই।"),
+        F.master.en + " — <code>pe_district</code> as printed, on district " +
+        "boundaries from <span class=\"verbatim\">geoBoundaries gbOpen</span>, " +
+        "the one file here not supplied with the documents and used for the " +
+        "outline alone.",
+        F.master.bn + " — <code>pe_district</code> যেমন ছাপা, জেলাসীমা " +
+        "<span class=\"verbatim\">geoBoundaries gbOpen</span> থেকে — দস্তাবেজের " +
+        "সঙ্গে না আসা একমাত্র ফাইল, ব্যবহার কেবল রূপরেখায়।"),
     });
   },
 
