@@ -14,9 +14,9 @@
    takes the deviation counts as breaches of law has been misled, so the tab
    says it before it says anything else. */
 
-import { el, t, n, digits, dash, takaFull, href, fill, fillText, cite, agencyName } from "./core.js";
+import { el, t, n, digits, dash, takaFull, ratio, href, fill, fillText, cite, agencyName, said } from "./core.js";
 import { figure, table } from "./charts.js";
-import { UI, LABELS } from "./content.js";
+import { UI, LABELS, METHOD_NOTES } from "./content.js";
 
 /* A label or note that prints a count. The count is resolved here, against the
    corpus, rather than typed into the string: no figure on this tab — not even
@@ -36,6 +36,7 @@ const W = {
   scriptsHead: { en: "The scripts that produce every figure", bn: "প্রতিটি সংখ্যা তৈরি করা স্ক্রিপ্ট" },
   toolsHead: { en: "The tools, opened directly", bn: "টুলগুলো, সরাসরি" },
   gapsHead: { en: "What these documents never say", bn: "এই নথিগুলো যা কখনো বলে না" },
+  cautionHead: { en: "What to carry with a figure before you quote it", bn: "কোনো সংখ্যা উদ্ধৃত করার আগে সঙ্গে যা নিতে হবে" },
   qaHead: { en: "Corrections made after the first computation", bn: "প্রথম গণনার পরে করা সংশোধন" },
   readHead: { en: "What is repaired between the file and the page", bn: "ফাইল থেকে পাতায় আসার পথে যা সারানো হয়" },
   notesHead: { en: "Where the fact check disagreed with the analysis", bn: "যেখানে তথ্য-যাচাই বিশ্লেষণের সঙ্গে একমত হয়নি" },
@@ -76,11 +77,16 @@ function mb(bytes) {
 function fileRow(src) {
   const bits = [t(W.rows) + ": " + (src.rows === null ? dash() : n(src.rows))];
   if (src.cols) bits.push(t(W.cols) + ": " + n(src.cols));
-  bits.push("sha256 " + src.sha256);
   return el("li", { class: "dl-row" }, [
     el("span", { class: "dl-what" },
       el("a", { href: href("investigation_output", src.name) }, el("code", { text: src.name }))),
-    el("span", { class: "dl-note", text: bits.join("  ·  ") }),
+    /* The checksum is a string compared character by character, never read
+       aloud, so it keeps the monospace face in both editions — the same reason a
+       filename and a clause number do. */
+    el("span", { class: "dl-note" }, [
+      bits.join("  ·  ") + "  ·  ",
+      el("code", { text: "sha256 " + src.sha256 }),
+    ]),
     el("span", { class: "dl-size", text: mb(src.bytes) }),
   ]);
 }
@@ -90,7 +96,10 @@ function linkRow(path, note, size) {
     el("span", { class: "dl-what" },
       el("a", { href: path.split("/").map(encodeURIComponent).join("/") },
         el("code", { text: path.split("/").pop() }))),
-    el("span", { class: "dl-note", text: t(note) }),
+    /* html, not text, because a note may name the file a script writes, and a
+       filename keeps the monospace face inside a Bangla sentence for the same
+       reason it does in a citation line. Every note is a literal in this file. */
+    el("span", { class: "dl-note", html: t(note) }),
     el("span", { class: "dl-size", text: size || "" }),
   ]);
 }
@@ -174,7 +183,7 @@ function instrument(corpus) {
       en: "A deviation counted on this site means one thing: the tender does not match a clause printed in a standard document that is in this folder. It does not mean a law was broken, and for most of the counts it cannot mean that.",
       bn: "এই সাইটে গোনা একটি বিচ্যুতির অর্থ একটিই: দরপত্রটি এই ফোল্ডারে থাকা কোনো আদর্শ দস্তাবেজে ছাপা ধারার সঙ্গে মেলে না। এর মানে আইন ভাঙা হয়েছে তা নয়, আর বেশিরভাগ হিসাবের ক্ষেত্রে তা হতেই পারে না।",
     }) }),
-    cat.instrument_note ? el("p", { text: cat.instrument_note }) : null,
+    cat.instrument_note ? el("p", said(cat.instrument_note)) : null,
     el("p", { text: t({
       en: "That is why every rule on the rules tab prints, above its count, which document the clause came from, whether the clause is worded as an obligation or as a recommended band, and how many of the rows cite a clause dated after the tender they are applied to.",
       bn: "সে কারণেই নিয়ম ট্যাবের প্রতিটি নিয়ম তার হিসাবের ওপরে লেখে — ধারাটি কোন দস্তাবেজ থেকে, ধারাটি বাধ্যবাধকতা হিসেবে লেখা না সুপারিশকৃত সীমা হিসেবে, এবং কতটি সারি এমন ধারা উদ্ধৃত করছে যার তারিখ সংশ্লিষ্ট দরপত্রের পরে।",
@@ -190,7 +199,8 @@ function quoteNote(corpus) {
       el("span", { text: t(W.quoteHead) }),
       el("span", { class: "open-note", text: t({ en: "three extraction artefacts", bn: "তিনটি নিষ্কাশন-ত্রুটি" }) }),
     ]),
-    el("div", { class: "open-body" }, el("p", { class: "measure", text: cat.quote_note })),
+    el("div", { class: "open-body" },
+      el("p", Object.assign({ class: "measure" }, said(cat.quote_note)))),
   ]);
 }
 
@@ -211,7 +221,7 @@ const PARTS = [
       bn: "বিজ্ঞপ্তিতে যেভাবে ছাপা, প্যাকেজের বিবরণ — একটি দরপত্রে একাধিক প্যাকেজ থাকলে।" } },
   { what: { en: "Clause", bn: "ধারা" },
     why: { en: "In the form the standard document itself uses: the ITT number, the TDS entry that varies it, and the Rule of the Public Procurement Rules that the TDS entry cites. Never renumbered here.",
-      bn: "আদর্শ দস্তাবেজ নিজে যে রূপে লেখে সেভাবেই: ITT নম্বর, যে TDS ভুক্তি তা বদলায়, এবং সেই TDS ভুক্তি যে পাবলিক প্রকিউরমেন্ট রুলসের ধারা উদ্ধৃত করে। এখানে নতুন করে নম্বর দেওয়া হয়নি।" } },
+      bn: "আদর্শ দস্তাবেজ নিজে যে রূপে লেখে সেভাবেই: <code>ITT</code> নম্বর, যে <code>TDS</code> ভুক্তি তা বদলায়, এবং সেই ভুক্তি যে পাবলিক প্রকিউরমেন্ট রুলসের ধারা উদ্ধৃত করে। এখানে নতুন করে নম্বর দেওয়া হয়নি।" } },
   { what: { en: "Printed page (PDF page)", bn: "ছাপা পৃষ্ঠা (পিডিএফ পৃষ্ঠা)" },
     why: { en: "The number printed on the page comes first, because that is the number an official will quote back. A standard tender document restarts its numbering in every section, so the PDF's own page follows in brackets whenever the two differ.",
       bn: "পৃষ্ঠায় ছাপা নম্বরটি আগে, কারণ কর্মকর্তা ওই নম্বরই উদ্ধৃত করবেন। আদর্শ দরপত্র দস্তাবেজ প্রতিটি অংশে নতুন করে নম্বর শুরু করে, তাই দুটি আলাদা হলে বন্ধনীতে পিডিএফের নিজের পৃষ্ঠা থাকে।" } },
@@ -225,9 +235,13 @@ function citation(corpus) {
   const kids = [
     el("p", { class: "note-title", text: t(W.citeHead) }),
     el("p", { class: "measure", text: t(W.citeNote) }),
+    /* html, not text, for one reason: the clause row names ITT and TDS, and a
+       locator keeps the monospace face inside a Bangla sentence the same way it
+       does in a citation line. PARTS is a literal in this file, so nothing
+       reaches innerHTML that was not written here. */
     el("ul", { class: "dl-list" }, PARTS.map((p) => el("li", { class: "dl-row" }, [
       el("span", { class: "dl-what", text: t(p.what) }),
-      el("span", { class: "dl-note", text: t(p.why) }),
+      el("span", { class: "dl-note", html: t(p.why) }),
     ]))),
   ];
 
@@ -266,7 +280,7 @@ function gaps(corpus) {
   return el("div", null, [
     el("p", { class: "note-title", text: t(W.gapsHead) }),
     el("ul", { class: "dl-list" }, rows.map((g) => el("li", { class: "dl-row" }, [
-      el("span", { class: "dl-what", text: g.key }),
+      el("span", Object.assign({ class: "dl-what" }, said(g.key))),
       el("span", { class: "dl-note", text: t({
         en: "on " + n(g.n) + " of " + n(corpus.counts.tenders) + " tenders",
         bn: n(corpus.counts.tenders) + "টির মধ্যে " + n(g.n) + "টিতে",
@@ -276,26 +290,61 @@ function gaps(corpus) {
   ]);
 }
 
-/* Four values were wrong the first time they were computed, in the same
+/* Six values were wrong the first time they were computed, in the same
    direction and for the same reason: a notice writes "Tk. 8,25,000 (Eight Lac
    Twenty Five Thousand) only" and a first pass read the spelled-out words as
    another figure. Printing the before, the after and the sentence itself is
-   the only way a reader can check that the correction went the right way. */
+   the only way a reader can check that the correction went the right way.
+
+   Two of the six are not a figure but a sentence. The correction script rewrote
+   the ratio and left the clause that quoted it standing, so the per-tender
+   record still said the bar was tens of thousands of times the contract value.
+   That clause is dropped on the way to the page, and the ratio it had printed is
+   shown against the corrected one here. */
 function corrections(corpus) {
   const rows = (corpus.qa && corpus.qa.corrections) || [];
   if (!rows.length) return null;
+  /* A ratio row is not money: 0.44 in the liquid-assets column is four hundred
+     and forty thousand taka, and 0.44 in the ratio column is a multiplier. */
+  const amount = (c, v) => (c.unit === "ratio" ? ratio(v) : takaFull(v));
   return el("div", null, [
     el("p", { class: "note-title", text: t(W.qaHead) }),
     table(
       [UI.words.tender, { en: "Column", bn: "কলাম" }, W.before, W.after, W.because],
-      rows.map((c) => [digits(c.tender_id) + " (" + agencyName(c.agency) + ")", c.column,
-        takaFull(c.before), takaFull(c.after), c.quote]),
+      /* The column name is a machine identifier and the sentence is the notice's
+         own words. Neither is translated, and each says which it is by the face
+         it is set in: monospace for the column, the caption face for the words
+         off the page. */
+      rows.map((c) => [digits(c.tender_id) + " (" + agencyName(c.agency) + ")",
+        { html: '<code>' + c.column + '</code>' },
+        amount(c, c.before), amount(c, c.after),
+        { html: '<span class="verbatim">' + c.quote + '</span>' }]),
       { textCols: true }
     ),
     el("p", { class: "src", text: t({
-      en: "The correction script that made these four changes is in the repository and is listed below, so the change can be re-run and checked rather than taken on trust.",
-      bn: "এই চারটি বদল যে সংশোধন-স্ক্রিপ্ট করেছে তা রিপোজিটরিতে আছে এবং নিচে তালিকাভুক্ত, যাতে বদলটি আবার চালিয়ে যাচাই করা যায়, বিশ্বাসে নিতে না হয়।",
+      en: "The correction script that made these changes is in the repository and is listed below, so the change can be re-run and checked rather than taken on trust. The two sentence corrections are made by this site's own build script, which is listed there too.",
+      bn: "এই বদলগুলো যে সংশোধন-স্ক্রিপ্ট করেছে তা রিপোজিটরিতে আছে এবং নিচে তালিকাভুক্ত, যাতে বদলটি আবার চালিয়ে যাচাই করা যায়, বিশ্বাসে নিতে না হয়। বাক্যের দুটি সংশোধন এই সাইটের নিজের বিল্ড স্ক্রিপ্টে করা, সেটিও ওখানে তালিকাভুক্ত।",
     }) }),
+  ]);
+}
+
+/** The cautions that used to interrupt the article. Three of them were boxed
+    asides between its paragraphs, which is the wrong place for them twice over:
+    a reader following the story does not want the method, and a reporter about
+    to quote a figure should not have to find the right paragraph to learn what
+    the figure will not carry. They are one list here, and the article keeps a
+    one-sentence pointer where each of them stood.
+
+    html rather than text on every line, because these carry the column names
+    the figures were computed from and a column name keeps its monospace face. */
+function cautions(corpus) {
+  if (!METHOD_NOTES.length) return null;
+  return el("div", null, [
+    el("p", { class: "note-title", text: t(W.cautionHead) }),
+    el("div", null, METHOD_NOTES.map((g) => el("aside", { class: "note" }, [
+      el("p", { class: "note-title", text: t(g.title) }),
+      ...g.p.map((p) => el("p", { html: fill(t(p), corpus) })),
+    ]))),
   ]);
 }
 
@@ -308,9 +357,9 @@ function notes(corpus) {
   return el("div", null, [
     el("p", { class: "note-title", text: t(W.notesHead) }),
     el("div", null, rows.map((note) => el("aside", { class: "note" }, [
-      el("p", { class: "note-title", text: note.kind }),
-      el("p", null, [el("b", { text: t(W.claimed) + ": " }), note.what]),
-      el("p", null, [el("b", { text: t(W.instead) + ": " }), note.instead]),
+      el("p", Object.assign({ class: "note-title" }, said(note.kind))),
+      el("p", null, [el("b", { text: t(W.claimed) + ": " }), el("span", said(note.what))]),
+      el("p", null, [el("b", { text: t(W.instead) + ": " }), el("span", said(note.instead))]),
     ]))),
   ]);
 }
@@ -347,8 +396,8 @@ function repairs(corpus) {
         bn: "তিনটিই প্রতিষ্ঠান-টুলে বিজ্ঞপ্তির প্রতিটি বানানসহ তালিকাভুক্ত, যাতে কোনটি দেখানো হলো তা বিশ্বাস করে না নিয়ে বিচার করা যায়।" }],
     [{ en: "Names re-spaced", bn: "ফাঁক ঠিক করা নাম" },
       n(r.names_respaced),
-      { en: "Spacing and one trailing full stop only — M/s.Suraim reads M/s. Suraim. No word is added, dropped or re-cased, and Ltd. keeps its point.",
-        bn: "কেবল ফাঁক আর শেষের একটি দাঁড়ি — M/s.Suraim হয় M/s. Suraim। কোনো শব্দ যোগ, বাদ বা হরফের ছোট-বড় বদল হয়নি, আর Ltd. তার বিন্দু রাখে।" }],
+      { en: "Spacing and one trailing full stop only — <span class=\"verbatim\">M/s.Suraim</span> reads <span class=\"verbatim\">M/s. Suraim</span>. No word is added, dropped or re-cased, and <span class=\"verbatim\">Ltd.</span> keeps its point.",
+        bn: "কেবল ফাঁক আর শেষের একটি দাঁড়ি — <span class=\"verbatim\">M/s.Suraim</span> হয় <span class=\"verbatim\">M/s. Suraim</span>। কোনো শব্দ যোগ, বাদ বা হরফের ছোট-বড় বদল হয়নি, আর <span class=\"verbatim\">Ltd.</span> তার বিন্দু রাখে।" }],
     [{ en: "Owner names split from the office they hold", bn: "মালিকের নাম ও পদ আলাদা করা" },
       n(r.owner_roles_split),
       { en: "The award notice prints the person in one table column and the office in the next, and the extraction glued them together. They are separated back into a name and a role; neither word is changed.",
@@ -358,13 +407,21 @@ function repairs(corpus) {
     el("p", { class: "note-title", text: t(W.readHead) }),
     table(
       [{ en: "What", bn: "কী" }, { en: "How many", bn: "কতগুলো" }, { en: "Why", bn: "কেন" }],
-      rows.map((row) => [t(row[0]), row[1], t(row[2])]),
+      /* The last column quotes two spellings of one firm's name, and a spelling
+         off a notice is evidence rather than writing. The row literals above
+         carry the markup that says so, which is why this column goes in as
+         html and the other two do not. */
+      rows.map((row) => [t(row[0]), row[1], { html: t(row[2]) }]),
       { textCols: true }
     ),
-    el("p", { class: "src", text: t({
-      en: "The repair runs in site/build/build.py, listed below, and is applied on the way out of the CSVs — the CSVs themselves are left exactly as the analysis wrote them, so both can be compared.",
-      bn: "সারানোর কাজটি হয় নিচে তালিকাভুক্ত site/build/build.py-তে, আর তা প্রয়োগ হয় সিএসভি থেকে বেরোনোর পথে — সিএসভিগুলো ঠিক যেভাবে বিশ্লেষণ লিখেছিল সেভাবেই থাকে, তাই দুটোই মিলিয়ে দেখা যায়।",
-    }) }),
+    el("p", { class: "src" }, [
+      t({ en: "The repair runs in ", bn: "সারানোর কাজটি হয় নিচে তালিকাভুক্ত " }),
+      el("code", { text: "site/build/build.py" }),
+      t({
+        en: ", listed below, and is applied on the way out of the CSVs — the CSVs themselves are left exactly as the analysis wrote them, so both can be compared.",
+        bn: "-তে, আর তা প্রয়োগ হয় সিএসভি থেকে বেরোনোর পথে — সিএসভিগুলো ঠিক যেভাবে বিশ্লেষণ লিখেছিল সেভাবেই থাকে, তাই দুটোই মিলিয়ে দেখা যায়।",
+      }),
+    ]),
   ]);
 }
 
@@ -414,7 +471,7 @@ function downloads(corpus) {
   ];
   const scripts = [
     ["investigation_output/rule_scripts/rule_catalogue.py", withCount({ en: "The {{counts.rules|n}} clauses, each with its file, page, wording and force", bn: "{{counts.rules|n}}টি ধারা, প্রতিটির ফাইল, পৃষ্ঠা, ভাষা ও ওজনসহ" }, corpus)],
-    ["investigation_output/rule_scripts/run_rules.py", { en: "Runs every clause against every tender and writes rule_deviations.csv", bn: "প্রতিটি ধারা প্রতিটি দরপত্রে চালিয়ে rule_deviations.csv লেখে" }],
+    ["investigation_output/rule_scripts/run_rules.py", { en: "Runs every clause against every tender and writes <code>rule_deviations.csv</code>", bn: "প্রতিটি ধারা প্রতিটি দরপত্রে চালিয়ে <code>rule_deviations.csv</code> লেখে" }],
     ["investigation_output/rule_scripts/fix_liquid_asset_bug.py", { en: "The correction logged above, as it was applied", bn: "ওপরে লেখা সংশোধন, যেভাবে প্রয়োগ হয়েছে" }],
     ["investigation_output/rule_scripts/verify_all.py", { en: "Re-derives every check on the five files from the CSVs and the PDFs, trusting none of the scripts above", bn: "ওপরের কোনো স্ক্রিপ্টে ভরসা না করে সিএসভি ও পিডিএফ থেকে পাঁচটি ফাইলের প্রতিটি পরীক্ষা আবার বের করে" }],
     ["investigation_output/rule_scripts/verify_merge.py", { en: "The same for the merged and bilingual files, including that no Bengali sentence drops a figure", bn: "একত্রিত ও দ্বিভাষিক ফাইলের জন্য একই — কোনো বাংলা বাক্য কোনো সংখ্যা বাদ দেয়নি, তা-ও দেখে" }],
@@ -478,6 +535,9 @@ export function renderMethod(root, corpus) {
 
   const g = gaps(corpus);
   if (g) root.appendChild(g);
+
+  const cau = cautions(corpus);
+  if (cau) root.appendChild(cau);
 
   const conf = confidence(corpus);
   if (conf) root.appendChild(conf);

@@ -15,6 +15,7 @@
    they are recorded together with the validator command that passes them. */
 
 import { el, svg, clear, t, n, digits } from "./core.js";
+import { DIVISIONS, SITES, MAP_BOX } from "./mapshape.js";
 
 export const HUES = ["var(--hue-1)", "var(--hue-2)", "var(--hue-3)"];
 export const SEQ = ["var(--seq-1)", "var(--seq-2)", "var(--seq-3)",
@@ -132,7 +133,42 @@ function tipFor(plot) {
 
 /* -------------------------------------------------------------------- table
    Built from the same rows the plot is built from, so the two can never
-   disagree. */
+   disagree.
+
+   A cell is normally a string or an {en, bn} pair. It may also be an attribute
+   pair — {text} or {html} — which is what core's said() returns: a sentence
+   pulled from a data file, in the Bangla edition, with its ITT number still in
+   <code> where a reader can copy it. That is the only reason markup is allowed
+   in a cell, and the pair form is why a plain string can never reach innerHTML
+   by accident. */
+
+/** One cell's attributes. A ready-made {text}/{html} pair passes through; every
+    other value goes through t() as text. */
+/* A cell takes a ready-made pair when the caller has one — {text} for a string
+   it has already formatted, {html} for one carrying a locator in <code>. Either
+   may name a class: a column of company names is the document's own spelling
+   rather than ours, and the type says so. */
+function cell(c, num) {
+  const pair = c && typeof c === "object" && ("html" in c || "text" in c);
+  const attrs = pair
+    ? ("html" in c ? { html: c.html } : { text: c.text })
+    : { text: t(c) };
+  attrs.class = [num ? "n" : "", pair && c.cls ? c.cls : ""].filter(Boolean).join(" ");
+  return attrs;
+}
+
+/** One cell as its <td>. A cell may also arrive as a ready-made node, or a list
+    of them, which is what core's clauses() returns: a sentence off a data file
+    already split into its translated clauses, its <code> locators and its
+    printed fragments. Those go in as children, because there is no string form
+    of them left to attribute — and building the string by hand is exactly the
+    escaping hazard cell() exists to avoid. */
+function td(c, num) {
+  const one = c && typeof c === "object" && typeof c.nodeType === "number";
+  const kids = one ? [c] : (Array.isArray(c) ? c : null);
+  if (kids) return el("td", { class: num ? "n" : "" }, kids);
+  return el("td", cell(c, num));
+}
 
 export function table(head, rows, opts) {
   const o = opts || {};
@@ -140,8 +176,7 @@ export function table(head, rows, opts) {
     el("thead", null, el("tr", null, head.map((h, i) =>
       el("th", { class: i && !o.textCols ? "n" : "", scope: "col", text: t(h) })))),
     el("tbody", null, rows.map((r) =>
-      el("tr", null, r.map((c, i) =>
-        el("td", { class: i && !o.textCols ? "n" : "", text: String(c) }))))),
+      el("tr", null, r.map((c, i) => td(c, i && !o.textCols))))),
   ]));
 }
 
@@ -167,7 +202,8 @@ export function barsH(rows, opts) {
     const len = Math.max(1, (Math.abs(r.value) / max) * barW);
     const fillCol = r.color || o.color || hue(0);
     marks.push(svg("text", {
-      x: labelW, y: y + rowH / 2, class: "t-cat", "text-anchor": "end",
+      x: labelW, y: y + rowH / 2,
+      class: "t-cat" + (o.labelClass ? " " + o.labelClass : ""), "text-anchor": "end",
       "dominant-baseline": "middle",
     }, t(r.label)));
     marks.push(svg("rect", {
@@ -199,7 +235,10 @@ export function lines(cats, series, opts) {
   const o = opts || {};
   const fmt = o.fmt || ((v) => n(v));
   const w = o.width || CANVAS, h = o.height || 260;
-  const padL = o.padL || 44, padR = 12, padT = 10, padB = 26;
+  /* The right pad carries half of the last category label, which is centred on
+     the last point and would otherwise be cut by the canvas edge. A four-figure
+     year in Bengali numerals is the widest label this chart takes. */
+  const padL = o.padL || 44, padR = o.padR || 20, padT = 10, padB = 26;
   const iw = w - padL - padR, ih = h - padT - padB;
   const max = o.max || Math.max(1, ...series.flatMap((s) => s.values.map((v) => v || 0)));
   const X = (i) => padL + (cats.length < 2 ? iw / 2 : (i / (cats.length - 1)) * iw);
@@ -408,6 +447,220 @@ export function funnel(rows, opts) {
     color: SEQ[Math.max(0, SEQ.length - 1 - i * 2)],
   })), Object.assign({ rowH: 34 }, o));
 }
+
+/* -------------------------------------------------------------------- matrix
+   Six named bodies measured six ways, which is the shape the question takes
+   when it is "which of these is worst". If the six were places on a map this
+   would be a choropleth; no map is drawn here, because no boundary geometry
+   exists in the supplied documents and those documents are the only source this
+   investigation may use. What is drawn is the same comparison without the
+   geography, and the district each body's own notices print rides on its row.
+
+   A cell is a bar, not a filled block. A block would have to carry its number
+   on top of itself, and the ramp cannot hold small text at contrast either way
+   round: its dark steps fail in light mode and its light steps fail in dark,
+   because tokens.css inverts the ramp between the two. So magnitude is a length
+   and the number sits on the page surface, where it is readable in both. Colour
+   is that same magnitude a second time — the redundancy any colour vision
+   needs — and never the only carrier of anything.
+
+   Each column is scaled to its own highest value, because six measures in six
+   units share no axis and one drawn across them would be a lie. The thin upright
+   is that column's middle value, so "above the middle" is something a reader can
+   see rather than a number they have to take on trust. */
+
+/* Only the ramp's upper steps colour the bars. tokens.css inverts the ramp
+   between the two modes, so a step has to clear the page surface in both, and
+   measured against #ffffff and #151719 the first three steps land between 1.2:1
+   and 3.3:1 in one mode or the other — a seven-pixel bar at that contrast is a
+   bar nobody can see. From --seq-4 up, every step clears 3:1 either way round.
+   Three steps is also all the colour has to carry: the figure is printed above
+   each bar and the upright already marks the middle, so the ramp says magnitude
+   a second time and is never the only thing saying it. */
+const BARS = SEQ.slice(3);
+
+export function matrix(rows, cols, opts) {
+  const o = opts || {};
+  const w = o.width || CANVAS_WIDE;
+  const labelW = o.labelW || 150, tailW = o.tailW || 74;
+  const rowH = o.rowH || 46, headH = o.headH || 40, gap = 16;
+  const cw = (w - labelW - 10 - tailW) / cols.length;
+  const barW = cw - gap;
+  const h = headH + rows.length * rowH;
+  const colX = (j) => labelW + 10 + j * cw;
+  const head = [], marks = [];
+
+  cols.forEach((c, j) => (c.head || []).forEach((line, k) => head.push(
+    svg("text", { x: colX(j), y: 11 + k * 13, class: "t-cat" }, t(line)))));
+  (o.tail || []).forEach((line, k) => head.push(svg("text", {
+    x: w, y: 11 + k * 13, class: "t-cat", "text-anchor": "end" }, t(line))));
+
+  rows.forEach((r, i) => {
+    const y = headH + i * rowH;
+    marks.push(svg("text", { x: 0, y: y + 15, class: "t-cat" }, t(r.label)));
+    if (r.sub) marks.push(svg("text", { x: 0, y: y + 29 }, t(r.sub)));
+    cols.forEach((c, j) => {
+      const x = colX(j), max = c.max || 100, cell = r.cells[j] || {};
+      /* Nothing recorded is not a value of zero, and it is not drawn as one:
+         the cell carries the absence mark and no bar at all. */
+      if (cell.v === null || cell.v === undefined) {
+        marks.push(svg("text", { x, y: y + 15, class: "t-val" }, o.absent || "—"));
+      } else {
+        const len = Math.max(1, (cell.v / max) * barW);
+        const step = Math.min(BARS.length - 1, Math.floor((cell.v / max) * BARS.length));
+        marks.push(svg("text", { x, y: y + 15, class: "t-val" },
+          (c.fmt || ((v) => n(v)))(cell.v)));
+        marks.push(svg("rect", { class: "mark", x, y: y + 22, width: len, height: 7,
+          fill: BARS[step] }));
+        if (c.middle !== undefined && c.middle !== null) {
+          const mx = x + Math.min(barW, (c.middle / max) * barW);
+          marks.push(svg("line", { class: "cross", x1: mx, x2: mx, y1: y + 19, y2: y + 32 }));
+        }
+      }
+      /* The hover target is the whole cell rather than the seven pixels of the
+         bar, and it goes on last so it is the thing under the pointer. */
+      if (cell.tip) marks.push(svg("rect", { class: "hit", x, y: y + 2,
+        width: Math.max(barW, 24), height: rowH - 4 }, svg("title", null, cell.tip)));
+    });
+    if (r.tail !== undefined) marks.push(svg("text", {
+      x: w, y: y + 15, class: "t-val", "text-anchor": "end" }, r.tail));
+  });
+
+  /* Fixed px, not a percentage: below about 820 units a six-column matrix
+     scaled to the column would print its labels at three pixels. It keeps its
+     size and the wrapper scrolls instead, exactly as a wide table does. */
+  return svg("svg", {
+    viewBox: "0 0 " + w + " " + h, width: w + "px", height: h,
+    role: "img", "aria-label": o.alt || "",
+  }, [svg("g", null, head), svg("g", { class: "marks" }, marks)]);
+}
+
+/** The ramp and the upright in words, so the matrix never has to be decoded.
+    The two swatches are the ends of the range the bars actually use. */
+export function matrixLegend() {
+  return [
+    { label: { en: "Lower share within that column", bn: "ওই কলামের মধ্যে কম হার" }, color: BARS[0] },
+    { label: { en: "Higher share within that column", bn: "ওই কলামের মধ্যে বেশি হার" }, color: BARS[BARS.length - 1] },
+    { label: { en: "The middle value of the six (the upright)", bn: "ছয়টির মাঝের মান (খাড়া দাগ)" }, color: "var(--axis)" },
+  ];
+}
+
+/* ----------------------------------------------------------------- map figure
+   Bangladesh, its eight divisions, and one shaded mark for each of the six
+   authorities, standing where its own notices say it works.
+
+   The outline is a schematic drawn for this page and mapshape.js says so at
+   length: no boundary geometry exists in the supplied documents, and nothing
+   outside them may be used. What the map is doing here is orientation, not
+   measurement. Every number on it comes off the notices.
+
+   Why marks and not shaded divisions, which is what a choropleth would be: two
+   of these six bodies sit in one division and two more in another, so four of
+   the six values would have to share two areas. An area cannot hold two values
+   without lying about one of them. So the divisions are a recessive base and the
+   value sits on the body it belongs to.
+
+   Text never sits on a fill. The marks carry it in a key beside the map, joined
+   to each mark by a hairline, so the ramp inverting between light and dark can
+   never take a label below contrast. */
+
+export function divisionMap(cells, opts) {
+  const o = opts || {};
+  const w = o.width || CANVAS_WIDE;
+  const [bx, by] = MAP_BOX;
+  /* The country is portrait, so height is the constraining dimension: the map is
+     sized by how tall it may be and stops at 480, and a wider column spreads the
+     key further out rather than blowing the country up to fill it. */
+  const mh = Math.round(Math.min(480, Math.max(300, w * 0.46)));
+  const k = mh / by;
+  const mw = Math.round(bx * k);
+  const max = o.max || Math.max(...cells.map((c) => c.v || 0));
+  const S = (n) => Math.round(n * k * 10) / 10;
+
+  /* Labels go on the flank the body sits on — the western half of the six west
+     of the map, the eastern half east of it — so the type is spread across the
+     width instead of banked up one side, and the map is centred between them.
+     The split is by rank rather than by a line down the middle, because four
+     bodies east of centre and two west would leave one flank crowded and the
+     other nearly empty. On each side the rows keep the vertical order of their
+     marks and are pushed apart to a legible minimum, so a leader never has to
+     cross another leader. */
+  /* A key row is two lines: the body's name, then its count and its district.
+     19px between the two baselines and 46px between rows, because the Bengali
+     face's ink box measures 18.5px at 14px — the matra of the lower line reaches
+     into the descender of the upper one at the 14px spacing the Latin face is
+     happy with. One spacing, set by the tighter of the two editions. */
+  const rowH = o.rowH || 46, lineH = 19, gap = 46, side = 13;
+  const mapX = Math.round((w - mw) / 2);
+  const seats = cells.map((c) => ({
+    c,
+    x: mapX + S(SITES[c.key][0]),
+    y: S(SITES[c.key][1]),
+  }));
+  const westward = seats.slice().sort((a, b) => a.x - b.x)
+    .slice(0, Math.ceil(seats.length / 2));
+  seats.forEach((s) => { s.west = westward.indexOf(s) >= 0; });
+  let low = 0;
+  [true, false].forEach((flank) => {
+    let last = -Infinity;
+    seats.filter((s) => s.west === flank).sort((a, b) => a.y - b.y)
+      .forEach((s) => { s.ky = Math.max(s.y, last + rowH); last = s.ky; });
+    low = Math.max(low, last);
+  });
+  /* The lowest row's second line sits lineH below its own baseline and its ink
+     descends a few px further, so the canvas has to reserve for that or the last
+     district name is clipped by the viewBox. */
+  const h = Math.max(mh, Math.round(low) + lineH + 6);
+
+  const areas = DIVISIONS.map((d) => {
+    const pts = [];
+    for (let i = 0; i < d.p.length; i += 2) {
+      pts.push((mapX + S(d.p[i])) + "," + S(d.p[i + 1]));
+    }
+    return svg("polygon", { class: "area", points: pts.join(" ") });
+  });
+  const names = DIVISIONS.map((d) => svg("text", {
+    class: "t-geo", x: mapX + S(d.at[0]), y: S(d.at[1]), "text-anchor": "middle",
+  }, t(d)));
+
+  const marks = [], key = [];
+  seats.forEach((s) => {
+    const c = s.c;
+    const absent = c.v === null || c.v === undefined;
+    const step = absent ? -1
+      : Math.min(BARS.length - 1, Math.floor((c.v / (max || 1)) * BARS.length));
+    const fill = absent ? "var(--surface-placeholder)" : BARS[step];
+    const swX = s.west ? mapX - gap - side : mapX + mw + gap;
+    const txX = s.west ? swX - 8 : swX + side + 8;
+    marks.push(svg("line", {
+      class: "leader",
+      x1: s.west ? s.x - 7 : s.x + 7, y1: s.y,
+      x2: s.west ? mapX - gap + 6 : swX - 6, y2: s.ky - 6,
+    }));
+    marks.push(svg("rect", {
+      class: "mark seat", x: s.x - 7, y: s.y - 7, width: 14, height: 14, fill,
+    }, c.tip ? svg("title", null, c.tip) : null));
+    key.push(svg("rect", {
+      class: "mark", x: swX, y: s.ky - side, width: side, height: side, fill,
+    }));
+    key.push(svg("text", {
+      class: "t-cat", x: txX, y: s.ky - 2, "text-anchor": s.west ? "end" : "start",
+    }, t(c.label)));
+    key.push(svg("text", {
+      class: "t-val", x: txX, y: s.ky - 2 + lineH, "text-anchor": s.west ? "end" : "start",
+    }, (absent ? (o.absent || "—") : c.read) + " · " + t(c.sub)));
+  });
+
+  return svg("svg", {
+    viewBox: "0 0 " + w + " " + h, width: w + "px", height: h,
+    role: "img", "aria-label": o.alt || "",
+  }, [
+    svg("g", { class: "geo" }, [...areas, ...names]),
+    svg("g", { class: "marks" }, [...marks, ...key]),
+  ]);
+}
+
+
 
 
 

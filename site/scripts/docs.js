@@ -8,12 +8,14 @@
 
    Filenames are printed exactly as they sit on disk, in both editions, because
    an editor checking a number needs to type the same string into a file
-   browser. The directory name "Tender Notice_PDFs" contains a space, so every
-   link is percent-encoded segment by segment. */
+   browser. The same goes for a package title with no Bangla name written for
+   it: in the Bangla edition it wears the caption face, which says it is the
+   notice's own line and not ours. The directory name "Tender Notice_PDFs"
+   contains a space, so every link is percent-encoded segment by segment. */
 
 import {
   el, t, n, digits, date, dash, taka, href, fill, clear, human, ofTotal,
-  agencyName, termName,
+  agencyName, quoted,
 } from "./core.js";
 import { figure, table, barsH, hue } from "./charts.js";
 import { UI } from "./content.js";
@@ -68,7 +70,7 @@ function docRow(r) {
   return el("li", { class: "doc-row" }, [
     el("span", { class: "doc-name" }, [
       el("code", { text: r.file }),
-      r.title ? el("span", { text: " — " + termName("work", r.title) }) : null,
+      r.title ? el("span", null, [" — ", quoted("work", r.title)]) : null,
       r.tender_id ? el("span", { text: " · " + t(UI.words.tender) + " " + digits(r.tender_id) }) : null,
     ].filter(Boolean)),
     el("span", { class: "doc-meta", text: meta }),
@@ -222,8 +224,12 @@ function refused(tenders) {
     }) }),
     el("ul", { class: "dl-list" }, rows.map((r) => el("li", { class: "dl-row" }, [
       el("span", { class: "dl-what", text: digits(r.tender_id) }),
-      el("span", { class: "dl-note", text: agencyName(r.agency || "") + " — " +
-        (termName("work", r.package_description) || termName("work", r.project_name) || dash()) }),
+      el("span", { class: "dl-note" }, [
+        agencyName(r.agency || "") + " — ",
+        r.package_description || r.project_name
+          ? quoted("work", r.package_description || r.project_name)
+          : dash(),
+      ]),
       el("span", { class: "dl-size" }, r.notice && r.notice.file
         ? el("a", { href: href(r.notice.dir, r.notice.file), text: t(UI.words.open) })
         : dash()),
@@ -269,8 +275,8 @@ export function renderDocs(root, corpus, data) {
   root.appendChild(el("div", { class: "open-stack" }, disc));
 
   root.appendChild(el("p", { class: "src", text: t({
-    en: "Filenames are printed exactly as they are on disk in both editions, so the string here can be typed into a file browser. Links open the PDF in this browser; nothing is fetched from outside this folder.",
-    bn: "ফাইলের নাম দুই সংস্করণেই ডিস্কে যেমন আছে হুবহু তেমন ছাপা, যাতে এখানকার লেখা ফাইল ব্রাউজারে টাইপ করা যায়। লিংক এই ব্রাউজারেই পিডিএফ খোলে; এই ফোল্ডারের বাইরে থেকে কিছু আনা হয় না।",
+    en: "Filenames are printed exactly as they are on disk in both editions, so the string here can be typed into a file browser. So are the package titles beside them, wherever no Bangla name has been written for one: a title is a line off a notice, and translating it would put words in the authority's mouth. Links open the PDF in this browser; nothing is fetched from outside this folder.",
+    bn: "ফাইলের নাম দুই সংস্করণেই ডিস্কে যেমন আছে হুবহু তেমন ছাপা, যাতে এখানকার লেখা ফাইল ব্রাউজারে টাইপ করা যায়। পাশের প্যাকেজের শিরোনামও তেমনই, যেগুলোর বাংলা নাম এখনো লেখা হয়নি: শিরোনাম বিজ্ঞপ্তির নিজের একটি লাইন, অনুবাদ করলে সংস্থার মুখে কথা বসানো হয়। লিংক এই ব্রাউজারেই পিডিএফ খোলে; এই ফোল্ডারের বাইরে থেকে কিছু আনা হয় না।",
   }) }));
 
   return root;
