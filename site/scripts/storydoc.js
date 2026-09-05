@@ -23,6 +23,14 @@
    figure. A figure name with no builder shows as a missing-figure line on the
    page rather than a hole, which is the existing behaviour and is left alone.
 
+   Case studies are named the same way, at two lengths. `# case high_bar` draws
+   the whole scene, paragraphs and all; `# evidence high_bar` draws the same
+   tender with the paragraphs left out — the dateline, the passage from its own
+   page with the operative words marked, the figures that passage turns on, the
+   two PDFs and the selection rule. Neither costs the article a word of its
+   budget, because the writing in them lives beside the case in content.js and
+   the figures in them are read from the corpus.
+
    Numbers are never typed into the file. `{{money.crore|cr}}` is resolved against
    site/data/corpus.json at render time, so a rebuild moves every figure in the
    prose and no edit here can put a stale number on the page. */
@@ -34,6 +42,7 @@ const KINDS = {
   lede: "text", p: "text", h2: "text",   /* prose */
   tiles: "bare", exhibits: "bare", doors: "bare",
   case: "arg", fig: "arg",               /* argument is a case id / figure name */
+  evidence: "arg",                       /* a case id, drawn without its prose */
   finding: "finding",                    /* argument is the tag */
 };
 
