@@ -365,8 +365,30 @@ for r in MASTER:
         if before is not None and before > 1e10:
             r[col] = "%.2f" % fix[col]
             CORRECTIONS.append({"tender_id": r["tender_id"], "column": col,
-                                "before": before, "after": fix[col],
+                                "before": before, "after": fix[col], "unit": "bdt",
                                 "quote": fix["quote"], "agency": r["agency"]})
+    # The correction script rewrote the ratio column and left the sentence that
+    # quotes it standing. documented_fact on these two rows still says the bar is
+    # tens of thousands of times the contract value, which is the reading the
+    # script had just withdrawn - so the record contradicted itself in the same
+    # cell the correction was recorded in.
+    #
+    # The clause is removed rather than restated. Across the 247 rows that carry a
+    # bar ratio the analysis writes this sentence on all 80 at 1.5x or more and on
+    # none of the 167 below it; the corrected ratios are 0.44 and 0.37, so by the
+    # analysis's own threshold the sentence would never have been written. Nothing
+    # is substituted for it: the corrected ratio is on the rules tab, where the
+    # test that uses it lives.
+    stale = re.search(r"\s*notice requires financial bar ([\d.,]+)x contract value\.",
+                      r.get("documented_fact") or "")
+    if stale and (num(r, "financial_bar_to_contract_value_ratio") or 0) < 1.5:
+        r["documented_fact"] = (r["documented_fact"][:stale.start()]
+                                + r["documented_fact"][stale.end():]).strip()
+        CORRECTIONS.append({
+            "tender_id": r["tender_id"], "column": "documented_fact",
+            "before": float(stale.group(1).replace(",", "")),
+            "after": num(r, "financial_bar_to_contract_value_ratio"),
+            "unit": "ratio", "quote": fix["quote"], "agency": r["agency"]})
 if CORRECTIONS:
     print("  applied %d documented liquid-asset corrections" % len(CORRECTIONS))
 
@@ -380,6 +402,11 @@ print("  rule catalogue %d rules" % len(RULES))
 BY_ID = {r["tender_id"]: r for r in MASTER}
 AWARDED = [r for r in MASTER if num(r, "contract_value_bdt") is not None]
 WITHBIDS = [r for r in MASTER if num(r, "total_bids_received") is not None]
+
+# Every taka in the awarded set, at module level, because a case study needs to
+# be able to say what share of the whole one contract is and the figure must be
+# the same one the concentration table divides by.
+AWARDED_VALUE = sum(num(r, "contract_value_bdt") or 0 for r in AWARDED)
 
 # One spelling per firm, so that a firm named in the article, in a table and in a
 # tender record is the same string in all three. Grouping is still the master's
@@ -426,7 +453,7 @@ def docref(kind, filename, pages):
 # ----------------------------------------------------------------- the corpus
 
 def build_corpus():
-    total_value = sum(num(r, "contract_value_bdt") or 0 for r in AWARDED)
+    total_value = AWARDED_VALUE
     bids = [num(r, "total_bids_received") for r in WITHBIDS]
     resp = [num(r, "responsive_bids") for r in WITHBIDS]
     lost = [(b or 0) - (rs or 0) for b, rs in zip(bids, resp)]
@@ -674,6 +701,10 @@ def build_violations():
             "crore": cr(sum(num(d, "contract_value_bdt") or 0 for d in devs)),
             "in_force_crore": cr(sum(num(d, "contract_value_bdt") or 0 for d in live)),
             "tenders": len(set(d["tender_id"] for d in live)),
+            # Which authorities the rule is found in, commonest first. Several
+            # deviations are concentrated in one or two agencies rather than
+            # spread across the six, and the article says so from this list.
+            "by_agency": tally(devs, "agency"),
         })
 
     duty = [d for d in in_force if d["clause_force"] in DUTY_FORCE]
@@ -1099,10 +1130,13 @@ def case_row(r, mark=None):
         "responsive": num(r, "responsive_bids"),
         "rejected": num(r, "bidders_rejected_count"),
         "value": val, "crore": cr(val),
+        "value_share": pct(val, AWARDED_VALUE, 2),
         "winner": winner_of(r),
         "winner_contracts": num(r, "winner_total_tenders"),
         "winner_crore": cr(num(r, "winner_total_contract_value_bdt")),
         "winner_share": num(r, "winner_percentage_of_total_awarded_value"),
+        "winner_thin": num(r, "winner_low_competition_wins"),
+        "winner_agencies": num(r, "winner_agency_count"),
         "years": num(r, "minimum_years_experience"),
         "similar": num(r, "minimum_similar_project_value_bdt"),
         "similar_crore": cr(num(r, "minimum_similar_project_value_bdt")),
@@ -1124,6 +1158,33 @@ def case_row(r, mark=None):
         "reuse": num(r, "number_of_tenders_using_rule"),
         "restriction": txt(r, "eligibility_restriction_level"),
         "red_flag": txt(r, "eligibility_red_flag_type"),
+
+        # How this tender's field compares with tenders of the same authority,
+        # method and size band - the like-for-like reading the aggregate cannot
+        # give, and the only figure in a case that is relative to other cases.
+        "peer_size": num(r, "peer_group_size"),
+        "peer_median": num(r, "peer_median_bids"),
+        "peer_gap": num(r, "bids_vs_peer_median"),
+
+        # What the portal itself says, in its own fields, about its own deadline
+        # and about whether the notice can be opened at all.
+        "certified": txt(r, "portal_self_certified_signed_in_due_time"),
+        "template": txt(r, "award_template"),
+        "notice_denied": txt(r, "notice_access_denied"),
+
+        # How much of the field was set aside, as the master states it.
+        "reject_rate": num(r, "disqualification_rate_pct"),
+        "mass_flag": txt(r, "mass_disqualification_flag"),
+
+        # The clause-sharing figures: how many other notices carry this one's
+        # most-reused sentence, and how many of its sentences are shared at all.
+        "shared_clauses": num(r, "shared_clause_count"),
+        "price_band_clause": txt(r, "price_band_nonresponsive_clause"),
+
+        # Our own priority score and band, carried on the case so a scene can
+        # say where the score put a tender - including when it put it low.
+        "score": num(r, "investigative_priority_score"),
+        "band": txt(r, "investigative_priority_band"),
         "deviations": num(r, "rule_deviation_count"),
         "codes": txt(r, "rule_deviation_codes"),
         "breach_codes": txt(r, "rule_deviation_publishable_as_breach_codes"),
@@ -1132,11 +1193,18 @@ def case_row(r, mark=None):
         "timing": txt(r, "rule_instrument_timing"),
         "preselection": txt(r, "potential_preselection_pattern"),
         "stages": num(r, "preselection_stage_count"),
+        # The staged conditions this tender actually met, as tokens, so a scene
+        # can list them in the reader's language instead of asserting a count.
+        "stages_met": [s for s in txt(r, "preselection_stages_met").split(";") if s],
         "quote_experience": clause(elig, "2)The minimum specific experience",
                                    "3)The required average"),
         "quote_bids": txt(r, "evidence_excerpt_competition"),
         "pages": txt(r, "evidence_page_numbers"),
-        "page": txt(r, "eligibility_page") or "1",
+        # A notice the portal refused to serve records eligibility page 0, which
+        # is not a page. Cite page 1 instead: the refusal itself is what page 1
+        # of that PDF contains, and that is the page the reader will open.
+        "page": (txt(r, "eligibility_page")
+                 if (num(r, "eligibility_page") or 0) > 0 else "1"),
         "gaps": txt(r, "data_gaps"),
         "next_step": txt(r, "journalist_next_step"),
         "notice": docref("notice", txt(r, "notice_source_file"), txt(r, "notice_pages")),
@@ -1178,6 +1246,23 @@ def build_case():
 # passage prints unmarked instead of marked in the wrong place.
 
 CASES = [
+    {
+        "key": "all_rejected",
+        "where": "record",
+        "pool": lambda r: num(r, "responsive_bids") == 0,
+        "rank": lambda r: -(num(r, "total_bids_received") or 0),
+        "mark": ("evidence_excerpt_competition", r"Responsive:\s*\d+"),
+        "rule": {
+            "en": "The signed contract in this set whose award notice records "
+                  "that no bid at all was ruled responsive. Ranked on bids "
+                  "received over the awarded tenders satisfying "
+                  "<code>responsive_bids == 0</code>.",
+            "bn": "এই সংকলনে যে স্বাক্ষরিত চুক্তির বিজ্ঞপ্তিতে লেখা আছে একটি দরও "
+                  "গ্রহণযোগ্য বিবেচিত হয়নি, সেটি। <code>responsive_bids == 0</code> "
+                  "শর্ত পূরণ করা চুক্তিগুলোকে জমা পড়া দরের সংখ্যা অনুযায়ী সাজিয়ে "
+                  "বাছাই করা হয়েছে।",
+        },
+    },
     {
         "key": "single_bid",
         "where": "competition",
@@ -1276,6 +1361,159 @@ CASES = [
                   "সাজিয়ে বাছাই করা হয়েছে।",
         },
     },
+    # The sixth turn carries the negative result from the other side. The master
+    # compares each tender with the notices of the same authority, method and
+    # size band; this is the one that came in furthest below the middle of its
+    # own peer group - and it published no bar at all.
+    {
+        "key": "peer_gap",
+        "where": "restriction",
+        "pool": lambda r: (num(r, "bids_vs_peer_median") is not None
+                           and (num(r, "peer_group_size") or 0) >= 10),
+        "rank": lambda r: (num(r, "bids_vs_peer_median"),
+                           -(num(r, "contract_value_bdt") or 0)),
+        "mark": ("evidence_excerpt_competition", r"Received:\s*\d+"),
+        "rule": {
+            "en": "The signed contract in this set that drew the fewest bids "
+                  "relative to the notices most like it. Ranked on "
+                  "<code>bids_vs_peer_median</code>, then contract value, over "
+                  "the awarded tenders whose peer group holds at least ten "
+                  "notices, so the middle of the group means something.",
+            "bn": "এই সংকলনে যে স্বাক্ষরিত চুক্তিতে, তার সঙ্গে সবচেয়ে মেলে এমন "
+                  "বিজ্ঞপ্তিগুলোর তুলনায় সবচেয়ে কম দর জমা পড়েছে। যেসব চুক্তির "
+                  "তুলনা-দলে অন্তত দশটি বিজ্ঞপ্তি আছে — যাতে দলের মধ্যবর্তী "
+                  "সংখ্যাটির অর্থ থাকে — সেগুলোকে "
+                  "<code>bids_vs_peer_median</code> ও তারপর চুক্তিমূল্য অনুযায়ী "
+                  "সাজিয়ে বাছাই করা হয়েছে।",
+        },
+    },
+    # The seventh turn is the notice most made of other notices' sentences. It is
+    # also the counter-example the article has to print: the strictest published
+    # bar in the set drew a full field and lost nobody.
+    {
+        "key": "repeat_clause",
+        "where": "reuse",
+        "pool": lambda r: (num(r, "shared_clause_count") or 0) > 0,
+        "rank": lambda r: (-(num(r, "shared_clause_count") or 0),
+                           -(num(r, "number_of_tenders_using_rule") or 0),
+                           -(num(r, "contract_value_bdt") or 0)),
+        "mark": ("repeated_rule_excerpt",
+                 r"general experience[\s\S]*?five \(05\) years"),
+        "rule": {
+            "en": "The notice in this set assembled from the most sentences it "
+                  "shares word for word with other notices. Ranked on "
+                  "<code>shared_clause_count</code>, then on how many notices "
+                  "carry its most-reused sentence, then contract value, over the "
+                  "awarded tenders that share at least one sentence.",
+            "bn": "এই সংকলনে যে বিজ্ঞপ্তিটি অন্য বিজ্ঞপ্তিগুলোর সঙ্গে হুবহু মেলে "
+                  "এমন সবচেয়ে বেশি বাক্য দিয়ে গাঁথা। অন্তত একটি বাক্য ভাগ করে "
+                  "নেওয়া চুক্তিগুলোকে <code>shared_clause_count</code>, তারপর তার "
+                  "সবচেয়ে বেশি ব্যবহৃত বাক্যটি কতটি বিজ্ঞপ্তিতে আছে, তারপর "
+                  "চুক্তিমূল্য অনুযায়ী সাজিয়ে বাছাই করা হয়েছে।",
+        },
+    },
+    # The eighth turn has no quotation, because the field it turns on is one word
+    # long. The portal answered its own question about its own deadline, and the
+    # two dates printed beside that answer are the whole of the exhibit.
+    {
+        "key": "portal_yes",
+        "where": "portal",
+        "pool": lambda r: (txt(r, "portal_self_certified_signed_in_due_time")
+                           == "yes"
+                           and txt(r, "signing_within_legal_band")
+                           .startswith("EXCEEDS")),
+        "rank": lambda r: -(num(r, "contract_value_bdt") or 0),
+        "mark": None,
+        "rule": {
+            "en": "The largest signed contract in this set that the portal "
+                  "records as signed in due time and that its own two dates "
+                  "place outside the window the size of the contract allows. "
+                  "Ranked on contract value over the awarded tenders whose "
+                  "<code>portal_self_certified_signed_in_due_time</code> reads "
+                  "<code>yes</code> and whose "
+                  "<code>signing_within_legal_band</code> begins "
+                  "<code>EXCEEDS</code>.",
+            "bn": "এই সংকলনে সেই সবচেয়ে বড় স্বাক্ষরিত চুক্তি, যেটিকে পোর্টাল "
+                  "নিজেই যথাসময়ে স্বাক্ষরিত বলে লিখে রেখেছে, অথচ তারই ছাপা দুটি "
+                  "তারিখ চুক্তির আকার অনুযায়ী প্রাপ্য সময়সীমার বাইরে পড়ে। যেসব "
+                  "চুক্তির <code>portal_self_certified_signed_in_due_time</code>-এ "
+                  "<code>yes</code> এবং <code>signing_within_legal_band</code> "
+                  "<code>EXCEEDS</code> দিয়ে শুরু, সেগুলোকে চুক্তিমূল্য অনুযায়ী "
+                  "সাজিয়ে বাছাই করা হয়েছে।",
+        },
+    },
+    # The ninth turn is simply the largest contract in the set, because the money
+    # section should open on the money. What it demanded of a bidder is quoted in
+    # the same figures the concentration table is built from.
+    {
+        "key": "biggest",
+        "where": "money",
+        "pool": lambda r: (num(r, "contract_value_bdt") or 0) > 0,
+        "rank": lambda r: -(num(r, "contract_value_bdt") or 0),
+        "mark": ("evidence_excerpt_turnover", MONEY_IN_CLAUSE),
+        "rule": {
+            "en": "The largest signed contract in this set. Ranked on "
+                  "<code>contract_value_bdt</code> over every awarded tender "
+                  "that prints a contract value.",
+            "bn": "এই সংকলনের সবচেয়ে বড় স্বাক্ষরিত চুক্তি। চুক্তিমূল্য ছাপা আছে "
+                  "এমন সব চুক্তিকে <code>contract_value_bdt</code> অনুযায়ী সাজিয়ে "
+                  "বাছাই করা হয়েছে।",
+        },
+    },
+    # The tenth turn is the one notice in the set whose own words put a number on
+    # a rule it appears to break: reject any price more than a tenth away from an
+    # estimate the notice never publishes.
+    {
+        "key": "price_band",
+        "where": "band",
+        "pool": lambda r: "R05" in txt(
+            r, "rule_deviation_publishable_as_breach_codes"),
+        "rank": lambda r: -(num(r, "contract_value_bdt") or 0),
+        "mark": ("evidence_excerpt_price_band",
+                 r"more thane\s*10%\s*above or below Estimated cost[^.]*"),
+        "rule": {
+            "en": "The signed contract whose notice carries a price-band "
+                  "rejection clause and whose citation can be placed at or "
+                  "before the tender's own event: the awarded tenders with "
+                  "<code>R05</code> among their "
+                  "<code>rule_deviation_publishable_as_breach_codes</code>, "
+                  "ranked on contract value.",
+            "bn": "যে স্বাক্ষরিত চুক্তির বিজ্ঞপ্তিতে দরসীমা-ভিত্তিক বাতিলের ধারা "
+                  "আছে এবং উদ্ধৃত দস্তাবেজটিকে দরপত্রের নিজের ঘটনার সময়ে বা তার "
+                  "আগে বসানো যায়, সেটি: যেসব চুক্তির "
+                  "<code>rule_deviation_publishable_as_breach_codes</code>-এ "
+                  "<code>R05</code> আছে, সেগুলোকে চুক্তিমূল্য অনুযায়ী সাজানো "
+                  "হয়েছে।",
+        },
+    },
+    # The last turn is the tender that met every one of the seven conditions we
+    # test for in sequence. Seven at once is not proof of anything; it is the
+    # place a reporter would start, and saying so is the point of the scene.
+    {
+        "key": "preselection",
+        "where": "stack",
+        "pool": lambda r: (txt(r, "potential_preselection_pattern")
+                           == "STRONG_INVESTIGATIVE_LEAD"),
+        "rank": lambda r: (-(num(r, "preselection_stage_count") or 0),
+                           -(num(r, "contract_value_bdt") or 0)),
+        "mark": ("evidence_excerpt_enlistment",
+                 r"Enlisted\s*\(\s*Electrical\)\s*Contractor of RAjuk"
+                 r"[\s\S]{0,90}?Firm"),
+        "rule": {
+            "en": "The signed contract that met the most of the seven conditions "
+                  "we test in sequence. Ranked on "
+                  "<code>preselection_stage_count</code>, then contract value, "
+                  "over the awarded tenders whose "
+                  "<code>potential_preselection_pattern</code> reads "
+                  "<code>STRONG_INVESTIGATIVE_LEAD</code>.",
+            "bn": "আমরা পরপর যে সাতটি শর্ত পরীক্ষা করি, তার সবচেয়ে বেশি পূরণ করেছে "
+                  "যে স্বাক্ষরিত চুক্তি। যেসব চুক্তির "
+                  "<code>potential_preselection_pattern</code>-এ "
+                  "<code>STRONG_INVESTIGATIVE_LEAD</code> লেখা, সেগুলোকে "
+                  "<code>preselection_stage_count</code> ও তারপর চুক্তিমূল্য "
+                  "অনুযায়ী সাজিয়ে বাছাই করা হয়েছে।",
+        },
+    },
 ]
 
 
@@ -1315,6 +1553,60 @@ def build_timeline():
     return [{"year": y, "published": pub.get(y, 0), "signed": sign.get(y, 0),
              "crore": cr(val.get(y, 0)), "thin_field": thin.get(y, 0)}
             for y in years]
+
+
+def build_portal():
+    """What the portal says about its own deadline, tested against the two dates
+    it prints beside the answer.
+
+    Every award notice answers one question - was the contract signed in due
+    time? - and prints the notice-of-award date and the signing date. The law's
+    window depends on the size of the contract, so the answer is checkable from
+    the notice alone. This block does the check and reports where the portal's
+    own answer and its own dates disagree. It asserts nothing about why."""
+    yes = [r for r in AWARDED
+           if txt(r, "portal_self_certified_signed_in_due_time") == "yes"]
+    no = [r for r in AWARDED
+          if txt(r, "portal_self_certified_signed_in_due_time") == "no"]
+    blank = [r for r in AWARDED
+             if not txt(r, "portal_self_certified_signed_in_due_time")]
+
+    # Rows where the field is answered and both dates are present, which is the
+    # only population the test can run on.
+    dated = [r for r in yes + no if num(r, "days_noa_to_signing") is not None]
+
+    # What the answer tracks. If "yes" is exactly (days <= 28) with no exception,
+    # the portal is not testing the window the contract's own size allows - it is
+    # testing the longest window any contract can get.
+    flat = [r for r in dated
+            if (txt(r, "portal_self_certified_signed_in_due_time") == "yes")
+            != ((num(r, "days_noa_to_signing") or 0) <= 28)]
+
+    over = [r for r in yes if txt(r, "signing_within_legal_band").startswith("EXCEEDS")]
+    caps = collections.Counter()
+    days_over = []
+    for r in over:
+        cap, o = overrun_of(r)
+        if cap:
+            caps[cap] += 1
+        if o is not None:
+            days_over.append(o)
+    return {
+        "yes": len(yes), "no": len(no), "blank": len(blank),
+        "answered": len(dated),
+        "flat_test_exceptions": len(flat),
+        "over_cap": len(over),
+        "yes_within": len(yes) - len(over),
+        "over_crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in over)),
+        "over_pct": pct(len(over), len(yes)),
+        "over_14": caps.get(14, 0), "over_21": caps.get(21, 0),
+        "over_28": caps.get(28, 0),
+        "over_week": sum(1 for d in days_over if d > 7),
+        "overrun": spread(days_over),
+        "no_over_cap": sum(1 for r in no
+                           if txt(r, "signing_within_legal_band").startswith("EXCEEDS")),
+        "templates": tally(AWARDED, "award_template"),
+    }
 
 
 def main():
@@ -1508,6 +1800,42 @@ def main():
         "owner_roles_split": NORM["owner_role_split"],
     }
 
+    # Where the folder and the document disagree about whose tender it is.
+    #
+    # The six authorities are the six folders the PDFs arrived in. Nine notices
+    # carry an Agency line naming a different public body — an authority running
+    # a package on another body's behalf, or a file filed under the wrong office.
+    # Every scene on this site prints the document's own line, so each one
+    # self-corrects, but the "six authorities" frame has to disclose this. The
+    # organisation string is compared against the name that authority's own
+    # notices use most; a string containing the authority's short form is a match,
+    # which keeps four OCR-mangled RAJUK lines out of the count.
+    own_name = {a["key"]: a["organization"] for a in C["agencies"]}
+    other_body = []
+    prov_blank = 0
+    for r in MASTER:
+        o = txt(r, "organization")
+        if not o:
+            prov_blank += 1
+            continue
+        k = r["agency"]
+        if k in o or o == own_name.get(k):
+            continue
+        other_body.append({
+            "tender_id": r["tender_id"], "agency": k, "organization": o,
+            "district": txt(r, "pe_district"),
+            "value": num(r, "contract_value_bdt"),
+            "crore": cr(num(r, "contract_value_bdt")),
+        })
+    provenance = {
+        "other_body_n": len(other_body),
+        "other_body_awarded": sum(1 for x in other_body if x["value"]),
+        "other_body_crore": cr(sum(x["value"] or 0 for x in other_body)),
+        "other_body_agencies": len(set(x["agency"] for x in other_body)),
+        "no_body_named": prov_blank,
+        "rows": sorted(other_body, key=lambda x: -(x["value"] or 0)),
+    }
+
     corpus = {
         "meta": {
             "built": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -1541,6 +1869,7 @@ def main():
             "security": spread([num(r, "tender_security_bdt") for r in MASTER]),
         },
         "competition": C["comp"],
+        "provenance": provenance,
         "field": {
             "submitted": int(sum(x or 0 for x in C["bids"])),
             "responsive": int(sum(x or 0 for x in C["resp"])),
@@ -1662,6 +1991,7 @@ def main():
         "status": tally(MASTER, "tender_status", 12),
         "nature": tally(MASTER, "procurement_nature"),
         "timeline": build_timeline(),
+        "portal": build_portal(),
         "districts": tally([r for r in MASTER if txt(r, "pe_district")], "pe_district", 12),
         "exhibits": build_exhibits(),
         "case": build_case(),

@@ -132,7 +132,42 @@ function tipFor(plot) {
 
 /* -------------------------------------------------------------------- table
    Built from the same rows the plot is built from, so the two can never
-   disagree. */
+   disagree.
+
+   A cell is normally a string or an {en, bn} pair. It may also be an attribute
+   pair — {text} or {html} — which is what core's said() returns: a sentence
+   pulled from a data file, in the Bangla edition, with its ITT number still in
+   <code> where a reader can copy it. That is the only reason markup is allowed
+   in a cell, and the pair form is why a plain string can never reach innerHTML
+   by accident. */
+
+/** One cell's attributes. A ready-made {text}/{html} pair passes through; every
+    other value goes through t() as text. */
+/* A cell takes a ready-made pair when the caller has one — {text} for a string
+   it has already formatted, {html} for one carrying a locator in <code>. Either
+   may name a class: a column of company names is the document's own spelling
+   rather than ours, and the type says so. */
+function cell(c, num) {
+  const pair = c && typeof c === "object" && ("html" in c || "text" in c);
+  const attrs = pair
+    ? ("html" in c ? { html: c.html } : { text: c.text })
+    : { text: t(c) };
+  attrs.class = [num ? "n" : "", pair && c.cls ? c.cls : ""].filter(Boolean).join(" ");
+  return attrs;
+}
+
+/** One cell as its <td>. A cell may also arrive as a ready-made node, or a list
+    of them, which is what core's clauses() returns: a sentence off a data file
+    already split into its translated clauses, its <code> locators and its
+    printed fragments. Those go in as children, because there is no string form
+    of them left to attribute — and building the string by hand is exactly the
+    escaping hazard cell() exists to avoid. */
+function td(c, num) {
+  const one = c && typeof c === "object" && typeof c.nodeType === "number";
+  const kids = one ? [c] : (Array.isArray(c) ? c : null);
+  if (kids) return el("td", { class: num ? "n" : "" }, kids);
+  return el("td", cell(c, num));
+}
 
 export function table(head, rows, opts) {
   const o = opts || {};
@@ -140,8 +175,7 @@ export function table(head, rows, opts) {
     el("thead", null, el("tr", null, head.map((h, i) =>
       el("th", { class: i && !o.textCols ? "n" : "", scope: "col", text: t(h) })))),
     el("tbody", null, rows.map((r) =>
-      el("tr", null, r.map((c, i) =>
-        el("td", { class: i && !o.textCols ? "n" : "", text: String(c) }))))),
+      el("tr", null, r.map((c, i) => td(c, i && !o.textCols))))),
   ]));
 }
 
@@ -167,7 +201,8 @@ export function barsH(rows, opts) {
     const len = Math.max(1, (Math.abs(r.value) / max) * barW);
     const fillCol = r.color || o.color || hue(0);
     marks.push(svg("text", {
-      x: labelW, y: y + rowH / 2, class: "t-cat", "text-anchor": "end",
+      x: labelW, y: y + rowH / 2,
+      class: "t-cat" + (o.labelClass ? " " + o.labelClass : ""), "text-anchor": "end",
       "dominant-baseline": "middle",
     }, t(r.label)));
     marks.push(svg("rect", {
@@ -199,7 +234,10 @@ export function lines(cats, series, opts) {
   const o = opts || {};
   const fmt = o.fmt || ((v) => n(v));
   const w = o.width || CANVAS, h = o.height || 260;
-  const padL = o.padL || 44, padR = 12, padT = 10, padB = 26;
+  /* The right pad carries half of the last category label, which is centred on
+     the last point and would otherwise be cut by the canvas edge. A four-figure
+     year in Bengali numerals is the widest label this chart takes. */
+  const padL = o.padL || 44, padR = o.padR || 20, padT = 10, padB = 26;
   const iw = w - padL - padR, ih = h - padT - padB;
   const max = o.max || Math.max(1, ...series.flatMap((s) => s.values.map((v) => v || 0)));
   const X = (i) => padL + (cats.length < 2 ? iw / 2 : (i / (cats.length - 1)) * iw);

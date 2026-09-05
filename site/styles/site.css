@@ -380,6 +380,24 @@ img, svg { max-width: 100%; }
   color: var(--text-strong);
 }
 
+/* A string reproduced exactly as a document prints it: a package description, a
+   file title, the words a notice spells a figure out in. It is evidence, not
+   writing, so it is never translated — the Bangla edition shows the same
+   characters an official would read off the same page, and a reader typing it
+   into the portal's search box needs it unaltered.
+
+   Set in the caption face so the eye can tell at a glance that these words are
+   the document's rather than ours. No quotation marks: the string is often
+   already full of brackets and commas, and a quoted 100-character package
+   description reads as a sentence somebody wrote. */
+.verbatim {
+  font-family: var(--font-caption);
+  font-size: 0.94em;
+  color: var(--text-primary);
+}
+
+html:lang(bn) .verbatim { font-family: var(--font-caption); }
+
 .unresolved {
   font-family: var(--font-heading);
   font-size: 0.82em;
@@ -540,12 +558,16 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 
 /* "Quoted from the page as published; the highlight is ours." The one line that
    makes the marking honest, so it sits in the source register with the citation
-   and the selection rule rather than in the prose. */
+   and the selection rule rather than in the prose.
+
+   It takes --text-muted for the reason the exhibit label above does: at 0.78rem
+   this is small text, and --text-faint measures 4.09:1 against the dark-mode
+   surface where small text needs 4.5. --text-muted measures 6.11:1 there. */
 .case-note {
   font-family: var(--font-body);
   font-size: 0.78rem;
   line-height: 1.5;
-  color: var(--text-faint);
+  color: var(--text-muted);
   margin: 0.5rem 0 0;
 }
 
@@ -856,7 +878,13 @@ table.tbl {
   width: 100%;
 }
 
-.ctl input::placeholder { color: var(--text-faint); }
+/* The placeholder is the only place the search grammar is written down — the
+   field examples are how a reader learns that agency: and bids: are accepted at
+   all — so it is read, not decoration, and has to clear 4.5:1 like any other
+   small text. --text-faint measures 4.00:1 against the dark-mode field. Muted
+   still sits two steps below the --text-strong of an entered query, so the box
+   does not read as pre-filled. */
+.ctl input::placeholder { color: var(--text-muted); }
 
 .btn {
   font-family: var(--font-heading);
@@ -990,7 +1018,12 @@ html.dark-mode .btn-quiet { background: var(--surface-raised); }
 
 .pill-dev { background: var(--hue-2); color: var(--on-accent); }
 .pill-ok { background: var(--hue-3); color: var(--on-accent); }
-.pill-na { background: transparent; color: var(--text-faint); padding-left: 0; }
+/* The plain pill: no fill, because it is not a verdict. It names which section of
+   a notice a search hit was quoted from, which is the one thing that tells the
+   reader what they are looking at, so it takes --text-muted — at 0.68rem
+   --text-faint measures 4.09:1 against the dark-mode surface, and small text
+   needs 4.5. Same reason as the exhibit label and the field placeholder. */
+.pill-na { background: transparent; color: var(--text-muted); padding-left: 0; }
 
 /* In dark mode the categorical hues are LIGHT steps — they are meant to be read
    as fills on a dark surface, not as chip backgrounds behind white type, where
@@ -1041,7 +1074,11 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
   border-top: 1px solid var(--ntr-home-line-soft);
 }
 
-.dl-what { font-family: var(--font-heading); font-size: 0.88rem; font-weight: 600; flex: 1 1 14rem; }
+/* min-width lets the flex item shrink under its content, and the wrap rule lets
+   the content give way: what sits here is often a filename, one unbroken 44-
+   character token, and a flex basis alone cannot get it inside a phone column. */
+.dl-what { font-family: var(--font-heading); font-size: 0.88rem; font-weight: 600; flex: 1 1 14rem; min-width: 0; }
+.dl-what code { overflow-wrap: anywhere; }
 .dl-note { font-size: 0.82rem; color: var(--text-muted); flex: 2 1 20rem; }
 .dl-size { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
 

@@ -17,7 +17,7 @@ import {
   agencyName, bodyName, placeName, firmName,
 } from "./core.js";
 import {
-  figure, table, barsH, lines, percentileStrip, stripLegend, stackedShare,
+  figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
   funnel, hue, SEQ, wideCanvas,
 } from "./charts.js";
 import { UI, HEAD, CASE, CASES, STORY, DOORS, LABELS, EXHIBIT_WORDS, RULE_TITLES, RULE_SHORT } from "./content.js";
@@ -289,6 +289,72 @@ const FIGS = {
       ),
       source: src(F.master.en + " — <code>publication_date</code> and <code>signing_date</code>, grouped by year; value from <code>contract_value_bdt</code>.",
         F.master.bn + " — বছর অনুযায়ী <code>publication_date</code> ও <code>signing_date</code>; মূল্য <code>contract_value_bdt</code> থেকে।"),
+    });
+  },
+
+  /* Every award notice, sorted by what it says about its own deadline against
+     what its own two dates show. The four rows are exhaustive and sum to the
+     awarded set, so the reader can see the unanswered notices too rather than
+     having them quietly dropped out of the denominator. */
+  portal(corpus) {
+    const p = corpus.portal;
+    const rows = [
+      { label: { en: "Says yes, and its dates agree", bn: "হ্যাঁ লেখা, তারিখও মেলে" },
+        value: p.yes_within, color: hue(0) },
+      { label: { en: "Says yes, but its dates run past the window", bn: "হ্যাঁ লেখা, অথচ তারিখ সময়সীমা ছাড়িয়ে গেছে" },
+        value: p.over_cap, color: hue(1) },
+      { label: { en: "Says no", bn: "না লেখা" }, value: p.no, color: hue(2) },
+      { label: { en: "Does not answer", bn: "উত্তর নেই" }, value: p.blank, color: SEQ[1] },
+    ];
+    return figure({
+      title: { en: "What the award notice says about its own deadline", bn: "চুক্তির বিজ্ঞপ্তি তার নিজের সময়সীমা নিয়ে কী বলে" },
+      deck: {
+        en: "Each of the " + n(corpus.counts.awarded) + " award notices answers one question — was the contract signed in due time? — and prints the two dates that settle it. On " +
+          n(p.over_cap) + " of them, worth " + cr(p.over_crore) + ", the answer is yes and the dates are not.",
+        bn: "চুক্তির " + n(corpus.counts.awarded) + "টি বিজ্ঞপ্তির প্রত্যেকটিতে একটি প্রশ্নের উত্তর আছে — চুক্তি কি যথাসময়ে স্বাক্ষরিত হয়েছে? — আর সেই সঙ্গে ছাপা আছে মীমাংসাকারী দুটি তারিখ। এর মধ্যে " +
+          n(p.over_cap) + "টিতে, যার মূল্য " + cr(p.over_crore) + ", উত্তর হ্যাঁ, তারিখ দুটি নয়।",
+      },
+      /* The gutter fits the longest of the four labels, which is the English
+         "Says yes, but its dates run past the window" at 279 of the 820 canvas
+         units. The labels are right-aligned against it, so the three shorter
+         ones simply leave whitespace to their left and the width costs nothing. */
+      plot: barsH(rows, {
+        labelW: 300, valueW: 60, rowH: 34, fmt: (v) => n(v),
+        alt: A({ en: "Award notices by what they record about the signing deadline.", bn: "স্বাক্ষরের সময়সীমা নিয়ে কী লেখা, সেই অনুযায়ী চুক্তির বিজ্ঞপ্তি।" }, corpus),
+      }),
+      table: table(
+        [{ en: "What the notice records", bn: "বিজ্ঞপ্তিতে যা লেখা" }, { en: "Notices", bn: "বিজ্ঞপ্তি" },
+         { en: "Share of award notices", bn: "চুক্তির বিজ্ঞপ্তির হার" }],
+        rows.map((r) => [r.label, n(r.value), pct((r.value / corpus.counts.awarded) * 100)])
+      ),
+      source: src(F.master.en + " — <code>portal_self_certified_signed_in_due_time</code> against <code>noa_date</code> and <code>signing_date</code>, tested at the window the contract's own value allows.",
+        F.master.bn + " — <code>portal_self_certified_signed_in_due_time</code>-এর বিপরীতে <code>noa_date</code> ও <code>signing_date</code>, চুক্তির নিজের মূল্য অনুযায়ী প্রাপ্য সময়সীমায় পরীক্ষা করা।"),
+    });
+  },
+
+  /* The seven conditions, counted per notice. This is the one figure in the
+     article built entirely from our own tests rather than from a field the
+     documents print, so the deck says so before the reader reads a bar. */
+  stack(corpus) {
+    const rows = corpus.preselection.stages;
+    return figure({
+      title: { en: "How many of the seven conditions each notice meets", bn: "প্রতিটি বিজ্ঞপ্তি সাতটি শর্তের কতটি পূরণ করে" },
+      deck: {
+        en: "Seven conditions, tested one after another on every notice in the set: a restrictive-looking requirement, few bids, documents sold that never came back as bids, bidders ruled non-responsive, a single responsive bidder, a winner that wins repeatedly, and a winner whose wins come in thin fields. Meeting several is not evidence of anything. It is where a reporter would start.",
+        bn: "সাতটি শর্ত, সম্ভারের প্রতিটি বিজ্ঞপ্তিতে একের পর এক পরীক্ষা করা: সীমাবদ্ধকারী বলে মনে হওয়া কোনো শর্ত, অল্প দর, বিক্রি হওয়া দলিল যা দর হয়ে ফেরেনি, অগ্রহণযোগ্য বিবেচিত দরদাতা, একটিই গ্রহণযোগ্য দর, বারবার জেতা বিজয়ী, এবং যে বিজয়ীর জয় আসে পাতলা প্রতিযোগিতায়। একাধিক শর্ত মেলা কোনো কিছুর প্রমাণ নয়। এটি সেই জায়গা, যেখান থেকে একজন প্রতিবেদক শুরু করবেন।",
+      },
+      plot: columns(rows.map((r) => r.key), rows.map((r) => r.n), {
+        height: 230, padL: 44, color: hue(3),
+        label: { en: "Notices", bn: "বিজ্ঞপ্তি" },
+        alt: A({ en: "Notices by how many of the seven conditions they meet.", bn: "সাতটি শর্তের কতটি পূরণ করে, সেই অনুযায়ী বিজ্ঞপ্তি।" }, corpus),
+      }),
+      table: table(
+        [{ en: "Conditions met", bn: "পূরণ হওয়া শর্ত" }, { en: "Notices", bn: "বিজ্ঞপ্তি" },
+         { en: "Share of the set", bn: "সম্ভারের হার" }],
+        rows.map((r) => [digits(r.key), n(r.n), pct((r.n / corpus.counts.tenders) * 100)])
+      ),
+      source: src(F.master.en + " — <code>preselection_stage_count</code> and <code>preselection_stages_met</code>. The seven conditions are this investigation's own tests, applied to the documents' own fields; no authority has classified any of these tenders.",
+        F.master.bn + " — <code>preselection_stage_count</code> ও <code>preselection_stages_met</code>। সাতটি শর্ত এই অনুসন্ধানের নিজস্ব পরীক্ষা, নথির নিজের ঘর ধরে প্রয়োগ করা; কোনো সংস্থা এসব দরপত্রকে কোনো শ্রেণিতে ফেলেনি।"),
     });
   },
 
@@ -601,6 +667,25 @@ const REC = {
   days: (c) => [CASE.words.days, n(c.days)],
   overrun: (c) => [CASE.words.overrun, n(c.overrun)],
   winnerRec: (c) => [CASE.words.winnerRec, firmName(c.winner) || dash()],
+
+  /* The rows the transition studies added. Each is a field the case already
+     carries, formatted once here so a scene names the figure and never the
+     format. `certified` is the portal's own one-word answer, printed as a word
+     rather than as the string the column holds, so the Bangla edition can print
+     it in Bangla; `share` is this contract measured against every taka in the
+     awarded set, which is the only row on any scene that is relative. */
+  peerSize: (c) => [CASE.words.peerSize, n(c.peer_size)],
+  peerMedian: (c) => [CASE.words.peerMedian, n(c.peer_median)],
+  shared: (c) => [CASE.words.shared, n(c.shared_clauses)],
+  reuse: (c) => [CASE.words.reuse, n(c.reuse)],
+  cap: (c) => [CASE.words.cap, n(c.cap)],
+  certified: (c) => [CASE.words.certified,
+    t(c.certified === "yes" ? CASE.words.yes
+      : c.certified === "no" ? CASE.words.no : CASE.words.unanswered)],
+  share: (c) => [CASE.words.share, pct(c.value_share, 2)],
+  stages: (c) => [CASE.words.stages, n(c.stages)],
+  score: (c) => [CASE.words.score, n(c.score, 1)],
+  rejectRate: (c) => [CASE.words.rejectRate, pct(c.reject_rate)],
 };
 
 function caseRec(c, keys) {

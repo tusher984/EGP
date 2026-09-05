@@ -12,9 +12,9 @@
    the tender, the row says so. A reader who disagrees with a test can see
    exactly what it did and dismiss it, which is the point. */
 
-import { el, t, n, pct, cr, digits, dash, fill, href, human, cite, agencyName } from "./core.js";
+import { el, t, n, pct, cr, digits, dash, fill, href, human, cite, agencyName, said, state } from "./core.js";
 import { figure, table, barsH, columns, hue, SEQ } from "./charts.js";
-import { UI, LABELS, RULE_TITLES } from "./content.js";
+import { UI, LABELS, RULE_TITLES, RULE_BN } from "./content.js";
 
 const W = {
   intro: {
@@ -51,6 +51,16 @@ function kv(k, v) {
   return [el("dt", { text: t(k) }), el("dd", null, v)];
 }
 
+/** Three fields of a rule — the clause it cites, what the test compared, the
+    limit on the finding — are written into site/data/rules.json, because each
+    is traceable to a page of a PDF and the English there is the record. Their
+    Bangla lives in content.js, keyed by rule code. A code with no entry falls
+    back to the English so the Latin-script sweep finds it. */
+function rule(code, field, en) {
+  const bn = (RULE_BN[code] || {})[field];
+  return state.lang === "bn" && bn ? { html: bn } : { text: en };
+}
+
 /* ------------------------------------------------------------------ one rule */
 
 function ruleBlock(r, corpus) {
@@ -59,7 +69,7 @@ function ruleBlock(r, corpus) {
   /* The four attributes that govern the count, before the count. */
   body.push(el("dl", { class: "kv" }, [
     ...kv(W.clause, [
-      el("span", { text: r.clause }),
+      el("span", rule(r.code, "clause", r.clause)),
       el("br"),
       el("span", { class: "src" }, cite({
         printed: r.printed_page, pdf: r.pdf_page, file: r.source_file,
@@ -77,7 +87,7 @@ function ruleBlock(r, corpus) {
   ]));
 
   /* What was actually compared. */
-  body.push(el("dl", { class: "kv" }, kv(W.test, el("span", { text: r.test }))));
+  body.push(el("dl", { class: "kv" }, kv(W.test, el("span", rule(r.code, "test", r.test)))));
 
   /* The count, with its outcomes, and the timing caveat on the same line. */
   const outcomes = table(
@@ -130,7 +140,7 @@ function ruleBlock(r, corpus) {
   if (r.limit) {
     body.push(el("aside", { class: "note" }, [
       el("p", { class: "note-title", text: t(W.limit) }),
-      el("p", { text: r.limit }),
+      el("p", rule(r.code, "limit", r.limit)),
     ]));
   }
 
@@ -139,7 +149,7 @@ function ruleBlock(r, corpus) {
     body.push(el("p", { class: "note-title", text: t(W.sample) }));
     body.push(table(
       [UI.words.tender, W.observed, W.required],
-      r.observed_sample.map((s) => [digits(s.tender_id), s.observed, s.required]),
+      r.observed_sample.map((s) => [digits(s.tender_id), said(s.observed), said(s.required)]),
       { textCols: true }
     ));
   }

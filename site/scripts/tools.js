@@ -14,12 +14,24 @@
    A firm's name, a tender number, a clause as printed and a PDF filename are
    quoted exactly as the document has them, in both editions, because an
    editor has to be able to match the string on the screen to the string in
-   the file. And no view invents a value: where the record is blank the cell
-   says what is missing, never zero. */
+   the file. In the Bangla edition such a string wears the caption face, which
+   says in the type that the words are the document's and not ours — that is
+   what quoted(), quotedName() and asPrinted() are for, and it is also what
+   keeps the Latin-script check off a line nobody is permitted to translate.
+
+   The one long piece of prose in here is the per-tender analysis: several
+   clauses written into one cell by the investigation's own scripts. English
+   prints that cell byte for byte, because it is the audited record. Bangla
+   takes it apart clause by clause through clauses(), so no figure is restated
+   and an untranslated clause stays visible instead of disappearing.
+
+   And no view invents a value: where the record is blank the cell says what is
+   missing, never zero. */
 
 import {
   el, t, n, pct, cr, taka, takaBoth, ratio, digits, date, dash, fill, fillText, href, human, clear,
   stop, ofTotal, agencyName, bodyName, placeName, firmName, termName,
+  quoted, quotedName, asPrinted, clauses,
 } from "./core.js";
 import { figure, table, barsH, hue } from "./charts.js";
 import { UI, LABELS } from "./content.js";
@@ -42,6 +54,10 @@ const W = {
   clauseNote: { en: "The same sentence in more than one tender", bn: "একাধিক দরপত্রে একই বাক্য" },
 
   q: { en: "Search", bn: "খোঁজ" },
+  /* The example query stays in English in both editions, and not for want of a
+     translation: the documents are written in English, so a Bangla search term
+     would return nothing and the example would be teaching the reader to fail.
+     Same reasoning as a filename — this is text typed into a box, not read. */
   qHint: { en: "e.g. reputed · \"liquid assets\" · agency:CDA bids:1 · signed:2023", bn: "যেমন reputed · \"liquid assets\" · agency:CDA bids:1 · signed:2023" },
   syntax: { en: "What you can type", bn: "কী কী লেখা যায়" },
   fuzzy: { en: "No document contains", bn: "কোনো নথিতে নেই" },
@@ -95,6 +111,33 @@ function lab(map, key) {
   return m[key] === undefined ? human(key) : t(m[key]);
 }
 
+/** Absence has to survive the quoting helpers. Each of them always returns an
+    element, and kv() decides what is missing by looking at the value it was
+    handed — so a blank cell would print an empty span instead of saying that the
+    documents do not record it. */
+function ifSet(v, fn) {
+  return v === null || v === undefined || v === "" ? null : fn(v);
+}
+
+/** The same lookup as an element, for the columns whose vocabulary is not
+    closed. tender_status holds 92 distinct values in these files, 77 of them
+    occurring once and almost all of those a line of the page that came away
+    with the status; evaluation_type holds four whole extracted paragraphs. So
+    the head of each distribution is translated and the tail is printed as the
+    portal filed it, rather than tidied into a form no document contains.
+
+    A translation may carry a locator in <code> — the paid document's own
+    section name, which a reader searches for rather than reads aloud — so the
+    resolved string goes in as markup when it holds a tag and as text when it
+    does not, on the same rule as said(). */
+function enumOf(map, key) {
+  if (key === null || key === undefined || key === "") return dash();
+  const m = LABELS[map] || {};
+  if (m[key] === undefined) return asPrinted(String(key));
+  const s = t(m[key]);
+  return el("span", /<[a-z]/.test(s) ? { html: s } : { text: s });
+}
+
 /** A key-value row. Absent values print what is missing, never a zero. */
 function kv(k, v) {
   return [el("dt", { text: t(k) }), el("dd", null, v === null || v === undefined || v === "" ? dash() : v)];
@@ -110,6 +153,42 @@ function kvIf(k, v) {
 
 function pill(text, kind) {
   return el("span", { class: "pill" + (kind ? " pill-" + kind : ""), text: text });
+}
+
+/** How a signing date sat against the cap the rules set for it. This column
+    holds 53 distinct values in two families — within_14d_cap and its two
+    siblings, and EXCEEDS_14d_CAP_by_13d and the rest — so the two shapes are
+    read rather than mapped. A shape that does not match is printed as filed,
+    on the same rule as every other unrecognised value here. */
+function band(v) {
+  if (v === null || v === undefined || v === "") return dash();
+  const s = String(v);
+  const ok = /^within_(\d+)d_cap$/.exec(s);
+  if (ok) {
+    return el("span", { text: t({
+      en: "Within the " + ok[1] + "-day cap",
+      bn: digits(ok[1]) + " দিনের সীমার মধ্যে",
+    }) });
+  }
+  const over = /^EXCEEDS_(\d+)d_CAP_by_(\d+)d$/.exec(s);
+  if (over) {
+    return el("span", { text: t({
+      en: "Past the " + over[1] + "-day cap by " + over[2] + (over[2] === "1" ? " day" : " days"),
+      bn: digits(over[1]) + " দিনের সীমা ছাড়িয়েছে " + digits(over[2]) + " দিন",
+    }) });
+  }
+  return asPrinted(s);
+}
+
+/** Where on the notice a rule test read its evidence. Usually a bare page
+    number, which is a figure and is set as one. On the 375 rows where the test
+    reads the eligibility section it is a short locator instead — "eligibility
+    p.1" — and that is a sentence, so it goes through the clause machinery like
+    every other sentence off a data file. */
+function pageRef(v) {
+  if (v === null || v === undefined || v === "") return dash();
+  const s = String(v);
+  return /^\d+$/.test(s) ? digits(s) : clauses(s);
 }
 
 /** The gap between a numeral and the word after it: none where the Bangla word
@@ -146,6 +225,35 @@ function splitList(s) {
   if (Array.isArray(s)) return s.filter(Boolean);
   return String(s).split(/[;,]\s*/).map((x) => x.trim()).filter((x) => x && x !== "none");
 }
+
+/** The same split, keeping "none". Most of the lists on a record are flags, and
+    a flag that is not set is nothing to print. The stages of the theory are the
+    exception: 397 records say none of the eight are met, and that is a reading
+    of the file rather than a hole in it. Dropping the word would have the record
+    say the stages are not documented, which is the opposite of what it holds. */
+function keptList(s) {
+  if (!s) return [];
+  if (Array.isArray(s)) return s.filter(Boolean);
+  return String(s).split(/[;,]\s*/).map((x) => x.trim()).filter(Boolean);
+}
+
+/** A list of values as elements, with a separator between them. Returns null on
+    an empty list so kv() prints what is missing rather than an empty cell. */
+function nodeList(items, fn, between) {
+  const list = (items || []).filter((x) => x !== null && x !== undefined && x !== "");
+  if (!list.length) return null;
+  const out = [];
+  list.forEach((x, i) => {
+    if (i) out.push(between === undefined ? " · " : between);
+    out.push(fn(x));
+  });
+  return out;
+}
+
+/** A list of enum values as elements, with the site's separator between them. */
+function enumList(map, s) {
+  return nodeList(keptList(s), (k) => enumOf(map, k));
+}
 /** deviations.json stores its long strings once in a shared table and puts an
     index in the row, with −1 for "no such string". Unpack a tender's rows back
     into named fields so the record can read them like any other object. */
@@ -173,33 +281,38 @@ function recNotice(r) {
     el("h4", { text: t(W.notice) }),
     el("dl", { class: "kv" }, [
       ...kv({ en: "Tender number", bn: "দরপত্র নম্বর" }, digits(r.tender_id)),
-      ...kv({ en: "Reference", bn: "রেফারেন্স" }, r.tender_reference),
-      ...kv(UI.words.agency, bodyName(r.organization) || agencyName(r.agency)),
-      ...kv({ en: "Procuring entity", bn: "ক্রয়কারী কর্তৃপক্ষ" }, r.procuring_entity),
-      ...kv({ en: "District", bn: "জেলা" }, placeName(r.pe_district)),
-      ...kv({ en: "Project", bn: "প্রকল্প" }, termName("work", r.project_name)),
-      ...kv({ en: "Package", bn: "প্যাকেজ" }, termName("work", r.package_description)),
-      ...kv({ en: "Kind of procurement", bn: "ক্রয়ের ধরন" }, r.procurement_nature),
-      ...kv({ en: "Method", bn: "পদ্ধতি" }, termName("method", r.procurement_method)),
-      ...kv({ en: "Evaluation", bn: "মূল্যায়ন" }, r.evaluation_type),
-      ...kv({ en: "Source of funds", bn: "অর্থের উৎস" }, termName("funds", r.source_of_funds)),
-      ...kv({ en: "Status", bn: "অবস্থা" }, r.tender_status),
+      ...kv({ en: "Reference", bn: "রেফারেন্স" },
+        ifSet(r.tender_reference, (v) => el("code", { text: v }))),
+      ...kv(UI.words.agency, r.organization
+        ? quotedName(bodyName, r.organization) : ifSet(r.agency, (v) => quotedName(agencyName, v))),
+      ...kv({ en: "Procuring entity", bn: "ক্রয়কারী কর্তৃপক্ষ" }, ifSet(r.procuring_entity, asPrinted)),
+      ...kv({ en: "District", bn: "জেলা" }, ifSet(r.pe_district, (v) => quotedName(placeName, v))),
+      ...kv({ en: "Project", bn: "প্রকল্প" }, ifSet(r.project_name, (v) => quoted("work", v))),
+      ...kv({ en: "Package", bn: "প্যাকেজ" }, ifSet(r.package_description, (v) => quoted("work", v))),
+      ...kv({ en: "Kind of procurement", bn: "ক্রয়ের ধরন" }, enumOf("nature", r.procurement_nature)),
+      ...kv({ en: "Method", bn: "পদ্ধতি" }, ifSet(r.procurement_method, (v) => quoted("method", v))),
+      ...kv({ en: "Evaluation", bn: "মূল্যায়ন" }, enumOf("evaluation", r.evaluation_type)),
+      ...kv({ en: "Source of funds", bn: "অর্থের উৎস" }, ifSet(r.source_of_funds, (v) => quoted("funds", v))),
+      ...kv({ en: "Status", bn: "অবস্থা" }, enumOf("status", r.tender_status)),
       ...kv({ en: "Reading order", bn: "পড়ার ক্রম" }, lab("priority", r.investigative_priority_band)),
     ]),
   ];
 }
 function recDates(r) {
+  /* Every date goes through date(), including the ones that come off the
+     portal's own strip rather than from the build — it reads both forms, so a
+     record does not print two different date shapes in the same list. */
   return [
     el("h4", { text: t(W.dates) }),
     el("dl", { class: "kv" }, [
-      ...kv(UI.words.published, r.pub ? date(r.pub) : r.publication_date),
-      ...kv({ en: "Closing", bn: "শেষ তারিখ" }, r.close ? date(r.close) : r.closing_date),
-      ...kv({ en: "Opening", bn: "খোলার তারিখ" }, r.opening_date),
-      ...kv({ en: "Notified of award", bn: "চুক্তির নোটিফিকেশন" }, r.noa_date),
-      ...kv(UI.words.signed, r.sign ? date(r.sign) : r.signing_date),
+      ...kv(UI.words.published, date(r.pub || r.publication_date)),
+      ...kv({ en: "Closing", bn: "শেষ তারিখ" }, date(r.close || r.closing_date)),
+      ...kv({ en: "Opening", bn: "খোলার তারিখ" }, date(r.opening_date)),
+      ...kv({ en: "Notified of award", bn: "চুক্তির নোটিফিকেশন" }, date(r.noa_date)),
+      ...kv(UI.words.signed, date(r.sign || r.signing_date)),
       ...kv({ en: "Days from notification to signing", bn: "নোটিফিকেশন থেকে স্বাক্ষরে দিন" },
         r.days_noa_to_signing === null || r.days_noa_to_signing === "" ? null : digits(r.days_noa_to_signing)),
-      ...kv({ en: "Against the signing band", bn: "স্বাক্ষরের সীমার তুলনায়" }, human(r.signing_within_legal_band)),
+      ...kv({ en: "Against the signing band", bn: "স্বাক্ষরের সীমার তুলনায়" }, band(r.signing_within_legal_band)),
     ]),
   ];
 }
@@ -222,7 +335,7 @@ function recBids(r, d) {
   if (d && d.gaps) {
     out.push(el("aside", { class: "note" }, [
       el("p", { class: "note-title", text: t(W.gapsHead) }),
-      el("p", { text: d.gaps }),
+      el("p", null, clauses(d.gaps)),
     ]));
   }
   return out;
@@ -247,7 +360,7 @@ function recAsked(r) {
       ...kv({ en: "Turnover ÷ contract value", bn: "টার্নওভার ÷ চুক্তিমূল্য" }, rel(r.turnover_to_contract_value_ratio)),
       ...kv({ en: "Similar-work value ÷ contract value", bn: "সমজাতীয় কাজের মূল্য ÷ চুক্তিমূল্য" }, rel(r.similar_project_value_to_contract_value_ratio)),
       ...kv({ en: "Financial bar ÷ contract value", bn: "আর্থিক শর্ত ÷ চুক্তিমূল্য" }, rel(r.financial_bar_to_contract_value_ratio)),
-      ...kv({ en: "How the criteria were published", bn: "শর্ত যেভাবে প্রকাশিত" }, human(r.eligibility_published)),
+      ...kv({ en: "How the criteria were published", bn: "শর্ত যেভাবে প্রকাশিত" }, enumOf("published", r.eligibility_published)),
       ...kv({ en: "How restrictive they read", bn: "কতটা সীমাবদ্ধ মনে হয়" }, lab("restriction", r.eligibility_restriction_level)),
     ]),
   ];
@@ -257,10 +370,12 @@ function recAward(r) {
   return [
     el("h4", { text: t(W.awardHead) }),
     el("dl", { class: "kv" }, [
-      ...kv(UI.words.winner, firmName(r.winner_name)),
-      ...kvIf({ en: "Name as this notice spells it", bn: "এই বিজ্ঞপ্তিতে ছাপা নাম" }, r.winner_printed),
+      ...kv(UI.words.winner, ifSet(r.winner_name, (v) => quoted("firm", v))),
+      ...kvIf({ en: "Name as this notice spells it", bn: "এই বিজ্ঞপ্তিতে ছাপা নাম" },
+        ifSet(r.winner_printed, asPrinted)),
       ...kv({ en: "Joint venture", bn: "যৌথ উদ্যোগ" }, r.winner_is_joint_venture ? lab("yesno", r.winner_is_joint_venture) : null),
-      ...kv({ en: "Address as printed", bn: "ছাপা ঠিকানা" }, r.winner_location),
+      ...kv({ en: "Address as printed", bn: "ছাপা ঠিকানা" },
+        ifSet(r.winner_location, (v) => quotedName(placeName, v))),
       ...kv(UI.words.value, r.contract_value_bdt === null ? null : takaBoth(r.contract_value_bdt)),
       ...kv({ en: "Tender security", bn: "দরপত্র জামানত" }, r.tender_security_bdt === null ? null : takaBoth(r.tender_security_bdt)),
       ...kv({ en: "Owner named on the notice", bn: "বিজ্ঞপ্তিতে মালিকের নাম" },
@@ -279,7 +394,7 @@ function recSignals(r, d) {
   }
   out.push(el("dl", { class: "kv" }, [
     ...kv({ en: "Stages of the theory met", bn: "তত্ত্বের যে ধাপগুলো মিলেছে" },
-      d && d.stages_met ? splitList(d.stages_met).map(human).join(" · ") : null),
+      d ? enumList("stages", d.stages_met) : null),
     ...kv({ en: "Pattern before the bidding", bn: "দরপত্রের আগের ধরন" },
       r.potential_preselection_pattern ? lab("preselection", r.potential_preselection_pattern) : null),
     ...kv({ en: "Against this authority’s own price norm", bn: "এই সংস্থার দামের রীতির তুলনায়" },
@@ -307,8 +422,10 @@ function recRules(ctx, id) {
       [{ en: "Rule", bn: "নিয়ম" }, { en: "Outcome", bn: "ফলাফল" },
         { en: "What the document shows", bn: "নথিতে যা আছে" }, { en: "What the clause asks", bn: "ধারা যা চায়" },
         UI.words.page],
-      rows.map((x) => [x.code, lab("results", x.result), x.observed || dash(),
-        x.required || dash(), x.page ? digits(x.page) : dash()]),
+      rows.map((x) => [el("code", { text: x.code }), lab("results", x.result),
+        x.observed ? clauses(x.observed) : dash(),
+        x.required ? clauses(x.required) : dash(),
+        x.page ? pageRef(x.page) : dash()]),
       { textCols: true }
     ),
   ];
@@ -326,7 +443,7 @@ function recExcerpts(ctx, id) {
     ]),
     el("div", { class: "open-body" }, parts.map(([sec, txt]) => el("div", { class: "exhibit" }, [
       el("p", { class: "exhibit-label", text: lab("sections", sec) }),
-      el("p", { class: "quote-cell", text: txt }),
+      el("p", { class: "quote-cell verbatim", text: txt }),
     ]))),
   ])];
 }
@@ -335,8 +452,10 @@ function recWhere(r, d) {
   return [
     el("h4", { text: t(W.whereHead) }),
     el("dl", { class: "kv" }, [
-      ...kv({ en: "Pages each figure was read from", bn: "প্রতিটি সংখ্যা যে পৃষ্ঠা থেকে" }, d ? d.evidence_pages : null),
-      ...kv({ en: "How the text was extracted", bn: "লেখা যেভাবে তোলা হয়েছে" }, d ? human(d.extraction) : null),
+      ...kv({ en: "Pages each figure was read from", bn: "প্রতিটি সংখ্যা যে পৃষ্ঠা থেকে" },
+        d && d.evidence_pages ? clauses(d.evidence_pages) : null),
+      ...kv({ en: "How the text was extracted", bn: "লেখা যেভাবে তোলা হয়েছে" },
+        d && d.extraction ? clauses(d.extraction) : null),
       ...kv({ en: "Confidence in the reading", bn: "পাঠে আস্থা" }, lab("extraction", r.extraction_confidence)),
       ...kv({ en: "Notice", bn: "বিজ্ঞপ্তি" }, r.notice && r.notice.file
         ? el("code", { text: r.notice.file }) : null),
@@ -350,21 +469,21 @@ function recWhere(r, d) {
 function recReporter(d) {
   if (!d) return [];
   const out = [el("h4", { text: t(W.readerHead) })];
-  if (d.fact) out.push(el("p", { text: d.fact }));
+  if (d.fact) out.push(el("p", null, clauses(d.fact)));
   if (d.hypothesis) {
     out.push(el("aside", { class: "note" }, [
       el("p", { class: "note-title", text: t(W.hypothesis) }),
-      el("p", { text: d.hypothesis }),
+      el("p", null, clauses(d.hypothesis)),
     ]));
   }
   if (d.next_step) {
     out.push(el("p", { class: "note-title", text: t(W.nextStep) }));
-    out.push(el("p", { text: d.next_step }));
+    out.push(el("p", null, clauses(d.next_step)));
   }
   if (d.citation_caveat) {
     out.push(el("details", { class: "open" }, [
       el("summary", null, t(W.caveat)),
-      el("div", { class: "open-body" }, el("p", { class: "src", text: d.citation_caveat })),
+      el("div", { class: "open-body" }, el("p", { class: "src" }, clauses(d.citation_caveat))),
     ]));
   }
   return out;
@@ -411,8 +530,15 @@ function tenderItem(r, ctx, extra) {
   }, { once: false });
 
   return el("li", { class: "hit-item" }, [
-    el("p", { class: "hit-title", text: digits(r.tender_id) + " — " +
-      (termName("work", r.package_description) || termName("work", r.project_name) || dash()) }),
+    /* The title is a tender number and then the notice's own name for the work.
+       The number is prose and takes Bengali digits; the name is a line off a
+       page and is quoted, so the two are separate children rather than one
+       joined string. */
+    el("p", { class: "hit-title" }, [
+      digits(r.tender_id), " — ",
+      r.package_description || r.project_name
+        ? quoted("work", r.package_description || r.project_name) : dash(),
+    ]),
     el("p", { class: "hit-meta", text: meta }),
     extra || null,
     disc,
@@ -670,7 +796,7 @@ function snippet(row, plan) {
       if (at < 0) continue;
       const from = Math.max(0, at - 110);
       const to = Math.min(text.length, at + term.length + 190);
-      return el("p", { class: "hit-snip" }, [
+      return el("p", { class: "hit-snip verbatim" }, [
         el("span", { class: "pill pill-na", text: lab("sections", sec) }),
         (from > 0 ? "… " : "") + text.slice(from, at),
         el("mark", { text: text.slice(at, at + term.length) }),
@@ -955,13 +1081,24 @@ function firmFigure(ctx) {
         "টি চুক্তি পেয়েছে। সবচেয়ে বড়টি " + n(con.top1.contracts) + "টি চুক্তিতে অর্থের " +
         pct(con.top1.share) + " পেয়েছে।",
     },
+    /* A company name is a line off an award notice, so it is set in the
+       document's own type on the chart and in the table alike — the same
+       treatment quoted() gives it everywhere else on the site.
+
+       The label gutter is wide because two of the fifteen are joint ventures,
+       and a joint venture's registered name is two company names joined: 390 of
+       the 820 canvas units at the size the labels are set. It is not shortened.
+       A name a reader cannot copy into a register is a name that cannot be
+       checked, which is the only reason this chart prints names at all. */
     plot: barsH(top.map((firm) => ({ label: firmName(firm.name), value: firm.crore })), {
-      labelW: 250, valueW: 96, rowH: 26, color: hue(0), fmt: (v) => cr(v, 0),
+      labelW: 400, valueW: 96, rowH: 26, color: hue(0), fmt: (v) => cr(v, 0),
+      labelClass: "verbatim",
       alt: t({ en: "The fifteen largest winning firms by money.", bn: "অর্থ অনুসারে সবচেয়ে বড় পনেরোটি বিজয়ী প্রতিষ্ঠান।" }),
     }),
     table: table(
       [{ en: "Firm", bn: "প্রতিষ্ঠান" }, UI.words.contracts, UI.words.money, UI.words.share],
-      top.map((firm) => [firmName(firm.name), n(firm.contracts), cr(firm.crore), pct(firm.share)])
+      top.map((firm) => [{ text: firmName(firm.name), cls: "verbatim" },
+        n(firm.contracts), cr(firm.crore), pct(firm.share)])
     ),
     source: {
       en: t(UI.words.source) + ": e-GP portal data analysis — contract award notices, grouped on <code>winner_name_normalised</code> and shown under a spelling the award notices print.",
@@ -992,11 +1129,18 @@ function ownerList(owners) {
   if (!rows.length) return null;
   const ul = el("ul", { class: "plain-list" });
   for (const o of rows) {
-    const tail = [o.role, o.share ? pct(parseFloat(o.share)) : null, o.country]
-      .filter(Boolean).join(" · ");
+    /* A person's name is never translated, in either edition. The office and
+       the country are the portal's own closed list and are; the share is a
+       figure and is set as one. Built as children rather than a joined string
+       so the three treatments stay separate. */
+    const tail = [];
+    const put = (node) => { if (node) { if (tail.length) tail.push(" · "); tail.push(node); } };
+    put(o.role ? enumOf("role", o.role) : null);
+    put(o.share ? el("span", { text: pct(parseFloat(o.share)) }) : null);
+    put(o.country ? enumOf("country", o.country) : null);
     ul.appendChild(el("li", null, [
-      el("span", { class: "owner-name", text: o.name }),
-      tail ? el("span", { class: "owner-role", text: " — " + tail }) : null,
+      el("span", { class: "owner-name verbatim", text: o.name }),
+      tail.length ? el("span", { class: "owner-role" }, [" — ", ...tail]) : null,
     ].filter(Boolean)));
   }
   return ul;
@@ -1020,21 +1164,26 @@ function firmRecord(firm, ctx) {
       ...kv(UI.words.contracts, n(firm.contracts)),
       ...kv(UI.words.money, takaBoth(firm.taka)),
       ...kv(UI.words.share, pct(firm.share)),
-      ...kv({ en: "Authorities", bn: "সংস্থা" }, (firm.agencies || []).map(agencyName).join(", ")),
-      ...kv({ en: "Districts as printed", bn: "ছাপা জেলা" }, (firm.districts || []).join(", ")),
+      ...kv({ en: "Authorities", bn: "সংস্থা" },
+        nodeList(firm.agencies, (a) => quotedName(agencyName, a))),
+      ...kv({ en: "Districts", bn: "জেলা" },
+        nodeList(firm.districts, (d) => quotedName(placeName, d))),
       ...kv({ en: "Won where the field was thin", bn: "কম প্রতিযোগিতায় জিতেছে" }, n(firm.thin_wins)),
       ...kv({ en: "Won as a joint venture", bn: "যৌথ উদ্যোগে জিতেছে" }, n(firm.jv_awards)),
       ...kv(W.owners, ownerList(firm.owners)),
-      ...kv(W.spellings, (firm.verbatim || []).join(" · ")),
+      ...kv(W.spellings, nodeList(firm.verbatim, asPrinted)),
       ...kvIf({ en: "Grouping key", bn: "দলবদ্ধ করার সূত্র" },
         firm.key && firm.key !== firm.name ? el("code", { text: firm.key }) : null),
       ...kvIf({ en: "The supplier field, as printed", bn: "সরবরাহকারীর ঘর, যেভাবে ছাপা" },
         printed.length
           ? el("div", null, printed.slice(0, 4).map(
-              (x) => el("p", { class: "quote-cell", text: x })))
+              (x) => el("p", { class: "quote-cell verbatim", text: x })))
           : null),
+      /* The near-miss names this grouping did not merge, in the spelling the
+         notices give them — the check is only meaningful if the reader sees the
+         actual strings. */
       ...kv({ en: "Name-variant check", bn: "নামের রূপভেদ পরীক্ষা" },
-        (firm.variants || []).map(human).join(", ")),
+        nodeList(firm.variants, asPrinted, ", ")),
     ]),
     el("h4", { text: t(W.contracts) }),
   ];
@@ -1061,7 +1210,7 @@ function firmItem(firm, ctx) {
     unit(firm.contracts, { en: "contract", bn: "চুক্তি" }, { en: "contracts", bn: "চুক্তি" }),
     cr(firm.crore),
     pct(firm.share) + " " + t({ en: "of the money", bn: "অর্থের" }),
-    (firm.agencies || []).join(", "),
+    (firm.agencies || []).map(agencyName).join(", "),
     firm.thin_wins ? n(firm.thin_wins) + " " + t({ en: "won with a thin field", bn: "কম প্রতিযোগিতায় জেতা" }) : null,
   ].filter(Boolean).join("  ·  ");
 
@@ -1074,7 +1223,7 @@ function firmItem(firm, ctx) {
   });
 
   return el("li", { class: "hit-item" }, [
-    el("p", { class: "hit-title", text: firmName(firm.name) }),
+    el("p", { class: "hit-title" }, quoted("firm", firm.name)),
     el("p", { class: "hit-meta", text: meta }),
     disc,
   ]);
@@ -1194,7 +1343,7 @@ function clauseItem(group, ctx) {
   return el("li", { class: "hit-item" }, [
     el("p", { class: "hit-title", text: unit(group.ids.length, UI.words.tender1, UI.words.tenders) +
       "  ·  " + agencies.join(", ") }),
-    el("p", { class: "quote-cell", text: group.text }),
+    el("p", { class: "quote-cell verbatim", text: group.text }),
     disc,
   ]);
 }

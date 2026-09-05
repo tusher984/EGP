@@ -278,7 +278,10 @@ async function draw(key) {
 
 function trouble(err) {
   return el("div", { class: "note" }, [
-    el("p", { class: "note-title", text: t(UI.loadFail) }),
+    /* html because the sentence names the folder the payloads are read from,
+       and a path keeps the monospace face in both editions. The string is a
+       literal in content.js. */
+    el("p", { class: "note-title", html: t(UI.loadFail) }),
     el("p", { class: "src", html: fill(t(W.fileHint), view.corpus) }),
     el("p", { class: "src" }, el("code", { text: String(err && err.message ? err.message : err) })),
   ]);
