@@ -220,6 +220,12 @@ def num(row, col):
         return None
 
 
+def codes(row, col):
+    """A semicolon-separated code list as a list. Blank cells give an empty list,
+    so len() of the result is a count a scene can publish."""
+    return [c.strip() for c in txt(row, col).split(";") if c.strip()]
+
+
 def yes(row, col):
     return (row.get(col) or "").strip().lower() == "yes"
 
@@ -1416,6 +1422,13 @@ def as_pct(ratio):
 
 CAP = re.compile(r"EXCEEDS_(\d+)d_CAP_by_(\d+)d")
 
+# The longest signing window the standard document allows any contract, whatever
+# its size. The shorter windows a smaller contract earns are read per row out of
+# the column above; this one is a fixed threshold in the rule, so it is named
+# here once, used by the flat test below, and published as a token so the
+# sentence in the article that reports the test cannot drift from it.
+FLAT_CAP = 28
+
 # A sum of money as a tender notice writes one, for marking inside a quoted
 # clause: "Tk. 740 million", "Tk-58 (Fifty Eight) Lac", "BDT 10,00,000 crore".
 MONEY_IN_CLAUSE = (r"(?:Tk|BDT)[-.\s]*[\d,]+(?:\.\d+)?"
@@ -1539,6 +1552,13 @@ def case_row(r, mark=None):
         "breach_codes": txt(r, "rule_deviation_publishable_as_breach_codes"),
         "duty_codes": txt(r, "rule_deviation_mandatory_clause_codes"),
         "band_codes": txt(r, "rule_deviation_recommended_band_codes"),
+        # The same two lists as counts. A scene that says how many of a tender's
+        # mismatches are against a clause worded as a duty, and how many against
+        # a figure a document recommends, is making the most important
+        # distinction in this report - so it reads the number off the codes
+        # rather than having it typed into the prose beside them.
+        "duty_n": len(codes(r, "rule_deviation_mandatory_clause_codes")),
+        "band_n": len(codes(r, "rule_deviation_recommended_band_codes")),
         "timing": txt(r, "rule_instrument_timing"),
         "preselection": txt(r, "potential_preselection_pattern"),
         "stages": num(r, "preselection_stage_count"),
@@ -1653,13 +1673,15 @@ CASES = [
         "rank": lambda r: -(num(r, "financial_bar_to_contract_value_ratio") or 0),
         "mark": ("evidence_excerpt_liquid_assets", MONEY_IN_CLAUSE),
         "rule": {
-            "en": "The signed contract in this set where the liquid money a "
-                  "bidder had to hold was the largest multiple of what the "
-                  "contract turned out to be worth. Ranked on "
-                  "<code>financial_bar_to_contract_value_ratio</code> over the "
-                  "awarded tenders that publish both figures.",
-            "bn": "এই সংকলনে যে স্বাক্ষরিত চুক্তিতে দরদাতার কাছে থাকতে হওয়া নগদ "
-                  "অর্থ চুক্তির প্রকৃত মূল্যের সবচেয়ে বড় গুণিতক ছিল, সেটি। দুটি "
+            "en": "The signed contract in this set where the money a bidder had "
+                  "to be able to show - yearly turnover where the notice asks "
+                  "for it, cash or a credit line otherwise - was the largest "
+                  "multiple of what the contract turned out to be worth. Ranked "
+                  "on <code>financial_bar_to_contract_value_ratio</code> over "
+                  "the awarded tenders that publish both figures.",
+            "bn": "এই সংকলনে যে স্বাক্ষরিত চুক্তিতে দরদাতাকে দেখাতে হওয়া অর্থ — "
+                  "বিজ্ঞপ্তি বার্ষিক লেনদেন চাইলে সেটি, নইলে নগদ বা ঋণসীমা — "
+                  "চুক্তির প্রকৃত মূল্যের সবচেয়ে বড় গুণিতক ছিল, সেটি। দুটি "
                   "সংখ্যাই প্রকাশ করা চুক্তিগুলোকে "
                   "<code>financial_bar_to_contract_value_ratio</code> অনুযায়ী "
                   "সাজিয়ে বাছাই করা হয়েছে।",
@@ -1924,12 +1946,12 @@ def build_portal():
     # only population the test can run on.
     dated = [r for r in yes + no if num(r, "days_noa_to_signing") is not None]
 
-    # What the answer tracks. If "yes" is exactly (days <= 28) with no exception,
-    # the portal is not testing the window the contract's own size allows - it is
-    # testing the longest window any contract can get.
+    # What the answer tracks. If "yes" is exactly (days <= FLAT_CAP) with no
+    # exception, the portal is not testing the window the contract's own size
+    # allows - it is testing the longest window any contract can get.
     flat = [r for r in dated
             if (txt(r, "portal_self_certified_signed_in_due_time") == "yes")
-            != ((num(r, "days_noa_to_signing") or 0) <= 28)]
+            != ((num(r, "days_noa_to_signing") or 0) <= FLAT_CAP)]
 
     over = [r for r in yes if txt(r, "signing_within_legal_band").startswith("EXCEEDS")]
     caps = collections.Counter()
@@ -1943,6 +1965,7 @@ def build_portal():
     return {
         "yes": len(yes), "no": len(no), "blank": len(blank),
         "answered": len(dated),
+        "flat_cap": FLAT_CAP,
         "flat_test_exceptions": len(flat),
         "over_cap": len(over),
         "yes_within": len(yes) - len(over),
@@ -2344,7 +2367,7 @@ def main():
         "nature": tally(MASTER, "procurement_nature"),
         "timeline": build_timeline(),
         "portal": build_portal(),
-        "districts": tally([r for r in MASTER if txt(r, "pe_district")], "pe_district", 12),
+        "districts": tally([r for r in MASTER if txt(r, "pe_district")], "pe_district"),
         "exhibits": build_exhibits(),
         "case": build_case(),
         "cases": build_cases(),

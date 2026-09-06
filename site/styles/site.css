@@ -710,13 +710,16 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
    the plot is exactly as tall as what is drawn in it at any column width. */
 .fig-plot svg { display: block; overflow: visible; width: 100%; height: auto; }
 
-/* One figure will not scale: a six-column matrix squeezed into a phone column
-   would print its 11px labels at three pixels. That one is drawn at a fixed
-   width inside a scroller, exactly as a wide table is, so width:auto here takes
-   the width from the <svg> element's own attribute instead of the column. The
-   scroller loses its top margin because the figure has already spaced it. */
+/* Two figures will not scale: a six-column matrix squeezed into a phone column
+   would print its 11px labels at three pixels, and the map is drawn at a canvas
+   the portrait country actually fills. Both are drawn at a fixed width inside a
+   scroller, exactly as a wide table is, so width:auto here takes the width from
+   the <svg> element's own attribute instead of the column. margin-inline:auto
+   centres a canvas narrower than the column and does nothing to one wider than
+   it. The scroller loses its top margin because the figure has already spaced
+   it. */
 .fig-plot > .tbl-scroll { margin-top: 0; }
-.fig-plot > .tbl-scroll > svg { width: auto; max-width: none; }
+.fig-plot > .tbl-scroll > svg { width: auto; max-width: none; margin-inline: auto; }
 
 .legend {
   display: flex;
@@ -737,6 +740,11 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 }
 
 .swatch { width: 0.7rem; height: 0.7rem; flex: 0 0 auto; }
+/* The one swatch that stands for no fill at all, on the map. It is the single
+   place in this file where a border is the content rather than a separator:
+   the row says "not filled", so the swatch has to be an outline and there is
+   nothing else it could be. */
+.swatch-edge { border: 1px solid var(--axis); }
 
 /* Chart internals. Marks are thin, grid and axis recessive, text on text
    tokens and never on the series colour. */
@@ -755,16 +763,36 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 .fig .mark-dot { stroke: var(--surface-page); stroke-width: 2; }
 .fig .gap { stroke: var(--surface-page); stroke-width: 2; fill: none; }
 
-/* Map layer. The divisions are a base a reader orients by, so they take the
-   recessive surface and a page-colour stroke — that stroke opens the 2px gap
-   between two fills instead of a border being drawn between them. The value
-   sits on the authority's own mark, which wears a page-colour ring so an
-   overlap onto a division edge stays readable, and a hairline leader carries
-   the eye to its row in the key. Division names are set small but on the body
-   text token, not a faint one: they sit on a filled area rather than on the page,
-   and a fainter token measured 2.5:1 against that fill. */
-.fig .area { fill: var(--surface-sunken); stroke: var(--surface-page); stroke-width: 2; }
-.fig .t-geo { fill: var(--text-default); font-size: 10px; letter-spacing: 0.01em; }
+/* Map layer. Two states, and the difference between them has to be categorical
+   rather than a step on the ramp, because the deck stakes a claim on it: a
+   district no notice names is not a district named once. So a district with a
+   count is filled and a district without one is not filled at all — only
+   outlined. Measured in OKLab, the palest step of the ramp sits 16.4 from the
+   page in light and 20.8 in dark, clear of the 15 floor; any grey put between
+   them measured under 12 from both, which is a legend making a promise the map
+   cannot keep. Ink carries data here and nothing else does.
+
+   Geography is carried by a hairline instead: every district takes an --axis
+   boundary, so 64 shapes read as 64 shapes and the country has an outline
+   without a single drop of fill. A district that does carry a count swaps that
+   hairline for a page-colour stroke, which opens a gap between two tints rather
+   than drawing a border between them; it needs no outline of its own, having a
+   fill that clears the page on its own. At 64 areas that gap has to be 1px: 2px
+   around each of Bogra's neighbours eats the small central districts entirely,
+   and Bhola and Hatiya stop reading as islands.
+
+   `:not([fill])` rather than a class, because a fill written on the shape is a
+   presentation attribute and a plain `fill` rule in this file would beat it and
+   flatten the whole ramp.
+
+   The authority marks carry no value, only identity, and wear a page-colour ring
+   so an overlap onto a district edge stays readable; a hairline leader carries
+   the eye to the row in the key that names the body. Nothing is labelled on the
+   fills themselves: 64 names would be illegible at this size, and the key is
+   where the type goes. */
+.fig .area.zone { stroke: var(--axis); stroke-width: 0.8; shape-rendering: geometricPrecision; }
+.fig .area.zone:not([fill]) { fill: none; }
+.fig .area.zone.lit { stroke: var(--surface-page); stroke-width: 1; cursor: help; }
 .fig .leader { stroke: var(--axis); stroke-width: 1; fill: none; }
 .fig .mark.seat { stroke: var(--surface-page); stroke-width: 2; }
 
@@ -1256,8 +1284,12 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
     forced-color-adjust: none;
   }
   .fig .mark { stroke: CanvasText; stroke-width: 1; }
-  .fig .area { fill: Canvas; stroke: CanvasText; stroke-width: 1; }
-  .fig .t-geo { fill: GrayText; }
+  /* Four shades cannot survive a two-colour system, so the map degrades to the
+     one distinction that still reads — named by a notice, or never named — and
+     the table under it carries the counts. Both selectors carry the same weight
+     as the ones that set the ramp above, and sit after them, so they win. */
+  .fig .area.zone { fill: Canvas; stroke: CanvasText; stroke-width: 1; }
+  .fig .area.zone.lit { fill: GrayText; stroke: CanvasText; }
   .fig .leader { stroke: CanvasText; }
   .fig .mark.seat { stroke: CanvasText; stroke-width: 1; }
   .swatch { border: 1px solid CanvasText; }

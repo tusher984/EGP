@@ -50,14 +50,13 @@ bn: প্রতিযোগিতায় সীমাবদ্ধতা ব�
 
 # dek
 en: Six of Bangladesh’s urban development authorities published {{counts.pdfs|n}}
-  procurement documents covering {{money.crore|cr}}. They show how a government office
-  may narrow the field it will choose from, and how little it must explain.
-  {{field.lost|n}} bids were rejected here. Published reasons:
-  {{field.reasons_published|n}}.
+  procurement documents covering {{money.crore|cr}}. They show how a buying office can
+  narrow who is allowed to bid, and how little it must explain. {{field.lost|n}} bids
+  were rejected. Published reasons: {{field.reasons_published|n}}.
 bn: বাংলাদেশের ছয়টি নগর উন্নয়ন সংস্থার প্রকাশিত {{counts.pdfs|n}}টি ক্রয়-নথিতে
-  {{money.crore|cr}} টাকার কাজ। নথিগুলো দেখায়, একটি সরকারি দপ্তর কীভাবে নিজের বাছাইয়ের
-  পরিসরটিকেই আগে সংকুচিত করে নিতে পারে — আর কত কমটুকুর ব্যাখ্যা তাকে দিতে হয়। এখানে
-  বাতিল হয়েছে {{field.lost|n}}টি দর। প্রকাশিত কারণ: {{field.reasons_published|n}}টি।
+  {{money.crore|cr}} টাকার কাজ। নথিগুলো দেখায়, একটি ক্রয়কারী দপ্তর কীভাবে ঠিক করে দিতে
+  পারে কারা দর দিতে পারবে — আর কত কম ব্যাখ্যা তাকে দিতে হয়। বাতিল হয়েছে
+  {{field.lost|n}}টি দর। প্রকাশিত কারণ: {{field.reasons_published|n}}টি।
 
 // ---------------------------------------------------------------- the opening
 // One tender, in full, before the article widens to all {{counts.tenders}}. Every
@@ -70,30 +69,28 @@ bn: বাংলাদেশের ছয়টি নগর উন্নয়�
 en: In February 2021 the Chittagong Development Authority advertised a road in
   Uttar Patenga: a 1.175-kilometre two-lane link, a kilometre of four-lane feeder
   road, drains, culverts, a walkway, a gymnasium. To bid, a company had to have
-  already finished, in one contract, a five-kilometre four-lane highway worth at
-  least {{case.similar_crore|cr}} — and a kilometre of walkway, five metres wide,
-  along a sea or river bank. It wanted {{case.turnover_crore|cr}} in annual turnover.
-  To build one kilometre of four-lane road, a bidder had to have already built five.
+  finished a five-kilometre four-lane highway worth at least {{case.similar_crore|cr}},
+  under one contract. It had to have built a kilometre of five-metre-wide walkway on a
+  sea or river bank. It needed {{case.turnover_crore|cr}} in yearly turnover. To build
+  one kilometre of four-lane road, a bidder had to have already built five.
 bn: ২০২১ সালের ফেব্রুয়ারিতে চট্টগ্রাম উন্নয়ন কর্তৃপক্ষ উত্তর পতেঙ্গায় একটি সড়কের
   দরপত্র আহ্বান করে: ১.১৭৫ কিলোমিটার দুই লেনের সংযোগ সড়ক, এক কিলোমিটার চার লেনের
-  ফিডার সড়ক, নর্দমা, কালভার্ট, কংক্রিটের হাঁটাপথ, একটি জিমনেসিয়াম। দর দেওয়ার আগে
-  বিজ্ঞপ্তি শর্ত দেয়, প্রতিষ্ঠানটিকে আগেই একটি একক চুক্তিতে পাঁচ কিলোমিটার চার লেনের
-  মহাসড়ক শেষ করে থাকতে হবে, যার মূল্য অন্তত {{case.similar_crore|cr}} — সঙ্গে সমুদ্র
-  বা নদীর তীরে পাঁচ মিটার চওড়া এক কিলোমিটার হাঁটাপথ। বার্ষিক লেনদেন চাই
-  {{case.turnover_crore|cr}}। অর্থাৎ এক কিলোমিটার চার লেনের সড়ক বানাতে হলে দরদাতাকে
-  আগে পাঁচ কিলোমিটার বানিয়ে থাকতে হবে।
+  ফিডার সড়ক, নর্দমা, কালভার্ট, কংক্রিটের হাঁটাপথ, একটি জিমনেসিয়াম। দর দিতে হলে
+  প্রতিষ্ঠানটিকে আগেই একটি চুক্তিতে পাঁচ কিলোমিটার চার লেনের মহাসড়ক শেষ করে থাকতে হবে,
+  যার মূল্য অন্তত {{case.similar_crore|cr}}। সমুদ্র বা নদীর তীরে পাঁচ মিটার চওড়া এক
+  কিলোমিটার হাঁটাপথও বানিয়ে থাকতে হবে। বার্ষিক লেনদেন চাই {{case.turnover_crore|cr}}।
+  অর্থাৎ এক কিলোমিটার চার লেনের সড়ক বানাতে দরদাতাকে আগে পাঁচ কিলোমিটার বানিয়ে থাকতে হবে।
 
 # p
-en: {{case.sold|n}} companies bought the documents and {{case.bids|n}} bid.
-  {{case.responsive|n}} was found responsive. The work went to
-  {{case.winner|firm}} for {{case.crore|cr}}. Why the other {{case.rejected|n}} were
-  ruled out, who they were, what they offered: the record says none of it. It cannot —
-  the award notice has no line for any of it.
-bn: {{case.sold|n}}টি প্রতিষ্ঠান নথি কিনেছিল, দর দিয়েছিল {{case.bids|n}}টি।
+en: {{case.sold|n}} companies bought the documents. {{case.bids|n}} bid.
+  {{case.responsive|n}} was found responsive. The work went to {{case.winner|firm}} for
+  {{case.crore|cr}}. The published record does not say who the other
+  {{case.rejected|n}} were, what they offered, or why they were ruled out. The award
+  notice has no line for any of it.
+bn: {{case.sold|n}}টি প্রতিষ্ঠান নথি কিনেছিল। দর দিয়েছিল {{case.bids|n}}টি।
   গ্রহণযোগ্য বিবেচিত হয় {{case.responsive|n}}টি। কাজটি পায় {{case.winner|firm}},
-  মূল্য {{case.crore|cr}}। বাকি {{case.rejected|n}}টি কেন বাদ পড়ল, কারা সেগুলো, দর কত
-  ছিল — প্রকাশিত নথি কিছুই বলে না। বলতে পারে না: চুক্তির বিজ্ঞপ্তিতে এর কোনোটির জন্যই
-  ঘর নেই।
+  মূল্য {{case.crore|cr}}। বাকি {{case.rejected|n}}টি কারা ছিল, দর কত দিয়েছিল, কেন বাদ
+  পড়ল — প্রকাশিত নথি কিছুই বলে না। চুক্তির বিজ্ঞপ্তিতে এর কোনোটির জন্যই ঘর নেই।
 
 // The lender’s own rulebook is in this repository, so it can be quoted against
 // this tender rather than paraphrased. Scope is stated in the sentence: the
@@ -101,13 +98,12 @@ bn: {{case.sold|n}}টি প্রতিষ্ঠান নথি কিনে�
 // tender notice, so it is offered as the lender’s standard, not as a breach.
 
 # p
-en: This road was part-financed by a Japanese development loan, whose procurement
-  guidelines are in this folder. Criteria deciding who may compete, they say, “should
-  not be so strict as to limit participation to only certain companies.”
-bn: এই সড়কের অর্থায়নের একটি অংশ এসেছে জাপানি উন্নয়ন ঋণ থেকে, আর সেই ঋণদাতার
-  ক্রয়-নির্দেশিকা এই সম্ভারেই আছে। কারা প্রতিযোগিতায় থাকতে পারবে তা ঠিক করার শর্ত
-  “এত কঠিন হওয়া উচিত নয় যে অংশগ্রহণ কেবল নির্দিষ্ট কয়েকটি প্রতিষ্ঠানেই সীমিত হয়ে
-  পড়ে।”
+en: A Japanese development loan paid for part of this road. The lender’s procurement
+  guidelines are in this folder. Criteria for who may compete, they say, “should not be
+  so strict as to limit participation to only certain companies.”
+bn: এই সড়কের একটি অংশের অর্থ এসেছে জাপানি উন্নয়ন ঋণ থেকে। ঋণদাতার ক্রয়-নির্দেশিকা এই
+  সম্ভারেই আছে। কারা প্রতিযোগিতায় থাকতে পারবে তা ঠিক করার শর্ত, সেখানে বলা আছে, “এত
+  কঠিন হওয়া উচিত নয় যে অংশগ্রহণ কেবল নির্দিষ্ট কয়েকটি প্রতিষ্ঠানেই সীমিত হয়ে পড়ে।”
 
 # tiles
 
@@ -127,47 +123,46 @@ en: The office that buys sets the bar
 bn: যে দপ্তর কেনে, মাপকাঠিও ঠিক করে সে-ই
 
 # p
-en: None of this is out of order. Bangladesh’s standard tender document makes
-  qualification pass or fail — criteria “which if not met by the Tenderers, will result
-  in consideration of its Tender as non-responsive” — then hands each level to the
-  buying office: experience, turnover, cash in hand, similar jobs finished, all “as
-  specified in the TDS,” which that office writes itself, with no ceiling.
+en: None of this breaks a rule. Bangladesh’s standard tender document makes
+  qualification pass or fail: criteria “which if not met by the Tenderers, will result
+  in consideration of its Tender as non-responsive.” It then leaves every level to the
+  buying office — experience, turnover, cash in hand, similar jobs finished, all “as
+  specified in the TDS.” The buying office writes the TDS. No rule sets a ceiling.
 bn: এর কিছুই নিয়মবিরুদ্ধ নয়। বাংলাদেশের আদর্শ দরপত্র দস্তাবেজ যোগ্যতা যাচাইকে পাশ-ফেলই
-  করে — এমন শর্ত, “দরদাতা যা পূরণ করতে না পারলে তার দরপত্র গ্রহণযোগ্য নয় বলে বিবেচিত
-  হবে” — তারপর প্রতিটি মাত্রা ছেড়ে দেয় ক্রয়কারী দপ্তরের হাতে: অভিজ্ঞতা, লেনদেন, হাতে
-  নগদ, কতটি সমমানের কাজ, সবই “দরপত্র উপাত্ত পত্রে যেমন উল্লিখিত”, আর ওই পত্র লেখে
-  দপ্তরটি নিজেই, কোনোটিতেই ঊর্ধ্বসীমা নেই।
+  রাখে: এমন শর্ত, “দরদাতা যা পূরণ করতে না পারলে তার দরপত্র গ্রহণযোগ্য নয় বলে বিবেচিত
+  হবে।” তারপর প্রতিটি মাত্রা ছেড়ে দেয় ক্রয়কারী দপ্তরের হাতে — অভিজ্ঞতা, লেনদেন, হাতে
+  নগদ, কতটি সমমানের কাজ, সবই “দরপত্র উপাত্ত পত্রে যেমন উল্লিখিত”। ওই পত্র লেখে দপ্তরটি
+  নিজেই। কোনো বিধিতে ঊর্ধ্বসীমা নেই।
 
 # fig bars
 
 # finding derived
-h.en: {{bars.financial_above_1x|n}} notices asked a bidder to hold more cash than
-  the contract was worth
-h.bn: {{bars.financial_above_1x|n}}টি বিজ্ঞপ্তিতে চুক্তির মূল্যের চেয়ে বেশি নগদ সম্পদ
-  দাবি করা হয়েছে
-en: On the {{bars.financial.n|n}} tenders publishing both the money demanded and the
-  contract value, the middle demand is {{bars.financial.median|x2}} the contract and
-  {{bars.financial_above_2x|n}} ask more than twice it. Past work goes the same way:
-  usually below the job, but {{bars.specific_above_1x|n}} notices want a finished
-  contract bigger than the work itself.
-bn: চাওয়া অর্থ ও চুক্তিমূল্য দুটিই প্রকাশিত এমন {{bars.financial.n|n}}টি দরপত্রে দাবির
-  মাঝের মান চুক্তিমূল্যের {{bars.financial.median|x2}}, আর
-  {{bars.financial_above_2x|n}}টিতে চাওয়া হয়েছে দ্বিগুণের বেশি। অভিজ্ঞতাও চাওয়া হয়
-  একই ধাঁচে: সাধারণত কাজটির চেয়ে ছোট, তবু {{bars.specific_above_1x|n}}টি বিজ্ঞপ্তিতে
-  চাওয়া হয়েছে হাতে থাকা কাজটির চেয়েও বড় একটি শেষ করা চুক্তি।
-en: Where a national rule fixes the number, it is obeyed: the bid deposit sits inside
-  the permitted band in {{bars.security_in_band_pct|pct}} of the
-  {{bars.security.n|n}} tenders that publish it. Fix the number and it holds; leave it
-  to the buyer and the bars climb.
-bn: যেখানে জাতীয় বিধি সংখ্যাটি বেঁধে দেয়, সেখানে তা মানা হয়: দরের জামানত যে
-  {{bars.security.n|n}}টি দরপত্রে প্রকাশিত, তার {{bars.security_in_band_pct|pct}}-এ
-  তা অনুমোদিত সীমার ভেতরেই। সংখ্যা বেঁধে দিলে তা টেকে; ক্রয়কারীর হাতে ছেড়ে দিলে
-  মাপকাঠি উঠতে থাকে।
+h.en: {{bars.financial_above_1x|n}} notices asked a bidder to show more money than the
+  contract was worth
+h.bn: {{bars.financial_above_1x|n}}টি বিজ্ঞপ্তিতে দরদাতাকে চুক্তির মূল্যের চেয়ে বেশি অর্থ
+  দেখাতে বলা হয়েছে
+en: {{bars.financial.n|n}} tenders publish both the money demanded and the contract
+  value. The middle demand is {{bars.financial.median|x2}} the contract value.
+  {{bars.financial_above_2x|n}} ask for more than twice it. Experience follows the same
+  pattern: usually less than the job, but {{bars.specific_above_1x|n}} notices ask for a
+  finished contract bigger than the work being bought.
+bn: চাওয়া অর্থ ও চুক্তিমূল্য দুটিই প্রকাশিত এমন দরপত্র {{bars.financial.n|n}}টি। দাবির
+  মাঝের মান চুক্তিমূল্যের {{bars.financial.median|x2}}। {{bars.financial_above_2x|n}}টিতে
+  চাওয়া হয়েছে দ্বিগুণের বেশি। অভিজ্ঞতার ধাঁচও একই: সাধারণত কাজটির চেয়ে কম, তবু
+  {{bars.specific_above_1x|n}}টি বিজ্ঞপ্তি চায় হাতের কাজটির চেয়েও বড় একটি শেষ করা
+  চুক্তি।
+en: Where a national rule fixes the number, offices follow it. The bid deposit sits
+  inside the permitted band in {{bars.security_in_band_pct|pct}} of the
+  {{bars.security.n|n}} tenders that publish it. The numbers that climb are the ones the
+  buying office sets itself.
+bn: যেখানে জাতীয় বিধি সংখ্যাটি বেঁধে দেয়, সেখানে দপ্তর তা মানে। দরের জামানত যে
+  {{bars.security.n|n}}টি দরপত্রে প্রকাশিত, তার {{bars.security_in_band_pct|pct}}-এ তা
+  অনুমোদিত সীমার ভেতরেই। যে সংখ্যাগুলো উঠতে থাকে, সেগুলো ক্রয়কারী দপ্তর নিজে ঠিক করে।
 
 // One notice from the far end of that chart, and then the chart that tests the
-// obvious objection to it. The fire-protection tender wanted more cash in hand
-// than the contract was worth; the restriction figure asks whether notices that
-// look restrictive drew fewer bidders, and answers no — which is why the
+// obvious objection to it. The fire-protection tender demanded yearly turnover of
+// seven and a half times the contract; the restriction figure asks whether notices
+// that look restrictive drew fewer bidders, and answers no — which is why the
 // complication is printed further down the article rather than left out of it.
 
 # evidence high_bar
@@ -190,19 +185,19 @@ bn: অর্ধেক বিজ্ঞপ্তিই বলে না মাপ
 # fig agencies
 
 # p
-en: {{eligibility.no_criteria|n}} of the {{counts.tenders|n}} notices —
-  {{eligibility.no_criteria_pct|pct}} — publish no criteria of their own; they send the
-  bidder to a data sheet not published with them. Where criteria are printed they are
+en: {{eligibility.no_criteria|n}} of the {{counts.tenders|n}} notices, or
+  {{eligibility.no_criteria_pct|pct}}, publish no criteria of their own. They send the
+  bidder to a data sheet not published with them. Where criteria are printed, they are
   often not written for the job: {{reuse.tenders|n}} tenders repeat a qualification
   sentence word for word from another notice here.
-bn: {{counts.tenders|n}}টি বিজ্ঞপ্তির {{eligibility.no_criteria|n}}টিতে —
-  {{eligibility.no_criteria_pct|pct}} — নিজস্ব কোনো শর্তই ছাপা হয়নি; দরদাতাকে পাঠানো
-  হয়েছে এমন এক উপাত্ত পত্রে, যা বিজ্ঞপ্তির সঙ্গে প্রকাশিত নয়। আর যেখানে শর্ত ছাপা
-  আছে, সেখানেও তা প্রায়ই এই কাজটির জন্য লেখা নয়: {{reuse.tenders|n}}টি দরপত্রে
-  যোগ্যতার অন্তত একটি বাক্য অন্য বিজ্ঞপ্তি থেকে অক্ষরে অক্ষরে এক।
+bn: {{counts.tenders|n}}টি বিজ্ঞপ্তির {{eligibility.no_criteria|n}}টিতে, অর্থাৎ
+  {{eligibility.no_criteria_pct|pct}}, নিজস্ব কোনো শর্তই ছাপা হয়নি। দরদাতাকে পাঠানো
+  হয়েছে এমন এক উপাত্ত পত্রে, যা বিজ্ঞপ্তির সঙ্গে প্রকাশিত নয়। আর যেখানে শর্ত ছাপা আছে,
+  সেখানেও তা প্রায়ই এই কাজটির জন্য লেখা নয়: {{reuse.tenders|n}}টি দরপত্রে যোগ্যতার একটি
+  বাক্য অন্য বিজ্ঞপ্তি থেকে অক্ষরে অক্ষরে এক।
 
 // The two halves of that paragraph, each as one document. no_criteria is the
-// largest contract in the whole set, and everything its notice published about
+// second largest of the twelve scenes, and everything its notice published about
 // who could bid is three words; repeat_clause is the shared sentence itself,
 // with the count of other notices carrying it word for word in the label.
 
@@ -216,26 +211,26 @@ h.en: {{eligibility.enlistment.n|n}} notices asked for an enlistment the standar
 h.bn: {{eligibility.enlistment.n|n}}টি বিজ্ঞপ্তিতে আগেই তালিকাভুক্তি চাওয়া হয়েছে, যা
   আদর্শ দস্তাবেজ বলে চাওয়াই যাবে না
 en: Its own words: “There shall not be any pre-conditions whatsoever, for sale of
-  Tender Documents.” It keeps enlistment for the limited method;
-  {{eligibility.enlistment.n|n}} notices carry it anyway. Most are wide —
-  {{eligibility.enlistment.catch_all|n}} accept any public body, excluding only a firm
-  enlisted nowhere. {{eligibility.enlistment.single_office|n}} name one office only —
-  in {{eligibility.enlistment.own_office|n}}, the authority running the tender.
+  Tender Documents.” It keeps enlistment for the limited method.
+  {{eligibility.enlistment.n|n}} notices ask for it anyway. Most are wide:
+  {{eligibility.enlistment.catch_all|n}} accept any public body, shutting out only a firm
+  enlisted nowhere. {{eligibility.enlistment.single_office|n}} name one office, and in
+  {{eligibility.enlistment.own_office|n}} it is the authority running the tender.
 bn: দস্তাবেজের নিজের ভাষা: “দরপত্র দস্তাবেজ বিক্রির ক্ষেত্রে কোনো পূর্বশর্তই থাকবে না।”
-  তালিকাভুক্তির শর্তটি সে রেখেছে সীমিত পদ্ধতির জন্য; তবু এখানকার
-  {{eligibility.enlistment.n|n}}টি বিজ্ঞপ্তিতে তা আছে। বেশিরভাগেরই দরজা চওড়া —
-  {{eligibility.enlistment.catch_all|n}}টি যেকোনো সরকারি প্রতিষ্ঠানের তালিকাভুক্তিই
-  মানে, ফলে বাদ পড়ে কেবল সেই প্রতিষ্ঠান যে কোথাওই তালিকাভুক্ত নয়।
-  {{eligibility.enlistment.single_office|n}}টিতে একটিমাত্র দপ্তরের নাম — তার
+  তালিকাভুক্তির শর্তটি সে রেখেছে সীমিত পদ্ধতির জন্য। তবু এখানকার
+  {{eligibility.enlistment.n|n}}টি বিজ্ঞপ্তি তা চেয়েছে। বেশিরভাগেরই দরজা চওড়া:
+  {{eligibility.enlistment.catch_all|n}}টি যেকোনো সরকারি প্রতিষ্ঠানের তালিকাভুক্তিই মানে,
+  ফলে বাদ পড়ে কেবল সেই প্রতিষ্ঠান যে কোথাওই তালিকাভুক্ত নয়।
+  {{eligibility.enlistment.single_office|n}}টিতে একটিমাত্র দপ্তরের নাম, আর তার
   {{eligibility.enlistment.own_office|n}}টিতে সেই দপ্তরই দরপত্রটি ডেকেছে।
 en: In {{field.mass_disqualified|n}} tenders most of the field was ruled out at once.
-  In {{preselection.strong|n}} notices five or more of seven conditions coincide: a
-  restrictive-looking requirement, bidders ruled non-responsive, one responsive bid
-  left, a repeat winner. That is where to start asking, not a finding of preselection.
+  In {{preselection.strong|n}} notices, five or more of seven conditions occur together:
+  a restrictive-looking requirement, bidders ruled non-responsive, one responsive bid
+  left, a repeat winner. That is a reason to ask questions, not proof of preselection.
 bn: {{field.mass_disqualified|n}}টি দরপত্রে প্রতিযোগীদের বড় অংশ একবারেই বাদ পড়েছে।
   {{preselection.strong|n}}টি বিজ্ঞপ্তিতে সাতটি শর্তের পাঁচটি বা তার বেশি একসঙ্গে মেলে:
   সীমাবদ্ধকারী বলে মনে হওয়া শর্ত, অগ্রহণযোগ্য বিবেচিত দরদাতা, শেষে একটিই গ্রহণযোগ্য দর,
-  বারবার জেতা বিজয়ী। এটি প্রশ্ন শুরু করার জায়গা, আগেই বেছে রাখার প্রমাণ নয়।
+  বারবার জেতা বিজয়ী। এটি প্রশ্ন করার কারণ, আগেই বেছে রাখার প্রমাণ নয়।
 
 // The seven conditions as a distribution, then the one notice that meets most of
 // them, then what happened when all eighteen rules were tested against every
@@ -262,17 +257,16 @@ en: A floor under the price, and nobody may see it
 bn: দামের নিচে একটি মেঝে, যা কারও দেখার অনুমতি নেই
 
 # p
-en: The same discretion reaches the money. {{estimate.band_notices|n}} notices here
-  reject any price more than {{estimate.width_common|n}} per cent from the official
-  cost estimate, above or below. A company that can do the job a fifth cheaper may not
-  say so and win: the saving is a disqualification. And the estimate appears in none of
-  the {{counts.pdfs|n}} documents, so the centre of that corridor is invisible to every
-  bidder.
-bn: একই স্বেচ্ছাধিকার টাকার গায়েও পৌঁছায়। এখানকার {{estimate.band_notices|n}}টি
+en: The same discretion reaches the price. {{estimate.band_notices|n}} notices reject
+  any bid more than {{estimate.width_common|n}} per cent away from the official cost
+  estimate, above or below. A company that can do the job a fifth cheaper cannot offer
+  that price and win. The saving disqualifies it. The estimate itself appears in none of
+  the {{counts.pdfs|n}} documents, so no bidder can see the centre of the band.
+bn: একই স্বেচ্ছাধিকার দামের গায়েও পৌঁছায়। এখানকার {{estimate.band_notices|n}}টি
   বিজ্ঞপ্তি সরকারি প্রাক্কলিত ব্যয়ের {{estimate.width_common|n}} শতাংশের বেশি দূরের দর
-  বাতিল করে — উপরে হোক, নিচে হোক। যে প্রতিষ্ঠান এক-পঞ্চমাংশ কমে কাজটি করতে পারে, সে তা
-  বলে কাজ পেতে পারবে না: ওই সাশ্রয়ই তখন অযোগ্যতা। আর প্রাক্কলনটি {{counts.pdfs|n}}টি
-  নথির একটিতেও নেই, তাই ওই বলয়ের কেন্দ্রটি প্রত্যেক দরদাতার কাছেই অদৃশ্য।
+  বাতিল করে — উপরে হোক, নিচে হোক। যে প্রতিষ্ঠান এক-পঞ্চমাংশ কমে কাজটি করতে পারে, সে ওই
+  দাম বলে কাজ পেতে পারবে না। সাশ্রয়টিই তাকে অযোগ্য করে দেয়। আর প্রাক্কলনটি
+  {{counts.pdfs|n}}টি নথির একটিতেও নেই, তাই বলয়ের কেন্দ্রটি কোনো দরদাতাই দেখতে পান না।
 
 // The band as one notice’s own page — the ±10 per cent printed, the estimate it
 // is measured from absent — and then where these clauses sit in the rulebook:
@@ -287,16 +281,16 @@ h.en: A notice that rejects any bid {{estimate.width_common|n}} per cent below t
   estimate has capped its own saving there
 h.bn: প্রাক্কলনের {{estimate.width_common|n}} শতাংশ নিচের দর যে বিজ্ঞপ্তি নেবে না, সে
   নিজের সাশ্রয়ের সীমাও ওখানেই বেঁধে ফেলেছে
-en: The headline as arithmetic, not opinion: the cap is set before the first envelope
-  is opened, by the office that will pay the bill. {{estimate.two_sided|n}} name both
-  directions expressly, and {{estimate.band_awarded|n}} became contracts worth
-  {{estimate.band_crore|cr}}. It is not a finding that any price was too high — only
-  that nobody outside the office can tell.
-bn: এখানেই শিরোনামটি মতামত নয়, অঙ্ক: প্রথম খামটি খোলার আগেই সীমা বাঁধা হয়ে যায়, আর
-  বাঁধে যে দপ্তর বিলটি দেবে সে-ই। {{estimate.two_sided|n}}টিতে দুই দিকের কথা স্পষ্ট
-  করে লেখা, আর {{estimate.band_awarded|n}}টিতে চুক্তি হয়েছে, মূল্য
-  {{estimate.band_crore|cr}}। এটি এই সিদ্ধান্ত নয় যে কোনো দাম বেশি ছিল — কেবল এই যে
-  দপ্তরের বাইরের কেউ তা বলতে পারবে না।
+en: The cap is set before the first envelope is opened, and it is set by the office that
+  will pay the bill. {{estimate.two_sided|n}} notices name both directions expressly.
+  {{estimate.band_awarded|n}} became contracts worth {{estimate.band_crore|cr}}. This is
+  not a finding that any price was too high. It is a finding that nobody outside the
+  buying office can tell.
+bn: প্রথম খামটি খোলার আগেই সীমা বাঁধা হয়ে যায়, আর বাঁধে যে দপ্তর বিলটি দেবে সে-ই।
+  {{estimate.two_sided|n}}টি বিজ্ঞপ্তিতে দুই দিকের কথাই স্পষ্ট করে লেখা।
+  {{estimate.band_awarded|n}}টিতে চুক্তি হয়েছে, মূল্য {{estimate.band_crore|cr}}। এটি এই
+  সিদ্ধান্ত নয় যে কোনো দাম বেশি ছিল। এটি এই সিদ্ধান্ত যে দপ্তরের বাইরের কেউ তা বলতে
+  পারবে না।
 
 # fig violations
 
@@ -324,18 +318,31 @@ bn: {{field.lost|n}}টি দর বাতিল, প্রকাশিত ক�
 // that provide for the silence.
 
 # p
-en: The silence is provided for. The standard document gives a rejected tenderer the
-  reason on written request — then adds that the office “is not required to justify
-  those reason(s).” And the award form it must publish has no field at all for anyone
-  who lost. Nothing was withheld here; the record was never asked for it.
-bn: এই নীরবতার ব্যবস্থাই করা আছে। আদর্শ দস্তাবেজ বলে, বাতিল হওয়া দরদাতা লিখিত আবেদনে
+en: The silence is written into the rules. The standard document gives a rejected
+  tenderer the reason on written request, then adds that the office “is not required to
+  justify those reason(s).” The award form the office must publish has no field for
+  anyone who lost. Nothing was withheld here. The record was never asked to hold it.
+bn: এই নীরবতা বিধিতেই লেখা আছে। আদর্শ দস্তাবেজ বলে, বাতিল হওয়া দরদাতা লিখিত আবেদনে
   কারণটি জানতে পারবেন — তারপরই যোগ করে, দপ্তর “ওই কারণগুলোর সাফাই দিতে বাধ্য নয়।” আর যে
-  চুক্তি-বিজ্ঞপ্তি তাকে প্রকাশ করতেই হয়, তাতে যারা হেরেছে তাদের জন্য কোনো ঘরই নেই।
-  এখানে কিছু লুকানো হয়নি; নথিতে কখনো তা চাওয়াই হয়নি।
+  চুক্তি-বিজ্ঞপ্তি দপ্তরকে প্রকাশ করতেই হয়, তাতে যারা হেরেছে তাদের জন্য কোনো ঘরই নেই।
+  এখানে কিছু লুকানো হয়নি। নথিতে কখনো তা রাখতেই বলা হয়নি।
 
 # evidence all_rejected
 
 # fig portal
+
+// The one sentence the portal's own answer supports, before the notice itself:
+// across every award notice that answers the question and prints both dates, "yes"
+// is exactly (days <= flat_cap) — corpus.portal.flat_test_exceptions is 0. So the
+// figure above counts contracts signed later than their own size allows, and this
+// paragraph says what the answer is measuring instead. Both are checkable; neither
+// is an explanation, and none is offered.
+
+# p
+en: On all {{portal.answered|n}} notices that answer it, the portal says yes when the
+  contract was signed within {{portal.flat_cap|n}} days, and no when it was not.
+bn: যে {{portal.answered|n}}টি বিজ্ঞপ্তি প্রশ্নটির উত্তর দিয়েছে, তার সবগুলোতেই পোর্টাল
+  হ্যাঁ বলেছে যখন চুক্তি {{portal.flat_cap|n}} দিনের মধ্যে সই হয়েছে, আর না বলেছে যখন হয়নি।
 
 # evidence portal_yes
 
@@ -362,14 +369,13 @@ bn: প্রতিযোগিতা যেখানে সবচেয়ে �
 # fig authority
 
 # p
-en: {{money.thin_field_n|n}} tenders here drew two bidders or fewer, and they carry
-  {{money.thin_field_crore|cr}} between them — {{money.thin_field_share|pct}} of every
-  taka. {{field.single_responsive|n}} ended with one responsive bidder, whoever else
-  turned up.
-bn: এখানকার {{money.thin_field_n|n}}টি দরপত্রে দরদাতা ছিল দুই বা তার কম, আর ওই
-  {{money.thin_field_n|n}}টিতেই আছে {{money.thin_field_crore|cr}} — প্রতিটি টাকার
-  {{money.thin_field_share|pct}}। {{field.single_responsive|n}}টি শেষ হয়েছে একজন
-  গ্রহণযোগ্য দরদাতা দিয়ে, আর যারাই এসে থাকুক।
+en: {{money.thin_field_n|n}} tenders drew two bidders or fewer. Together they carry
+  {{money.thin_field_crore|cr}}, or {{money.thin_field_share|pct}} of every taka.
+  {{field.single_responsive|n}} ended with one responsive bidder, however many bid.
+bn: {{money.thin_field_n|n}}টি দরপত্রে দরদাতা ছিল দুই বা তার কম। ওই দরপত্রগুলোতেই আছে
+  {{money.thin_field_crore|cr}}, অর্থাৎ প্রতিটি টাকার {{money.thin_field_share|pct}}।
+  {{field.single_responsive|n}}টি শেষ হয়েছে একজন গ্রহণযোগ্য দরদাতা দিয়ে, দর যতজনই দিয়ে
+  থাকুক।
 
 # fig competition
 
@@ -378,16 +384,15 @@ bn: এখানকার {{money.thin_field_n|n}}টি দরপত্রে �
 # evidence peer_gap
 
 # p
-en: One complication belongs here rather than in a footnote, because it cuts against
-  the argument. Among tenders that publish their conditions, the more demanding ones
-  drew slightly more bidders, not fewer ({{correlation.level_vs_bids_276.r|r}} across
-  {{correlation.level_vs_bids_276.n|n}}) — bigger jobs both ask more and attract more.
-  High bars and thin fields are two findings; the record cannot join them.
-bn: একটি জটিলতা পাদটীকায় নয়, এখানেই থাকা উচিত — কারণ তা যুক্তিটির বিপক্ষে যায়। যেসব
-  দরপত্রে শর্ত প্রকাশিত, তার মধ্যে বেশি কঠিনগুলোতে দরদাতা এসেছে কিছু বেশি, কম নয়
-  ({{correlation.level_vs_bids_276.n|n}}টিতে {{correlation.level_vs_bids_276.r|r}}) —
-  বড় কাজ একইসঙ্গে বেশি চায় এবং বেশি টানে। উঁচু মাপকাঠি আর পাতলা প্রতিযোগিতা দুটি আলাদা
-  ফলাফল; নথি দুটিকে জোড়া দিতে পারে না।
+en: One measurement cuts against the argument, and it belongs here. Among the
+  {{correlation.level_vs_bids_276.n|n}} tenders that publish their conditions, the more
+  demanding ones drew slightly more bidders, not fewer
+  ({{correlation.level_vs_bids_276.r|r}}). Bigger jobs ask for more and attract more.
+  High bars and thin fields are two separate findings.
+bn: একটি মাপ যুক্তিটির বিপক্ষে যায়, আর তার জায়গা এখানেই। যেসব দরপত্রে শর্ত প্রকাশিত, ওই
+  {{correlation.level_vs_bids_276.n|n}}টির মধ্যে বেশি কঠিনগুলোতে দরদাতা এসেছে কিছু বেশি,
+  কম নয় ({{correlation.level_vs_bids_276.r|r}})। বড় কাজ বেশি চায়, আর বেশি টানেও। উঁচু
+  মাপকাঠি ও পাতলা প্রতিযোগিতা দুটি আলাদা ফলাফল।
 
 # fig winners
 
@@ -404,25 +409,23 @@ en: What would settle it
 bn: যা দিয়ে বিষয়টি মিটে যেত
 
 # p
-en: Four documents would answer what these cannot: the cost estimate for any of the
-  {{counts.awards|n}} contracts; the recorded reason each of the {{field.lost|n}} bids
-  was ruled non-responsive; the names and prices of the losing companies; and the owners
-  behind the winning firms, blank on {{ownership.not_disclosed|n}} award notices. All
-  four exist in a file; none is published.
-bn: চারটি নথি এগুলো যা পারে না তার উত্তর দিত: {{counts.awards|n}}টি চুক্তির যেকোনো
-  একটির প্রাক্কলিত ব্যয়; {{field.lost|n}}টি বাতিল দরের প্রতিটিকে কেন অগ্রহণযোগ্য বলা
-  হলো তার লিখিত কারণ; যারা হেরেছে তাদের নাম আর দর; এবং বিজয়ী প্রতিষ্ঠানগুলোর পেছনের
-  মালিকদের পরিচয় — {{ownership.not_disclosed|n}}টি বিজ্ঞপ্তিতে ঘরটি ফাঁকা। চারটিই কোনো
-  না কোনো ফাইলে আছে; একটিও প্রকাশিত নয়।
+en: Four documents would answer what these do not: the cost estimate for any of the
+  {{counts.awards|n}} contracts; the written reason each of the {{field.lost|n}} bids was
+  ruled non-responsive; the names and prices of the losing companies; and the owners of
+  the winning firms, blank on {{ownership.not_disclosed|n}} notices. All four exist. None
+  is published.
+bn: চারটি নথি এগুলো যা বলে না তার উত্তর দিত: {{counts.awards|n}}টি চুক্তির যেকোনো একটির
+  প্রাক্কলিত ব্যয়; {{field.lost|n}}টি বাতিল দরের প্রতিটিকে কেন অগ্রহণযোগ্য বলা হলো তার
+  লিখিত কারণ; যারা হেরেছে তাদের নাম আর দর; এবং বিজয়ী প্রতিষ্ঠানগুলোর মালিকদের পরিচয় —
+  {{ownership.not_disclosed|n}}টি বিজ্ঞপ্তিতে ঘরটি ফাঁকা। চারটিই আছে। একটিও প্রকাশিত নয়।
 
 # p
-en: Until then this is what the government’s own record shows: the office that spends
-  the money may set the height of the bar, put a floor under the price, and need never
-  say who it ruled out or why. All of it is a red flag warranting scrutiny, not a
-  finding of wrongdoing.
-bn: ততদিন সরকারের নিজের নথিই যা দেখায়, সেটি এই: যে দপ্তর টাকাটা খরচ করে, সে-ই মাপকাঠির
-  উচ্চতা ঠিক করতে পারে, দামের নিচে মেঝে বসাতে পারে, আর কাকে কেন বাদ দিল তা কখনো না
-  বললেও চলে। এর সবটাই খতিয়ে দেখার মতো লাল পতাকা, অপরাধ প্রমাণিত হওয়া নয়।
+en: The record shows what the rules allow: the office that spends the money sets the
+  bar, puts a floor under the price, and need never say who it ruled out or why. That is
+  a red flag warranting scrutiny, not a finding of wrongdoing.
+bn: নথি দেখায় বিধি কী কী করতে দেয়: যে দপ্তর টাকাটা খরচ করে, সে-ই মাপকাঠি ঠিক করে, দামের
+  নিচে মেঝে বসায়, আর কাকে কেন বাদ দিল তা কখনো না বললেও চলে। এটি খতিয়ে দেখার মতো লাল
+  পতাকা, অপরাধ প্রমাণিত হওয়া নয়।
 
 # doors
 
