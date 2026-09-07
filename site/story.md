@@ -7,9 +7,6 @@ en: Lack of competition paid by people
 # dek
 en: Six urban development authorities in Bangladesh published e-GP procurement documents totaling approximately 3,723.68 crore taka. An analysis of 1,151 tender documents, comprising procurement notices and contract award details, reveals a systematic pattern: procuring entities routinely restrict bidder eligibility with minimal justification. Furthermore, approximately 997 bids were rejected without any published rationale.
 
-# p
-en: Al Amin Tusher, Reporting and Data Analysis
-
 # lede
 en: In February 2021, the Chittagong Development Authority (CDA) issued a tender for a road project in Uttar Patenga comprising a 1.175-kilometer two-lane link, a one-kilometer four-lane feeder road, drains, culverts, a walkway, and a gymnasium. To qualify, prospective contractors were required to have completed a single contract for a five-kilometer, four-lane highway worth at least 74 crore taka, constructed a one-kilometer, five-meter-wide embankment walkway, and maintained an annual turnover of 140 crore taka. Constructing a single kilometer of four-lane road effectively required five kilometers of prior experience, yet the criteria contained no specific experience requirements for specialized components like the gymnasium.
 

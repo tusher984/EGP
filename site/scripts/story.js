@@ -390,100 +390,64 @@ const FIGS = {
      supplied folder, so the districts were fetched from geoBoundaries and
      vendored into the repository. Not one number here is computed from it. */
   authorityMap(corpus) {
+    const focusKey = "CDA";
     const au = corpus.authority;
-    /* Which bodies published a notice naming each district. Dinajpur is named by
-       two of the six, so this is a list and not a single name. */
-    const from = {};
-    au.rows.forEach((r) => (r.printed || []).forEach((p) => {
-      (from[p.key] = from[p.key] || []).push(r.key);
-    }));
+    const focus = (au.rows || []).find((r) => r.key === focusKey) || au.rows[0];
 
-    /* Six of the thirteen named districts are named exactly once, and "1 notices"
-       is not something a reader should be shown. Bangla does not inflect here —
-       ১টি বিজ্ঞপ্তি is right for one and for a hundred — so only English forks. */
     const notices = (v) => ({
       en: n(v) + (v === 1 ? " notice" : " notices"),
       bn: n(v) + "টি বিজ্ঞপ্তি",
     });
 
-    const shade = byBoundary(corpus.districts);
+    const printedRows = (focus.printed || []).map((p) => ({ key: p.key, n: p.n || 1 }));
+    const shade = byBoundary(printedRows);
     Object.entries(shade).forEach(([key, cell]) => {
-      const named = [...new Set(cell.printed.flatMap((s) => from[s] || []))];
-      cell.tip = cell.printed.map((s) => placeName(s)).join(" / ") + " — " +
-        t(notices(cell.v)) + " · " + named.map((k) => agencyName(k)).join(", ");
+      cell.tip = placeName(key) + " — " + t(notices(cell.v)) + " for " + agencyName(focus.key);
     });
 
-    const seats = au.rows.map((r) => ({
-      key: r.key,
-      label: agencyName(r.key),
-      sub: placeName(r.district),
-      read: n(r.tenders),
-      tip: bodyName(r.organization) + " — " +
-        t({ en: notices(r.tenders).en + ", most often naming " + placeName(r.district),
-            bn: notices(r.tenders).bn + ", সবচেয়ে বেশিবার নাম এসেছে " +
-                placeName(r.district) + " জেলার" }),
-    }));
+    const seats = [{
+      key: focus.key,
+      label: agencyName(focus.key),
+      sub: placeName(focus.district),
+      read: n(focus.tenders),
+      tip: bodyName(focus.organization) + " — " +
+        t({ en: notices(focus.tenders).en + " in the record, most often naming " + placeName(focus.district),
+            bn: notices(focus.tenders).bn + ", সবচেয়ে বেশিবার নাম এসেছে " +
+                placeName(focus.district) + " জেলার" }),
+    }];
 
     const rows = Object.entries(shade).sort((a, b) => b[1].v - a[1].v);
     return figure({
-      /* Every other chart here is marked wide and stretches to the full page, and
-         this one deliberately does not. A portrait country under a 640px height
-         ceiling is 451px wide; on the full page that leaves the key rows a fifth
-         of the window away from the coast they point at, and the alternative —
-         scaling the country up to the page — puts a 950px-tall figure in the
-         middle of the article. On the 54rem measure the drawing reaches both ends
-         of its column with the leaders barely longer than they were. */
       title: {
-        en: "Every district these notices name, and the six bodies that named them",
-        bn: "এই বিজ্ঞপ্তিগুলোতে যেসব জেলার নাম আছে, আর যে ছয় সংস্থা নাম দিয়েছে",
+        en: "CDA’s district footprint in Bangladesh",
+        bn: "বাংলাদেশে সিডিএর জেলা-ছাপ",
       },
       deck: {
-        en: n(DISTRICT_N - rows.length) + " of the " + n(DISTRICT_N) +
-            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
-        bn: n(DISTRICT_N) + " জেলার " + n(DISTRICT_N - rows.length) +
-            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
+        en: "This map shows the districts named in the tender notices for Chittagong Development Authority. The single mark on the map identifies the authority’s main working district; the shading reflects the notice counts in those districts rather than all authorities in the dataset.",
+        bn: "এই মানচিত্রে চট্টগ্রাম উন্নয়ন কর্তৃপক্ষের দরপত্র বিজ্ঞপ্তিতে যেসব জেলার নাম এসেছে, তা দেখা যায়। মানচিত্রের একটিমাত্র চিহ্নটি সংস্থার প্রধান কাজের জেলার অবস্থান নির্দেশ করে; রঙের আভা সব সংস্থা নয়, শুধু এই এক সংস্থার বিজ্ঞপ্তির সংখ্যাকে ধরে।",
       },
       plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
-        /* The width of the column this figure is laid out in, measured, because
-           the map is drawn to it exactly: the svg carries a pixel width so that
-           the type in its key is never scaled, and a canvas narrower than the
-           column would sit in the grid with white space at both ends. */
         width: midColumn(),
-        /* The same number again, and separately, because the two questions are
-           different: this one is how narrow the column is, which is what tells a
-           phone to stack the key under the map instead of flanking it. */
         col: midColumn(),
         alt: A({
-          en: "A map of the 64 districts of Bangladesh, shaded darker where more tender notices name the district, with one mark for each of the six authorities. The counts are in the table below.",
-          bn: "বাংলাদেশের ৬৪ জেলার মানচিত্র; যে জেলার নাম বেশি বিজ্ঞপ্তিতে সেটি তত গাঢ়, আর ছয়টি সংস্থার জন্য একটি করে চিহ্ন। সংখ্যাগুলো নিচের টেবিলে আছে।",
+          en: "Bangladesh map showing the districts named in Chittagong Development Authority notices and the authority’s location mark.",
+          bn: "বাংলাদেশের মানচিত্রে চট্টগ্রাম উন্নয়ন কর্তৃপক্ষের বিজ্ঞপ্তিতে নাম থাকা জেলা ও সংস্থার অবস্থান চিহ্ন।",
         }, corpus),
       })),
       legend: mapLegend(),
       table: table(
         [{ en: "District", bn: "জেলা" },
          { en: "Notices naming it", bn: "যত বিজ্ঞপ্তিতে নাম" },
-         { en: "Named by", bn: "নাম দিয়েছে" },
          { en: "Printed as", bn: "যেভাবে ছাপা" }],
         rows.map(([key, cell]) => [
           placeName(key), n(cell.v),
-          [...new Set(cell.printed.flatMap((s) => from[s] || []))]
-            .map((k) => agencyName(k)).join(", "),
           cell.printed.map((s) => placeName(s)).join(" / "),
         ]),
         { num: [1] }
       ),
-      /* One sentence, like every other source line. The licence, the lineage and
-         the limits of the exception are set out in full in the method section,
-         which is where a reader who wants them goes; repeating them under the
-         figure would put four lines of small print under a map. */
       source: src(
-        F.master.en + " — <code>pe_district</code> as printed, on district " +
-        "boundaries from <span class=\"verbatim\">geoBoundaries gbOpen</span>, " +
-        "the one file here not supplied with the documents and used for the " +
-        "outline alone.",
-        F.master.bn + " — <code>pe_district</code> যেমন ছাপা, জেলাসীমা " +
-        "<span class=\"verbatim\">geoBoundaries gbOpen</span> থেকে — দস্তাবেজের " +
-        "সঙ্গে না আসা একমাত্র ফাইল, ব্যবহার কেবল রূপরেখায়।"),
+        F.master.en + " — <code>pe_district</code> as printed for " + agencyName(focus.key) + ", on district boundaries from <span class=\"verbatim\">geoBoundaries gbOpen</span>.",
+        F.master.bn + " — " + agencyName(focus.key) + "-এর জন্য <code>pe_district</code> যেমন ছাপা, জেলাসীমা <span class=\"verbatim\">geoBoundaries gbOpen</span> থেকে।"),
     });
   },
 
