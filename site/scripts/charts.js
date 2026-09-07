@@ -149,7 +149,25 @@ export function figure(spec) {
   }
 
   if (spec.source) kids.push(el("p", { class: "src", html: t(spec.source) }));
-  return el("figure", { class: "fig" + (spec.wide ? " fig-wide" : "") }, kids);
+  const fig = el("figure", { class: "fig figure-reveal" + (spec.wide ? " fig-wide" : "") }, kids);
+  const marks = fig.querySelectorAll("svg .mark, svg .mark-line, svg .mark-dot");
+  marks.forEach((mark, i) => mark.style.setProperty("--chart-index", Math.min(i, 24)));
+
+  const reveal = () => fig.classList.add("is-visible");
+  if (typeof IntersectionObserver === "undefined") {
+    reveal();
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      reveal();
+      observer.disconnect();
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    setTimeout(() => {
+      if (fig.isConnected) observer.observe(fig);
+      else reveal();
+    }, 0);
+  }
+  return fig;
 }
 
 /* ------------------------------------------------------------------ tooltip */

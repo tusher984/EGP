@@ -18,8 +18,8 @@ import {
 } from "./core.js";
 import {
   figure, table, barsH, lines, columns, percentileStrip, stripLegend, stackedShare,
-  funnel, matrix, matrixLegend, districtMap, mapLegend, byBoundary, DISTRICT_N,
-  hue, SEQ, wideCanvas, midColumn, scrollCanvas,
+  funnel, matrix, matrixLegend,
+  hue, SEQ, wideCanvas, scrollCanvas,
 } from "./charts.js";
 import {
   UI, HEAD, CASE, CASES, STORY, LIMITS, CHECK, DOORS, LABELS, EXHIBIT_WORDS,
@@ -373,86 +373,6 @@ const FIGS = {
         F.master.bn + " — <code>agency</code> অনুযায়ী <code>eligibility_published</code>, আর কলামে <code>SUBSTANTIVE_TEXT_PUBLISHED</code> থাকলেই কেবল ধরা হয়েছে শর্ত প্রকাশিত হয়েছে।"),
     });
   },
-  /* Two views of the same six bodies: the districts their notices name, and the
-     matrix of the six measures that answers which of them is worse.
-
-     The map first, because it is the one a reader takes in at a glance, and it
-     answers only one question — where the paperwork comes from. The shading is
-     notices published, off pe_district as printed. The six marks are all one
-     colour and carry no value at all: they say which district each body works
-     in, nothing more. "Which body is worse" is the matrix directly below, where
-     six measures sit on six honest denominators, and a single shade on a single
-     mark could not carry that without picking one measure and calling it the
-     answer.
-
-     The outline is the one exception to this investigation's source rule, and
-     the source line names it on the page: no boundary geometry exists in the
-     supplied folder, so the districts were fetched from geoBoundaries and
-     vendored into the repository. Not one number here is computed from it. */
-  authorityMap(corpus) {
-    const focusKey = "CDA";
-    const au = corpus.authority;
-    const focus = (au.rows || []).find((r) => r.key === focusKey) || au.rows[0];
-
-    const notices = (v) => ({
-      en: n(v) + (v === 1 ? " notice" : " notices"),
-      bn: n(v) + "টি বিজ্ঞপ্তি",
-    });
-
-    const printedRows = (focus.printed || []).map((p) => ({ key: p.key, n: p.n || 1 }));
-    const shade = byBoundary(printedRows);
-    Object.entries(shade).forEach(([key, cell]) => {
-      cell.tip = placeName(key) + " — " + t(notices(cell.v)) + " for " + agencyName(focus.key);
-    });
-
-    const seats = [{
-      key: focus.key,
-      label: agencyName(focus.key),
-      sub: placeName(focus.district),
-      read: n(focus.tenders),
-      tip: bodyName(focus.organization) + " — " +
-        t({ en: notices(focus.tenders).en + " in the record, most often naming " + placeName(focus.district),
-            bn: notices(focus.tenders).bn + ", সবচেয়ে বেশিবার নাম এসেছে " +
-                placeName(focus.district) + " জেলার" }),
-    }];
-
-    const rows = Object.entries(shade).sort((a, b) => b[1].v - a[1].v);
-    return figure({
-      title: {
-        en: "CDA’s district footprint in Bangladesh",
-        bn: "বাংলাদেশে সিডিএর জেলা-ছাপ",
-      },
-      deck: {
-        en: n(DISTRICT_N - rows.length) + " of the " + n(DISTRICT_N) +
-            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
-        bn: n(DISTRICT_N) + " জেলার " + n(DISTRICT_N - rows.length) +
-            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
-      },
-      plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
-        width: midColumn(),
-        col: midColumn(),
-        alt: A({
-          en: "Bangladesh map showing the districts named in Chittagong Development Authority notices and the authority’s location mark.",
-          bn: "বাংলাদেশের মানচিত্রে চট্টগ্রাম উন্নয়ন কর্তৃপক্ষের বিজ্ঞপ্তিতে নাম থাকা জেলা ও সংস্থার অবস্থান চিহ্ন।",
-        }, corpus),
-      })),
-      legend: mapLegend(),
-      table: table(
-        [{ en: "District", bn: "জেলা" },
-         { en: "Notices naming it", bn: "যত বিজ্ঞপ্তিতে নাম" },
-         { en: "Printed as", bn: "যেভাবে ছাপা" }],
-        rows.map(([key, cell]) => [
-          placeName(key), n(cell.v),
-          cell.printed.map((s) => placeName(s)).join(" / "),
-        ]),
-        { num: [1] }
-      ),
-      source: src(
-        F.master.en + " — <code>pe_district</code> as printed for " + agencyName(focus.key) + ", on district boundaries from <span class=\"verbatim\">geoBoundaries gbOpen</span>.",
-        F.master.bn + " — " + agencyName(focus.key) + "-এর জন্য <code>pe_district</code> যেমন ছাপা, জেলাসীমা <span class=\"verbatim\">geoBoundaries gbOpen</span> থেকে।"),
-    });
-  },
-
   /* One row per authority, one column per measure, one bar per cell, and a count
      at the end. Six measures on six honest denominators is the answer to "which
      one is worse" that these documents can carry; a single weighted index would

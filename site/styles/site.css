@@ -676,8 +676,21 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
    title, deck, plot, legend, source. No frame, no caption furniture, no
    gridline labels beyond the axis itself. */
 
-.fig { margin: 2.2rem 0 0; max-width: 54rem; }
+.fig {
+  margin: 2.2rem 0 0;
+  max-width: 54rem;
+  opacity: 1;
+  transform: none;
+}
 .fig-wide { max-width: none; }
+
+.figure-reveal {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 650ms ease, transform 650ms cubic-bezier(.2, .75, .25, 1);
+}
+
+.figure-reveal.is-visible { opacity: 1; transform: none; }
 
 /* Title, deck and source line all take the text face, so the three lines of
    words wrapped around a chart read as one caption in the article's own voice.
@@ -692,6 +705,15 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
   margin: 0 0 0.3rem;
 }
 
+.fig-title::before {
+  content: "";
+  display: inline-block;
+  width: 1.8rem;
+  height: 2px;
+  margin: 0 0.55rem 0.22rem 0;
+  background: var(--hue-1);
+}
+
 .fig-deck {
   font-size: 0.92rem;
   line-height: 1.5;
@@ -700,7 +722,12 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
   max-width: 40rem;
 }
 
-.fig-plot { position: relative; }
+.fig-plot {
+  position: relative;
+  padding: 0.7rem 0.45rem 0.35rem;
+  background: var(--surface-raised);
+  border-block: 1px solid var(--ntr-home-line);
+}
 
 /* A chart is drawn on a fixed canvas and scaled by its viewBox. The height
    attribute on the <svg> is that canvas height in pixels, so as soon as the
@@ -762,6 +789,40 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 .fig .mark-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .fig .mark-dot { stroke: var(--surface-page); stroke-width: 2; }
 .fig .gap { stroke: var(--surface-page); stroke-width: 2; fill: none; }
+
+.fig.is-visible svg .mark,
+.fig.is-visible svg .mark-line,
+.fig.is-visible svg .mark-dot {
+  animation: chart-mark-in 620ms cubic-bezier(.2, .75, .25, 1) both;
+  animation-delay: calc(var(--chart-index, 0) * 24ms);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.fig.is-visible svg .grid,
+.fig.is-visible svg .axis {
+  animation: chart-grid-in 450ms ease both;
+}
+
+.fig svg .mark,
+.fig svg .mark-line,
+.fig svg .mark-dot {
+  transition: filter 180ms ease, opacity 180ms ease;
+}
+
+.fig svg .mark:hover,
+.fig svg .mark-line:hover,
+.fig svg .mark-dot:hover { filter: brightness(0.78); }
+
+@keyframes chart-mark-in {
+  from { opacity: 0; transform: translateY(0.45rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes chart-grid-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 /* Map layer. Two states, and the difference between them has to be categorical
    rather than a step on the ramp, because the deck stakes a claim on it: a
@@ -1306,6 +1367,7 @@ html.dark-mode .pill-ok { color: var(--color-darkmode); }
 @media print {
   .masthead, .controls, .chips, .skip, .tip, .masthead-tools, .foot-links { display: none !important; }
   body { font-size: 10.5pt; color: #000; background: #fff; }
+  .figure-reveal { opacity: 1; transform: none; }
   .wrap { max-width: none; padding: 0; }
   /* On paper there is one column and it is the paper's width, so the article's
      grid -- margins, breakout gutters, measure -- has nothing to do. */
