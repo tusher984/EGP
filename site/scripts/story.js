@@ -439,9 +439,9 @@ const FIGS = {
       },
       deck: {
         en: n(DISTRICT_N - rows.length) + " of the " + n(DISTRICT_N) +
-            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
+            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The totals are corrected for spelling variants on the page: Chattogram and Chittagong count as one district, and Laksmipur and Lakshmipur are folded together on the same shape, so the map shows the corrected geography rather than the raw spellings in the notices. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
         bn: n(DISTRICT_N) + " জেলার " + n(DISTRICT_N - rows.length) +
-            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
+            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। বিজ্ঞপ্তিতে লেখা বানানের ভিন্নতা মিটিয়ে গড়া মান এখানে ধরে নেওয়া হয়েছে: চট্টগ্রাম ও চিটাগং একই জেলা হিসেবে গণ্য, একইভাবে লাকসামপুর ও লাক্ষ্মীপুরও একই চিত্রে মেশানো হয়েছে — ফলে মানচিত্রটি কেবল কাগজে আসা বানান নয়, সংশোধিত ভৌগোলিক হিসাব দেখায়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
       },
       plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
         /* The width of the column this figure is laid out in, measured, because
