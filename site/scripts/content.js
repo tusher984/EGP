@@ -112,6 +112,25 @@ export const UI = {
    more. Where a label would have to guess, it says what is missing instead. */
 
 export const LABELS = {
+  /* The clause columns, said the way a reader would say them. build.py carries
+     an English label for the data downloads; these are what the page prints, so
+     the Bangla edition has a written phrase for every clause rather than a
+     column name. Keys are the master file's own column names. */
+  clause: {
+    blanket_rejection_clause: { en: "A blanket right to reject any or all bids", bn: "যেকোনো বা সব দর বাতিল করার নিরঙ্কুশ অধিকার" },
+    price_band_nonresponsive_clause: { en: "A fixed price band decides responsiveness", bn: "দামের নির্দিষ্ট বলয়ই ঠিক করে দর গ্রহণযোগ্য কি না" },
+    false_document_forfeiture_clause: { en: "Security forfeited for a document held false", bn: "কোনো কাগজ মিথ্যা ধরা হলে জামানত বাজেয়াপ্ত" },
+    govt_client_experience_required: { en: "Past work must have been for a government client", bn: "আগের কাজ সরকারি প্রতিষ্ঠানের হতে হবে" },
+    licence_document_stack: { en: "A stack of licences and certificates together", bn: "একগুচ্ছ লাইসেন্স ও সনদ একসঙ্গে" },
+    reputed_qualifier: { en: "The word “reputed” used as a qualification", bn: "যোগ্যতা হিসেবে “সুনামধন্য” শব্দটির ব্যবহার" },
+    agency_enlistment_requirement: { en: "Bidder must already be enlisted", bn: "দরদাতাকে আগেই তালিকাভুক্ত থাকতে হবে" },
+    brand_without_or_equivalent: { en: "A brand named with no “or equivalent”", bn: "ব্র্যান্ডের নাম, “বা সমমানের” কথা নেই" },
+    narrow_specification: { en: "Specification narrow enough to fit few products", bn: "এত সংকীর্ণ বিবরণ যে অল্প কিছু পণ্যেই মেলে" },
+    pwd_authentication_requirement: { en: "Certificates must be countersigned by PWD", bn: "সনদে গণপূর্তের প্রতিস্বাক্ষর লাগবে" },
+    bank_document_window_requirement: { en: "Bank papers valid only inside a narrow window", bn: "ব্যাংকের কাগজ কেবল সংকীর্ণ সময়সীমার ভেতরেই বৈধ" },
+    electrical_licence_requirement: { en: "A specific electrical licence required", bn: "নির্দিষ্ট বৈদ্যুতিক লাইসেন্স লাগবে" },
+  },
+
   competition: {
     SINGLE_BID: { en: "One bid only", bn: "কেবল একটি দর" },
     VERY_LOW: { en: "Two bids", bn: "দুটি দর" },
