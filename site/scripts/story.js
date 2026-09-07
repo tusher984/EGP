@@ -113,6 +113,178 @@ function tiles(corpus) {
 
 const FIGS = {
 
+  /* The rejection stage, watched from outside it.
+
+     No document in this set says why a bid was rejected. But every notice that
+     publishes a bid count also publishes how many of those bids were found
+     responsive, so the stage can still be measured: group the tenders by how
+     many companies bid, and read off what share of the field survived. Both
+     numbers are published columns and the population is the same 591 notices in
+     every band, so no bar here is a different population from its neighbour.
+
+     One series, one unit, so no legend — the title names the measure. The money
+     each band carried is deliberately NOT on this plot: it is the competition
+     figure further down, because a second axis would turn two separate findings
+     into one apparent trend. */
+  filter(corpus) {
+    const f = corpus.filter;
+    const cats = f.rows.map((r) => r.key);
+    return figure({
+      title: {
+        en: "Where one company bid, it was never ruled out",
+        bn: "যেখানে একটিই প্রতিষ্ঠান দর দিয়েছে, সেখানে কেউ বাদ পড়েনি",
+      },
+      deck: {
+        en: "The share of submitted bids found responsive, by how many bids the tender drew, across the " +
+          n(f.n) + " tenders that publish both numbers. In the " + n(f.bottom_band.n) +
+          " tenders with a single bid, that bid was accepted every time. In the " +
+          n(f.top_band.n) + " that drew ten or more, under half survived.",
+        bn: "কতটি দর পড়েছে সেই অনুযায়ী জমা পড়া দরের কত অংশ গ্রহণযোগ্য বিবেচিত হয়েছে — দুটি সংখ্যাই প্রকাশিত এমন " +
+          n(f.n) + "টি দরপত্রে। একটিমাত্র দর পড়া " + n(f.bottom_band.n) +
+          "টি দরপত্রে সেই দরটি প্রতিবারই গৃহীত হয়েছে। দশ বা তার বেশি দর পড়া " +
+          n(f.top_band.n) + "টিতে অর্ধেকের কমই টিকেছে।",
+      },
+      plot: columns(cats, f.rows.map((r) => r.share), {
+        max: 100, fmt: (v) => pct(v, 0), color: hue(0), height: 250,
+        label: { en: "Found responsive", bn: "গ্রহণযোগ্য বিবেচিত" },
+        alt: A({ en: "Share of bids found responsive falls as the number of bids rises.", bn: "দরের সংখ্যা বাড়লে গ্রহণযোগ্য বিবেচিত দরের হার কমে।" }, corpus),
+      }),
+      table: table(
+        [{ en: "Bids received", bn: "প্রাপ্ত দর" }, { en: "Tenders", bn: "দরপত্র" },
+         { en: "Bids submitted", bn: "জমা পড়া দর" }, { en: "Found responsive", bn: "গ্রহণযোগ্য" },
+         { en: "Rejected", bn: "বাতিল" }, { en: "Share responsive", bn: "গ্রহণযোগ্যের হার" },
+         { en: "One responsive bid", bn: "একটিই গ্রহণযোগ্য দর" },
+         { en: "Contract value", bn: "চুক্তিমূল্য" }],
+        f.rows.map((r) => [digits(r.key), n(r.n), n(r.submitted), n(r.responsive),
+          n(r.lost), pct(r.share), n(r.one_resp), cr(r.crore)])
+      ),
+      source: src(F.master.en + " — <code>responsive_bids</code> over <code>total_bids_received</code>, banded by the same column.",
+        F.master.bn + " — <code>total_bids_received</code>-এর বিপরীতে <code>responsive_bids</code>, ভাগগুলোও একই কলাম থেকে।"),
+    });
+  },
+
+  /* Which kind of clause the thin field travels with.
+
+     Two kinds sit in these notices: clauses about who may enter, and clauses
+     about how the bids already in the box are to be treated. Both are counted
+     against one outcome — one responsive bidder left — on the same denominator
+     rule, and the baseline for all 591 tenders is drawn through the bars so a
+     reader can see which are above it and which are not.
+
+     Colour carries the family, which is the finding, so it needs a legend. Rows
+     measured on fewer than the corpus floor of notices are drawn in the muted
+     step and labelled in the table: the rate is still shown, because hiding it
+     would be a choice about which findings a reader may check, but nothing in
+     the article quotes one. */
+  clause(corpus) {
+    const c = corpus.clause;
+    const fam = {
+      rejection: { en: "Decides how a bid already received is treated", bn: "জমা পড়া দর নিয়ে কী হবে, তা ঠিক করে" },
+      entry: { en: "Decides who is allowed to bid at all", bn: "কে আদৌ দর দিতে পারবে, তা ঠিক করে" },
+    };
+    const rows = c.rows.map((r) => ({
+      label: label("clause", r.key),
+      value: r.one_resp_pct || 0,
+      color: r.reportable ? (r.family === "rejection" ? hue(0) : hue(1)) : SEQ[1],
+      note: {
+        en: n(r.one_resp) + " of " + n(r.with_bids) + " notices with a bid count" +
+          (r.reportable ? "" : " — too few to quote"),
+        bn: "দরের সংখ্যা আছে এমন " + n(r.with_bids) + "টির " + n(r.one_resp) + "টিতে" +
+          (r.reportable ? "" : " — উদ্ধৃত করার মতো যথেষ্ট নয়"),
+      },
+      r,
+    }));
+    return figure({
+      title: {
+        en: "The clauses a one-bidder finish travels with are the ones about rejection",
+        bn: "একজন দরদাতায় শেষ হওয়া যে শর্তগুলোর সঙ্গে মেলে, সেগুলো বাতিল করা নিয়ে",
+      },
+      deck: {
+        en: "For each clause, the share of its notices that ended with exactly one responsive bidder. Across all " +
+          n(c.baseline.with_bids) + " tenders with a bid count that share is " +
+          pct(c.baseline.one_resp_pct) + ". The two clauses that govern how bids are treated sit well above it; the requirements about who may enter straddle it, and one of them has no single-bidder finish at all. Bars measured on fewer than " +
+          n(c.floor) + " notices are muted and are not quoted in the article. Association across published notices, not cause.",
+        bn: "প্রতিটি শর্তের ক্ষেত্রে, তার কত অংশ বিজ্ঞপ্তি ঠিক একজন গ্রহণযোগ্য দরদাতা দিয়ে শেষ হয়েছে। দরের সংখ্যা আছে এমন সব " +
+          n(c.baseline.with_bids) + "টি দরপত্রে ওই হার " + pct(c.baseline.one_resp_pct) +
+          "। জমা পড়া দর নিয়ে কী হবে তা ঠিক করে দেওয়া দুটি শর্ত এর অনেক উপরে; কে দর দিতে পারবে সেই শর্তগুলো এর দুই পাশেই ছড়ানো, আর একটিতে একজন দরদাতায় শেষ হওয়ার ঘটনাই নেই। " +
+          n(c.floor) + "টির কম বিজ্ঞপ্তিতে মাপা দণ্ডগুলো হালকা রঙে, আর সেগুলো লেখায় উদ্ধৃত হয়নি। এটি প্রকাশিত বিজ্ঞপ্তির মধ্যে মিল, কারণ নয়।",
+      },
+      plot: barsH(rows, {
+        labelW: 330, valueW: 60, rowH: 28, max: 100, fmt: (v) => pct(v, 0),
+        alt: A({ en: "Share of notices ending with one responsive bidder, by clause.", bn: "শর্ত অনুযায়ী একজন গ্রহণযোগ্য দরদাতায় শেষ হওয়া বিজ্ঞপ্তির হার।" }, corpus),
+      }),
+      legend: [
+        { color: hue(0), label: fam.rejection },
+        { color: hue(1), label: fam.entry },
+        { color: SEQ[1], label: { en: "Fewer than " + n(c.floor) + " notices — not quoted", bn: n(c.floor) + "টির কম বিজ্ঞপ্তি — উদ্ধৃত নয়" } },
+      ],
+      table: table(
+        [{ en: "Clause", bn: "শর্ত" }, { en: "What it governs", bn: "কী নিয়ন্ত্রণ করে" },
+         { en: "Notices", bn: "বিজ্ঞপ্তি" }, { en: "With a bid count", bn: "দরের সংখ্যা আছে" },
+         { en: "One responsive bid", bn: "একটিই গ্রহণযোগ্য দর" }, { en: "Share", bn: "হার" },
+         { en: "Middle bid count", bn: "দরের মাঝের মান" }, { en: "Contract value", bn: "চুক্তিমূল্য" }],
+        rows.map((x) => [t(x.label), t(fam[x.r.family]), n(x.r.n), n(x.r.with_bids),
+          n(x.r.one_resp), x.r.with_bids ? pct(x.r.one_resp_pct) : dash(),
+          x.r.median_bids === null ? dash() : n(x.r.median_bids), cr(x.r.crore)])
+          .concat([[t({ en: "All tenders with a bid count", bn: "দরের সংখ্যা আছে এমন সব দরপত্র" }),
+            dash(), n(c.baseline.n), n(c.baseline.with_bids), n(c.baseline.one_resp),
+            pct(c.baseline.one_resp_pct), n(c.baseline.median_bids), cr(corpus.money.crore)]])
+      ),
+      source: src(F.master.en + " — each clause column against <code>responsive_bids</code>.",
+        F.master.bn + " — প্রতিটি শর্তের কলাম <code>responsive_bids</code>-এর বিপরীতে।"),
+    });
+  },
+
+  /* The round that was run twice.
+
+     A retender is the buying office recording in its own notice that the first
+     attempt produced no contract. Where the second notice names the first in
+     retendered_from_id, the abandoned round can be looked up and read — and it
+     turns out to publish nothing at all about what happened in it. Same unit,
+     notices, all the way down, and every line a subset of the one above, so the
+     three zeros at the bottom are on the same scale as the 100. */
+  retender(corpus) {
+    const rt = corpus.retender;
+    const rows = [
+      { label: { en: "First rounds a later notice names as its predecessor", bn: "পরের বিজ্ঞপ্তি যেগুলোকে নিজের পূর্ববর্তী বলে নাম দিয়েছে" }, value: rt.linked },
+      { label: { en: "Identical package description on both notices", bn: "দুই বিজ্ঞপ্তিতে প্যাকেজের বিবরণ অক্ষরে অক্ষরে এক" }, value: rt.same_package },
+      { label: { en: "Bid count published", bn: "দরের সংখ্যা প্রকাশিত" }, value: rt.first_with_bids },
+      { label: { en: "Any bidder named", bn: "কোনো দরদাতার নাম প্রকাশিত" }, value: rt.first_with_winner },
+      { label: { en: "Any price published", bn: "কোনো দর প্রকাশিত" }, value: rt.first_with_value },
+    ];
+    return figure({
+      title: {
+        en: "The abandoned round leaves no record of itself",
+        bn: "পরিত্যক্ত পর্বটি নিজের কোনো নথি রেখে যায় না",
+      },
+      deck: {
+        en: n(rt.flagged) + " of the " + n(corpus.counts.tenders) +
+          " notices record a retender — " + n(rt.first) +
+          " saying the package would be tendered again, " + n(rt.second) +
+          " that are the second attempt. " + n(rt.linked) +
+          " of the second notices name the first outright, which makes the pair checkable. The first round publishes nothing about itself.",
+        bn: n(corpus.counts.tenders) + "টি বিজ্ঞপ্তির " + n(rt.flagged) +
+          "টিতে পুনঃদরপত্রের কথা আছে — " + n(rt.first) +
+          "টিতে বলা হয়েছে প্যাকেজটি আবার ডাকা হবে, " + n(rt.second) +
+          "টি দ্বিতীয় দফা। পরের বিজ্ঞপ্তির " + n(rt.linked) +
+          "টি প্রথমটির নাম সরাসরি লিখেছে, ফলে জোড়াটি মিলিয়ে দেখা যায়। প্রথম পর্বটি নিজের সম্পর্কে কিছুই প্রকাশ করে না।",
+      },
+      plot: funnel(rows, { labelW: 330, alt: A({ en: "The abandoned first round publishes no bid count, no bidder and no price.", bn: "পরিত্যক্ত প্রথম পর্বে দরের সংখ্যা, দরদাতা বা দর কিছুই প্রকাশিত নয়।" }, corpus) }),
+      table: table(
+        [{ en: "Second attempt", bn: "দ্বিতীয় দফা" }, { en: "First attempt", bn: "প্রথম দফা" },
+         { en: "Authority", bn: "সংস্থা" }, { en: "Package", bn: "প্যাকেজ" },
+         { en: "Bids", bn: "দর" }, { en: "Responsive", bn: "গ্রহণযোগ্য" },
+         { en: "Contract value", bn: "চুক্তিমূল্য" }, { en: "Winner", bn: "বিজয়ী" }],
+        rt.rows.map((r) => [digits(r.second_id), digits(r.first_id), agencyName(r.agency),
+          r.package || dash(), r.bids === null ? dash() : n(r.bids),
+          r.responsive === null ? dash() : n(r.responsive),
+          r.value ? cr(r.crore) : dash(), r.winner ? firmName(r.winner) : dash()])
+      ),
+      source: src(F.master.en + " — <code>retender_flag</code> and <code>retendered_from_id</code> joined back onto the same table.",
+        F.master.bn + " — <code>retender_flag</code> ও <code>retendered_from_id</code> একই তালিকার সঙ্গে জোড়া।"),
+    });
+  },
+
   /* Where the published record stops. Same unit — bids — the whole way down,
      so the three zeros sit on the same scale as the 2,749 and cannot be read
      as anything other than zero. */

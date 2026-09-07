@@ -527,12 +527,15 @@ def build_corpus():
         withb = [r for r in WITHBIDS if r["agency"] == k]
         noc = [r for r in MASTER if r["agency"] == k
                and r["eligibility_published"] != "SUBSTANTIVE_TEXT_PUBLISHED"]
+        one_resp_w = [r for r in withb if num(r, "responsive_bids") == 1]
 
         v = sum(num(r, "contract_value_bdt") or 0 for r in rows)
         agencies.append({
             "key": k, "tenders": n, "awarded": len(rows), "crore": cr(v),
             "share": pct(v, total_value),
             "median_bids": med([num(r, "total_bids_received") for r in withb]),
+            "mean_bids": mean([num(r, "total_bids_received") for r in withb]),
+            "one_resp_pct": pct(len(one_resp_w), len(withb)),
             "no_criteria": len(noc), "no_criteria_pct": pct(len(noc), n),
             "organization": next((txt(r, "organization") for r in MASTER
                                   if r["agency"] == k and txt(r, "organization")), ""),
@@ -1114,6 +1117,38 @@ FLAGS = ["price_band_nonresponsive_clause", "agency_enlistment_requirement",
          "mass_disqualification_flag", "many_bids_one_responsive_flag",
          "incumbent_advantage_risk", "or_equivalent_present",
          "repeated_rule_present"]
+
+# What each of those columns is, in the words a reader would use. The column name
+# is the audit's; this is the same condition said in English, and it is what the
+# page prints in every figure and table that names a clause.
+CLAUSE_LABEL = {
+    "govt_client_experience_required": "Past work must have been for a government client",
+    "licence_document_stack": "A stack of licences and certificates demanded together",
+    "reputed_qualifier": "The word “reputed” used as a qualification",
+    "electrical_licence_requirement": "A specific electrical licence required",
+    "manufacturer_requirement": "Manufacturer authorisation required",
+    "narrow_specification": "Specification narrow enough to fit few products",
+    "pwd_authentication_requirement": "Certificates must be countersigned by PWD",
+    "agency_enlistment_requirement": "Bidder must already be enlisted with the agency",
+    "bank_document_window_requirement": "Bank papers valid only inside a narrow window",
+    "dealer_requirement": "Sole agent or dealership required",
+    "price_band_nonresponsive_clause": "A fixed price band decides responsiveness",
+    "false_document_forfeiture_clause": "Security forfeited for a document held false",
+    "brand_requirement": "A brand name appears in the requirement",
+    "model_specific_requirement": "A specific model is named",
+    "proprietary_specification": "Specification is proprietary to one product",
+    "blanket_rejection_clause": "Blanket discretion to reject",
+    "brand_without_or_equivalent": "A brand named with no “or equivalent”",
+    "local_presence_requirement": "A local office or presence required",
+    "egp_id_on_certificate_required": "The e-GP ID must appear on the certificate",
+    "possible_specification_targeting": "Specification may point at one supplier",
+    "iso_certification_requirement": "ISO certification required",
+    "or_equivalent_present": "“Or equivalent” wording present",
+    "mass_disqualification_flag": "Most of the field was ruled out",
+    "many_bids_one_responsive_flag": "Many bids, one survivor",
+    "incumbent_advantage_risk": "Conditions an existing supplier meets more easily",
+    "repeated_rule_present": "A clause reused across other tenders",
+}
 EXCERPTS = ["eligibility", "general_experience", "specific_experience",
             "turnover", "liquid_assets", "price_band", "enlistment", "competition"]
 
@@ -1981,6 +2016,187 @@ def build_portal():
     }
 
 
+# ------------------------------------------------- the one stage that can be watched
+# Nothing in this record says why a bid was rejected. But every notice that
+# publishes a bid count also publishes how many of those bids were found
+# responsive, so the rejection stage can still be measured from the outside:
+# group the tenders by how many companies actually bid, and read off what share
+# of the field survived. That is arithmetic on two published columns, not a
+# model, and it is the same 591 notices throughout - no bin is a different
+# population from its neighbour.
+
+def build_filter():
+    bands = [(1, 1, "1"), (2, 2, "2"), (3, 4, "3-4"), (5, 9, "5-9"), (10, 10 ** 6, "10+")]
+    rows = []
+    for lo, hi, label in bands:
+        s = [r for r in WITHBIDS if lo <= (num(r, "total_bids_received") or 0) <= hi]
+        sub = sum(num(r, "total_bids_received") or 0 for r in s)
+        res = sum(num(r, "responsive_bids") or 0 for r in s)
+        shares = [(num(r, "responsive_bids") or 0) / (num(r, "total_bids_received") or 1)
+                  for r in s]
+        rows.append({
+            "key": label, "n": len(s),
+            "submitted": int(sub), "responsive": int(res), "lost": int(sub - res),
+            "share": pct(res, sub),
+            "median_share": round(med(shares) * 100, 1) if shares else None,
+            "one_resp": sum(1 for r in s if num(r, "responsive_bids") == 1),
+            "crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in s)),
+        })
+    sub = sum(num(r, "total_bids_received") or 0 for r in WITHBIDS)
+    res = sum(num(r, "responsive_bids") or 0 for r in WITHBIDS)
+    return {
+        "rows": rows, "n": len(WITHBIDS),
+        "share": pct(res, sub),
+        "top_band": rows[-1], "bottom_band": rows[0],
+        "crowded": sum(r["n"] for r in rows[-2:]),
+        "crowded_lost": sum(r["lost"] for r in rows[-2:]),
+        "thin": sum(r["n"] for r in rows[:2]),
+        "thin_lost": sum(r["lost"] for r in rows[:2]),
+    }
+
+
+# ------------------------------------------ the clauses that travel with a thin field
+# Two kinds of clause sit in these notices. One decides who is allowed to enter -
+# experience, licences, the word "reputed". The other decides how the bids
+# already in the box are to be treated - a blanket discretion to reject, a price
+# band that makes a cheap bid non-responsive. Counting both against the same
+# outcome, one responsive bidder left, is the only way to see which kind the thin
+# field actually travels with. It is an association across published notices, not
+# a cause: the rate is printed beside the number of notices it is measured on so
+# a reader can see how thin the ground is under each one.
+
+CLAUSE_FAMILY = {
+    "blanket_rejection_clause": "rejection",
+    "price_band_nonresponsive_clause": "rejection",
+    "false_document_forfeiture_clause": "rejection",
+    "govt_client_experience_required": "entry",
+    "licence_document_stack": "entry",
+    "reputed_qualifier": "entry",
+    "agency_enlistment_requirement": "entry",
+    "brand_without_or_equivalent": "entry",
+    "narrow_specification": "entry",
+    "pwd_authentication_requirement": "entry",
+    "bank_document_window_requirement": "entry",
+    "electrical_licence_requirement": "entry",
+}
+CLAUSE_FLOOR = 30          # below this many notices with a bid count, no rate is quoted
+
+
+def build_clauses():
+    base = [r for r in WITHBIDS if num(r, "responsive_bids") is not None]
+    base_one = sum(1 for r in base if num(r, "responsive_bids") == 1)
+    rows = []
+    for c, family in CLAUSE_FAMILY.items():
+        s = [r for r in MASTER if yes(r, c)]
+        w = [r for r in s if num(r, "total_bids_received") is not None
+             and num(r, "responsive_bids") is not None]
+        one = sum(1 for r in w if num(r, "responsive_bids") == 1)
+        bids = [num(r, "total_bids_received") for r in w]
+        rows.append({
+            "key": c, "label": CLAUSE_LABEL.get(c, c.replace("_", " ")),
+            "family": family, "n": len(s), "with_bids": len(w),
+            "one_resp": one,
+            "one_resp_pct": pct(one, len(w)) if w else None,
+            "median_bids": med(bids),
+            "reportable": len(w) >= CLAUSE_FLOOR,
+            "crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in s)),
+        })
+    rows.sort(key=lambda x: (not x["reportable"], -(x["one_resp_pct"] or 0)))
+    good = [x for x in rows if x["reportable"]]
+    return {
+        "rows": rows,
+        # Every row again, keyed by its column name, so the article can name one
+        # clause in a sentence — {{clause.by.<column>.one_resp_pct|pct}} — instead of
+        # a number being typed into the prose and going stale at the next build.
+        "by": {x["key"]: x for x in rows},
+        "baseline": {"key": "ALL", "n": len(MASTER), "with_bids": len(base),
+                     "one_resp": base_one, "one_resp_pct": pct(base_one, len(base)),
+                     "median_bids": med([num(r, "total_bids_received") for r in base])},
+        "floor": CLAUSE_FLOOR,
+        "reportable": len(good),
+        "not_reportable": len(rows) - len(good),
+        "top": good[0] if good else None,
+        "rejection_top": next((x for x in good if x["family"] == "rejection"), None),
+        "entry_top": next((x for x in good if x["family"] == "entry"), None),
+        "rejection_reportable": sum(1 for x in good if x["family"] == "rejection"),
+        "rejection_above_baseline": sum(1 for x in good if x["family"] == "rejection"
+                                       and (x["one_resp_pct"] or 0)
+                                       > pct(base_one, len(base))),
+        "entry_below_baseline": sum(1 for x in good if x["family"] == "entry"
+                                   and (x["one_resp_pct"] or 0)
+                                   <= pct(base_one, len(base))),
+        "entry_reportable": sum(1 for x in good if x["family"] == "entry"),
+    }
+
+
+# ----------------------------------------------- the round that was run a second time
+# A retender is the buying office recording, in its own notice, that the first
+# attempt did not produce a contract. Where the second notice names the first in
+# retendered_from_id the two rounds can be read side by side, which is the only
+# before-and-after this record allows. It does not go far: the abandoned round
+# publishes no bid count, no bidder and no price, so there is nothing to compare
+# the second round's numbers against. The link itself is checkable - the package
+# description is character-for-character the same on both notices in all but one
+# pair - and the silence on the first round is the finding.
+
+def build_retender():
+    flag = collections.Counter(txt(r, "retender_flag") for r in MASTER)
+    first = [r for r in MASTER if txt(r, "retender_flag") == "TO_BE_RETENDERED"]
+    second = [r for r in MASTER if txt(r, "retender_flag") == "RETENDER"]
+    pairs = []
+    for r in MASTER:
+        p = txt(r, "retendered_from_id")
+        if not p or p.lower() == "none":
+            continue
+        a = BY_ID.get(p)
+        if not a:
+            continue
+        pairs.append((a, r))
+    same = [(a, b) for a, b in pairs
+            if txt(a, "package_description")
+            and txt(a, "package_description") == txt(b, "package_description")]
+    parents = [a for a, _ in pairs]
+    kids = [b for _, b in pairs]
+    kw = [r for r in kids if num(r, "responsive_bids") is not None]
+    awarded = [r for r in second if num(r, "contract_value_bdt")]
+    return {
+        "flagged": len(first) + len(second),
+        "first": len(first), "second": len(second),
+        "flag": [{"key": k, "n": v} for k, v in flag.most_common() if k and k != "no"],
+        "linked": len(pairs),
+        "same_package": len(same),
+        "first_named": len(set(txt(a, "tender_id") for a in parents)),
+        "first_named_abandoned": sum(1 for r in parents
+                                     if txt(r, "retender_flag") == "TO_BE_RETENDERED"),
+        "first_itself_retender": sum(1 for r in parents
+                                     if txt(r, "retender_flag") == "RETENDER"),
+        "first_with_bids": sum(1 for r in parents if num(r, "total_bids_received") is not None),
+        "first_with_winner": sum(1 for r in parents if winner_of(r)),
+        "first_with_value": sum(1 for r in parents if num(r, "contract_value_bdt")),
+        "first_ever_awarded": sum(1 for r in first if num(r, "contract_value_bdt")),
+        "second_with_bids": len(kw),
+        "second_one_resp": sum(1 for r in kw if num(r, "responsive_bids") == 1),
+        "second_one_resp_pct": pct(sum(1 for r in kw if num(r, "responsive_bids") == 1), len(kw)),
+        "second_awarded": len(awarded),
+        "second_crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in awarded)),
+        "rows": [{
+            "first_id": txt(a, "tender_id"), "second_id": txt(b, "tender_id"),
+            "agency": b["agency"],
+            "package": txt(b, "package_description") or txt(b, "project_name"),
+            "same_package": txt(a, "package_description") == txt(b, "package_description"),
+            "bids": num(b, "total_bids_received"),
+            "responsive": num(b, "responsive_bids"),
+            "value": num(b, "contract_value_bdt"),
+            "crore": cr(num(b, "contract_value_bdt")),
+            "winner": winner_of(b),
+            "first_notice": docref("notice", txt(a, "notice_source_file"),
+                                   txt(a, "notice_pages")),
+            "second_notice": docref("notice", txt(b, "notice_source_file"),
+                                    txt(b, "notice_pages")),
+        } for a, b in sorted(pairs, key=lambda p: -(num(p[1], "contract_value_bdt") or 0))],
+    }
+
+
 def main():
     C = build_corpus()
     winners, hhi, wtotal = build_winners()
@@ -2026,6 +2242,13 @@ def main():
     live_ok = [d for d in r01_ok if (signed_year(d["tender_id"]) or 0) >= 2025]
     eo = [r for r in AWARDED if txt(r, "award_template") == "ECONOMIC_OPERATOR"]
 
+    raj150 = [r for r in AWARDED
+              if abs((num(r, "days_noa_to_signing") or -999) - 150) < 1]
+    raj150_names = collections.Counter(
+        txt(r, "winner_name_normalised") or txt(r, "winner_name")
+        for r in raj150)
+    raj150_top = raj150_names.most_common(1)[0] if raj150_names else ("", 0)
+
     signing = collections.Counter()
     overrun = []
     for r in MASTER:
@@ -2036,6 +2259,8 @@ def main():
             overrun.append(int(m.group(2)))
         elif s.lower().startswith("within"):
             signing["within"] += 1
+
+    AUTH = build_authorities()
 
     # the ranking, and the eight biggest contracts the ranking under-weights
     ranked = sorted(
@@ -2094,34 +2319,7 @@ def main():
     bars["security_in_band"] = sum(1 for x in secr if 0.005 <= x <= 0.05)
     bars["security_in_band_pct"] = pct(bars["security_in_band"], len(secr))
 
-    FLAG_LABEL = {
-        "govt_client_experience_required": "Past work must have been for a government client",
-        "licence_document_stack": "A stack of licences and certificates demanded together",
-        "reputed_qualifier": "The word “reputed” used as a qualification",
-        "electrical_licence_requirement": "A specific electrical licence required",
-        "manufacturer_requirement": "Manufacturer authorisation required",
-        "narrow_specification": "Specification narrow enough to fit few products",
-        "pwd_authentication_requirement": "Certificates must be countersigned by PWD",
-        "agency_enlistment_requirement": "Bidder must already be enlisted with the agency",
-        "bank_document_window_requirement": "Bank papers valid only inside a narrow window",
-        "dealer_requirement": "Sole agent or dealership required",
-        "price_band_nonresponsive_clause": "A fixed price band decides responsiveness",
-        "false_document_forfeiture_clause": "Security forfeited for a document held false",
-        "brand_requirement": "A brand name appears in the requirement",
-        "model_specific_requirement": "A specific model is named",
-        "proprietary_specification": "Specification is proprietary to one product",
-        "blanket_rejection_clause": "Blanket discretion to reject",
-        "brand_without_or_equivalent": "A brand named with no “or equivalent”",
-        "local_presence_requirement": "A local office or presence required",
-        "egp_id_on_certificate_required": "The e-GP ID must appear on the certificate",
-        "possible_specification_targeting": "Specification may point at one supplier",
-        "iso_certification_requirement": "ISO certification required",
-        "or_equivalent_present": "“Or equivalent” wording present",
-        "mass_disqualification_flag": "Most of the field was ruled out",
-        "many_bids_one_responsive_flag": "Many bids, one survivor",
-        "incumbent_advantage_risk": "Conditions an existing supplier meets more easily",
-        "repeated_rule_present": "A clause reused across other tenders",
-    }
+    FLAG_LABEL = CLAUSE_LABEL
     flags = []
     for c in FLAGS:
         n = sum(1 for r in MASTER if yes(r, c) or (r.get(c) or "").strip() == c.upper())
@@ -2242,7 +2440,11 @@ def main():
         },
         "competition": C["comp"],
         "estimate": build_estimate(),
-        "authority": build_authorities(),
+        "authority": AUTH,
+        "authority_rates": {r["key"]: r["m"].get("one_resp")
+                            for r in AUTH["rows"]
+                            if r["m"].get("one_resp")},
+        "saltgola": case_row(BY_ID["436738"]) if "436738" in BY_ID else None,
         "provenance": provenance,
         "field": {
             "submitted": int(sum(x or 0 for x in C["bids"])),
@@ -2256,6 +2458,9 @@ def main():
             "many_one": sum(1 for r in MASTER if yes(r, "many_bids_one_responsive_flag")),
             "many_one_crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in MASTER
                                      if yes(r, "many_bids_one_responsive_flag"))),
+            "many_one_3plus": sum(1 for r in WITHBIDS
+                                  if (num(r, "total_bids_received") or 0) >= 3
+                                  and num(r, "responsive_bids") == 1),
             "rejected_aggregate_rows": sum(
                 1 for b in BID if b["record_type"] == "UNNAMED_REJECTED_BIDDERS_AGGREGATE"),
             "reasons_published": sum(
@@ -2270,6 +2475,9 @@ def main():
             "bids": spread(C["bids"]), "responsive_spread": spread(C["resp"]),
             "sold": spread([num(r, "documents_sold") for r in MASTER]),
         },
+        "filter": build_filter(),
+        "clause": build_clauses(),
+        "retender": build_retender(),
         "restriction": C["restriction"],
         "correlation": C["corr"],
         "agencies": C["agencies"],
@@ -2298,6 +2506,9 @@ def main():
             "over_total": sum(v for k, v in signing.items() if k != "within"),
             "overrun": spread(overrun),
             "days": spread([num(r, "days_noa_to_signing") for r in AWARDED]),
+            "rajuk_150_n": len(raj150),
+            "rajuk_150_winner": NAME_OF.get(raj150_top[0]) or tidy_name(raj150_top[0]),
+            "rajuk_150_winner_n": raj150_top[1],
         },
         "ownership": {
             "disclosed": len(own_yes), "not_disclosed": len(own_no),
