@@ -527,12 +527,15 @@ def build_corpus():
         withb = [r for r in WITHBIDS if r["agency"] == k]
         noc = [r for r in MASTER if r["agency"] == k
                and r["eligibility_published"] != "SUBSTANTIVE_TEXT_PUBLISHED"]
+        one_resp_w = [r for r in withb if num(r, "responsive_bids") == 1]
 
         v = sum(num(r, "contract_value_bdt") or 0 for r in rows)
         agencies.append({
             "key": k, "tenders": n, "awarded": len(rows), "crore": cr(v),
             "share": pct(v, total_value),
             "median_bids": med([num(r, "total_bids_received") for r in withb]),
+            "mean_bids": mean([num(r, "total_bids_received") for r in withb]),
+            "one_resp_pct": pct(len(one_resp_w), len(withb)),
             "no_criteria": len(noc), "no_criteria_pct": pct(len(noc), n),
             "organization": next((txt(r, "organization") for r in MASTER
                                   if r["agency"] == k and txt(r, "organization")), ""),
@@ -2239,6 +2242,13 @@ def main():
     live_ok = [d for d in r01_ok if (signed_year(d["tender_id"]) or 0) >= 2025]
     eo = [r for r in AWARDED if txt(r, "award_template") == "ECONOMIC_OPERATOR"]
 
+    raj150 = [r for r in AWARDED
+              if abs((num(r, "days_noa_to_signing") or -999) - 150) < 1]
+    raj150_names = collections.Counter(
+        txt(r, "winner_name_normalised") or txt(r, "winner_name")
+        for r in raj150)
+    raj150_top = raj150_names.most_common(1)[0] if raj150_names else ("", 0)
+
     signing = collections.Counter()
     overrun = []
     for r in MASTER:
@@ -2249,6 +2259,8 @@ def main():
             overrun.append(int(m.group(2)))
         elif s.lower().startswith("within"):
             signing["within"] += 1
+
+    AUTH = build_authorities()
 
     # the ranking, and the eight biggest contracts the ranking under-weights
     ranked = sorted(
@@ -2428,7 +2440,11 @@ def main():
         },
         "competition": C["comp"],
         "estimate": build_estimate(),
-        "authority": build_authorities(),
+        "authority": AUTH,
+        "authority_rates": {r["key"]: r["m"].get("one_resp")
+                            for r in AUTH["rows"]
+                            if r["m"].get("one_resp")},
+        "saltgola": case_row(BY_ID["436738"]) if "436738" in BY_ID else None,
         "provenance": provenance,
         "field": {
             "submitted": int(sum(x or 0 for x in C["bids"])),
@@ -2442,6 +2458,9 @@ def main():
             "many_one": sum(1 for r in MASTER if yes(r, "many_bids_one_responsive_flag")),
             "many_one_crore": cr(sum(num(r, "contract_value_bdt") or 0 for r in MASTER
                                      if yes(r, "many_bids_one_responsive_flag"))),
+            "many_one_3plus": sum(1 for r in WITHBIDS
+                                  if (num(r, "total_bids_received") or 0) >= 3
+                                  and num(r, "responsive_bids") == 1),
             "rejected_aggregate_rows": sum(
                 1 for b in BID if b["record_type"] == "UNNAMED_REJECTED_BIDDERS_AGGREGATE"),
             "reasons_published": sum(
@@ -2487,6 +2506,9 @@ def main():
             "over_total": sum(v for k, v in signing.items() if k != "within"),
             "overrun": spread(overrun),
             "days": spread([num(r, "days_noa_to_signing") for r in AWARDED]),
+            "rajuk_150_n": len(raj150),
+            "rajuk_150_winner": NAME_OF.get(raj150_top[0]) or tidy_name(raj150_top[0]),
+            "rajuk_150_winner_n": raj150_top[1],
         },
         "ownership": {
             "disclosed": len(own_yes), "not_disclosed": len(own_no),
