@@ -423,8 +423,10 @@ const FIGS = {
         bn: "বাংলাদেশে সিডিএর জেলা-ছাপ",
       },
       deck: {
-        en: "This map shows the districts named in the tender notices for Chittagong Development Authority. The single mark on the map identifies the authority’s main working district; the shading reflects the notice counts in those districts rather than all authorities in the dataset.",
-        bn: "এই মানচিত্রে চট্টগ্রাম উন্নয়ন কর্তৃপক্ষের দরপত্র বিজ্ঞপ্তিতে যেসব জেলার নাম এসেছে, তা দেখা যায়। মানচিত্রের একটিমাত্র চিহ্নটি সংস্থার প্রধান কাজের জেলার অবস্থান নির্দেশ করে; রঙের আভা সব সংস্থা নয়, শুধু এই এক সংস্থার বিজ্ঞপ্তির সংখ্যাকে ধরে।",
+        en: n(DISTRICT_N - rows.length) + " of the " + n(DISTRICT_N) +
+            " districts are named by none of these notices and are left unshaded, because nothing recorded is not a count of zero. The rest are darker the more notices name them. The six marks show which district each authority works in; they carry no value at all, and which body is worse is the matrix below.",
+        bn: n(DISTRICT_N) + " জেলার " + n(DISTRICT_N - rows.length) +
+            "টির নাম এই বিজ্ঞপ্তিগুলোর একটিতেও নেই, তাই সেগুলো রঙানো হয়নি — কিছু লেখা না থাকা আর শূন্য এক নয়। বাকিগুলোর মধ্যে যার নাম বেশি বিজ্ঞপ্তিতে, সেটি তত গাঢ়। ছয়টি চিহ্ন দেখায় কোন সংস্থা কোন জেলায় কাজ করে; এগুলো কোনো মান বহন করে না, কে খারাপ তার উত্তর নিচের ছকে।",
       },
       plot: el("div", { class: "tbl-scroll" }, districtMap(shade, seats, {
         width: midColumn(),
