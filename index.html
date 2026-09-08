@@ -4,39 +4,69 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Interactive corruption indicators for six Bangladesh development authorities.">
+<meta property="og:title" content="Bangladesh procurement risk map">
+<meta property="og:description" content="Interactive corruption indicators for six Bangladesh development authorities.">
+<meta property="og:image" content="site/assets/reporter.jpg">
+<meta property="og:url" content="https://example.github.io/EGP-CDA/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bangladesh procurement risk map">
+<meta name="twitter:description" content="Interactive corruption indicators for six Bangladesh development authorities.">
+<meta name="twitter:image" content="site/assets/reporter.jpg">
 <title>Bangladesh procurement risk map</title>
+<link rel="icon" href="favicon.ico">
 <link rel="preconnect" href="https://unpkg.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="site/styles/map.css">
 </head>
 <body>
-<header class="masthead">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="masthead" id="top">
   <div class="masthead-inner">
-    <div><p class="kicker">e-GP Watch / Data desk</p><h1>Where procurement risk clusters</h1></div>
+    <div><p class="kicker">e-GP Watch / Data desk</p><h1 id="page-title">Where procurement risk clusters</h1></div>
     <button class="download-button" id="download-map" type="button">Download PNG</button>
   </div>
 </header>
-<main class="page-shell">
-  <section class="intro">
+<main class="page-shell" id="main-content" tabindex="-1">
+  <nav class="toc" aria-label="Table of contents">
+    <details>
+      <summary>On this page</summary>
+      <ol>
+        <li><a href="#map-section">Corruption indicators by authority</a></li>
+        <li><a href="#detail-section">Selected authority</a></li>
+      </ol>
+    </details>
+  </nav>
+  <article>
+  <section class="intro" aria-labelledby="map-section-title">
     <p class="eyebrow">Six development authorities · Bangladesh</p>
-    <h2>Corruption indicators by authority</h2>
+    <h2 id="map-section-title">Corruption indicators by authority</h2>
     <p>Composite scores combine single-bid awards, market concentration and late contract signing. Larger, warmer circles indicate higher measured risk.</p>
   </section>
-  <section class="dashboard" id="map-export">
-    <div class="map-panel"><div id="map" aria-label="Map of Bangladesh showing corruption indicators"></div><div class="map-note">District boundaries shown for geographic context. Click a circle for the indicator breakdown.</div></div>
+  <section class="dashboard" id="map-export" aria-labelledby="map-section-title">
+    <figure class="map-panel" id="map-section">
+      <div id="map" role="img" aria-label="Map of Bangladesh showing district boundaries and corruption indicators for six development authorities"></div>
+      <figcaption class="map-note">District boundaries shown for geographic context. Click a circle for the indicator breakdown.</figcaption>
+    </figure>
     <aside class="sidebar" aria-label="Authority ranking">
-      <div class="side-heading"><div><p class="eyebrow">Ranking</p><h2>Measured risk</h2></div><span class="unit">score / 100</span></div>
+      <div class="side-heading"><div><p class="eyebrow">Ranking</p><h3>Measured risk</h3></div><span class="unit">score / 100</span></div>
       <ol id="ranking" class="ranking-list"></ol>
-      <div class="legend"><h3>How to read the map</h3><div class="gradient-bar"></div><div class="legend-labels"><span>Low</span><span>Medium</span><span>High</span></div><div class="size-key"><span class="size-dot dot-small"></span><span class="size-dot dot-large"></span><span>Circle size = composite score</span></div><p>Weights: single-bid 40%, concentration 35%, late signing 25%.</p></div>
+      <div class="legend"><h3>How to read the map</h3><div class="gradient-bar" aria-label="Color scale from low to high corruption"></div><div class="legend-labels"><span>Low</span><span>Medium</span><span>High</span></div><div class="size-key"><span class="size-dot dot-small" aria-hidden="true"></span><span class="size-dot dot-large" aria-hidden="true"></span><span>Circle size = composite score</span></div><p class="deck">Weights: single-bid 40%, concentration 35%, late signing 25%.</p></div>
     </aside>
   </section>
-  <section class="detail-panel" aria-live="polite"><div class="detail-copy"><p class="eyebrow">Selected authority</p><h2 id="detail-title">Select a circle</h2><p id="detail-summary">Hover over a marker for a quick read. Click one to compare its three indicators.</p></div><div class="chart-wrap"><canvas id="indicator-chart" aria-label="Selected authority indicators"></canvas></div></section>
-  <p class="source-line">Source: supplied authority-level procurement indicators. “No data” values are shown as reported and still contribute zero to the composite formula.</p>
+  <section class="detail-panel" id="detail-section" aria-labelledby="detail-title" aria-live="polite"><div class="detail-copy"><p class="eyebrow">Selected authority</p><h2 id="detail-title">Select a circle</h2><p class="deck" id="detail-summary">Hover over a marker for a quick read. Click one to compare its three indicators.</p></div><div class="chart-wrap"><canvas id="indicator-chart" role="img" aria-label="Bar chart of selected authority indicators"></canvas></div></section>
+  <p class="source-line source">Source: supplied authority-level procurement indicators. “No data” values are shown as reported and still contribute zero to the composite formula.</p>
+  </article>
 </main>
+<button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top">Back to top</button>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script type="module" src="site/scripts/map.js"></script>
+<script>
+  const backToTop = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => backToTop.classList.toggle('is-visible', window.scrollY > 300), { passive: true });
+  backToTop.addEventListener('click', () => document.getElementById('top').scrollIntoView({ behavior: 'smooth' }));
+</script>
 </body>
 </html>
