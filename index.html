@@ -3,139 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Both editions of the title and the description live here, in the markup, so a
-     crawler and a reader with no JavaScript get them. site/scripts/app.js picks the
-     pair that matches the edition being read; it does not invent either string. -->
-<title data-bn="e-GP ওয়াচ — প্রতিযোগিতার অভাবের মূল্য দেয় জনগণ">e-GP Watch — Lack of competition paid by people</title>
-<meta name="description"
-  data-bn="বাংলাদেশের ছয়টি নগর উন্নয়ন কর্তৃপক্ষের প্রায় ৩,৭২৩.৬৮ কোটি টাকার ক্রয় নথির অনুসন্ধান: যোগ্যতার কঠোর শর্ত, দরদাতা বাতিলের অপ্রকাশিত কারণ এবং সরকারি চুক্তির কেন্দ্রীভবন।"
-  content="An investigation into approximately 3,723.68 crore taka in procurement documents
-  published by six of Bangladesh's urban development authorities, examining restrictive
-  eligibility criteria, unexplained bidder rejection, and concentration of public contracts.">
-<meta name="robots" content="index, follow">
-<meta name="color-scheme" content="light dark">
-
-<!-- The article itself. The words a reader reads are in this text file, not in the
-     JavaScript: site/scripts/storydoc.js parses it and site/scripts/story.js draws it,
-     so the story can be edited, retranslated or reordered by anyone who can edit a text
-     file, with no build step. Numbers in it are {{tokens}} resolved against
-     site/data/corpus.json at render time, so no edit here can put a stale figure on the
-     page. If this file is missing or will not parse, the page draws the copy compiled
-     into site/scripts/content.js instead. -->
-<meta name="story-src" content="site/story.md">
-
-<!-- The entry document sits at the repository root so the published site opens on the
-     investigation itself. Everything it loads is under site/, and each module addresses
-     its own files relative to itself, so this file holds no data paths at all. -->
-
-<!-- Two stylesheets and no third: tokens.css holds the palette, the type scale and the
-     one embedded typeface; site.css holds the page. Both are in this repository.
-     Nothing is fetched from another host, here or anywhere in this build. -->
-<link rel="stylesheet" href="site/styles/tokens.css">
-<link rel="stylesheet" href="site/styles/site.css">
-<link rel="icon" type="image/svg+xml" href="site/assets/favicon.svg">
-
-<!-- Palette and edition, both settled before the first paint: a reader who asked their
-     system for a dark screen never gets a white flash, and a reader who asked for
-     Bangla gets the Bengali face from the first frame rather than watching the page
-     re-set itself. A remembered choice beats the system setting. This is the only
-     inline script on the page; app.js reads what it decided rather than deciding
-     again, so the two cannot disagree. -->
-<script>
-  (function () {
-    var d = document.documentElement;
-    try {
-      var kept = localStorage.getItem("egp-watch-theme");
-      var dark = kept === null
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-        : kept === "dark";
-      if (dark) d.classList.add("dark-mode");
-    } catch (e) { /* private browsing: fall through to the light palette */ }
-
-    var lang = "en";
-    try {
-      var q = new URLSearchParams(location.search).get("lang");
-      var chosen = q || localStorage.getItem("egp-watch-lang");
-      if (chosen === "bn" || chosen === "en") lang = chosen;
-    } catch (e) { /* no URL or no storage: fall through to English */ }
-    d.lang = lang;
-  }());
-</script>
+<meta name="description" content="Interactive corruption indicators for six Bangladesh development authorities.">
+<title>Bangladesh procurement risk map</title>
+<link rel="preconnect" href="https://unpkg.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="site/styles/map.css">
 </head>
 <body>
-
-<a class="skip" href="#app" id="skip">Skip to content</a>
-
-<header class="masthead" id="bar"></header>
-
-<main id="app" tabindex="-1">
-  <div class="wrap"><p class="src">Loading…</p></div>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div><p class="kicker">e-GP Watch / Data desk</p><h1>Where procurement risk clusters</h1></div>
+    <button class="download-button" id="download-map" type="button">Download PNG</button>
+  </div>
+</header>
+<main class="page-shell">
+  <section class="intro">
+    <p class="eyebrow">Six development authorities · Bangladesh</p>
+    <h2>Corruption indicators by authority</h2>
+    <p>Composite scores combine single-bid awards, market concentration and late contract signing. Larger, warmer circles indicate higher measured risk.</p>
+  </section>
+  <section class="dashboard" id="map-export">
+    <div class="map-panel"><div id="map" aria-label="Map of Bangladesh showing corruption indicators"></div><div class="map-note">District boundaries shown for geographic context. Click a circle for the indicator breakdown.</div></div>
+    <aside class="sidebar" aria-label="Authority ranking">
+      <div class="side-heading"><div><p class="eyebrow">Ranking</p><h2>Measured risk</h2></div><span class="unit">score / 100</span></div>
+      <ol id="ranking" class="ranking-list"></ol>
+      <div class="legend"><h3>How to read the map</h3><div class="gradient-bar"></div><div class="legend-labels"><span>Low</span><span>Medium</span><span>High</span></div><div class="size-key"><span class="size-dot dot-small"></span><span class="size-dot dot-large"></span><span>Circle size = composite score</span></div><p>Weights: single-bid 40%, concentration 35%, late signing 25%.</p></div>
+    </aside>
+  </section>
+  <section class="detail-panel" aria-live="polite"><div class="detail-copy"><p class="eyebrow">Selected authority</p><h2 id="detail-title">Select a circle</h2><p id="detail-summary">Hover over a marker for a quick read. Click one to compare its three indicators.</p></div><div class="chart-wrap"><canvas id="indicator-chart" aria-label="Selected authority indicators"></canvas></div></section>
+  <p class="source-line">Source: supplied authority-level procurement indicators. “No data” values are shown as reported and still contribute zero to the composite formula.</p>
 </main>
-
-<footer class="foot" id="foot"></footer>
-
-<noscript>
-  <div class="wrap" style="padding-block:3rem;max-width:34rem" lang="en">
-    <h2>This page assembles itself in your browser</h2>
-    <p>There is no server behind this site and no pre-rendered article: what you would
-      read is built out of the data files by JavaScript running on your own machine.
-      With JavaScript switched off, the data is still yours to read, and it is the same
-      data every sentence of the article is written from.</p>
-    <ul>
-      <li><a href="investigation_output/master_tender_investigation.csv">master_tender_investigation.csv</a>
-        — one row per tender, 1,155 rows and 179 columns, from notice to award</li>
-      <li><a href="investigation_output/rule_deviations.csv">rule_deviations.csv</a> —
-        one row per rule tested against one tender, 5,525 rows, each carrying the
-        excerpt it was read from and its page</li>
-      <li><a href="investigation_output/bidder_detail.csv">bidder_detail.csv</a> — the
-        winning firms and joint-venture partners, 1,189 rows</li>
-      <li><a href="investigation_output/investigative_summary.md">investigative_summary.md</a>
-        — the analysis these pages were built from, in full</li>
-      <li><a href="site/data/corpus.json">site/data/corpus.json</a> — every aggregate
-        the article prints, and beside it the eight other payloads the tabs read</li>
-      <li><a href="investigation_output/rule_scripts/rule_catalogue.py">rule_catalogue.py</a>
-        and <a href="investigation_output/rule_scripts/run_rules.py">run_rules.py</a> —
-        the eighteen rules as code, and the script that ran them</li>
-    </ul>
-    <p>The PDFs themselves sit in three folders beside this file:
-      <code>Tender Notice_PDFs</code> (1,155 notices),
-      <code>Contract_Awards_PDFs</code> (645 award notices) and
-      <code>eGP_Forensic_Engine</code> (the five standard documents the rules were
-      drawn from).</p>
-  </div>
-
-  <div class="wrap" style="padding-block:3rem;max-width:34rem" lang="bn">
-    <h2>এই পাতাটি আপনার ব্রাউজারেই নিজেকে তৈরি করে</h2>
-    <p>এই সাইটের পিছনে কোনো সার্ভার নেই, আগে থেকে তৈরি কোনো প্রতিবেদনও নেই: আপনি যা
-      পড়তেন, তা আপনার নিজের যন্ত্রে চলা জাভাস্ক্রিপ্ট ডেটা ফাইল থেকে বানিয়ে দেয়।
-      জাভাস্ক্রিপ্ট বন্ধ থাকলেও ডেটা আপনারই থাকে — আর প্রতিবেদনের প্রতিটি বাক্য ঠিক এই
-      ডেটা থেকেই লেখা।</p>
-    <ul>
-      <li><a href="investigation_output/master_tender_investigation.csv">master_tender_investigation.csv</a>
-        — প্রতি দরপত্রে এক সারি, ১,১৫৫টি সারি ও ১৭৯টি কলাম, বিজ্ঞপ্তি থেকে চুক্তি পর্যন্ত</li>
-      <li><a href="investigation_output/rule_deviations.csv">rule_deviations.csv</a> —
-        এক দরপত্রে এক নিয়মের পরীক্ষায় এক সারি, মোট ৫,৫২৫টি সারি; প্রতিটিতে যে উদ্ধৃতি
-        থেকে পড়া হয়েছে তা ও তার পৃষ্ঠা</li>
-      <li><a href="investigation_output/bidder_detail.csv">bidder_detail.csv</a> —
-        বিজয়ী প্রতিষ্ঠান ও যৌথ উদ্যোগের অংশীদার, ১,১৮৯টি সারি</li>
-      <li><a href="investigation_output/investigative_summary.md">investigative_summary.md</a>
-        — এই পাতাগুলো যে বিশ্লেষণ থেকে তৈরি, সম্পূর্ণ</li>
-      <li><a href="site/data/corpus.json">site/data/corpus.json</a> — প্রতিবেদনে ছাপা
-        প্রতিটি সমষ্টি, আর তার পাশে ট্যাবগুলো যে আটটি ফাইল পড়ে</li>
-      <li><a href="investigation_output/rule_scripts/rule_catalogue.py">rule_catalogue.py</a>
-        ও <a href="investigation_output/rule_scripts/run_rules.py">run_rules.py</a> —
-        আঠারোটি নিয়ম কোড আকারে, আর যে স্ক্রিপ্ট সেগুলো চালিয়েছে</li>
-    </ul>
-    <p>পিডিএফগুলো এই ফাইলের পাশের তিনটি ফোল্ডারেই আছে:
-      <code>Tender Notice_PDFs</code> (১,১৫৫টি বিজ্ঞপ্তি),
-      <code>Contract_Awards_PDFs</code> (৬৪৫টি চুক্তির নথি) এবং
-      <code>eGP_Forensic_Engine</code> (নিয়মগুলো যে পাঁচটি আদর্শ দস্তাবেজ থেকে নেওয়া)।</p>
-  </div>
-
-</noscript>
-
-
-<script type="module" src="site/scripts/app.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script type="module" src="site/scripts/map.js"></script>
 </body>
 </html>
