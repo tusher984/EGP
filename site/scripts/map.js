@@ -13,11 +13,12 @@ const scores = authorities.map((authority) => ({
 }));
 const byDistrict = new Map(scores.map((authority) => [authority.district, authority]));
 byDistrict.set('Chittagong', byDistrict.get('Chattogram'));
-const map = L.map('map', { zoomControl: false, attributionControl: true }).setView([23.75, 90.35], 7);
-L.control.zoom({ position: 'bottomright' }).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', opacity: .18 }).addTo(map);
+let map;
 let selectedCode = null;
 let chart;
+const districtLayers = new Map();
+let activeMapStep = null;
+let initialized = false;
 
 function colorFor(score) {
   const stops = [[0, [46, 204, 113]], [50, [241, 196, 15]], [100, [231, 76, 60]]];
@@ -36,30 +37,122 @@ function fillFor(district) {
   return authority ? colorFor(authority.score) : '#edf3ef';
 }
 
-fetch('site/build/geo/bgd-adm2-districts.geojson')
-  .then((response) => response.json())
-  .then((geojson) => {
-    const boundaryLayer = L.geoJSON(geojson, {
-      style: (feature) => ({ color: '#b3c5be', weight: .65, fillColor: fillFor(feature.properties.shapeName), fillOpacity: byDistrict.has(feature.properties.shapeName) ? .22 : .58 }),
-      onEachFeature: (feature, layer) => layer.bindTooltip(feature.properties.shapeName, { sticky: true, className: 'district-tooltip' }),
+function mapAccent() {
+  return getComputedStyle(document.documentElement).getPropertyValue('--accent-fill').trim() || '#00243e';
+}
+
+function resetHighlights() {
+  districtLayers.forEach((layer, district) => {
+    layer.setStyle({
+      fillColor: fillFor(district),
+      fillOpacity: byDistrict.has(district) ? .22 : .58,
+      weight: .65,
+    });
+  });
+}
+
+function updateMapStep(step) {
+  if (!map || !step || step === activeMapStep) return;
+  activeMapStep = step;
+  document.querySelectorAll('.map-step.is-map-active').forEach((paragraph) => paragraph.classList.remove('is-map-active'));
+  step.classList.add('is-map-active');
+  const [lat, lng] = step.dataset.mapCenter.split(',').map(Number);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) map.flyTo([lat, lng], Number(step.dataset.mapZoom) || 8, { duration: 1.1 });
+  resetHighlights();
+  const highlight = step.dataset.mapHighlight;
+  if (highlight) {
+    const layer = districtLayers.get(highlight);
+    if (layer) layer.setStyle({ fillColor: mapAccent(), fillOpacity: .6, weight: 1.5 });
+  }
+}
+
+function observeMapSteps() {
+  const steps = document.querySelectorAll('.map-step[data-map-center]');
+  if (!steps.length || !('IntersectionObserver' in window)) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.filter((entry) => entry.isIntersecting)
+      .sort((a, b) => Math.abs(a.boundingClientRect.top - innerHeight / 2) - Math.abs(b.boundingClientRect.top - innerHeight / 2))
+      .slice(0, 1)
+      .forEach((entry) => updateMapStep(entry.target));
+  }, { rootMargin: '-42% 0px -42% 0px', threshold: [0, .5, 1] });
+  steps.forEach((step) => observer.observe(step));
+  updateMapStep(steps[0]);
+}
+
+function initializeMap() {
+  if (initialized) return;
+  console.log('[e-GP map] initializeMap called');
+  if (!window.L) {
+    console.log('[e-GP map] Leaflet is not ready; retrying');
+    setTimeout(initializeMap, 250);
+    return;
+  }
+  initialized = true;
+  console.log('[e-GP map] Leaflet ready; building map');
+  const container = document.getElementById('map');
+  const note = document.querySelector('.map-note');
+  if (!container) return;
+  container.textContent = '';
+  if (note) note.textContent = 'Loading district boundaries…';
+  map = L.map(container, { zoomControl: false, attributionControl: true }).setView([23.75, 90.35], 7);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', opacity: .18 }).addTo(map);
+
+  scores.forEach((authority) => {
+    const marker = L.circleMarker([authority.lat, authority.lng], {
+      radius: 10 + authority.score * .3,
+      color: '#fff', weight: 2, fillColor: colorFor(authority.score), fillOpacity: .9,
     }).addTo(map);
-    map.invalidateSize({ pan: false });
-    map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
-    requestAnimationFrame(() => {
+    marker.bindTooltip(tooltip(authority), { sticky: true, direction: 'top', offset: [0, -8] });
+    marker.on('click', () => selectAuthority(authority.code));
+  });
+
+  fetch('site/build/geo/bgd-adm2-districts.geojson')
+    .then((response) => response.json())
+    .then((geojson) => {
+      const boundaryLayer = L.geoJSON(geojson, {
+        style: (feature) => ({ color: '#b3c5be', weight: .65, fillColor: fillFor(feature.properties.shapeName), fillOpacity: byDistrict.has(feature.properties.shapeName) ? .22 : .58 }),
+        onEachFeature: (feature, layer) => {
+          districtLayers.set(feature.properties.shapeName, layer);
+          layer.bindTooltip(feature.properties.shapeName, { sticky: true, className: 'district-tooltip' });
+        },
+      }).addTo(map);
       map.invalidateSize({ pan: false });
       map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
+      requestAnimationFrame(() => {
+        map.invalidateSize({ pan: false });
+        map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
+      });
+      districtLayers.set('Chattogram', districtLayers.get('Chittagong'));
+      observeMapSteps();
+      if (note) note.textContent = '';
+      console.log('[e-GP map] district boundaries loaded');
+    })
+    .catch((error) => {
+      console.error('[e-GP map] district boundary load failed', error);
+      if (note) note.textContent = 'District boundary data could not be loaded.';
     });
-  })
-  .catch(() => { document.querySelector('.map-note').textContent = 'District boundary data could not be loaded.'; });
 
-scores.forEach((authority) => {
-  const marker = L.circleMarker([authority.lat, authority.lng], {
-    radius: 10 + authority.score * .3,
-    color: '#fff', weight: 2, fillColor: colorFor(authority.score), fillOpacity: .9,
-  }).addTo(map);
-  marker.bindTooltip(tooltip(authority), { sticky: true, direction: 'top', offset: [0, -8] });
-  marker.on('click', () => selectAuthority(authority.code));
-});
+  selectAuthority('CDA');
+}
+
+const mapContainer = document.getElementById('map');
+if (mapContainer && 'IntersectionObserver' in window) {
+  const mapObserver = new IntersectionObserver((entries, observer) => {
+    if (!entries.some((entry) => entry.isIntersecting)) return;
+    console.log('[e-GP map] map entered preload distance');
+    initializeMap();
+    observer.disconnect();
+  }, { rootMargin: '300px 0px', threshold: 0.1 });
+  mapObserver.observe(mapContainer);
+  setTimeout(() => {
+    console.log('[e-GP map] fallback initialization timer fired');
+    initializeMap();
+  }, 2000);
+} else if (mapContainer) {
+  console.log('[e-GP map] IntersectionObserver unavailable; initializing directly');
+  initializeMap();
+}
 
 function selectAuthority(code) {
   const authority = scores.find((item) => item.code === code);
@@ -69,6 +162,11 @@ function selectAuthority(code) {
   document.getElementById('detail-title').textContent = `${authority.code} / ${authority.district}`;
   document.getElementById('detail-summary').textContent = `${authority.name} records a composite corruption score of ${authority.score.toFixed(1)} out of 100. Values are weighted 40% single-bid, 35% concentration and 25% late signing.`;
   const chartData = [authority.singleBid, authority.concentration, authority.lateSigning];
+  if (!window.Chart) {
+    console.log('[e-GP map] Chart.js is not ready; retrying selected authority chart');
+    setTimeout(() => selectAuthority(code), 250);
+    return;
+  }
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('indicator-chart'), { type: 'bar', data: { labels: ['Single-bid rate', 'Market concentration', 'Late signing'], datasets: [{ data: chartData, backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c'], borderWidth: 0, borderRadius: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.raw}%` } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (value) => `${value}%` }, grid: { color: '#d8e1dd' } }, x: { grid: { display: false } } } } });
 }
@@ -83,11 +181,22 @@ const ranking = document.getElementById('ranking');
   ranking.appendChild(item);
 });
 
-selectAuthority('CDA');
+function loadHtml2Canvas() {
+  if (window.html2canvas) return Promise.resolve(window.html2canvas);
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+    script.onload = () => resolve(window.html2canvas);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 document.getElementById('download-map').addEventListener('click', async () => {
   const button = document.getElementById('download-map');
   button.disabled = true; button.textContent = 'Preparing PNG...';
   try {
+    const html2canvas = await loadHtml2Canvas();
     const canvas = await html2canvas(document.getElementById('map-export'), { backgroundColor: '#f5f7f2', scale: 2, useCORS: true });
     const link = document.createElement('a'); link.download = 'bangladesh-procurement-risk-map.png'; link.href = canvas.toDataURL('image/png'); link.click();
   } finally { button.disabled = false; button.textContent = 'Download PNG'; }

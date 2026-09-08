@@ -555,6 +555,9 @@ export function load(name) {
     cache.set(name, fetch(DATA + name + ".json").then((r) => {
       if (!r.ok) throw new Error(name + ".json " + r.status);
       return r.json();
+    }).catch((err) => {
+      console.error("Could not load " + name + ".json", err);
+      throw err;
     }));
   }
   return cache.get(name);

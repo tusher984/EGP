@@ -11,15 +11,15 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-  background: var(--surface-page);
+  background: var(--surface-page, #ffffff);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--surface-page);
-  color: var(--text-body);
-  font-family: var(--font-body);
+  background: var(--surface-page, #ffffff);
+  color: var(--text-body, #222222);
+  font-family: var(--font-body, Georgia, "Times New Roman", serif);
   font-size: 1.0625rem;
   line-height: 1.62;
   font-kerning: normal;
@@ -319,8 +319,9 @@ img, svg { max-width: 100%; }
 .prose > *,
 .story-head > * { grid-column: 3; }
 .prose > .fig,
-.prose > .tiles { grid-column: 2 / 5; }
-.prose > .fig-wide { grid-column: 1 / -1; }
+.prose > .tiles { grid-column: 3; }
+.prose > .fig.fig-wide { grid-column: 3; }
+.prose > .scrolly-container { grid-column: 1 / -1; }
 
 .prose > * + * { margin-top: 1.15rem; }
 .prose p { margin: 0; }
@@ -678,11 +679,14 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 
 .fig {
   margin: 2.2rem 0 0;
-  max-width: 54rem;
+  max-width: 40rem;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
   opacity: 1;
   transform: none;
 }
-.fig-wide { max-width: none; }
+.fig-wide { max-width: 40rem; width: 100%; }
 
 .figure-reveal {
   opacity: 0;
@@ -724,6 +728,7 @@ html.dark-mode .hit-snip mark { background: var(--accent-fill); }
 
 .fig-plot {
   position: relative;
+  width: 100%;
   padding: 0.7rem 0.45rem 0.35rem;
   background: var(--surface-raised);
   border-block: 1px solid var(--ntr-home-line);
