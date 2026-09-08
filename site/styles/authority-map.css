@@ -8,8 +8,8 @@
 .authority-map-tools { display: flex; justify-content: flex-end; margin-bottom: .75rem; }
 .authority-map-tools .btn { color: var(--on-accent); background: var(--accent-fill); border: 1px solid var(--ntr-home-line-strong); padding: .55rem .8rem; cursor: pointer; }
 .authority-map-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(250px, .7fr); border-block: 1px solid var(--ntr-home-line); background: var(--surface-raised); }
-.authority-map-figure { position: relative; min-height: 620px; margin: 0; background: var(--surface-sunken); }
-.authority-map-figure #map { min-height: 620px; height: 100%; background: var(--surface-sunken); }
+.authority-map-figure { position: relative; height: 620px; margin: 0; background: var(--surface-sunken); }
+.authority-map-figure #map { height: 100%; background: var(--surface-sunken); }
 .authority-map-copy { position: absolute; left: 1rem; bottom: 1rem; z-index: 500; max-width: min(32rem, calc(100% - 2rem)); padding: .9rem 1rem; background: var(--surface-raised); color: var(--text-body); }
 .authority-map-kicker { margin: 0 0 .25rem; color: var(--ntr-home-muted-strong); font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .authority-map-copy h2 { margin: 0 0 .4rem; color: var(--text-strong); font-family: var(--font-heading); font-size: clamp(1.25rem, 2.5vw, 2rem); line-height: 1.1; }
@@ -47,7 +47,7 @@
   .authority-legend { margin-top: 1rem; }
 }
 @media (max-width: 560px) {
-  .authority-map-figure, .authority-map-figure #map { min-height: 480px; }
+  .authority-map-figure { height: 480px; }
   .authority-map-copy { right: 1rem; max-width: none; }
   .authority-map-source { font-size: .7rem; }
 }

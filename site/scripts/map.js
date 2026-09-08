@@ -39,10 +39,16 @@ function fillFor(district) {
 fetch('site/build/geo/bgd-adm2-districts.geojson')
   .then((response) => response.json())
   .then((geojson) => {
-    L.geoJSON(geojson, {
+    const boundaryLayer = L.geoJSON(geojson, {
       style: (feature) => ({ color: '#b3c5be', weight: .65, fillColor: fillFor(feature.properties.shapeName), fillOpacity: byDistrict.has(feature.properties.shapeName) ? .22 : .58 }),
       onEachFeature: (feature, layer) => layer.bindTooltip(feature.properties.shapeName, { sticky: true, className: 'district-tooltip' }),
     }).addTo(map);
+    map.invalidateSize({ pan: false });
+    map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
+    requestAnimationFrame(() => {
+      map.invalidateSize({ pan: false });
+      map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
+    });
   })
   .catch(() => { document.querySelector('.map-note').textContent = 'District boundary data could not be loaded.'; });
 
