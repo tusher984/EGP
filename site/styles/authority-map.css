@@ -1,0 +1,53 @@
+/* The map is scoped to its figure so the original article layout remains unchanged. */
+.authority-map-report {
+  position: relative;
+  margin: 3rem 0;
+  color: var(--text-body);
+  font-family: var(--font-body);
+}
+.authority-map-tools { display: flex; justify-content: flex-end; margin-bottom: .75rem; }
+.authority-map-tools .btn { color: var(--on-accent); background: var(--accent-fill); border: 1px solid var(--ntr-home-line-strong); padding: .55rem .8rem; cursor: pointer; }
+.authority-map-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(250px, .7fr); border-block: 1px solid var(--ntr-home-line); background: var(--surface-raised); }
+.authority-map-figure { position: relative; min-height: 620px; margin: 0; background: var(--surface-sunken); }
+.authority-map-figure #map { min-height: 620px; height: 100%; background: var(--surface-sunken); }
+.authority-map-copy { position: absolute; left: 1rem; bottom: 1rem; z-index: 500; max-width: min(32rem, calc(100% - 2rem)); padding: .9rem 1rem; background: var(--surface-raised); color: var(--text-body); }
+.authority-map-kicker { margin: 0 0 .25rem; color: var(--ntr-home-muted-strong); font-family: var(--font-mono); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.authority-map-copy h2 { margin: 0 0 .4rem; color: var(--text-strong); font-family: var(--font-heading); font-size: clamp(1.25rem, 2.5vw, 2rem); line-height: 1.1; }
+.authority-map-copy p:last-child { margin: 0; color: var(--text-muted); font-size: .85rem; line-height: 1.45; }
+.map-note { color: var(--text-muted); font-size: .75rem; }
+.authority-map-source { padding: .7rem 1rem; color: var(--text-muted); font-size: .75rem; }
+.authority-map-sidebar { display: flex; flex-direction: column; padding: 1.25rem; border-left: 1px solid var(--ntr-home-line); }
+.authority-map-heading { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; padding-bottom: .8rem; border-bottom: 1px solid var(--ntr-home-line); }
+.authority-map-heading h3, .authority-legend h3 { margin: 0; color: var(--text-strong); font-family: var(--font-heading); }
+.authority-map-heading span { color: var(--text-muted); font-family: var(--font-mono); font-size: .7rem; }
+.authority-ranking { margin: 0; padding: 0; list-style: none; counter-reset: authority-rank; }
+.authority-ranking .ranking-item { display: grid; grid-template-columns: 1.5rem 1fr auto; align-items: center; gap: .5rem; padding: .7rem 0; border-bottom: 1px solid var(--ntr-home-line-soft); cursor: pointer; }
+.authority-ranking .ranking-item::before { counter-increment: authority-rank; content: counter(authority-rank, decimal-leading-zero); color: var(--text-muted); font-family: var(--font-mono); font-size: .7rem; }
+.authority-ranking .ranking-item.active, .authority-ranking .ranking-item:hover { background: var(--surface-sunken); }
+.authority-ranking .ranking-name { color: var(--text-strong); font-weight: 700; }
+.authority-ranking .ranking-district { display: block; color: var(--text-muted); font-size: .72rem; }
+.authority-ranking .ranking-score { color: var(--text-strong); font-family: var(--font-mono); }
+.authority-legend { margin-top: auto; padding-top: 1.3rem; }
+.authority-gradient { height: 9px; margin-top: .7rem; background: linear-gradient(90deg, var(--ntr-home-line), var(--accent-fill), var(--text-strong)); }
+.authority-legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); font-size: .7rem; }
+.authority-legend p { margin: .75rem 0 0; color: var(--text-muted); font-size: .75rem; }
+.authority-detail { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: 1.5rem; margin-top: 1rem; padding: 1.25rem; border-top: 1px solid var(--ntr-home-line); background: var(--surface-raised); }
+.authority-detail h3 { margin: .25rem 0 .5rem; color: var(--text-strong); font-family: var(--font-heading); font-size: 1.35rem; }
+.authority-detail p:last-child { color: var(--text-muted); font-size: .9rem; }
+.authority-chart { min-height: 250px; }
+.authority-chart canvas { width: 100% !important; height: 250px !important; }
+.authority-map-report .leaflet-container { font-family: var(--font-body); background: var(--surface-sunken); }
+.authority-map-report .leaflet-control-zoom a { color: var(--text-strong); background: var(--surface-raised); }
+.authority-map-report .authority-tooltip { color: var(--text-body); }
+.authority-map-report .authority-tooltip strong { display: block; color: var(--text-strong); }
+.authority-map-report .authority-tooltip span { display: block; color: var(--text-muted); font-size: .75rem; }
+@media (max-width: 900px) {
+  .authority-map-layout, .authority-detail { grid-template-columns: 1fr; }
+  .authority-map-sidebar { border-top: 1px solid var(--ntr-home-line); border-left: 0; }
+  .authority-legend { margin-top: 1rem; }
+}
+@media (max-width: 560px) {
+  .authority-map-figure, .authority-map-figure #map { min-height: 480px; }
+  .authority-map-copy { right: 1rem; max-width: none; }
+  .authority-map-source { font-size: .7rem; }
+}
