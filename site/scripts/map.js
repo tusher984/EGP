@@ -16,17 +16,11 @@ byDistrict.set('Chittagong', byDistrict.get('Chattogram'));
 let map;
 let selectedCode = null;
 let chart;
-const districtLayers = new Map();
-let activeMapStep = null;
 let initialized = false;
 
 function colorFor(score) {
-  const stops = [[0, [46, 204, 113]], [50, [241, 196, 15]], [100, [231, 76, 60]]];
-  const lower = score <= 50 ? stops[0] : stops[1];
-  const upper = score <= 50 ? stops[1] : stops[2];
-  const amount = (score - lower[0]) / (upper[0] - lower[0]);
-  const rgb = lower[1].map((channel, index) => Math.round(channel + (upper[1][index] - channel) * amount));
-  return `rgb(${rgb.join(',')})`;
+  const high = Math.max(0, Math.min(100, score));
+  return `color-mix(in srgb, var(--color-wash) ${100 - high}%, var(--color-primary) ${high}%)`;
 }
 function metric(value, noData) { return noData ? 'No data (0%)' : `${value}%`; }
 function tooltip(authority) {
@@ -34,49 +28,7 @@ function tooltip(authority) {
 }
 function fillFor(district) {
   const authority = byDistrict.get(district);
-  return authority ? colorFor(authority.score) : '#edf3ef';
-}
-
-function mapAccent() {
-  return getComputedStyle(document.documentElement).getPropertyValue('--accent-fill').trim() || '#00243e';
-}
-
-function resetHighlights() {
-  districtLayers.forEach((layer, district) => {
-    layer.setStyle({
-      fillColor: fillFor(district),
-      fillOpacity: byDistrict.has(district) ? .22 : .58,
-      weight: .65,
-    });
-  });
-}
-
-function updateMapStep(step) {
-  if (!map || !step || step === activeMapStep) return;
-  activeMapStep = step;
-  document.querySelectorAll('.map-step.is-map-active').forEach((paragraph) => paragraph.classList.remove('is-map-active'));
-  step.classList.add('is-map-active');
-  const [lat, lng] = step.dataset.mapCenter.split(',').map(Number);
-  if (Number.isFinite(lat) && Number.isFinite(lng)) map.flyTo([lat, lng], Number(step.dataset.mapZoom) || 8, { duration: 1.1 });
-  resetHighlights();
-  const highlight = step.dataset.mapHighlight;
-  if (highlight) {
-    const layer = districtLayers.get(highlight);
-    if (layer) layer.setStyle({ fillColor: mapAccent(), fillOpacity: .6, weight: 1.5 });
-  }
-}
-
-function observeMapSteps() {
-  const steps = document.querySelectorAll('.map-step[data-map-center]');
-  if (!steps.length || !('IntersectionObserver' in window)) return;
-  const observer = new IntersectionObserver((entries) => {
-    entries.filter((entry) => entry.isIntersecting)
-      .sort((a, b) => Math.abs(a.boundingClientRect.top - innerHeight / 2) - Math.abs(b.boundingClientRect.top - innerHeight / 2))
-      .slice(0, 1)
-      .forEach((entry) => updateMapStep(entry.target));
-  }, { rootMargin: '-42% 0px -42% 0px', threshold: [0, .5, 1] });
-  steps.forEach((step) => observer.observe(step));
-  updateMapStep(steps[0]);
+  return authority ? colorFor(authority.score) : 'var(--surface-sunken)';
 }
 
 function initializeMap() {
@@ -96,12 +48,12 @@ function initializeMap() {
   if (note) note.textContent = 'Loading district boundaries…';
   map = L.map(container, { zoomControl: false, attributionControl: true }).setView([23.75, 90.35], 7);
   L.control.zoom({ position: 'bottomright' }).addTo(map);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', opacity: .18 }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', subdomains: 'abcd', opacity: .72 }).addTo(map);
 
   scores.forEach((authority) => {
     const marker = L.circleMarker([authority.lat, authority.lng], {
       radius: 10 + authority.score * .3,
-      color: '#fff', weight: 2, fillColor: colorFor(authority.score), fillOpacity: .9,
+      color: 'var(--surface-page)', weight: 2, fillColor: colorFor(authority.score), fillOpacity: .9,
     }).addTo(map);
     marker.bindTooltip(tooltip(authority), { sticky: true, direction: 'top', offset: [0, -8] });
     marker.on('click', () => selectAuthority(authority.code));
@@ -111,9 +63,8 @@ function initializeMap() {
     .then((response) => response.json())
     .then((geojson) => {
       const boundaryLayer = L.geoJSON(geojson, {
-        style: (feature) => ({ color: '#b3c5be', weight: .65, fillColor: fillFor(feature.properties.shapeName), fillOpacity: byDistrict.has(feature.properties.shapeName) ? .22 : .58 }),
+        style: (feature) => ({ color: 'var(--ntr-home-line-strong)', weight: .65, fillColor: fillFor(feature.properties.shapeName), fillOpacity: byDistrict.has(feature.properties.shapeName) ? .22 : .58 }),
         onEachFeature: (feature, layer) => {
-          districtLayers.set(feature.properties.shapeName, layer);
           layer.bindTooltip(feature.properties.shapeName, { sticky: true, className: 'district-tooltip' });
         },
       }).addTo(map);
@@ -123,8 +74,6 @@ function initializeMap() {
         map.invalidateSize({ pan: false });
         map.fitBounds(boundaryLayer.getBounds(), { padding: [20, 20] });
       });
-      districtLayers.set('Chattogram', districtLayers.get('Chittagong'));
-      observeMapSteps();
       if (note) note.textContent = '';
       console.log('[e-GP map] district boundaries loaded');
     })
@@ -136,23 +85,11 @@ function initializeMap() {
   selectAuthority('CDA');
 }
 
-const mapContainer = document.getElementById('map');
-if (mapContainer && 'IntersectionObserver' in window) {
-  const mapObserver = new IntersectionObserver((entries, observer) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    console.log('[e-GP map] map entered preload distance');
-    initializeMap();
-    observer.disconnect();
-  }, { rootMargin: '300px 0px', threshold: 0.1 });
-  mapObserver.observe(mapContainer);
-  setTimeout(() => {
-    console.log('[e-GP map] fallback initialization timer fired');
-    initializeMap();
-  }, 2000);
-} else if (mapContainer) {
-  console.log('[e-GP map] IntersectionObserver unavailable; initializing directly');
-  initializeMap();
-}
+initializeMap();
+
+window.addEventListener('resize', () => {
+  if (map) map.invalidateSize({ pan: false });
+}, { passive: true });
 
 function selectAuthority(code) {
   const authority = scores.find((item) => item.code === code);
@@ -168,7 +105,7 @@ function selectAuthority(code) {
     return;
   }
   if (chart) chart.destroy();
-  chart = new Chart(document.getElementById('indicator-chart'), { type: 'bar', data: { labels: ['Single-bid rate', 'Market concentration', 'Late signing'], datasets: [{ data: chartData, backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c'], borderWidth: 0, borderRadius: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.raw}%` } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (value) => `${value}%` }, grid: { color: '#d8e1dd' } }, x: { grid: { display: false } } } } });
+  chart = new Chart(document.getElementById('indicator-chart'), { type: 'bar', data: { labels: ['Single-bid rate', 'Market concentration', 'Late signing'], datasets: [{ data: chartData, backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => `${context.raw}%` } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: (value) => `${value}%` }, grid: { color: '#d8e1dd' } }, x: { grid: { display: false } } } } });
 }
 
 const ranking = document.getElementById('ranking');

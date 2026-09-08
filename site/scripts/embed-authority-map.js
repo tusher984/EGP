@@ -10,6 +10,7 @@ function authorityMapMarkup() {
     <div class="authority-map-tools">
       <button class="btn btn-quiet" id="download-map" type="button">Download PNG</button>
     </div>
+    <div class="map-details-bar"><span class="measured-risk-indicator">Measured risk</span><span>Composite score / 100</span></div>
     <div class="authority-map-layout" id="map-export">
       <figure class="authority-map-figure">
         <div id="map" role="img" aria-label="Map of Bangladesh showing district boundaries and corruption indicators for six development authorities"><div style="color: var(--text-muted);">Loading map...</div></div>
@@ -22,7 +23,6 @@ function authorityMapMarkup() {
         <figcaption class="authority-map-source">Source: supplied authority-level procurement indicators; district boundaries from the vendored Bangladesh ADM2 GeoJSON.</figcaption>
       </figure>
       <aside class="authority-map-sidebar" aria-label="Authority ranking">
-        <div class="authority-map-heading"><h3>Measured risk</h3><span>score / 100</span></div>
         <ol id="ranking" class="authority-ranking"></ol>
         <div class="authority-legend">
           <h3>How to read the map</h3>
@@ -45,33 +45,12 @@ function mount() {
   if (!story) return;
   mounted = true;
   const mapReport = authorityMapMarkup();
-  const anchor = Array.from(story.querySelectorAll('p')).find((paragraph) =>
-    paragraph.textContent.trim().startsWith('These stringent prerequisites raise fundamental concerns')
-  );
-  if (anchor) anchor.after(mapReport);
+  const firstParagraph = story.querySelector(':scope > p');
+  if (firstParagraph) firstParagraph.after(mapReport);
   else story.appendChild(mapReport);
-  tagMapSteps(story);
   import(`./map.js?authority-map=${Date.now()}`).catch(() => {
     const note = document.querySelector('.authority-map-figure .map-note');
     if (note) note.textContent = 'The interactive authority map could not be loaded.';
-  });
-}
-
-function tagMapSteps(proseColumn) {
-  const steps = [
-    ['In February 2021, the Chittagong Development Authority', '22.3569,91.7832', '10', 'Chittagong'],
-    ['Further analysis highlighted a CDA tender', '22.3569,91.7832', '10', 'Chittagong'],
-    ['Single-bidder rates vary substantially across authorities', '24.3745,88.6042', '8', 'Rajshahi'],
-    ['RAJUK, overseeing a higher project volume', '23.8103,90.4125', '9', 'Dhaka'],
-    ['This is particularly evident in Chattogram', '22.3569,91.7832', '9', 'Chittagong'],
-  ];
-  Array.from(proseColumn.querySelectorAll('p')).forEach((paragraph) => {
-    const step = steps.find(([text]) => paragraph.textContent.trim().startsWith(text));
-    if (!step) return;
-    paragraph.classList.add('map-step');
-    paragraph.dataset.mapCenter = step[1];
-    paragraph.dataset.mapZoom = step[2];
-    paragraph.dataset.mapHighlight = step[3];
   });
 }
 

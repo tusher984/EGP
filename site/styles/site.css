@@ -12,6 +12,8 @@
 
 html {
   background: var(--surface-page, #ffffff);
+  height: 100%;
+  overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -22,6 +24,8 @@ body {
   font-family: var(--font-body, Georgia, "Times New Roman", serif);
   font-size: 1.0625rem;
   line-height: 1.62;
+  min-height: 100%;
+  overflow-x: hidden;
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
@@ -124,6 +128,29 @@ img, svg { max-width: 100%; }
 }
 
 .masthead-tools { display: flex; gap: 0.4rem; align-items: center; }
+
+/* The article's headline hierarchy for the Netra News embed. */
+.story-head {
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--ntr-home-line);
+}
+.story-head .hed {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  line-height: 1.15;
+  color: var(--text-strong);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.story-head .dek {
+  max-width: 40rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.story-head .byline { color: var(--text-faint); font-size: .875rem; }
 
 .ghost {
   font-family: var(--font-heading);
@@ -321,10 +348,28 @@ img, svg { max-width: 100%; }
 .prose > .fig,
 .prose > .tiles { grid-column: 3; }
 .prose > .fig.fig-wide { grid-column: 3; }
-.prose > .scrolly-container { grid-column: 1 / -1; }
 
 .prose > * + * { margin-top: 1.15rem; }
 .prose p { margin: 0; }
+
+/* Simple article measure and normal-flow visualization layout. */
+.prose-column, article { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+article p, .prose-column p { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.7; color: var(--text-body); margin-bottom: 1.5em; }
+article h1 { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 700; color: var(--text-strong); line-height: 1.2; margin-bottom: 1rem; }
+article h2 { font-family: var(--font-heading); font-size: 1.75rem; font-weight: 700; color: var(--text-strong); margin: 3rem 0 1rem; }
+.map-background { position: fixed; top: 0; right: 0; width: 40%; height: 100vh; background-image: url('../assets/bangladesh-map-outline.svg'); background-size: contain; background-position: center; background-repeat: no-repeat; opacity: .15; z-index: -1; pointer-events: none; }
+.map-section, .authority-map-report { width: 100%; max-width: 100%; margin: 4rem 0; padding: 3rem 24px; background: var(--surface-sunken); }
+#map-container, .authority-map-figure #map { max-width: 100%; height: 600px; border: 1px solid var(--ntr-home-line); }
+.chart-full-width { width: 100vw; margin-left: calc(-50vw + 50%); max-width: none; padding: 3rem 24px; background: var(--surface-sunken); }
+figure caption, .chart-caption { font-family: var(--font-caption); font-size: .875rem; line-height: 1.5; color: var(--text-muted); margin-top: 1rem; }
+.source-line, .authority-map-source { font-size: .75rem; color: var(--text-faint); font-style: italic; margin-top: .5rem; }
+.prose > .fig { grid-column: 1 / -1; width: 100vw; max-width: none; margin-left: calc(-50vw + 50%); padding: 3rem 24px; background: var(--surface-sunken); }
+@media (min-width: 768px) {
+  .prose-column, article { padding-inline: 48px; }
+}
+@media (max-width: 768px) {
+  .map-background { display: none; }
+}
 
 /* The subheads take the text face, like the headline and the deck above them.
    A section head in the sans announces a dashboard panel; a section head in the
