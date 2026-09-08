@@ -81,6 +81,17 @@ h3 { font-size: 1.1rem; line-height: 1.25; }
 .intro { max-width: 65ch; margin: 0 auto; padding-block: clamp(2.4rem, 6vw, 5rem) 1.5rem; }
 .intro h2 { margin-top: .45rem; }
 .intro > p:last-child, .deck { color: var(--text-muted); }
+.article-section { max-width: 65ch; margin: 0 auto; padding-block: 1.5rem 3rem; }
+.article-section h2 { margin-top: .4rem; }
+.article-byline { margin: .6rem 0 2rem; color: var(--text-muted); font-family: var(--font-mono); font-size: .78rem; }
+.article-body { max-width: 65ch; }
+.article-body p { margin: 0 0 1.25rem; }
+.article-body .article-deck, .article-body .article-lede { color: var(--text-strong); font-size: 1.12rem; line-height: 1.55; }
+.article-body h3 { margin: 2.2rem 0 .8rem; font-size: 1.45rem; }
+.report-finding { margin: 1.7rem 0; padding-block: .9rem; border-block: 1px solid var(--ntr-home-line); }
+.report-finding h3 { margin: 0 0 .45rem; color: var(--ntr-home-accent); font-family: var(--font-mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+.report-finding p { margin-bottom: 0; }
+.report-placeholder { color: var(--text-muted); font-style: italic; }
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 1.75fr) minmax(280px, .75fr);
